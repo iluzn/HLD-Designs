@@ -1,3 +1,9 @@
+---
+layout: default
+title: "Notification System — HLD"
+description: "System design for Notification System — HLD - architecture, deep dives, and trade-offs"
+---
+
 # Notification System — HLD
 
 ## 1. Understanding the Problem

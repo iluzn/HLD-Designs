@@ -1,3 +1,8 @@
+---
+layout: none
+title: "SystemCraft — High-Level System Design for Tech Interviews"
+description: "Free HLD system design notes covering notification systems, job schedulers, URL shorteners, digital wallets, and food delivery platforms."
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,37 +31,37 @@
         <p class="subtitle">High-Level System Design notes for tech interviews</p>
 
         <div class="designs">
-            <a class="card" href="NotificationSystem.md">
+            <a class="card" href="NotificationSystem">
                 <h3>Notification System</h3>
                 <p>Multi-channel (push, SMS, email) notification platform with real-time delivery, template service, send-time optimization, and engagement tracking.</p>
                 <span class="tag">Kafka</span><span class="tag">WebSocket</span><span class="tag">Redis</span><span class="tag">DynamoDB</span>
             </a>
 
-            <a class="card" href="JobScheduler.md">
+            <a class="card" href="JobScheduler">
                 <h3>Distributed Job Scheduler</h3>
                 <p>Cron-like scheduler with DAG dependencies, sharded execution, retries, and dead-letter reconciliation.</p>
                 <span class="tag">Cassandra</span><span class="tag">Kafka</span><span class="tag">ZooKeeper</span><span class="tag">Flink</span>
             </a>
 
-            <a class="card" href="DelayedTriggerService.md">
+            <a class="card" href="DelayedTriggerService">
                 <h3>Delayed Trigger Service</h3>
                 <p>Register a callback with a future fire time. Two-tier (SQS + Cassandra) with timing wheel, sweeper, dispatcher pool, and circuit breakers.</p>
                 <span class="tag">SQS</span><span class="tag">Cassandra</span><span class="tag">Timing Wheel</span><span class="tag">Redis</span>
             </a>
 
-            <a class="card" href="DigitalWallet.md">
+            <a class="card" href="DigitalWallet">
                 <h3>Digital Wallet (Paytm/PhonePe)</h3>
                 <p>Double-entry ledger, P2P transfers, merchant payments, idempotent transactions, and fraud detection.</p>
                 <span class="tag">Ledger</span><span class="tag">Postgres</span><span class="tag">Kafka</span><span class="tag">Redis</span>
             </a>
 
-            <a class="card" href="URLShortner.md">
+            <a class="card" href="URLShortner">
                 <h3>URL Shortener (Bitly)</h3>
                 <p>Base62 encoding, distributed ID generation, read-heavy caching, analytics pipeline, and geo-routing.</p>
                 <span class="tag">Redis</span><span class="tag">Cassandra</span><span class="tag">CDN</span><span class="tag">Kafka</span>
             </a>
 
-            <a class="card" href="Zomato.md">
+            <a class="card" href="Zomato">
                 <h3>Food Delivery (Zomato)</h3>
                 <p>Restaurant search, real-time order tracking, dispatch optimization, and delivery partner matching.</p>
                 <span class="tag">Elasticsearch</span><span class="tag">Redis Geo</span><span class="tag">Kafka</span><span class="tag">WebSocket</span>

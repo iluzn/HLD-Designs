@@ -1,3 +1,9 @@
+---
+layout: default
+title: "Designing a URL Shortener Like Bitly or TinyURL"
+description: "System design for Designing a URL Shortener Like Bitly or TinyURL - architecture, deep dives, and trade-offs"
+---
+
 # Designing a URL Shortener Like Bitly or TinyURL
 
 ## Understanding the Problem
