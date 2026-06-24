@@ -4,9 +4,10 @@ title: "SystemCraft — High-Level System Design for Tech Interviews"
 description: "Free HLD system design notes covering notification systems, job schedulers, URL shorteners, digital wallets, and food delivery platforms."
 ---
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
+    <script>(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SystemCraft — System Design for Tech Interviews</title>
     <meta name="description" content="Free high-level system design notes. Notification systems, job schedulers, URL shorteners, digital wallets, food delivery and more.">
@@ -23,10 +24,22 @@ description: "Free HLD system design notes covering notification systems, job sc
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #09090b;
-            color: #e2e8f0;
+            background: var(--bg, #09090b);
+            color: var(--text, #e2e8f0);
             line-height: 1.6;
             min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        [data-theme="light"] {
+            --bg: #ffffff; --text: #1e293b; --text-muted: #475569; --text-dim: #94a3b8;
+            --card-bg: #f8fafc; --border: rgba(0,0,0,0.08); --accent: #4f46e5;
+            --accent-light: #6366f1; --tag-bg: rgba(79,70,229,0.06); --tag-border: rgba(79,70,229,0.15);
+        }
+        [data-theme="dark"] {
+            --bg: #09090b; --text: #e2e8f0; --text-muted: #94a3b8; --text-dim: #64748b;
+            --card-bg: rgba(15,15,20,0.8); --border: rgba(255,255,255,0.06); --accent: #6366f1;
+            --accent-light: #a5b4fc; --tag-bg: rgba(99,102,241,0.06); --tag-border: rgba(99,102,241,0.15);
         }
 
         /* Animated gradient background */
@@ -101,10 +114,10 @@ description: "Free HLD system design notes covering notification systems, job sc
             gap: 1rem;
         }
         .card {
-            background: rgba(15,15,20,0.8);
-            border: 1px solid rgba(255,255,255,0.06);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 14px; padding: 1.4rem 1.5rem;
-            text-decoration: none; color: #e2e8f0;
+            text-decoration: none; color: var(--text);
             transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
             display: flex; flex-direction: column;
             position: relative; overflow: hidden;
@@ -116,12 +129,12 @@ description: "Free HLD system design notes covering notification systems, job sc
         }
         .card:hover { border-color: rgba(99,102,241,0.4); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(99,102,241,0.08); }
         .card:hover::before { opacity: 1; }
-        .card h3 { font-size: 1.05rem; font-weight: 600; color: #fff; margin-bottom: 0.4rem; }
-        .card p { color: #94a3b8; font-size: 0.85rem; flex-grow: 1; margin-bottom: 0.8rem; line-height: 1.5; }
+        .card h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+        .card p { color: var(--text-muted); font-size: 0.85rem; flex-grow: 1; margin-bottom: 0.8rem; line-height: 1.5; }
         .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
         .tag {
-            background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.15);
-            color: #a5b4fc; padding: 3px 9px; border-radius: 6px;
+            background: var(--tag-bg); border: 1px solid var(--tag-border);
+            color: var(--accent-light); padding: 3px 9px; border-radius: 6px;
             font-size: 0.7rem; font-weight: 500;
         }
         .tag-beginner { background: rgba(34,197,94,0.06); border-color: rgba(34,197,94,0.2); color: #86efac; }
@@ -158,6 +171,7 @@ description: "Free HLD system design notes covering notification systems, job sc
                 <a href="/">Designs</a>
                 <a href="/concepts">Fundamentals</a>
                 <a href="/about">About</a>
+                <button id="theme-btn" title="Toggle theme" style="background:none;border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:0.4rem 0.6rem;border-radius:6px;cursor:pointer;font-size:1rem;margin-left:0.5rem;">🌙</button>
             </nav>
         </div>
     </header>
@@ -260,6 +274,22 @@ description: "Free HLD system design notes covering notification systems, job sc
         </div>
         <p>&copy; 2026 SystemCraft. Built by Shaswat Kumar.</p>
     </footer>
+
+    <script>
+        (function() {
+            var theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            var btn = document.getElementById('theme-btn');
+            btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+            btn.addEventListener('click', function() {
+                var current = document.documentElement.getAttribute('data-theme');
+                var next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+                btn.textContent = next === 'dark' ? '☀️' : '🌙';
+            });
+        })();
+    </script>
 
 </body>
 </html>
