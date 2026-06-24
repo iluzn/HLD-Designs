@@ -32,14 +32,16 @@ description: "Free HLD system design notes covering notification systems, job sc
         }
 
         [data-theme="light"] {
-            --bg: #ffffff; --text: #1e293b; --text-muted: #475569; --text-dim: #94a3b8;
-            --card-bg: #f8fafc; --border: rgba(0,0,0,0.08); --accent: #4f46e5;
-            --accent-light: #6366f1; --tag-bg: rgba(79,70,229,0.06); --tag-border: rgba(79,70,229,0.15);
+            --bg: #f9fafb; --text: #111827; --text-muted: #374151; --text-dim: #6b7280;
+            --card-bg: #ffffff; --border: rgba(0,0,0,0.1); --accent: #4f46e5;
+            --accent-light: #4338ca; --tag-bg: rgba(79,70,229,0.08); --tag-border: rgba(79,70,229,0.2);
+            --header-bg: rgba(249,250,251,0.92);
         }
         [data-theme="dark"] {
             --bg: #09090b; --text: #e2e8f0; --text-muted: #94a3b8; --text-dim: #64748b;
             --card-bg: rgba(15,15,20,0.8); --border: rgba(255,255,255,0.06); --accent: #6366f1;
             --accent-light: #a5b4fc; --tag-bg: rgba(99,102,241,0.06); --tag-border: rgba(99,102,241,0.15);
+            --header-bg: rgba(9,9,11,0.8);
         }
 
         /* Animated gradient background */
@@ -48,23 +50,24 @@ description: "Free HLD system design notes covering notification systems, job sc
             background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.15), transparent);
             pointer-events: none; z-index: 0;
         }
+        [data-theme="light"] .bg-gradient { opacity: 0.3; }
 
         /* Header */
         header {
             position: sticky; top: 0; z-index: 100;
-            background: rgba(9,9,11,0.8);
+            background: var(--header-bg);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid var(--border);
             padding: 0.9rem 0;
         }
         .header-inner {
             max-width: 1100px; margin: 0 auto; padding: 0 1.5rem;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .logo { font-size: 1.3rem; font-weight: 800; color: #fff; text-decoration: none; letter-spacing: -0.02em; }
-        .logo span { background: linear-gradient(135deg, #6366f1, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        nav a { color: #94a3b8; text-decoration: none; margin-left: 1.5rem; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
-        nav a:hover { color: #fff; }
+        .logo { font-size: 1.3rem; font-weight: 800; color: var(--text); text-decoration: none; letter-spacing: -0.02em; }
+        .logo span { background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        nav a { color: var(--text-muted); text-decoration: none; margin-left: 1.5rem; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
+        nav a:hover { color: var(--text); }
 
         /* Hero */
         .hero {
@@ -83,24 +86,21 @@ description: "Free HLD system design notes covering notification systems, job sc
             background: linear-gradient(135deg, #6366f1, #a78bfa, #6366f1);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .hero p { color: #94a3b8; font-size: 1.15rem; max-width: 550px; margin: 0 auto 2rem; }
+        .hero p { color: var(--text-muted); font-size: 1.15rem; max-width: 550px; margin: 0 auto 2rem; }
         .badge {
             display: inline-block;
             background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.25);
-            color: #a5b4fc; padding: 0.35rem 1rem; border-radius: 20px;
+            color: var(--accent); padding: 0.35rem 1rem; border-radius: 20px;
             font-size: 0.78rem; font-weight: 500; margin-bottom: 1.5rem;
             letter-spacing: 0.02em;
         }
-        .hero-stats {
-            display: flex; justify-content: center; gap: 2.5rem; margin-top: 1rem;
-            color: #64748b; font-size: 0.85rem;
-        }
-        .hero-stats strong { color: #e2e8f0; font-size: 1.1rem; display: block; }
+        .hero-stats { display: flex; justify-content: center; gap: 2.5rem; margin-top: 1rem; color: var(--text-dim); font-size: 0.85rem; }
+        .hero-stats strong { color: var(--text); font-size: 1.1rem; display: block; }
 
         /* Section titles */
         .section-label {
             max-width: 1100px; margin: 0 auto; padding: 0 1.5rem;
-            font-size: 0.75rem; font-weight: 600; color: #6366f1;
+            font-size: 0.75rem; font-weight: 600; color: var(--accent);
             text-transform: uppercase; letter-spacing: 0.1em;
             margin-bottom: 1rem; position: relative; z-index: 1;
         }
@@ -143,10 +143,10 @@ description: "Free HLD system design notes covering notification systems, job sc
         /* Footer */
         footer {
             position: relative; z-index: 1;
-            border-top: 1px solid rgba(255,255,255,0.04);
-            padding: 2.5rem 1.5rem; text-align: center; color: #475569; font-size: 0.82rem;
+            border-top: 1px solid var(--border);
+            padding: 2.5rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.82rem;
         }
-        footer a { color: #6366f1; text-decoration: none; }
+        footer a { color: var(--accent); text-decoration: none; }
         footer a:hover { text-decoration: underline; }
         .footer-links { margin-bottom: 0.5rem; }
         .footer-links a { margin: 0 0.8rem; }
@@ -171,7 +171,7 @@ description: "Free HLD system design notes covering notification systems, job sc
                 <a href="/">Designs</a>
                 <a href="/concepts">Fundamentals</a>
                 <a href="/about">About</a>
-                <button id="theme-btn" title="Toggle theme" style="background:none;border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:0.4rem 0.6rem;border-radius:6px;cursor:pointer;font-size:1rem;margin-left:0.5rem;">🌙</button>
+                <button id="theme-btn" title="Toggle theme" style="background:none;border:1px solid var(--border);color:var(--text-muted);padding:0.4rem 0.6rem;border-radius:6px;cursor:pointer;font-size:1rem;margin-left:0.5rem;">🌙</button>
             </nav>
         </div>
     </header>
