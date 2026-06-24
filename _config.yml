@@ -12,3 +12,5 @@ permalink: pretty
 
 plugins:
   - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-sitemap

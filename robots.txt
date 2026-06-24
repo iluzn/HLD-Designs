@@ -1,0 +1,7 @@
+---
+layout: none
+---
+User-agent: *
+Allow: /
+
+Sitemap: https://systemcraft.in/sitemap.xml
