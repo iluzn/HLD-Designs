@@ -194,6 +194,28 @@
         </aside>
     </div>
 
+    <!-- Next/Previous navigation -->
+    <div style="max-width:900px;margin:0 auto;padding:0 1.5rem 2rem;display:flex;justify-content:space-between;font-size:0.9rem;">
+        {% assign pages_list = site.pages | where_exp: "p", "p.layout == 'default'" | sort: "title" %}
+        {% assign current_index = -1 %}
+        {% for p in pages_list %}
+            {% if p.url == page.url %}{% assign current_index = forloop.index0 %}{% endif %}
+        {% endfor %}
+        {% if current_index > 0 %}
+            {% assign prev = pages_list[current_index | minus: 1] %}
+            <a href="{{ prev.url }}" style="color:#6366f1;text-decoration:none;">&larr; {{ prev.title | truncate: 30 }}</a>
+        {% else %}
+            <span></span>
+        {% endif %}
+        {% assign next_index = current_index | plus: 1 %}
+        {% if next_index < pages_list.size %}
+            {% assign nxt = pages_list[next_index] %}
+            <a href="{{ nxt.url }}" style="color:#6366f1;text-decoration:none;">{{ nxt.title | truncate: 30 }} &rarr;</a>
+        {% else %}
+            <span></span>
+        {% endif %}
+    </div>
+
     <footer>
         <p>&copy; 2026 SystemCraft &middot; <a href="/">Home</a> &middot; <a href="/concepts">Fundamentals</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/iluzn/HLD-Designs">GitHub</a></p>
     </footer>
