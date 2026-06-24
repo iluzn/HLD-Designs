@@ -1,4 +1,5 @@
 ---
+permalink: /privacy/
 layout: default
 title: "Privacy Policy — SystemCraft"
 description: "Privacy policy for systemcraft.in"

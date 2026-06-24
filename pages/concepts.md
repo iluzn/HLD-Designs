@@ -1,4 +1,5 @@
 ---
+permalink: /concepts/
 layout: default
 title: "System Design Fundamentals"
 description: "Core system design concepts: CAP theorem, load balancing, caching, sharding, message queues, and more. Everything you need before diving into HLD problems."

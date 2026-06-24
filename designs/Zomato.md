@@ -1,4 +1,5 @@
 ---
+permalink: /Zomato/
 layout: default
 title: "Designing a Food Delivery Service Like Zomato"
 description: "System design for Designing a Food Delivery Service Like Zomato - architecture, deep dives, and trade-offs"

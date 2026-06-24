@@ -1,4 +1,5 @@
 ---
+permalink: /TwitterFeed/
 layout: default
 title: "Designing a Social Media Feed Like Twitter"
 description: "System design for a social media news feed - fan-out, timeline generation, caching, ranking, and real-time updates"

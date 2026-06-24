@@ -1,4 +1,5 @@
 ---
+permalink: /Leaderboard/
 layout: default
 title: "Designing a Real-Time Leaderboard"
 description: "System design for a gaming leaderboard - Redis sorted sets, rank queries, and scaling to millions of players"

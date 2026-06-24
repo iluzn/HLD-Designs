@@ -1,4 +1,5 @@
 ---
+permalink: /JobScheduler/
 layout: default
 title: "Distributed Job Scheduler — HLD"
 description: "System design for Distributed Job Scheduler — HLD - architecture, deep dives, and trade-offs"

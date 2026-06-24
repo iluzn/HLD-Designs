@@ -1,4 +1,5 @@
 ---
+permalink: /about/
 layout: default
 title: "About — SystemCraft"
 description: "About SystemCraft and its author Shaswat Kumar"

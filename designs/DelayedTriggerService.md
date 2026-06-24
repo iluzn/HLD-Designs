@@ -1,4 +1,5 @@
 ---
+permalink: /DelayedTriggerService/
 layout: default
 title: "Delayed Trigger Service"
 description: "System design for Delayed Trigger Service - architecture, deep dives, and trade-offs"

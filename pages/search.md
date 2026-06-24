@@ -1,4 +1,5 @@
 ---
+permalink: /search/
 layout: none
 title: "Search — SystemCraft"
 description: "Search system design articles on SystemCraft"

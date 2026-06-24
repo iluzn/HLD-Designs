@@ -1,4 +1,5 @@
 ---
+permalink: /ChatSystem/
 layout: default
 title: "Designing a Chat System Like WhatsApp"
 description: "System design for a real-time messaging platform - WebSockets, message delivery, read receipts, group chat, and offline handling"

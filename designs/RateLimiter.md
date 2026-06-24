@@ -1,4 +1,5 @@
 ---
+permalink: /RateLimiter/
 layout: default
 title: "Designing a Rate Limiter"
 description: "System design for a distributed rate limiter - token bucket, sliding window, Redis, edge limiting, and trade-offs. Beginner-friendly with diagrams."

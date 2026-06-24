@@ -1,4 +1,5 @@
 ---
+permalink: /DigitalWallet/
 layout: default
 title: "Designing a Payment Wallet Like Paytm, PhonePe, Venmo, or Cash App"
 description: "System design for Designing a Payment Wallet Like Paytm, PhonePe, Venmo, or Cash App - architecture, deep dives, and trade-offs"

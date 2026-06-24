@@ -1,4 +1,5 @@
 ---
+permalink: /ParkingLot/
 layout: default
 title: "Designing a Parking Lot System"
 description: "Beginner-friendly low-level design for a parking lot - object-oriented design, classes, and design patterns"
