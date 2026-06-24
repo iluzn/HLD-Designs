@@ -2,11 +2,13 @@ title: SystemCraft
 description: High-Level System Design notes for tech interviews
 url: "https://systemcraft.in"
 baseurl: ""
-theme: jekyll-theme-midnight
-markdown: kramdown
 
+markdown: kramdown
 kramdown:
   input: GFM
+  syntax_highlighter: rouge
+
+permalink: pretty
 
 plugins:
   - jekyll-seo-tag
