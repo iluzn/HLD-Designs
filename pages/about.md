@@ -2,7 +2,7 @@
 permalink: /about/
 layout: default
 title: "About — SystemCraft"
-description: "About SystemCraft and its author Shaswat Kumar"
+description: "About SystemCraft — free system design notes for tech interviews"
 ---
 
 # About SystemCraft
@@ -22,18 +22,9 @@ Each design follows a consistent format:
 - **Deep dives** — Bad / Good / Great format for the hardest problems
 - **Core flows** — sequence diagrams showing runtime interactions
 
-## Why I built this
+## Why this exists
 
-I'm Shaswat Kumar — a Software Development Engineer at Amazon with 4+ years of experience building distributed systems. I created these notes while preparing for system design interviews and wanted a clean, structured resource that didn't exist elsewhere.
-
-These are the notes I wish I had when I started. They're free and always will be.
-
-## Contact
-
-- **Email:** [shaswat.kumar03@gmail.com](mailto:shaswat.kumar03@gmail.com)
-- **LinkedIn:** [linkedin.com/in/shaswat-kumar-a16426190](https://www.linkedin.com/in/shaswat-kumar-a16426190/)
-- **GitHub:** [github.com/iluzn](https://github.com/iluzn)
-- **LeetCode:** [leetcode.com/iluzn](https://leetcode.com/iluzn/)
+These notes were created while preparing for system design interviews at top tech companies. The goal was a clean, structured resource that didn't exist elsewhere — free, open-source, and always available.
 
 ## Contributing
 

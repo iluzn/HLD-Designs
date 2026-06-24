@@ -43,4 +43,4 @@ We may update this Privacy Policy from time to time. Changes will be posted on t
 
 ## Contact
 
-If you have questions about this Privacy Policy, contact us at shaswat.kumar03@gmail.com.
+If you have questions about this Privacy Policy, contact us via [GitHub Issues](https://github.com/iluzn/HLD-Designs/issues).

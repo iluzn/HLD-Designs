@@ -266,7 +266,7 @@ An operation is idempotent if doing it 1 time or N times produces the same resul
 - Key stored with TTL (e.g., 24h)
 
 **Examples:**
-- `PUT /users/123 {name: "Shaswat"}` → naturally idempotent (same result every time)
+- `PUT /users/123 {name: "Alice"}` → naturally idempotent (same result every time)
 - `POST /payments {amount: 100, idempotency_key: "abc"}` → made idempotent via key
 
 ---
