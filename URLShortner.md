@@ -6,6 +6,39 @@ description: "System design for Designing a URL Shortener Like Bitly or TinyURL 
 
 # Designing a URL Shortener Like Bitly or TinyURL
 
+⚡ **Difficulty:** Beginner–Intermediate
+📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Caching and CDN
+⏱️ **Reading time:** 20 min
+
+---
+
+## TL;DR
+
+A URL shortener maps short codes to long URLs and redirects billions of clicks per day using tiered caching (CDN → Redis → DB).
+
+```mermaid
+flowchart LR
+    USER["Browser"]:::client
+    CDN["CDN Edge<br/>cache hot links"]:::edge
+    RS["Redirect Service"]:::service
+    REDIS[("Redis cache")]:::data
+    DB[("Global KV Store<br/>all links")]:::data
+
+    USER --> CDN
+    CDN --> RS
+    RS --> REDIS
+    RS --> DB
+
+    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
+    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
+    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+```
+
+**In 3 sentences:** User submits a long URL → system generates a unique short code (base62 of a Snowflake ID) → stores the mapping. On redirect, the system looks up the short code through CDN → Redis → DB tiers and returns a 302. Analytics events fire async to Kafka without slowing the redirect.
+
+---
+
 ## Understanding the Problem
 
 🔗 **What is a URL shortener?** A service that takes a long URL like `https://example.com/products/2024/summer-sale?utm_campaign=email&ref=newsletter` and gives you back a short one like `https://sho.rt/aB3xY9`. When someone clicks the short link, they're redirected to the original. Despite the tiny API surface, a URL shortener has to handle billions of redirects a day, generate unique codes without collisions, survive traffic spikes on viral links, and provide analytics.

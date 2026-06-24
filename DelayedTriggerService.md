@@ -6,6 +6,45 @@ description: "System design for Delayed Trigger Service - architecture, deep div
 
 # HLD: Delayed Trigger Service
 
+⚡ **Difficulty:** Intermediate–Advanced
+📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Message Queues and Caching
+⏱️ **Reading time:** 25 min
+
+---
+
+## TL;DR
+
+A service that fires HTTP callbacks at a future time. Short delays (≤15 min) go directly to a queue. Long delays park in a database and a sweeper migrates them to the queue as their fire time approaches.
+
+```mermaid
+flowchart LR
+    CALLER["Caller services"]:::client
+    API["Trigger API"]:::service
+    DB[("Cassandra<br/>durable store")]:::data
+    SWEEPER["Sweeper<br/>scans upcoming triggers"]:::service
+    SQS["Queue<br/>SQS with delay"]:::async
+    DISP["Dispatcher<br/>fires HTTP callback"]:::service
+    TARGET["Caller callback URL"]:::external
+
+    CALLER --> API
+    API --> DB
+    API --> SQS
+    SWEEPER --> DB
+    SWEEPER --> SQS
+    SQS --> DISP
+    DISP --> TARGET
+
+    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
+    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
+    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+```
+
+**In 3 sentences:** Services register "call me back in X minutes" requests. The system persists the trigger durably, then fires the HTTP callback at the right time with retries. Two tiers: short delays use a managed queue (SQS); long delays sit in a database until a sweeper promotes them.
+
+---
+
 ## 1. Understanding the Problem
 
 A delayed trigger service lets internal services register a callback with a future fire time (e.g., "ping me back in 30 minutes"). When the delay elapses, the service POSTs a response to a callback URL the caller provided. It's the building block behind reminders, payment retries, abandoned-cart nudges, "release the seat hold in 7 minutes," and "auto-cancel the order if not paid in 15 min."
@@ -454,3 +493,23 @@ flowchart LR
 - [AWS SQS delay queues docs](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-delay-queues.html) — 15-min delay primitive.
 - [Stripe Idempotency-Key](https://stripe.com/docs/api/idempotent_requests) — caller-supplied idempotency pattern.
 - [Netflix Maestro overview](https://blog.bytebytego.com/p/how-netflix-orchestrates-millions) — sharded execution layer.
+
+
+---
+
+## Key Technologies Mentioned
+
+| Term | What it is |
+|---|---|
+| **SQS** | Amazon Simple Queue Service. A managed message queue. You put messages in, consumers take them out. Supports delaying message visibility up to 15 minutes. |
+| **Cassandra** | Distributed NoSQL database. Excellent for time-series/bucketed data. We partition triggers by their fire-time minute for efficient sweeper scans. |
+| **Timing Wheel** | An in-memory data structure (ring buffer) that fires callbacks at precise times. O(1) insert and expiry. Used inside Kafka and Netty. |
+| **Sweeper** | A background job that scans the database for triggers approaching their fire time and moves them into the active queue. Safety net for long delays. |
+| **Idempotency Key** | A unique ID the caller sends with each request. If retried, the server recognizes it's a duplicate and returns the cached response instead of creating a new trigger. |
+| **Circuit Breaker** | Pattern that stops calling a failing service after N errors. "Opens" the circuit, fast-fails for a cooldown period, then retries. Protects dispatchers from bad callback endpoints. |
+| **DLQ (Dead Letter Queue)** | Where messages go after failing N retries. Allows manual investigation without blocking the main queue. |
+| **Reconciler** | Hourly safety-net job that finds "stuck" triggers (fire time passed but status still PENDING) and re-injects them. Catches bugs in the sweeper or leader election. |
+
+---
+
+*Related: [Job Scheduler](/JobScheduler) · [Notification System](/NotificationSystem) · [System Design Fundamentals](/concepts)*

@@ -6,6 +6,44 @@ description: "System design for Designing a Payment Wallet Like Paytm, PhonePe, 
 
 # Designing a Payment Wallet Like Paytm, PhonePe, Venmo, or Cash App
 
+⚡ **Difficulty:** Advanced
+📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Databases, Consistency, and Message Queues
+⏱️ **Reading time:** 30 min
+
+---
+
+## TL;DR
+
+A digital wallet is an accounting system disguised as a consumer app. Every transfer is a pair of debits and credits on a double-entry ledger. Money never moves without both sides of the entry being written atomically.
+
+```mermaid
+flowchart LR
+    APP["Wallet App"]:::client
+    API["Wallet API"]:::service
+    LEDGER["Ledger Service<br/>double-entry"]:::service
+    DB[("Postgres<br/>ledger primary")]:::data
+    CACHE[("Redis<br/>balance cache")]:::data
+    BANK["External Bank<br/>UPI Cards"]:::external
+    K["Kafka<br/>events"]:::async
+
+    APP --> API
+    API --> LEDGER
+    LEDGER --> DB
+    LEDGER --> CACHE
+    API --> BANK
+    LEDGER --> K
+
+    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
+    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
+    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+```
+
+**In 3 sentences:** Users load money from banks (async, webhook-confirmed), send to each other (instant, single DB transaction), and withdraw (async again). The core is a double-entry ledger in Postgres — every balance change creates both a debit and a credit line that sum to zero. Redis caches balances for fast reads; Kafka fans out events to notifications and analytics.
+
+---
+
 ## Understanding the Problem
 
 👛 **What is a payment wallet?** A closed-loop or semi-closed-loop digital wallet lets users load money into a balance, send it peer-to-peer, pay merchants, and withdraw back to a bank. Examples: Paytm Wallet, PhonePe Wallet, Venmo, Cash App, Google Pay's balance. Under the hood it's an accounting system disguised as a consumer app — every "transfer" is a pair of debits and credits on a ledger, and every ₹1 or $1 moving in the app must correspond to real money sitting in a partner bank account.

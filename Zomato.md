@@ -6,6 +6,43 @@ description: "System design for Designing a Food Delivery Service Like Zomato - 
 
 # Designing a Food Delivery Service Like Zomato
 
+⚡ **Difficulty:** Intermediate–Advanced
+📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Message Queues, Caching, and Databases
+⏱️ **Reading time:** 25 min
+
+---
+
+## TL;DR
+
+A food delivery platform connects customers, restaurants, and riders. The system handles search (Elasticsearch), ordering (Postgres), live rider tracking (Redis Geo + WebSocket), and dispatch matching (Temporal workflow).
+
+```mermaid
+flowchart LR
+    CUST["Customer App"]:::client
+    RIDER["Rider App"]:::client
+    SEARCH["Search<br/>Elasticsearch"]:::service
+    ORDER["Order Service"]:::service
+    LOC["Location<br/>Redis Geo"]:::data
+    MATCH["Dispatch<br/>Temporal"]:::service
+    WS["WebSocket<br/>live tracking"]:::service
+
+    CUST --> SEARCH
+    CUST --> ORDER
+    RIDER --> LOC
+    ORDER --> MATCH
+    MATCH --> LOC
+    LOC --> WS
+    WS --> CUST
+
+    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
+    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+```
+
+**In 3 sentences:** Customer searches for restaurants (Elasticsearch with geo + relevance scoring), places an order (Postgres with idempotency), and the system finds a nearby rider (Redis Geo for proximity, Temporal for the multi-step dispatch workflow). The rider's live location streams to the customer via WebSocket. Each component is independently scalable.
+
+---
+
 ## Understanding the Problem
 
 🍔 **What is Zomato?** Zomato is an on-demand food delivery platform that connects customers with nearby restaurants. Customers browse menus, place orders, pay, and watch their food travel from the restaurant to their door via a delivery partner.

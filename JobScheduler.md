@@ -6,6 +6,41 @@ description: "System design for Distributed Job Scheduler — HLD - architecture
 
 # Distributed Job Scheduler — HLD
 
+⚡ **Difficulty:** Intermediate–Advanced
+📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Message Queues, Leader Election, and Databases
+⏱️ **Reading time:** 25 min
+
+---
+
+## TL;DR
+
+A distributed job scheduler lets teams register recurring or one-off tasks (like cron, but across a fleet of machines). It ensures each job runs exactly once, on time, with retries and dependency management.
+
+```mermaid
+flowchart LR
+    USER["Users<br/>define jobs"]:::client
+    API["Scheduler API"]:::service
+    DB[("Job Store<br/>Cassandra")]:::data
+    TICKER["Ticker<br/>checks whats due"]:::service
+    QUEUE["Job Queue<br/>Kafka"]:::async
+    WORKERS["Worker Pool<br/>executes jobs"]:::service
+
+    USER --> API
+    API --> DB
+    TICKER --> DB
+    TICKER --> QUEUE
+    QUEUE --> WORKERS
+
+    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
+    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
+    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+```
+
+**In 3 sentences:** Users register jobs with a schedule (cron expression) or a one-time fire time. A "ticker" process scans the database for due jobs and enqueues them to Kafka. Worker pods consume from Kafka, execute the job, and report success/failure back. Leader election ensures only one ticker runs per shard.
+
+---
+
 ## 1. Understanding the Problem
 
 A distributed job scheduler accepts jobs (run once at time T, or recurring on a cron schedule, or a DAG of dependent steps) and executes them reliably across a fleet of workers. Callers shouldn't worry about which machine runs the job, what happens when a worker crashes mid-execution, or whether the job ran twice. The scheduler owns timing, dispatch, retries, isolation, and observability.

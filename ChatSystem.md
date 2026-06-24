@@ -6,6 +6,45 @@ description: "System design for a real-time messaging platform - WebSockets, mes
 
 # Designing a Chat System Like WhatsApp
 
+⚡ **Difficulty:** Intermediate
+📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Message Queues and Caching
+⏱️ **Reading time:** 20 min
+
+---
+
+## TL;DR
+
+A chat system delivers messages in real-time using WebSockets for online users and stores-then-forwards for offline users.
+
+```mermaid
+flowchart LR
+    SENDER["Sender"]:::client
+    WS["WebSocket Servers"]:::service
+    CHAT["Chat Service"]:::service
+    STORE[("Message Store<br/>Cassandra")]:::data
+    K["Kafka<br/>fan-out"]:::async
+    PUSH["Push Notifications<br/>FCM APNs"]:::external
+    RECEIVER["Receiver"]:::client
+
+    SENDER --> WS
+    WS --> CHAT
+    CHAT --> STORE
+    CHAT --> K
+    K --> WS
+    CHAT --> PUSH
+    WS --> RECEIVER
+
+    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
+    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
+    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+```
+
+**In 3 sentences:** Clients maintain a persistent WebSocket connection to the server. When a message is sent, the server persists it, looks up which server the receiver is connected to, and pushes it down their WebSocket. If the receiver is offline, the message waits in a queue and a push notification is sent.
+
+---
+
 ## Understanding the Problem
 
 💬 **What is a chat system?** A real-time messaging platform that lets users send text, images, and files to individuals or groups. Messages must be delivered reliably (even if the recipient is offline), ordered correctly, and displayed in real-time. Think WhatsApp, Telegram, Facebook Messenger, or Slack. The hard parts: guaranteed delivery across flaky mobile networks, real-time push without polling, group fan-out at scale, and end-to-end encryption.
@@ -350,3 +389,23 @@ flowchart LR
 | Ordering | Per-conversation sequence number | Simple, no clock dependency |
 | Delivery guarantee | At-least-once + client dedupe | Zero message loss, no duplicates visible to user |
 | Multi-device | Pull sync with seqNo cursor | Ordered log model (Facebook Iris) |
+
+
+---
+
+## Key Technologies Mentioned
+
+| Term | What it is |
+|---|---|
+| **WebSocket** | A persistent two-way connection between client and server. Unlike HTTP (request → response → done), WebSocket stays open so the server can push messages to the client anytime. |
+| **Cassandra** | A distributed NoSQL database optimized for fast writes. Stores data across many machines. Perfect for append-only message logs. |
+| **Kafka** | A distributed event streaming platform. Producers write events, consumers read them. Used here to decouple message sending from delivery fan-out. |
+| **Redis** | In-memory key-value store (< 1ms reads). Used here for connection registry (which user is on which server) and offline message queues. |
+| **FCM / APNs** | Firebase Cloud Messaging (Android) and Apple Push Notification service (iOS). How you send push notifications to phones when the app is closed. |
+| **Sequence Number** | A monotonically increasing integer per conversation. Guarantees message ordering regardless of clock differences between servers. |
+| **Store-and-Forward** | Pattern where the server stores a message durably first, then delivers it when the recipient is available. Ensures zero message loss. |
+| **Fan-out** | Delivering one message to multiple recipients (group chat). "Fan-out on write" = copy to each inbox. "Fan-out on read" = store once, each client fetches. |
+
+---
+
+*Related: [Rate Limiter](/RateLimiter) · [Notification System](/NotificationSystem) · [System Design Fundamentals](/concepts)*

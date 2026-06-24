@@ -6,6 +6,45 @@ description: "System design for Notification System — HLD - architecture, deep
 
 # Notification System — HLD
 
+⚡ **Difficulty:** Intermediate
+📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Message Queues and Event-Driven Architecture
+⏱️ **Reading time:** 20 min
+
+---
+
+## TL;DR
+
+A multi-channel notification platform that delivers push, SMS, email, and in-app messages. It decouples "something happened" from "tell the user" using an event bus.
+
+```mermaid
+flowchart LR
+    SERVICES["Internal Services<br/>order placed and payment etc"]:::client
+    BUS["Event Bus<br/>Kafka"]:::async
+    NS["Notification Service<br/>template and routing"]:::service
+    PUSH["Push<br/>FCM APNs"]:::external
+    SMS["SMS<br/>Twilio"]:::external
+    EMAIL["Email<br/>SES"]:::external
+    USER["User"]:::client
+
+    SERVICES --> BUS
+    BUS --> NS
+    NS --> PUSH
+    NS --> SMS
+    NS --> EMAIL
+    PUSH --> USER
+    SMS --> USER
+    EMAIL --> USER
+
+    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
+    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
+    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+```
+
+**In 3 sentences:** Backend services emit events ("order confirmed") to Kafka. The notification service consumes these, renders a template, picks the channel (push/SMS/email based on user preferences), and dispatches. Delivery tracking, retries, and send-time optimization ensure messages reach users when they're most likely to engage.
+
+---
+
 ## 1. Understanding the Problem
 
 A notification system lets product surfaces across a company send messages to users across multiple channels — push (mobile), email, SMS, in-app — without every team re-implementing delivery, preferences, retries, and rate limiting. The system must handle billions of events per day, respect user preferences, dedupe noisy senders, and prove delivery.
