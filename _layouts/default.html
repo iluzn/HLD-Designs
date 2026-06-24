@@ -163,6 +163,27 @@
         {% assign next_index = current_index | plus: 1 %}{% if next_index < pages_list.size %}{% assign nxt = pages_list[next_index] %}<a href="{{ nxt.url }}" style="color:var(--accent);text-decoration:none;">{{ nxt.title | truncate: 25 }} &rarr;</a>{% else %}<span></span>{% endif %}
     </div>
 
+    <!-- Comments (Giscus) -->
+    <div style="max-width:900px;margin:0 auto;padding:0 1.5rem 3rem;">
+        <h3 style="color:var(--text);font-size:1.1rem;margin-bottom:1rem;padding-top:1.5rem;border-top:1px solid var(--border);">💬 Comments</h3>
+        <script src="https://giscus.app/client.js"
+            data-repo="iluzn/HLD-Designs"
+            data-repo-id=""
+            data-category="General"
+            data-category-id=""
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="top"
+            data-theme="dark_dimmed"
+            data-lang="en"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async>
+        </script>
+    </div>
+
     <footer>
         <p>&copy; 2026 SystemCraft &middot; <a href="/">Home</a> &middot; <a href="/concepts">Fundamentals</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/iluzn/HLD-Designs">GitHub</a></p>
     </footer>
