@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,159 +10,119 @@
     <meta property="og:description" content="{{ page.description }}">
     <meta property="og:url" content="https://systemcraft.in{{ page.url }}">
     <meta property="og:type" content="article">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" as="style">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": "{{ page.title }}",
-        "description": "{{ page.description }}",
-        "author": { "@type": "Person", "name": "Shaswat Kumar" },
-        "publisher": { "@type": "Organization", "name": "SystemCraft" },
-        "url": "https://systemcraft.in{{ page.url }}"
-    }
+    { "@context": "https://schema.org", "@type": "Article", "headline": "{{ page.title }}", "description": "{{ page.description }}", "author": { "@type": "Person", "name": "Shaswat Kumar" }, "publisher": { "@type": "Organization", "name": "SystemCraft" }, "url": "https://systemcraft.in{{ page.url }}" }
     </script>
     <style>
+        :root {
+            --bg: #0a0a0f; --bg-card: #1e1e2e; --bg-header: rgba(10,10,15,0.95);
+            --text: #e2e8f0; --text-muted: #94a3b8; --text-dim: #64748b;
+            --accent: #6366f1; --accent-light: #a5b4fc;
+            --border: rgba(255,255,255,0.06); --border-hover: rgba(99,102,241,0.4);
+            --code-bg: #1e1e2e;
+        }
+        [data-theme="light"] {
+            --bg: #ffffff; --bg-card: #f8fafc; --bg-header: rgba(255,255,255,0.95);
+            --text: #1e293b; --text-muted: #475569; --text-dim: #94a3b8;
+            --accent: #4f46e5; --accent-light: #6366f1;
+            --border: rgba(0,0,0,0.08); --border-hover: rgba(79,70,229,0.4);
+            --code-bg: #f1f5f9;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: #0a0a0f;
-            color: #e2e8f0;
-            line-height: 1.7;
-        }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; transition: background 0.3s, color 0.3s; }
 
-        /* Progress bar */
-        #progress-bar {
-            position: fixed; top: 0; left: 0; height: 3px; width: 0%;
-            background: linear-gradient(90deg, #6366f1, #a78bfa);
-            z-index: 1000; transition: width 0.1s;
-        }
+        #progress-bar { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: linear-gradient(90deg, var(--accent), #a78bfa); z-index: 1000; }
 
-        /* Header */
-        header {
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            padding: 1rem 0;
-            position: sticky; top: 0;
-            background: rgba(10,10,15,0.95);
-            backdrop-filter: blur(10px);
-            z-index: 100;
-        }
-        .header-inner {
-            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .logo { font-size: 1.2rem; font-weight: 700; color: #fff; text-decoration: none; }
-        .logo span { color: #6366f1; }
-        nav a { color: #94a3b8; text-decoration: none; margin-left: 1.5rem; font-size: 0.9rem; }
-        nav a:hover { color: #fff; }
+        header { border-bottom: 1px solid var(--border); padding: 0.9rem 0; position: sticky; top: 0; background: var(--bg-header); backdrop-filter: blur(12px); z-index: 100; }
+        .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.2rem; font-weight: 700; color: var(--text); text-decoration: none; }
+        .logo span { color: var(--accent); }
+        nav { display: flex; align-items: center; gap: 0.2rem; }
+        nav a { color: var(--text-muted); text-decoration: none; padding: 0.4rem 0.7rem; font-size: 0.88rem; border-radius: 6px; transition: all 0.2s; }
+        nav a:hover { color: var(--text); background: var(--border); }
 
-        /* Layout: content + sidebar */
-        .page-layout {
-            max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 4rem;
-            display: grid; grid-template-columns: 1fr 240px; gap: 3rem;
-        }
+        /* Theme toggle */
+        .theme-toggle { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 0.4rem 0.6rem; border-radius: 6px; cursor: pointer; font-size: 1rem; margin-left: 0.5rem; transition: all 0.2s; }
+        .theme-toggle:hover { border-color: var(--accent); color: var(--text); }
 
-        /* TOC sidebar */
-        .toc {
-            position: sticky; top: 80px; max-height: calc(100vh - 100px);
-            overflow-y: auto; font-size: 0.82rem; padding-top: 1rem;
-        }
-        .toc-title { font-weight: 600; color: #94a3b8; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.05em; margin-bottom: 0.8rem; }
-        .toc a {
-            display: block; color: #64748b; text-decoration: none;
-            padding: 0.25rem 0 0.25rem 0.8rem;
-            border-left: 2px solid transparent; transition: all 0.2s;
-        }
-        .toc a:hover { color: #e2e8f0; border-left-color: #6366f1; }
-        .toc a.active { color: #a5b4fc; border-left-color: #6366f1; }
-        .toc a.toc-h3 { padding-left: 1.5rem; font-size: 0.78rem; }
+        .page-layout { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 4rem; display: grid; grid-template-columns: 1fr 220px; gap: 3rem; }
 
-        /* Content */
+        /* TOC */
+        .toc { position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; font-size: 0.8rem; padding-top: 1rem; }
+        .toc-title { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.06em; margin-bottom: 0.8rem; }
+        .toc a { display: block; color: var(--text-dim); text-decoration: none; padding: 0.2rem 0 0.2rem 0.8rem; border-left: 2px solid transparent; transition: all 0.2s; line-height: 1.4; }
+        .toc a:hover { color: var(--text); border-left-color: var(--accent); }
+        .toc a.active { color: var(--accent-light); border-left-color: var(--accent); }
+        .toc a.toc-h3 { padding-left: 1.4rem; font-size: 0.76rem; }
+
         .content { min-width: 0; }
+        .breadcrumbs { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1.5rem; }
+        .breadcrumbs a { color: var(--accent); text-decoration: none; }
 
-        /* Breadcrumbs */
-        .breadcrumbs { font-size: 0.82rem; color: #64748b; margin-bottom: 1.5rem; }
-        .breadcrumbs a { color: #6366f1; text-decoration: none; }
-        .breadcrumbs a:hover { text-decoration: underline; }
-
-        /* Typography */
-        .content h1 { font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
-        .content h2 { font-size: 1.5rem; font-weight: 600; color: #fff; margin-top: 2.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .content h3 { font-size: 1.15rem; font-weight: 600; color: #e2e8f0; margin-top: 2rem; margin-bottom: 0.8rem; }
-        .content h4 { font-size: 1rem; font-weight: 600; color: #cbd5e1; margin-top: 1.5rem; margin-bottom: 0.5rem; }
-        .content p { margin-bottom: 1rem; color: #cbd5e1; }
-        .content a { color: #6366f1; text-decoration: none; }
+        .content h1 { font-size: 2.1rem; font-weight: 700; color: var(--text); margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+        .content h2 { font-size: 1.4rem; font-weight: 600; color: var(--text); margin-top: 2.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .content h3 { font-size: 1.1rem; font-weight: 600; color: var(--text); margin-top: 1.8rem; margin-bottom: 0.7rem; }
+        .content h4 { font-size: 1rem; font-weight: 600; color: var(--text-muted); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .content p { margin-bottom: 1rem; color: var(--text-muted); }
+        .content a { color: var(--accent); text-decoration: none; }
         .content a:hover { text-decoration: underline; }
-        .content strong { color: #e2e8f0; }
-        .content em { color: #94a3b8; }
+        .content strong { color: var(--text); }
 
-        /* Lists */
-        .content ul, .content ol { margin-bottom: 1rem; padding-left: 1.5rem; color: #cbd5e1; }
+        .content ul, .content ol { margin-bottom: 1rem; padding-left: 1.5rem; color: var(--text-muted); }
         .content li { margin-bottom: 0.4rem; }
 
-        /* Code */
-        .content code {
-            font-family: 'JetBrains Mono', monospace;
-            background: #1e1e2e; padding: 2px 6px; border-radius: 4px;
-            font-size: 0.85em; color: #a5b4fc;
-        }
-        .content pre {
-            position: relative;
-            background: #1e1e2e; border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 8px; padding: 1.2rem; overflow-x: auto; margin-bottom: 1.5rem;
-        }
-        .content pre code { background: none; padding: 0; font-size: 0.85rem; color: #e2e8f0; }
+        .content code { font-family: 'JetBrains Mono', monospace; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-size: 0.85em; color: var(--accent-light); }
+        .content pre { position: relative; background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; overflow-x: auto; margin-bottom: 1.5rem; }
+        .content pre code { background: none; padding: 0; font-size: 0.83rem; color: var(--text); }
 
-        /* Copy button */
-        .copy-btn {
-            position: absolute; top: 8px; right: 8px;
-            background: #2d2d3d; border: 1px solid rgba(255,255,255,0.1);
-            color: #94a3b8; padding: 4px 10px; border-radius: 4px;
-            font-size: 0.72rem; cursor: pointer; opacity: 0; transition: opacity 0.2s;
-        }
+        .copy-btn { position: absolute; top: 8px; right: 8px; background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; opacity: 0; transition: opacity 0.2s; }
         .content pre:hover .copy-btn { opacity: 1; }
-        .copy-btn:hover { background: #3d3d4d; color: #fff; }
         .copy-btn.copied { color: #4ade80; }
 
-        /* Tables */
-        .content table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.9rem; }
-        .content th { background: #1e1e2e; color: #e2e8f0; padding: 0.7rem 1rem; text-align: left; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .content td { padding: 0.6rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); color: #cbd5e1; }
-        .content tr:hover td { background: rgba(99,102,241,0.03); }
+        .content table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.88rem; }
+        .content th { background: var(--code-bg); color: var(--text); padding: 0.6rem 0.8rem; text-align: left; font-weight: 600; border-bottom: 1px solid var(--border); }
+        .content td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); color: var(--text-muted); }
 
-        /* Blockquotes */
-        .content blockquote {
-            border-left: 3px solid #6366f1; padding: 0.8rem 1rem;
-            margin-bottom: 1rem; background: rgba(99,102,241,0.05); border-radius: 0 6px 6px 0;
-        }
-        .content blockquote p { color: #a5b4fc; margin-bottom: 0; }
+        .content blockquote { border-left: 3px solid var(--accent); padding: 0.7rem 1rem; margin-bottom: 1rem; background: rgba(99,102,241,0.04); border-radius: 0 6px 6px 0; }
+        .content blockquote p { color: var(--accent-light); margin-bottom: 0; }
 
-        /* Mermaid */
-        .mermaid {
-            background: #12121a; border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center;
-        }
+        .mermaid { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
+        .content hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
 
-        /* HR */
-        .content hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 2rem 0; }
+        /* Back to top */
+        #back-to-top { position: fixed; bottom: 2rem; right: 2rem; background: var(--accent); color: #fff; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: none; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(99,102,241,0.3); transition: transform 0.2s; z-index: 50; }
+        #back-to-top:hover { transform: scale(1.1); }
+        #back-to-top.visible { display: flex; }
 
-        /* Footer */
-        footer {
-            border-top: 1px solid rgba(255,255,255,0.06);
-            padding: 2rem 1.5rem; text-align: center; color: #475569; font-size: 0.85rem;
-        }
-        footer a { color: #6366f1; text-decoration: none; }
+        /* Mobile TOC */
+        .mobile-toc-btn { display: none; position: fixed; bottom: 2rem; left: 2rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-size: 0.8rem; z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .mobile-toc-drawer { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card); border-top: 1px solid var(--border); max-height: 50vh; overflow-y: auto; padding: 1.5rem; z-index: 200; border-radius: 16px 16px 0 0; }
+        .mobile-toc-drawer.open { display: block; }
+        .mobile-toc-drawer a { display: block; padding: 0.5rem 0; color: var(--text-muted); text-decoration: none; font-size: 0.88rem; border-bottom: 1px solid var(--border); }
+        .mobile-toc-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 199; }
+        .mobile-toc-overlay.open { display: block; }
 
-        /* Responsive */
+        footer { border-top: 1px solid var(--border); padding: 2rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.82rem; }
+        footer a { color: var(--accent); text-decoration: none; }
+
         @media (max-width: 900px) {
             .page-layout { grid-template-columns: 1fr; }
             .toc { display: none; }
-            .content h1 { font-size: 1.6rem; }
-            .content h2 { font-size: 1.3rem; }
+            .mobile-toc-btn { display: block; }
+            .content h1 { font-size: 1.5rem; }
+            .content h2 { font-size: 1.2rem; }
         }
     </style>
+    <script>
+        // Apply saved theme before render to prevent flash
+        (function() {
+            var t = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
 </head>
 <body>
 
@@ -175,6 +135,7 @@
                 <a href="/">Designs</a>
                 <a href="/concepts">Fundamentals</a>
                 <a href="/about">About</a>
+                <button class="theme-toggle" id="theme-btn" title="Toggle theme">🌙</button>
             </nav>
         </div>
     </header>
@@ -186,113 +147,111 @@
             </div>
             {{ content }}
         </div>
-
         <aside class="toc">
             <div class="toc-title">On this page</div>
             <div id="toc-links"></div>
         </aside>
     </div>
 
-    <!-- Next/Previous navigation -->
-    <div style="max-width:900px;margin:0 auto;padding:0 1.5rem 2rem;display:flex;justify-content:space-between;font-size:0.9rem;">
+    <!-- Next/Previous -->
+    <div style="max-width:900px;margin:0 auto;padding:0 1.5rem 2rem;display:flex;justify-content:space-between;font-size:0.88rem;">
         {% assign pages_list = site.pages | where_exp: "p", "p.layout == 'default'" | sort: "title" %}
         {% assign current_index = -1 %}
-        {% for p in pages_list %}
-            {% if p.url == page.url %}{% assign current_index = forloop.index0 %}{% endif %}
-        {% endfor %}
-        {% if current_index > 0 %}
-            {% assign prev = pages_list[current_index | minus: 1] %}
-            <a href="{{ prev.url }}" style="color:#6366f1;text-decoration:none;">&larr; {{ prev.title | truncate: 30 }}</a>
-        {% else %}
-            <span></span>
-        {% endif %}
-        {% assign next_index = current_index | plus: 1 %}
-        {% if next_index < pages_list.size %}
-            {% assign nxt = pages_list[next_index] %}
-            <a href="{{ nxt.url }}" style="color:#6366f1;text-decoration:none;">{{ nxt.title | truncate: 30 }} &rarr;</a>
-        {% else %}
-            <span></span>
-        {% endif %}
+        {% for p in pages_list %}{% if p.url == page.url %}{% assign current_index = forloop.index0 %}{% endif %}{% endfor %}
+        {% if current_index > 0 %}{% assign prev = pages_list[current_index | minus: 1] %}<a href="{{ prev.url }}" style="color:var(--accent);text-decoration:none;">&larr; {{ prev.title | truncate: 25 }}</a>{% else %}<span></span>{% endif %}
+        {% assign next_index = current_index | plus: 1 %}{% if next_index < pages_list.size %}{% assign nxt = pages_list[next_index] %}<a href="{{ nxt.url }}" style="color:var(--accent);text-decoration:none;">{{ nxt.title | truncate: 25 }} &rarr;</a>{% else %}<span></span>{% endif %}
     </div>
 
     <footer>
         <p>&copy; 2026 SystemCraft &middot; <a href="/">Home</a> &middot; <a href="/concepts">Fundamentals</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/iluzn/HLD-Designs">GitHub</a></p>
     </footer>
 
-    <!-- Mermaid JS -->
+    <!-- Back to top -->
+    <button id="back-to-top" title="Back to top">&uarr;</button>
+
+    <!-- Mobile TOC -->
+    <button class="mobile-toc-btn" id="mobile-toc-btn">📋 Contents</button>
+    <div class="mobile-toc-overlay" id="mobile-toc-overlay"></div>
+    <div class="mobile-toc-drawer" id="mobile-toc-drawer"></div>
+
+    <!-- Mermaid -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'dark',
-            themeVariables: {
-                primaryColor: '#6366f1', primaryTextColor: '#e2e8f0',
-                primaryBorderColor: '#4f46e5', lineColor: '#94a3b8',
-                secondaryColor: '#1e1e2e', tertiaryColor: '#12121a',
-                background: '#0a0a0f', mainBkg: '#1e1e2e', nodeBorder: '#4f46e5'
-            }
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark ? { primaryColor:'#6366f1', primaryTextColor:'#e2e8f0', primaryBorderColor:'#4f46e5', lineColor:'#94a3b8', secondaryColor:'#1e1e2e', tertiaryColor:'#12121a', background:'#0a0a0f', mainBkg:'#1e1e2e', nodeBorder:'#4f46e5' } : {}
         });
         document.querySelectorAll('pre code.language-mermaid').forEach(function(el) {
-            var div = document.createElement('div');
-            div.className = 'mermaid';
-            div.textContent = el.textContent;
-            el.parentElement.replaceWith(div);
+            var div = document.createElement('div'); div.className = 'mermaid'; div.textContent = el.textContent; el.parentElement.replaceWith(div);
         });
         mermaid.run();
     </script>
 
-    <!-- TOC generator -->
     <script>
+        // Theme toggle
+        var btn = document.getElementById('theme-btn');
+        function setTheme(t) {
+            document.documentElement.setAttribute('data-theme', t);
+            localStorage.setItem('theme', t);
+            btn.textContent = t === 'dark' ? '☀️' : '🌙';
+        }
+        btn.addEventListener('click', function() {
+            var current = document.documentElement.getAttribute('data-theme');
+            setTheme(current === 'dark' ? 'light' : 'dark');
+        });
+        setTheme(localStorage.getItem('theme') || 'dark');
+
+        // TOC
         (function() {
             var toc = document.getElementById('toc-links');
+            var mobileToc = document.getElementById('mobile-toc-drawer');
             var headings = document.querySelectorAll('.content h2, .content h3');
             headings.forEach(function(h, i) {
                 if (!h.id) h.id = 'section-' + i;
-                var a = document.createElement('a');
-                a.href = '#' + h.id;
-                a.textContent = h.textContent;
+                var a = document.createElement('a'); a.href = '#' + h.id; a.textContent = h.textContent;
                 if (h.tagName === 'H3') a.className = 'toc-h3';
                 toc.appendChild(a);
+                var ma = a.cloneNode(true); mobileToc.appendChild(ma);
+                ma.addEventListener('click', function() { closeMobileToc(); });
             });
-
-            // Highlight active section
             var tocLinks = toc.querySelectorAll('a');
             window.addEventListener('scroll', function() {
                 var current = '';
-                headings.forEach(function(h) {
-                    if (window.scrollY >= h.offsetTop - 100) current = h.id;
-                });
-                tocLinks.forEach(function(a) {
-                    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-                });
+                headings.forEach(function(h) { if (window.scrollY >= h.offsetTop - 100) current = h.id; });
+                tocLinks.forEach(function(a) { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
             });
         })();
-    </script>
 
-    <!-- Copy button on code blocks -->
-    <script>
+        // Mobile TOC
+        var mBtn = document.getElementById('mobile-toc-btn');
+        var mDrawer = document.getElementById('mobile-toc-drawer');
+        var mOverlay = document.getElementById('mobile-toc-overlay');
+        function closeMobileToc() { mDrawer.classList.remove('open'); mOverlay.classList.remove('open'); }
+        mBtn.addEventListener('click', function() { mDrawer.classList.toggle('open'); mOverlay.classList.toggle('open'); });
+        mOverlay.addEventListener('click', closeMobileToc);
+
+        // Back to top
+        var btt = document.getElementById('back-to-top');
+        window.addEventListener('scroll', function() { btt.classList.toggle('visible', window.scrollY > 500); });
+        btt.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+        // Copy buttons
         document.querySelectorAll('.content pre').forEach(function(pre) {
             if (pre.querySelector('.mermaid')) return;
-            var btn = document.createElement('button');
-            btn.className = 'copy-btn';
-            btn.textContent = 'Copy';
-            btn.addEventListener('click', function() {
+            var b = document.createElement('button'); b.className = 'copy-btn'; b.textContent = 'Copy';
+            b.addEventListener('click', function() {
                 var code = pre.querySelector('code');
                 navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
-                btn.textContent = 'Copied!';
-                btn.classList.add('copied');
-                setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+                b.textContent = 'Copied!'; b.classList.add('copied');
+                setTimeout(function() { b.textContent = 'Copy'; b.classList.remove('copied'); }, 2000);
             });
-            pre.appendChild(btn);
+            pre.appendChild(b);
         });
-    </script>
 
-    <!-- Reading progress bar -->
-    <script>
+        // Progress bar
         window.addEventListener('scroll', function() {
             var h = document.documentElement.scrollHeight - window.innerHeight;
-            var pct = (window.scrollY / h) * 100;
-            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('progress-bar').style.width = (window.scrollY / h * 100) + '%';
         });
     </script>
 
