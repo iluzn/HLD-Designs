@@ -6,6 +6,10 @@
     <title>{{ page.title }} — SystemCraft</title>
     <meta name="description" content="{{ page.description }}">
     <link rel="canonical" href="https://systemcraft.in{{ page.url }}">
+    <meta property="og:title" content="{{ page.title }}">
+    <meta property="og:description" content="{{ page.description }}">
+    <meta property="og:url" content="https://systemcraft.in{{ page.url }}">
+    <meta property="og:type" content="article">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -17,33 +21,60 @@
             color: #e2e8f0;
             line-height: 1.7;
         }
+
+        /* Progress bar */
+        #progress-bar {
+            position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+            background: linear-gradient(90deg, #6366f1, #a78bfa);
+            z-index: 1000; transition: width 0.1s;
+        }
+
+        /* Header */
         header {
             border-bottom: 1px solid rgba(255,255,255,0.06);
             padding: 1rem 0;
-            position: sticky;
-            top: 0;
+            position: sticky; top: 0;
             background: rgba(10,10,15,0.95);
             backdrop-filter: blur(10px);
             z-index: 100;
         }
         .header-inner {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
         }
         .logo { font-size: 1.2rem; font-weight: 700; color: #fff; text-decoration: none; }
         .logo span { color: #6366f1; }
         nav a { color: #94a3b8; text-decoration: none; margin-left: 1.5rem; font-size: 0.9rem; }
         nav a:hover { color: #fff; }
 
-        .content {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 3rem 1.5rem 4rem;
+        /* Layout: content + sidebar */
+        .page-layout {
+            max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 4rem;
+            display: grid; grid-template-columns: 1fr 240px; gap: 3rem;
         }
+
+        /* TOC sidebar */
+        .toc {
+            position: sticky; top: 80px; max-height: calc(100vh - 100px);
+            overflow-y: auto; font-size: 0.82rem; padding-top: 1rem;
+        }
+        .toc-title { font-weight: 600; color: #94a3b8; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.05em; margin-bottom: 0.8rem; }
+        .toc a {
+            display: block; color: #64748b; text-decoration: none;
+            padding: 0.25rem 0 0.25rem 0.8rem;
+            border-left: 2px solid transparent; transition: all 0.2s;
+        }
+        .toc a:hover { color: #e2e8f0; border-left-color: #6366f1; }
+        .toc a.active { color: #a5b4fc; border-left-color: #6366f1; }
+        .toc a.toc-h3 { padding-left: 1.5rem; font-size: 0.78rem; }
+
+        /* Content */
+        .content { min-width: 0; }
+
+        /* Breadcrumbs */
+        .breadcrumbs { font-size: 0.82rem; color: #64748b; margin-bottom: 1.5rem; }
+        .breadcrumbs a { color: #6366f1; text-decoration: none; }
+        .breadcrumbs a:hover { text-decoration: underline; }
 
         /* Typography */
         .content h1 { font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
@@ -53,151 +84,183 @@
         .content p { margin-bottom: 1rem; color: #cbd5e1; }
         .content a { color: #6366f1; text-decoration: none; }
         .content a:hover { text-decoration: underline; }
+        .content strong { color: #e2e8f0; }
+        .content em { color: #94a3b8; }
 
         /* Lists */
         .content ul, .content ol { margin-bottom: 1rem; padding-left: 1.5rem; color: #cbd5e1; }
         .content li { margin-bottom: 0.4rem; }
-        .content li strong { color: #e2e8f0; }
 
         /* Code */
         .content code {
             font-family: 'JetBrains Mono', monospace;
-            background: #1e1e2e;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.85em;
-            color: #a5b4fc;
+            background: #1e1e2e; padding: 2px 6px; border-radius: 4px;
+            font-size: 0.85em; color: #a5b4fc;
         }
         .content pre {
-            background: #1e1e2e;
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 8px;
-            padding: 1.2rem;
-            overflow-x: auto;
-            margin-bottom: 1.5rem;
+            position: relative;
+            background: #1e1e2e; border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px; padding: 1.2rem; overflow-x: auto; margin-bottom: 1.5rem;
         }
-        .content pre code {
-            background: none;
-            padding: 0;
-            font-size: 0.85rem;
-            color: #e2e8f0;
+        .content pre code { background: none; padding: 0; font-size: 0.85rem; color: #e2e8f0; }
+
+        /* Copy button */
+        .copy-btn {
+            position: absolute; top: 8px; right: 8px;
+            background: #2d2d3d; border: 1px solid rgba(255,255,255,0.1);
+            color: #94a3b8; padding: 4px 10px; border-radius: 4px;
+            font-size: 0.72rem; cursor: pointer; opacity: 0; transition: opacity 0.2s;
         }
+        .content pre:hover .copy-btn { opacity: 1; }
+        .copy-btn:hover { background: #3d3d4d; color: #fff; }
+        .copy-btn.copied { color: #4ade80; }
 
         /* Tables */
-        .content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-        }
-        .content th {
-            background: #1e1e2e;
-            color: #e2e8f0;
-            padding: 0.7rem 1rem;
-            text-align: left;
-            font-weight: 600;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .content td {
-            padding: 0.6rem 1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            color: #cbd5e1;
-        }
+        .content table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.9rem; }
+        .content th { background: #1e1e2e; color: #e2e8f0; padding: 0.7rem 1rem; text-align: left; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .content td { padding: 0.6rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); color: #cbd5e1; }
         .content tr:hover td { background: rgba(99,102,241,0.03); }
 
         /* Blockquotes */
         .content blockquote {
-            border-left: 3px solid #6366f1;
-            padding: 0.5rem 1rem;
-            margin-bottom: 1rem;
-            background: rgba(99,102,241,0.05);
-            border-radius: 0 6px 6px 0;
+            border-left: 3px solid #6366f1; padding: 0.8rem 1rem;
+            margin-bottom: 1rem; background: rgba(99,102,241,0.05); border-radius: 0 6px 6px 0;
         }
         .content blockquote p { color: #a5b4fc; margin-bottom: 0; }
 
         /* Mermaid */
         .mermaid {
-            background: #12121a;
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
+            background: #12121a; border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center;
         }
 
         /* HR */
         .content hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 2rem 0; }
 
-        /* Back link */
-        .back { display: inline-block; margin-bottom: 2rem; color: #6366f1; text-decoration: none; font-size: 0.9rem; }
-        .back:hover { text-decoration: underline; }
-
+        /* Footer */
         footer {
             border-top: 1px solid rgba(255,255,255,0.06);
-            padding: 2rem 1.5rem;
-            text-align: center;
-            color: #475569;
-            font-size: 0.85rem;
+            padding: 2rem 1.5rem; text-align: center; color: #475569; font-size: 0.85rem;
         }
         footer a { color: #6366f1; text-decoration: none; }
 
-        @media (max-width: 768px) {
+        /* Responsive */
+        @media (max-width: 900px) {
+            .page-layout { grid-template-columns: 1fr; }
+            .toc { display: none; }
             .content h1 { font-size: 1.6rem; }
             .content h2 { font-size: 1.3rem; }
-            .content { padding: 2rem 1rem 3rem; }
         }
     </style>
 </head>
 <body>
+
+    <div id="progress-bar"></div>
 
     <header>
         <div class="header-inner">
             <a href="/" class="logo">System<span>Craft</span></a>
             <nav>
                 <a href="/">Designs</a>
+                <a href="/concepts">Fundamentals</a>
                 <a href="/about">About</a>
             </nav>
         </div>
     </header>
 
-    <div class="content">
-        <a href="/" class="back">&larr; All Designs</a>
-        {{ content }}
+    <div class="page-layout">
+        <div class="content">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> &rsaquo; <span>{{ page.title }}</span>
+            </div>
+            {{ content }}
+        </div>
+
+        <aside class="toc">
+            <div class="toc-title">On this page</div>
+            <div id="toc-links"></div>
+        </aside>
     </div>
 
     <footer>
-        <p>&copy; 2026 SystemCraft &middot; <a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/iluzn/HLD-Designs">GitHub</a></p>
+        <p>&copy; 2026 SystemCraft &middot; <a href="/">Home</a> &middot; <a href="/concepts">Fundamentals</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/iluzn/HLD-Designs">GitHub</a></p>
     </footer>
 
-    <!-- Mermaid JS for diagrams -->
+    <!-- Mermaid JS -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
         mermaid.initialize({
             startOnLoad: true,
             theme: 'dark',
             themeVariables: {
-                primaryColor: '#6366f1',
-                primaryTextColor: '#e2e8f0',
-                primaryBorderColor: '#4f46e5',
-                lineColor: '#94a3b8',
-                secondaryColor: '#1e1e2e',
-                tertiaryColor: '#12121a',
-                background: '#0a0a0f',
-                mainBkg: '#1e1e2e',
-                nodeBorder: '#4f46e5'
+                primaryColor: '#6366f1', primaryTextColor: '#e2e8f0',
+                primaryBorderColor: '#4f46e5', lineColor: '#94a3b8',
+                secondaryColor: '#1e1e2e', tertiaryColor: '#12121a',
+                background: '#0a0a0f', mainBkg: '#1e1e2e', nodeBorder: '#4f46e5'
             }
         });
-
-        // Convert ```mermaid code blocks to <div class="mermaid">
         document.querySelectorAll('pre code.language-mermaid').forEach(function(el) {
             var div = document.createElement('div');
             div.className = 'mermaid';
             div.textContent = el.textContent;
             el.parentElement.replaceWith(div);
         });
-
-        // Re-run mermaid after DOM manipulation
         mermaid.run();
+    </script>
+
+    <!-- TOC generator -->
+    <script>
+        (function() {
+            var toc = document.getElementById('toc-links');
+            var headings = document.querySelectorAll('.content h2, .content h3');
+            headings.forEach(function(h, i) {
+                if (!h.id) h.id = 'section-' + i;
+                var a = document.createElement('a');
+                a.href = '#' + h.id;
+                a.textContent = h.textContent;
+                if (h.tagName === 'H3') a.className = 'toc-h3';
+                toc.appendChild(a);
+            });
+
+            // Highlight active section
+            var tocLinks = toc.querySelectorAll('a');
+            window.addEventListener('scroll', function() {
+                var current = '';
+                headings.forEach(function(h) {
+                    if (window.scrollY >= h.offsetTop - 100) current = h.id;
+                });
+                tocLinks.forEach(function(a) {
+                    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+                });
+            });
+        })();
+    </script>
+
+    <!-- Copy button on code blocks -->
+    <script>
+        document.querySelectorAll('.content pre').forEach(function(pre) {
+            if (pre.querySelector('.mermaid')) return;
+            var btn = document.createElement('button');
+            btn.className = 'copy-btn';
+            btn.textContent = 'Copy';
+            btn.addEventListener('click', function() {
+                var code = pre.querySelector('code');
+                navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+            });
+            pre.appendChild(btn);
+        });
+    </script>
+
+    <!-- Reading progress bar -->
+    <script>
+        window.addEventListener('scroll', function() {
+            var h = document.documentElement.scrollHeight - window.innerHeight;
+            var pct = (window.scrollY / h) * 100;
+            document.getElementById('progress-bar').style.width = pct + '%';
+        });
     </script>
 
 </body>
