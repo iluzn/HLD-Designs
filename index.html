@@ -77,13 +77,12 @@ description: "Free HLD system design notes covering notification systems, job sc
         }
         .hero h1 {
             font-size: 3.5rem; font-weight: 800; letter-spacing: -0.03em;
-            background: linear-gradient(to bottom, #ffffff, #94a3b8);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            color: var(--text);
             margin-bottom: 1.2rem;
         }
         .hero h1 em {
             font-style: normal;
-            background: linear-gradient(135deg, #6366f1, #a78bfa, #6366f1);
+            background: linear-gradient(135deg, var(--accent), #a78bfa);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .hero p { color: var(--text-muted); font-size: 1.15rem; max-width: 550px; margin: 0 auto 2rem; }
@@ -152,11 +151,14 @@ description: "Free HLD system design notes covering notification systems, job sc
         .footer-links a { margin: 0 0.8rem; }
 
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.2rem; }
-            .hero { padding: 4rem 1.5rem 2rem; }
+            .hero h1 { font-size: 2rem; }
+            .hero { padding: 3.5rem 1.5rem 2rem; }
             .designs { grid-template-columns: 1fr; }
-            nav a { margin-left: 1rem; font-size: 0.8rem; }
-            .hero-stats { gap: 1.5rem; }
+            .header-inner { padding: 0 1rem; }
+            nav a { margin-left: 0.5rem; font-size: 0.75rem; }
+            .hero-stats { gap: 1.2rem; font-size: 0.78rem; }
+            .hero-stats strong { font-size: 0.95rem; }
+            #theme-btn { padding: 0.3rem 0.5rem; font-size: 0.85rem; }
         }
     </style>
 </head>
@@ -171,7 +173,7 @@ description: "Free HLD system design notes covering notification systems, job sc
                 <a href="/">Designs</a>
                 <a href="/concepts">Fundamentals</a>
                 <a href="/about">About</a>
-                <button id="theme-btn" title="Toggle theme" style="background:none;border:1px solid var(--border);color:var(--text-muted);padding:0.4rem 0.6rem;border-radius:6px;cursor:pointer;font-size:1rem;margin-left:0.5rem;">🌙</button>
+                <button id="theme-btn" title="Toggle theme" style="background:var(--tag-bg);border:1px solid var(--tag-border);color:var(--accent);padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:500;margin-left:1rem;font-family:inherit;display:flex;align-items:center;gap:0.3rem;">🌙 Dark</button>
             </nav>
         </div>
     </header>
@@ -280,13 +282,13 @@ description: "Free HLD system design notes covering notification systems, job sc
             var theme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', theme);
             var btn = document.getElementById('theme-btn');
-            btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+            btn.innerHTML = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
             btn.addEventListener('click', function() {
                 var current = document.documentElement.getAttribute('data-theme');
                 var next = current === 'dark' ? 'light' : 'dark';
                 document.documentElement.setAttribute('data-theme', next);
                 localStorage.setItem('theme', next);
-                btn.textContent = next === 'dark' ? '☀️' : '🌙';
+                btn.innerHTML = next === 'dark' ? '☀️ Light' : '🌙 Dark';
             });
         })();
     </script>
