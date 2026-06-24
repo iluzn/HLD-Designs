@@ -33,7 +33,8 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; transition: background 0.3s, color 0.3s; }
+        html { overflow-x: hidden; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; transition: background 0.3s, color 0.3s; overflow-x: hidden; }
 
         #progress-bar { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: linear-gradient(90deg, var(--accent), #a78bfa); z-index: 1000; }
 
@@ -59,7 +60,7 @@
         .toc a.active { color: var(--accent-light); border-left-color: var(--accent); }
         .toc a.toc-h3 { padding-left: 1.4rem; font-size: 0.76rem; }
 
-        .content { min-width: 0; }
+        .content { min-width: 0; overflow-x: hidden; }
         .breadcrumbs { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1.5rem; }
         .breadcrumbs a { color: var(--accent); text-decoration: none; }
 
@@ -83,14 +84,14 @@
         .content pre:hover .copy-btn { opacity: 1; }
         .copy-btn.copied { color: #4ade80; }
 
-        .content table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.88rem; }
+        .content table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.88rem; display: block; overflow-x: auto; }
         .content th { background: var(--code-bg); color: var(--text); padding: 0.6rem 0.8rem; text-align: left; font-weight: 600; border-bottom: 1px solid var(--border); }
         .content td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); color: var(--text-muted); }
 
         .content blockquote { border-left: 3px solid var(--accent); padding: 0.7rem 1rem; margin-bottom: 1rem; background: rgba(99,102,241,0.04); border-radius: 0 6px 6px 0; }
         .content blockquote p { color: var(--accent-light); margin-bottom: 0; }
 
-        .mermaid { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
+        .mermaid { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; overflow-x: auto; max-width: 100%; }
         .content hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
 
         /* Back to top */
