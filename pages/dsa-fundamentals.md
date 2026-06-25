@@ -165,7 +165,14 @@ return lo
 
 **Examples:** Number of Islands, Word Ladder, Shortest Path in Binary Matrix, Rotting Oranges.
 
-**Java:**
+<div class="code-tabs">
+<div class="tab-buttons">
+<button class="tab-btn active">Java</button>
+<button class="tab-btn">Python</button>
+<button class="tab-btn">C++</button>
+</div>
+<div class="tab-content active">
+
 ```java
 Queue<int[]> queue = new ArrayDeque<>();
 Set<Integer> visited = new HashSet<>();
@@ -182,7 +189,9 @@ while (!queue.isEmpty()) {
 }
 ```
 
-**Python:**
+</div>
+<div class="tab-content">
+
 ```python
 from collections import deque
 queue = deque([start])
@@ -196,7 +205,9 @@ while queue:
             queue.append(neighbor)
 ```
 
-**C++:**
+</div>
+<div class="tab-content">
+
 ```cpp
 queue<int> q;
 unordered_set<int> visited;
@@ -213,6 +224,9 @@ while (!q.empty()) {
     }
 }
 ```
+
+</div>
+</div>
 
 ### 5. DFS / Backtracking
 
@@ -256,7 +270,14 @@ def backtrack(state):
 
 **Examples:** Daily Temperatures, Next Greater Element, Trapping Rain Water, Largest Rectangle.
 
-**Java:**
+<div class="code-tabs">
+<div class="tab-buttons">
+<button class="tab-btn active">Java</button>
+<button class="tab-btn">Python</button>
+<button class="tab-btn">C++</button>
+</div>
+<div class="tab-content active">
+
 ```java
 Deque<Integer> stack = new ArrayDeque<>();
 int[] result = new int[n];
@@ -269,7 +290,9 @@ for (int i = 0; i < n; i++) {
 }
 ```
 
-**Python:**
+</div>
+<div class="tab-content">
+
 ```python
 stack = []
 result = [0] * n
@@ -280,7 +303,9 @@ for i in range(n):
     stack.append(i)
 ```
 
-**C++:**
+</div>
+<div class="tab-content">
+
 ```cpp
 stack<int> st;
 vector<int> result(n, 0);
@@ -293,39 +318,51 @@ for (int i = 0; i < n; i++) {
 }
 ```
 
+</div>
+</div>
+
 ### 9. Union-Find (Disjoint Set)
 
 **Trigger:** "connected components," "are X and Y in the same group?", "merge groups."
 
 **Examples:** Number of Connected Components, Accounts Merge, Redundant Connection.
 
-**Java:**
+<div class="code-tabs">
+<div class="tab-buttons">
+<button class="tab-btn active">Java</button>
+<button class="tab-btn">Python</button>
+<button class="tab-btn">C++</button>
+</div>
+<div class="tab-content active">
+
 ```java
 int[] parent = new int[n];
 int[] rank = new int[n];
 for (int i = 0; i < n; i++) parent[i] = i;
 
 int find(int x) {
-    if (parent[x] != x) parent[x] = find(parent[x]); // path compression
+    if (parent[x] != x) parent[x] = find(parent[x]);
     return parent[x];
 }
 void union(int x, int y) {
     int px = find(x), py = find(y);
     if (px == py) return;
-    if (rank[px] < rank[py]) parent[px] = py;       // union by rank
+    if (rank[px] < rank[py]) parent[px] = py;
     else if (rank[px] > rank[py]) parent[py] = px;
     else { parent[py] = px; rank[px]++; }
 }
 ```
 
-**Python:**
+</div>
+<div class="tab-content">
+
 ```python
 parent = list(range(n))
 rank = [0] * n
 
 def find(x):
     if parent[x] != x:
-        parent[x] = find(parent[x])  # path compression
+        parent[x] = find(parent[x])
     return parent[x]
 
 def union(x, y):
@@ -336,7 +373,9 @@ def union(x, y):
     else: parent[py] = px; rank[px] += 1
 ```
 
-**C++:**
+</div>
+<div class="tab-content">
+
 ```cpp
 vector<int> parent(n), rank_(n, 0);
 iota(parent.begin(), parent.end(), 0);
@@ -354,13 +393,23 @@ void unite(int x, int y) {
 }
 ```
 
+</div>
+</div>
+
 ### 10. Topological Sort
 
 **Trigger:** dependencies between tasks, "can I finish all courses?", "order of compilation."
 
 **Examples:** Course Schedule, Alien Dictionary, Build Order.
 
-**Java:**
+<div class="code-tabs">
+<div class="tab-buttons">
+<button class="tab-btn active">Java</button>
+<button class="tab-btn">Python</button>
+<button class="tab-btn">C++</button>
+</div>
+<div class="tab-content active">
+
 ```java
 int[] inDegree = new int[n];
 for (int[] edge : edges) inDegree[edge[1]]++;
@@ -379,7 +428,9 @@ while (!queue.isEmpty()) {
 if (order.size() != n) { /* cycle exists */ }
 ```
 
-**Python:**
+</div>
+<div class="tab-content">
+
 ```python
 from collections import deque
 in_degree = [0] * n
@@ -400,7 +451,9 @@ if len(order) != n:  # cycle exists
     pass
 ```
 
-**C++:**
+</div>
+<div class="tab-content">
+
 ```cpp
 vector<int> inDegree(n, 0);
 for (auto& [u, v] : edges) inDegree[v]++;
@@ -419,13 +472,23 @@ while (!q.empty()) {
 if (order.size() != n) { /* cycle exists */ }
 ```
 
+</div>
+</div>
+
 ### 11. Trie
 
 **Trigger:** prefix-based operations, autocomplete, "word exists in dictionary," word search in grid.
 
 **Examples:** Implement Trie, Word Search II, Design Search Autocomplete.
 
-**Java:**
+<div class="code-tabs">
+<div class="tab-buttons">
+<button class="tab-btn active">Java</button>
+<button class="tab-btn">Python</button>
+<button class="tab-btn">C++</button>
+</div>
+<div class="tab-content active">
+
 ```java
 class TrieNode {
     TrieNode[] children = new TrieNode[26];
@@ -456,7 +519,9 @@ class Trie {
 }
 ```
 
-**Python:**
+</div>
+<div class="tab-content">
+
 ```python
 class TrieNode:
     def __init__(self):
@@ -483,7 +548,9 @@ class Trie:
         return node.is_end
 ```
 
-**C++:**
+</div>
+<div class="tab-content">
+
 ```cpp
 struct TrieNode {
     TrieNode* children[26] = {};
@@ -512,6 +579,9 @@ public:
     }
 };
 ```
+
+</div>
+</div>
 
 ### 12. Intervals
 
