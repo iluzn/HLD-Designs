@@ -7,6 +7,8 @@ description: "Core concepts for Low-Level Design interviews: SOLID principles, d
 
 # LLD / Machine Coding Fundamentals
 
+> 💡 **Language note:** Examples use Java-like syntax for readability. The patterns (Strategy, State, Observer, etc.) apply identically in Python, C++, Go, or any OOP language. Individual problem solutions will be available in multiple languages.
+
 Everything you need before tackling machine-coding problems. These concepts are what interviewers grade on — not clever algorithms, but how well you organize code under time pressure.
 
 ---

@@ -15,16 +15,16 @@ Machine-coding problems asked at PhonePe, Flipkart, Swiggy, Razorpay, and other 
 
 ## Problems
 
-| # | Problem | Key Patterns | Companies |
-|---|---|---|---|
-| 1 | [🅿️ Parking Lot](/ParkingLot) | Strategy, Polymorphism, Factory | Flipkart, PhonePe, Amazon |
-| 2 | 🗃️ Multilevel Cache *(coming soon)* | Strategy (LRU/LFU), Composition, Facade | PhonePe, Flipkart |
-| 3 | 📨 Message Broker *(coming soon)* | Facade, Composition, Concurrency | PhonePe, Uber |
-| 4 | 🎫 Customer Issue Resolution *(coming soon)* | Strategy, State Machine, Facade | PhonePe |
-| 5 | 🐍 Snake & Ladder *(coming soon)* | Strategy, State, Command | PhonePe, Flipkart |
-| 6 | 💸 Splitwise *(coming soon)* | Strategy (split types), Aggregation | PhonePe, Flipkart |
-| 7 | 🍽️ Restaurant Booking *(coming soon)* | Reservation conflicts, Concurrency | PhonePe |
-| 8 | 📱 App Version Manager *(coming soon)* | Strategy (rollout), Adapter, Factory | PhonePe |
+| # | Problem | Key Patterns | Companies | Languages |
+|---|---|---|---|---|
+| 1 | [🅿️ Parking Lot](/ParkingLot) | Strategy, Polymorphism, Factory | Flipkart, PhonePe, Amazon | Java |
+| 2 | 🗃️ Multilevel Cache *(coming soon)* | Strategy (LRU/LFU), Composition, Facade | PhonePe, Flipkart | Java, Python |
+| 3 | 📨 Message Broker *(coming soon)* | Facade, Composition, Concurrency | PhonePe, Uber | Java, Python |
+| 4 | 🎫 Customer Issue Resolution *(coming soon)* | Strategy, State Machine, Facade | PhonePe | Java, Python |
+| 5 | 🐍 Snake & Ladder *(coming soon)* | Strategy, State, Command | PhonePe, Flipkart | Java, Python, C++ |
+| 6 | 💸 Splitwise *(coming soon)* | Strategy (split types), Aggregation | PhonePe, Flipkart | Java, Python, C++ |
+| 7 | 🍽️ Restaurant Booking *(coming soon)* | Reservation conflicts, Concurrency | PhonePe | Java |
+| 8 | 📱 App Version Manager *(coming soon)* | Strategy (rollout), Adapter, Factory | PhonePe | Java |
 
 ---
 
