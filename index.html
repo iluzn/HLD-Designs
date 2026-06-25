@@ -10,11 +10,10 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
     <script>(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="BAYHhl0VtKB6M3UG5V97QDXNEMSXEiTvbls3ciAAocU" />
-    <title>SystemCraft — System Design, LLD & DSA for Tech Interviews</title>
-    <meta name="description" content="Free interview prep: HLD system design, LLD machine coding, and DSA problems. Diagrams, deep dives, trade-offs.">
-    <meta name="keywords" content="system design, HLD, LLD, DSA, machine coding, interview, distributed systems, architecture">
-    <meta property="og:title" content="SystemCraft — System Design, LLD & DSA for Tech Interviews">
-    <meta property="og:description" content="Free interview prep covering HLD, LLD, and DSA with real architectures and trade-offs.">
+    <title>SystemCraft — Free Interview Prep: HLD, LLD, DSA</title>
+    <meta name="description" content="Free interview prep: system design, machine coding, and DSA problems. Diagrams, solutions in Java/Python/C++, and company tags.">
+    <meta property="og:title" content="SystemCraft — Free Interview Prep">
+    <meta property="og:description" content="HLD, LLD, and DSA with real architectures, patterns, and multi-language code.">
     <meta property="og:url" content="https://systemcraft.in">
     <meta property="og:type" content="website">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -24,128 +23,87 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { overflow-x: hidden; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg, #09090b);
-            color: var(--text, #e2e8f0);
-            line-height: 1.6;
-            min-height: 100vh;
-            overflow-x: hidden;
-            transition: background 0.3s, color 0.3s;
+            background: var(--bg); color: var(--text); line-height: 1.6;
+            min-height: 100vh; overflow-x: hidden; transition: background 0.3s, color 0.3s;
         }
-
         [data-theme="light"] {
             --bg: #f9fafb; --text: #111827; --text-muted: #374151; --text-dim: #6b7280;
-            --card-bg: #ffffff; --border: rgba(0,0,0,0.1); --accent: #4f46e5;
-            --accent-light: #4338ca; --tag-bg: rgba(79,70,229,0.08); --tag-border: rgba(79,70,229,0.2);
-            --header-bg: rgba(249,250,251,0.92);
+            --card-bg: #ffffff; --border: rgba(0,0,0,0.08); --accent: #4f46e5;
+            --accent-light: #4338ca; --tag-bg: rgba(79,70,229,0.06); --tag-border: rgba(79,70,229,0.15);
+            --header-bg: rgba(249,250,251,0.95);
         }
         [data-theme="dark"] {
             --bg: #09090b; --text: #e2e8f0; --text-muted: #94a3b8; --text-dim: #64748b;
             --card-bg: rgba(15,15,20,0.8); --border: rgba(255,255,255,0.06); --accent: #6366f1;
             --accent-light: #a5b4fc; --tag-bg: rgba(99,102,241,0.06); --tag-border: rgba(99,102,241,0.15);
-            --header-bg: rgba(9,9,11,0.8);
+            --header-bg: rgba(9,9,11,0.95);
         }
 
-        .bg-gradient {
-            position: fixed; top: 0; left: 0; right: 0; height: 600px;
-            background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.15), transparent);
-            pointer-events: none; z-index: 0;
-        }
-        [data-theme="light"] .bg-gradient { opacity: 0.3; }
+        .bg-gradient { position: fixed; top: 0; left: 0; right: 0; height: 600px; background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.12), transparent); pointer-events: none; z-index: 0; }
+        [data-theme="light"] .bg-gradient { opacity: 0.4; }
 
-        header {
-            position: sticky; top: 0; z-index: 100;
-            background: var(--header-bg);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            padding: 0.9rem 0;
-        }
-        .header-inner {
-            max-width: 1100px; margin: 0 auto; padding: 0 1.5rem;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        /* Header */
+        header { position: sticky; top: 0; z-index: 100; background: var(--header-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0.9rem 0; }
+        .header-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 1.3rem; font-weight: 800; color: var(--text); text-decoration: none; letter-spacing: -0.02em; white-space: nowrap; }
         .logo span { background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        nav { display: flex; align-items: center; gap: 0.2rem; flex-wrap: nowrap; position: relative; }
+        nav { display: flex; align-items: center; gap: 0.2rem; position: relative; }
         nav a { color: var(--text-muted); text-decoration: none; margin-left: 1.2rem; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
         nav a:hover { color: var(--text); }
-        nav a.active { color: var(--accent); }
         .hamburger { display: none; background: none; border: none; color: var(--text); cursor: pointer; padding: 0.4rem; font-size: 1.5rem; line-height: 1; }
         .nav-links { display: flex; align-items: center; gap: 0; }
 
-        .hero {
-            position: relative; z-index: 1;
-            max-width: 1100px; margin: 0 auto;
-            padding: 5rem 1.5rem 3rem; text-align: center;
-        }
-        .hero h1 { font-size: 3.2rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text); margin-bottom: 1.2rem; }
+        /* Hero */
+        .hero { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 5rem 1.5rem 2rem; text-align: center; }
+        .hero h1 { font-size: 3rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text); margin-bottom: 1rem; }
         .hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero p { color: var(--text-muted); font-size: 1.1rem; max-width: 550px; margin: 0 auto 2rem; }
-        .badge { display: inline-block; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.25); color: var(--accent); padding: 0.35rem 1rem; border-radius: 20px; font-size: 0.78rem; font-weight: 500; margin-bottom: 1.5rem; letter-spacing: 0.02em; }
+        .hero p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto 1.5rem; }
+        .hero-cta { display: inline-block; background: var(--accent); color: #fff; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
+        .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(99,102,241,0.3); }
+        .hero-sub { margin-top: 0.8rem; font-size: 0.82rem; color: var(--text-dim); }
 
-        /* Three pillars */
-        .pillars {
-            position: relative; z-index: 1;
-            max-width: 1100px; margin: 0 auto;
-            padding: 0 1.5rem 3rem;
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem;
-        }
-        .pillar {
-            background: var(--card-bg); border: 1px solid var(--border);
-            border-radius: 16px; padding: 2rem 1.5rem; text-align: center;
-            text-decoration: none; color: var(--text);
-            transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
-            display: flex; flex-direction: column; align-items: center;
-        }
-        .pillar:hover { border-color: rgba(99,102,241,0.5); transform: translateY(-4px); box-shadow: 0 16px 48px rgba(99,102,241,0.1); }
-        .pillar-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
-        .pillar h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
-        .pillar p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem; line-height: 1.5; }
-        .pillar .count { background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--accent-light); padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        /* Stats strip */
+        .stats { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 1.5rem; display: flex; justify-content: center; gap: 3rem; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        .stat { text-align: center; }
+        .stat strong { display: block; font-size: 1.4rem; color: var(--text); font-weight: 700; }
+        .stat span { font-size: 0.78rem; color: var(--text-dim); }
 
-        /* Recent section */
-        .section-label {
-            max-width: 1100px; margin: 0 auto; padding: 0 1.5rem;
-            font-size: 0.75rem; font-weight: 600; color: var(--accent);
-            text-transform: uppercase; letter-spacing: 0.1em;
-            margin-bottom: 1rem; position: relative; z-index: 1;
-        }
-        .recent-list {
-            position: relative; z-index: 1;
-            max-width: 1100px; margin: 0 auto;
-            padding: 0 1.5rem 3rem;
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;
-        }
-        .recent-card {
-            background: var(--card-bg); border: 1px solid var(--border);
-            border-radius: 12px; padding: 1.2rem 1.4rem;
-            text-decoration: none; color: var(--text);
-            transition: border-color 0.3s, transform 0.2s;
-            display: flex; flex-direction: column;
-        }
-        .recent-card:hover { border-color: rgba(99,102,241,0.4); transform: translateY(-2px); }
-        .recent-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
-        .recent-card p { color: var(--text-muted); font-size: 0.8rem; flex-grow: 1; }
-        .recent-card .meta { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
-        .recent-card .tag { background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--accent-light); padding: 2px 8px; border-radius: 5px; font-size: 0.68rem; font-weight: 500; }
+        /* Section */
+        .section { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 3rem; }
+        .section-title { font-size: 1.3rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+        .section-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.2rem; }
 
-        footer {
-            position: relative; z-index: 1;
-            border-top: 1px solid var(--border);
-            padding: 2.5rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.82rem;
-        }
+        /* Path cards */
+        .paths { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.2rem; margin-bottom: 3rem; }
+        .path-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; text-decoration: none; color: var(--text); transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s; }
+        .path-card:hover { border-color: rgba(99,102,241,0.5); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(99,102,241,0.08); }
+        .path-card .icon { font-size: 2rem; margin-bottom: 0.6rem; }
+        .path-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .path-card p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.8rem; line-height: 1.5; }
+        .path-card .meta { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .tag { background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--accent-light); padding: 3px 9px; border-radius: 6px; font-size: 0.7rem; font-weight: 500; }
+
+        /* Popular grid */
+        .popular { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+        .pop-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.4rem; text-decoration: none; color: var(--text); transition: border-color 0.2s, transform 0.2s; display: flex; flex-direction: column; }
+        .pop-card:hover { border-color: rgba(99,102,241,0.4); transform: translateY(-2px); }
+        .pop-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .pop-card p { color: var(--text-muted); font-size: 0.8rem; flex-grow: 1; margin-bottom: 0.6rem; }
+        .pop-card .meta { display: flex; gap: 0.4rem; }
+
+        /* Footer */
+        footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.82rem; }
         footer a { color: var(--accent); text-decoration: none; }
         footer a:hover { text-decoration: underline; }
-        .footer-links { margin-bottom: 0.5rem; }
-        .footer-links a { margin: 0 0.8rem; }
 
         @media (max-width: 768px) {
             .hero h1 { font-size: 2rem; }
-            .hero { padding: 3rem 1.5rem 2rem; }
-            .pillars { grid-template-columns: 1fr; gap: 1rem; }
-            .recent-list { grid-template-columns: 1fr; }
+            .hero { padding: 3rem 1.5rem 1.5rem; }
+            .stats { gap: 1.5rem; flex-wrap: wrap; }
+            .paths { grid-template-columns: 1fr; }
+            .popular { grid-template-columns: 1fr; }
             header { background: var(--bg); backdrop-filter: none; }
             .hamburger { display: block; }
             .nav-links { display: none; position: absolute; top: 100%; right: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.5rem 0; flex-direction: column; align-items: stretch; min-width: 160px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); margin-top: 0.5rem; }
@@ -158,145 +116,162 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
 </head>
 <body>
 
-    <div class="bg-gradient"></div>
+<div class="bg-gradient"></div>
 
-    <header>
-        <div class="header-inner">
-            <a href="/" class="logo">System<span>Craft</span></a>
-            <nav>
-                <button class="hamburger" id="hamburger-btn" aria-label="Menu">&#9776;</button>
-                <div class="nav-links" id="nav-links">
-                    <a href="/hld">HLD</a>
-                    <a href="/lld">LLD</a>
-                    <a href="/dsa">DSA</a>
-                    <a href="/concepts">Fundamentals</a>
-                    <button id="theme-btn" title="Switch theme" style="background:none;border:1px solid var(--border);color:var(--text-muted);cursor:pointer;font-size:1rem;padding:0.4rem 0.6rem;border-radius:6px;transition:color 0.2s;">🌙</button>
-                </div>
-            </nav>
-        </div>
-    </header>
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">System<span>Craft</span></a>
+        <nav>
+            <button class="hamburger" id="hamburger-btn" aria-label="Menu">&#9776;</button>
+            <div class="nav-links" id="nav-links">
+                <a href="/hld">HLD</a>
+                <a href="/lld">LLD</a>
+                <a href="/dsa">DSA</a>
+                <a href="/cheatsheet">Cheatsheet</a>
+                <a href="/about">About</a>
+                <button id="theme-btn" title="Switch theme" style="background:none;border:1px solid var(--border);color:var(--text-muted);cursor:pointer;font-size:1rem;padding:0.4rem 0.6rem;border-radius:6px;margin-left:0.8rem;transition:color 0.2s;">🌙</button>
+            </div>
+        </nav>
+    </div>
+</header>
 
-    <section class="hero">
-        <div class="badge">Free &middot; Open Source &middot; Interview Ready</div>
-        <h1>Master Tech <em>Interviews</em></h1>
-        <p>Production-grade HLD, machine-coding LLD, and DSA with diagrams, deep dives, and trade-offs. Built for interviews at any level.</p>
-    </section>
+<!-- HERO — one clear message + one CTA -->
+<section class="hero">
+    <h1>Ace your next tech <em>interview</em></h1>
+    <p>Free system design, machine coding, and DSA prep — with diagrams, multi-language code, and the patterns interviewers actually test.</p>
+    <a class="hero-cta" href="/cheatsheet">Start with the Quick-Fire 50 →</a>
+    <div class="hero-sub">Free &middot; Open Source &middot; No signup required</div>
+</section>
 
-    <!-- Three pillar cards -->
-    <div class="pillars">
-        <a class="pillar" href="/hld">
-            <div class="pillar-icon">🏗️</div>
-            <h2>High-Level Design</h2>
-            <p>Distributed system architectures with diagrams, technology choices, and deep dives.</p>
-            <span class="count">13 designs</span>
+<!-- STATS — trust strip -->
+<div class="stats">
+    <div class="stat"><strong>13</strong><span>System Designs</span></div>
+    <div class="stat"><strong>225+</strong><span>DSA Problems</span></div>
+    <div class="stat"><strong>3</strong><span>Languages</span></div>
+    <div class="stat"><strong>100%</strong><span>Free</span></div>
+</div>
+
+<!-- PICK YOUR PATH — guided entry points -->
+<div class="section">
+    <div class="section-title">📍 Pick your prep path</div>
+    <div class="section-sub">Choose based on your interview type or timeline.</div>
+
+    <div class="paths">
+        <a class="path-card" href="/dsa">
+            <div class="icon">🧮</div>
+            <h3>DSA / Coding Round</h3>
+            <p>Pattern-based problems with solutions in Java, Python, and C++. Curated lists for 1-week, 4-week, and 8-week preps.</p>
+            <div class="meta"><span class="tag">Quick-Fire 50</span><span class="tag">The 75</span><span class="tag">The 150</span></div>
         </a>
-        <a class="pillar" href="/lld">
-            <div class="pillar-icon">⚙️</div>
-            <h2>Low-Level Design</h2>
-            <p>Machine-coding problems with OOP, design patterns, and runnable code.</p>
-            <span class="count">5 problems</span>
+        <a class="path-card" href="/hld">
+            <div class="icon">🏗️</div>
+            <h3>System Design (HLD)</h3>
+            <p>Distributed architectures with diagrams, technology choices, and deep dives. Covers everything from URL Shortener to Payment Systems.</p>
+            <div class="meta"><span class="tag">13 designs</span><span class="tag">Beginner → Advanced</span></div>
         </a>
-        <a class="pillar" href="/dsa">
-            <div class="pillar-icon">🧮</div>
-            <h2>DSA</h2>
-            <p>Data structures and algorithms with pattern-based approaches and company tags.</p>
-            <span class="count">4 problems</span>
+        <a class="path-card" href="/lld">
+            <div class="icon">⚙️</div>
+            <h3>Machine Coding (LLD)</h3>
+            <p>OOP problems with design patterns, runnable code, and company tags. Built for PhonePe, Flipkart, Swiggy-style rounds.</p>
+            <div class="meta"><span class="tag">Strategy</span><span class="tag">State</span><span class="tag">Observer</span></div>
         </a>
     </div>
+</div>
 
-    <!-- Recent additions -->
-    <div class="section-label">🆕 Recently Added</div>
-    <div class="recent-list">
-        <a class="recent-card" href="/NotificationSystem">
-            <h3>🔔 Notification System</h3>
-            <p>Multi-channel push, SMS, email with template service and engagement tracking.</p>
-            <div class="meta"><span class="tag">HLD</span><span class="tag">Advanced</span></div>
-        </a>
-        <a class="recent-card" href="/JobScheduler">
-            <h3>⏰ Distributed Job Scheduler</h3>
-            <p>Cron-like scheduler with sharding, retries, and dead-letter reconciliation.</p>
-            <div class="meta"><span class="tag">HLD</span><span class="tag">Advanced</span></div>
-        </a>
-        <a class="recent-card" href="/ParkingLot">
-            <h3>🅿️ Parking Lot</h3>
-            <p>OOP design with Strategy pattern, composition, and pluggable pricing.</p>
-            <div class="meta"><span class="tag">LLD</span><span class="tag">Beginner</span></div>
-        </a>
-        <a class="recent-card" href="/DigitalWallet">
-            <h3>💰 Digital Wallet</h3>
-            <p>Double-entry ledger, idempotent transactions, and bank rail reconciliation.</p>
-            <div class="meta"><span class="tag">HLD</span><span class="tag">Advanced</span></div>
-        </a>
-        <a class="recent-card" href="/Zomato">
-            <h3>🍔 Food Delivery (Zomato)</h3>
-            <p>Search, dispatch, live tracking, and real-time rider assignment.</p>
-            <div class="meta"><span class="tag">HLD</span><span class="tag">Advanced</span></div>
-        </a>
-        <a class="recent-card" href="/URLShortner">
-            <h3>🔗 URL Shortener</h3>
-            <p>Base62 encoding, Snowflake IDs, CDN+Redis caching, analytics.</p>
-            <div class="meta"><span class="tag">HLD</span><span class="tag">Intermediate</span></div>
-        </a>
-    </div>
+<!-- MOST POPULAR — surface your best content -->
+<div class="section">
+    <div class="section-title">🔥 Most Popular</div>
+    <div class="section-sub">Where most readers start.</div>
 
-    <!-- Start here -->
-    <div class="section-label">📚 Start Here</div>
-    <div class="recent-list">
-        <a class="recent-card" href="/cheatsheet" style="border-color: rgba(99,102,241,0.3);">
-            <h3>📋 Interview Cheatsheet — Top 50 Problems</h3>
-            <p>One-page reference: pattern, approach, and complexity for the 50 most-asked coding problems. Bookmark and review before every interview.</p>
+    <div class="popular">
+        <a class="pop-card" href="/cheatsheet">
+            <h4>📋 Quick-Fire 50 Cheatsheet</h4>
+            <p>50 problems, pattern + one-line approach + complexity. The page people bookmark before every interview.</p>
             <div class="meta"><span class="tag">DSA</span><span class="tag">Must Bookmark</span></div>
         </a>
-        <a class="recent-card" href="/concepts" style="border-color: rgba(99,102,241,0.2);">
-            <h3>📚 System Design Fundamentals</h3>
-            <p>CAP theorem, load balancing, caching, sharding, message queues, consistent hashing, and back-of-envelope estimation.</p>
-            <div class="meta"><span class="tag">Prerequisites</span><span class="tag">Must Read First</span></div>
+        <a class="pop-card" href="/the-75">
+            <h4>🎯 The 75 — Interview Sprint</h4>
+            <p>75 problems that cover every pattern. LeetCode links + progress tracker. Complete in 4-5 weeks.</p>
+            <div class="meta"><span class="tag">DSA</span><span class="tag">4 weeks</span></div>
+        </a>
+        <a class="pop-card" href="/Zomato">
+            <h4>🍔 Designing Zomato (Food Delivery)</h4>
+            <p>Search, dispatch, live tracking, Redis Geo, Elasticsearch, WebSockets. Full Staff+ HLD.</p>
+            <div class="meta"><span class="tag">HLD</span><span class="tag">Advanced</span></div>
+        </a>
+        <a class="pop-card" href="/NotificationSystem">
+            <h4>🔔 Notification System</h4>
+            <p>Multi-channel push/email/SMS, Kafka, template service, engagement tracking, 11 deep dives.</p>
+            <div class="meta"><span class="tag">HLD</span><span class="tag">Advanced</span></div>
+        </a>
+        <a class="pop-card" href="/dsa-fundamentals">
+            <h4>🧠 DSA Fundamentals — 12 Patterns</h4>
+            <p>The 12 core patterns with triggers, pseudocode, and multi-language implementations. Read before solving.</p>
+            <div class="meta"><span class="tag">DSA</span><span class="tag">Start Here</span></div>
+        </a>
+        <a class="pop-card" href="/lld-fundamentals">
+            <h4>📐 LLD Fundamentals — SOLID & Patterns</h4>
+            <p>SOLID principles, 8 design patterns, concurrency, state machines, and the 90-minute approach.</p>
+            <div class="meta"><span class="tag">LLD</span><span class="tag">Start Here</span></div>
         </a>
     </div>
+</div>
 
-    <footer>
-        <div class="footer-links">
-            <a href="/about">About</a>
-            <a href="/privacy">Privacy</a>
-            <a href="https://github.com/iluzn/HLD-Designs">GitHub</a>
-        </div>
-        <p>&copy; 2026 SystemCraft.</p>
-    </footer>
+<!-- WHAT'S NEW -->
+<div class="section">
+    <div class="section-title">🆕 Recently Added</div>
+    <div class="popular">
+        <a class="pop-card" href="/dsa/coin-change">
+            <h4>💰 Coin Change (DP)</h4>
+            <p>Classic unbounded knapsack with walkthrough + Java/Python/C++ tabs.</p>
+            <div class="meta"><span class="tag">DSA</span><span class="tag">Medium</span></div>
+        </a>
+        <a class="pop-card" href="/dsa/merge-intervals">
+            <h4>📊 Merge Intervals</h4>
+            <p>Sort + sweep greedy with walkthrough + multi-language code.</p>
+            <div class="meta"><span class="tag">DSA</span><span class="tag">Medium</span></div>
+        </a>
+        <a class="pop-card" href="/JobScheduler">
+            <h4>⏰ Distributed Job Scheduler</h4>
+            <p>Redis ZSET hot window, leader election, retries, and 8 deep dives.</p>
+            <div class="meta"><span class="tag">HLD</span><span class="tag">Advanced</span></div>
+        </a>
+    </div>
+</div>
 
-    <script>
-        (function() {
-            var theme = localStorage.getItem('theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', theme);
-            var btn = document.getElementById('theme-btn');
-            btn.textContent = theme === 'dark' ? '☀️' : '🌙';
-            btn.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
-            btn.addEventListener('click', function() {
-                var current = document.documentElement.getAttribute('data-theme');
-                var next = current === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', next);
-                localStorage.setItem('theme', next);
-                btn.textContent = next === 'dark' ? '☀️' : '🌙';
-                btn.title = next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
-            });
+<footer>
+    <p><a href="/about">About</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/iluzn/HLD-Designs">GitHub</a></p>
+    <p style="margin-top:0.5rem;">&copy; 2026 SystemCraft. Free forever.</p>
+</footer>
 
-            // Hamburger menu
-            var hamburger = document.getElementById('hamburger-btn');
-            var navLinks = document.getElementById('nav-links');
-            if (hamburger && navLinks) {
-                hamburger.addEventListener('click', function() { navLinks.classList.toggle('open'); });
-                navLinks.querySelectorAll('a').forEach(function(a) {
-                    a.addEventListener('click', function() { navLinks.classList.remove('open'); });
-                });
-                document.addEventListener('click', function(e) {
-                    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
-                        navLinks.classList.remove('open');
-                    }
-                });
-            }
-        })();
-    </script>
+<script>
+(function() {
+    var theme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    var btn = document.getElementById('theme-btn');
+    btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+    btn.addEventListener('click', function() {
+        var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        btn.textContent = next === 'dark' ? '☀️' : '🌙';
+    });
 
-    <!-- Cloudflare Web Analytics -->
-    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "46af7c683dec42ceb435ae3e97b8d9a1"}'></script>
+    var hamburger = document.getElementById('hamburger-btn');
+    var navLinks = document.getElementById('nav-links');
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', function() { navLinks.classList.toggle('open'); });
+        navLinks.querySelectorAll('a').forEach(function(a) {
+            a.addEventListener('click', function() { navLinks.classList.remove('open'); });
+        });
+        document.addEventListener('click', function(e) {
+            if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
+        });
+    }
+})();
+</script>
+
+<!-- Cloudflare Web Analytics -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "46af7c683dec42ceb435ae3e97b8d9a1"}'></script>
 </body>
 </html>
