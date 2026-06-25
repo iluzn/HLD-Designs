@@ -102,8 +102,7 @@ classDiagram
 </div>
 <div class="tab-content active">
 
-```java
-package musicplayer.model;
+<pre><code class="language-java">package musicplayer.model;
 
 public class Song {
     private final String id;
@@ -137,14 +136,12 @@ public class Song {
 
     @Override
     public int hashCode() { return id.hashCode(); }
-}
-```
+}</code></pre>
 
 </div>
 <div class="tab-content">
 
-```python
-from dataclasses import dataclass
+<pre><code class="language-python">from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class Song:
@@ -154,15 +151,13 @@ class Song:
     duration_sec: int
 
     def __str__(self):
-        return f"{self.title} — {self.artist} ({self.duration_sec}s)"
-```
+        return f"{self.title} — {self.artist} ({self.duration_sec}s)"</code></pre>
 
 </div>
 <div class="tab-content">
 
-```cpp
-#pragma once
-#include <string>
+<pre><code class="language-cpp">#pragma once
+#include &lt;string&gt;
 
 class Song {
 public:
@@ -175,14 +170,13 @@ public:
         : id(std::move(id)), title(std::move(title)),
           artist(std::move(artist)), durationSec(dur) {}
 
-    bool operator==(const Song& other) const { return id == other.id; }
+    bool operator==(const Song&amp; other) const { return id == other.id; }
 
-    friend std::ostream& operator<<(std::ostream& os, const Song& s) {
-        os << s.title << " — " << s.artist << " (" << s.durationSec << "s)";
+    friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, const Song&amp; s) {
+        os &lt;&lt; s.title &lt;&lt; " — " &lt;&lt; s.artist &lt;&lt; " (" &lt;&lt; s.durationSec &lt;&lt; "s)";
         return os;
     }
-};
-```
+};</code></pre>
 
 </div>
 </div>
@@ -197,8 +191,7 @@ public:
 </div>
 <div class="tab-content active">
 
-```java
-package musicplayer.model;
+<pre><code class="language-java">package musicplayer.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -206,26 +199,24 @@ import java.util.List;
 
 public class Playlist {
     private final String name;
-    private final List<Song> songs;
+    private final List&lt;Song&gt; songs;
 
     public Playlist(String name) {
         this.name = name;
-        this.songs = new ArrayList<>();
+        this.songs = new ArrayList&lt;&gt;();
     }
 
     public void addSong(Song song) { songs.add(song); }
     public String getName() { return name; }
-    public List<Song> getSongs() { return Collections.unmodifiableList(songs); }
+    public List&lt;Song&gt; getSongs() { return Collections.unmodifiableList(songs); }
     public int size() { return songs.size(); }
     public boolean isEmpty() { return songs.isEmpty(); }
-}
-```
+}</code></pre>
 
 </div>
 <div class="tab-content">
 
-```python
-class Playlist:
+<pre><code class="language-python">class Playlist:
     def __init__(self, name: str):
         self.name = name
         self.songs: list[Song] = []
@@ -233,34 +224,31 @@ class Playlist:
     def add_song(self, song: Song):
         self.songs.append(song)
 
-    def size(self) -> int:
+    def size(self) -&gt; int:
         return len(self.songs)
 
-    def is_empty(self) -> bool:
-        return len(self.songs) == 0
-```
+    def is_empty(self) -&gt; bool:
+        return len(self.songs) == 0</code></pre>
 
 </div>
 <div class="tab-content">
 
-```cpp
-#pragma once
-#include <vector>
-#include <string>
+<pre><code class="language-cpp">#pragma once
+#include &lt;vector&gt;
+#include &lt;string&gt;
 #include "Song.h"
 
 class Playlist {
 public:
     std::string name;
-    std::vector<Song> songs;
+    std::vector&lt;Song&gt; songs;
 
     Playlist(std::string name) : name(std::move(name)) {}
 
-    void addSong(const Song& song) { songs.push_back(song); }
+    void addSong(const Song&amp; song) { songs.push_back(song); }
     int size() const { return songs.size(); }
     bool isEmpty() const { return songs.empty(); }
-};
-```
+};</code></pre>
 
 </div>
 </div>
@@ -275,8 +263,7 @@ public:
 </div>
 <div class="tab-content active">
 
-```java
-package musicplayer.strategy;
+<pre><code class="language-java">package musicplayer.strategy;
 
 import musicplayer.model.Song;
 import java.util.List;
@@ -284,25 +271,23 @@ import java.util.List;
 public interface PlayMode {
     Song next();
     Song previous();
-    void reset(List<Song> songs);
+    void reset(List&lt;Song&gt; songs);
     boolean hasNext();
     Song current();
-}
-```
+}</code></pre>
 
 </div>
 <div class="tab-content">
 
-```python
-from abc import ABC, abstractmethod
+<pre><code class="language-python">from abc import ABC, abstractmethod
 
 class PlayMode(ABC):
     @abstractmethod
-    def next(self) -> Song | None:
+    def next(self) -&gt; Song | None:
         pass
 
     @abstractmethod
-    def previous(self) -> Song | None:
+    def previous(self) -&gt; Song | None:
         pass
 
     @abstractmethod
@@ -310,20 +295,18 @@ class PlayMode(ABC):
         pass
 
     @abstractmethod
-    def has_next(self) -> bool:
+    def has_next(self) -&gt; bool:
         pass
 
     @abstractmethod
-    def current(self) -> Song | None:
-        pass
-```
+    def current(self) -&gt; Song | None:
+        pass</code></pre>
 
 </div>
 <div class="tab-content">
 
-```cpp
-#pragma once
-#include <vector>
+<pre><code class="language-cpp">#pragma once
+#include &lt;vector&gt;
 #include "Song.h"
 
 class PlayMode {
@@ -331,11 +314,10 @@ public:
     virtual ~PlayMode() = default;
     virtual Song* next() = 0;
     virtual Song* previous() = 0;
-    virtual void reset(const std::vector<Song>& songs) = 0;
+    virtual void reset(const std::vector&lt;Song&gt;&amp; songs) = 0;
     virtual bool hasNext() const = 0;
     virtual Song* current() = 0;
-};
-```
+};</code></pre>
 
 </div>
 </div>
@@ -350,20 +332,19 @@ public:
 </div>
 <div class="tab-content active">
 
-```java
-package musicplayer.strategy;
+<pre><code class="language-java">package musicplayer.strategy;
 
 import musicplayer.model.Song;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SequentialMode implements PlayMode {
-    private List<Song> songs = new ArrayList<>();
+    private List&lt;Song&gt; songs = new ArrayList&lt;&gt;();
     private int currentIndex = -1;
 
     @Override
-    public void reset(List<Song> songs) {
-        this.songs = new ArrayList<>(songs);
+    public void reset(List&lt;Song&gt; songs) {
+        this.songs = new ArrayList&lt;&gt;(songs);
         this.currentIndex = -1;
     }
 
@@ -371,7 +352,7 @@ public class SequentialMode implements PlayMode {
     public Song next() {
         if (songs.isEmpty()) return null;
         currentIndex++;
-        if (currentIndex >= songs.size()) currentIndex = 0;
+        if (currentIndex &gt;= songs.size()) currentIndex = 0;
         return songs.get(currentIndex);
     }
 
@@ -379,7 +360,7 @@ public class SequentialMode implements PlayMode {
     public Song previous() {
         if (songs.isEmpty()) return null;
         currentIndex--;
-        if (currentIndex < 0) currentIndex = songs.size() - 1;
+        if (currentIndex &lt; 0) currentIndex = songs.size() - 1;
         return songs.get(currentIndex);
     }
 
@@ -388,17 +369,15 @@ public class SequentialMode implements PlayMode {
 
     @Override
     public Song current() {
-        if (currentIndex < 0 || currentIndex >= songs.size()) return null;
+        if (currentIndex &lt; 0 || currentIndex &gt;= songs.size()) return null;
         return songs.get(currentIndex);
     }
-}
-```
+}</code></pre>
 
 </div>
 <div class="tab-content">
 
-```python
-class SequentialMode(PlayMode):
+<pre><code class="language-python">class SequentialMode(PlayMode):
     def __init__(self):
         self._songs: list[Song] = []
         self._index = -1
@@ -407,45 +386,43 @@ class SequentialMode(PlayMode):
         self._songs = list(songs)
         self._index = -1
 
-    def next(self) -> Song | None:
+    def next(self) -&gt; Song | None:
         if not self._songs:
             return None
         self._index += 1
-        if self._index >= len(self._songs):
+        if self._index &gt;= len(self._songs):
             self._index = 0
         return self._songs[self._index]
 
-    def previous(self) -> Song | None:
+    def previous(self) -&gt; Song | None:
         if not self._songs:
             return None
         self._index -= 1
-        if self._index < 0:
+        if self._index &lt; 0:
             self._index = len(self._songs) - 1
         return self._songs[self._index]
 
-    def has_next(self) -> bool:
-        return len(self._songs) > 0
+    def has_next(self) -&gt; bool:
+        return len(self._songs) &gt; 0
 
-    def current(self) -> Song | None:
-        if self._index < 0 or self._index >= len(self._songs):
+    def current(self) -&gt; Song | None:
+        if self._index &lt; 0 or self._index &gt;= len(self._songs):
             return None
-        return self._songs[self._index]
-```
+        return self._songs[self._index]</code></pre>
 
 </div>
 <div class="tab-content">
 
-```cpp
-#pragma once
-#include <vector>
+<pre><code class="language-cpp">#pragma once
+#include &lt;vector&gt;
 #include "PlayMode.h"
 
 class SequentialMode : public PlayMode {
-    std::vector<Song> songs;
+    std::vector&lt;Song&gt; songs;
     int currentIndex = -1;
 
 public:
-    void reset(const std::vector<Song>& s) override {
+    void reset(const std::vector&lt;Song&gt;&amp; s) override {
         songs = s;
         currentIndex = -1;
     }
@@ -453,25 +430,24 @@ public:
     Song* next() override {
         if (songs.empty()) return nullptr;
         currentIndex++;
-        if (currentIndex >= (int)songs.size()) currentIndex = 0;
-        return &songs[currentIndex];
+        if (currentIndex &gt;= (int)songs.size()) currentIndex = 0;
+        return &amp;songs[currentIndex];
     }
 
     Song* previous() override {
         if (songs.empty()) return nullptr;
         currentIndex--;
-        if (currentIndex < 0) currentIndex = songs.size() - 1;
-        return &songs[currentIndex];
+        if (currentIndex &lt; 0) currentIndex = songs.size() - 1;
+        return &amp;songs[currentIndex];
     }
 
     bool hasNext() const override { return !songs.empty(); }
 
     Song* current() override {
-        if (currentIndex < 0 || currentIndex >= (int)songs.size()) return nullptr;
-        return &songs[currentIndex];
+        if (currentIndex &lt; 0 || currentIndex &gt;= (int)songs.size()) return nullptr;
+        return &amp;songs[currentIndex];
     }
-};
-```
+};</code></pre>
 
 </div>
 </div>
@@ -486,26 +462,25 @@ public:
 </div>
 <div class="tab-content active">
 
-```java
-package musicplayer.strategy;
+<pre><code class="language-java">package musicplayer.strategy;
 
 import musicplayer.model.Song;
 import java.util.*;
 
 public class ShuffleMode implements PlayMode {
-    private List<Song> shuffled = new ArrayList<>();
+    private List&lt;Song&gt; shuffled = new ArrayList&lt;&gt;();
     private int currentIndex = -1;
     private final Random random = new Random();
 
     @Override
-    public void reset(List<Song> songs) {
-        this.shuffled = new ArrayList<>(songs);
+    public void reset(List&lt;Song&gt; songs) {
+        this.shuffled = new ArrayList&lt;&gt;(songs);
         fisherYatesShuffle();
         this.currentIndex = -1;
     }
 
     private void fisherYatesShuffle() {
-        for (int i = shuffled.size() - 1; i > 0; i--) {
+        for (int i = shuffled.size() - 1; i &gt; 0; i--) {
             int j = random.nextInt(i + 1);
             Collections.swap(shuffled, i, j);
         }
@@ -515,7 +490,7 @@ public class ShuffleMode implements PlayMode {
     public Song next() {
         if (shuffled.isEmpty()) return null;
         currentIndex++;
-        if (currentIndex >= shuffled.size()) {
+        if (currentIndex &gt;= shuffled.size()) {
             fisherYatesShuffle(); // all played once, reshuffle
             currentIndex = 0;
         }
@@ -525,7 +500,7 @@ public class ShuffleMode implements PlayMode {
     @Override
     public Song previous() {
         if (shuffled.isEmpty()) return null;
-        if (currentIndex > 0) currentIndex--;
+        if (currentIndex &gt; 0) currentIndex--;
         return shuffled.get(currentIndex);
     }
 
@@ -534,17 +509,15 @@ public class ShuffleMode implements PlayMode {
 
     @Override
     public Song current() {
-        if (currentIndex < 0 || currentIndex >= shuffled.size()) return null;
+        if (currentIndex &lt; 0 || currentIndex &gt;= shuffled.size()) return null;
         return shuffled.get(currentIndex);
     }
-}
-```
+}</code></pre>
 
 </div>
 <div class="tab-content">
 
-```python
-import random
+<pre><code class="language-python">import random
 
 class ShuffleMode(PlayMode):
     def __init__(self):
@@ -561,55 +534,53 @@ class ShuffleMode(PlayMode):
             j = random.randint(0, i)
             self._shuffled[i], self._shuffled[j] = self._shuffled[j], self._shuffled[i]
 
-    def next(self) -> Song | None:
+    def next(self) -&gt; Song | None:
         if not self._shuffled:
             return None
         self._index += 1
-        if self._index >= len(self._shuffled):
+        if self._index &gt;= len(self._shuffled):
             self._fisher_yates_shuffle()
             self._index = 0
         return self._shuffled[self._index]
 
-    def previous(self) -> Song | None:
+    def previous(self) -&gt; Song | None:
         if not self._shuffled:
             return None
-        if self._index > 0:
+        if self._index &gt; 0:
             self._index -= 1
         return self._shuffled[self._index]
 
-    def has_next(self) -> bool:
-        return len(self._shuffled) > 0
+    def has_next(self) -&gt; bool:
+        return len(self._shuffled) &gt; 0
 
-    def current(self) -> Song | None:
-        if self._index < 0 or self._index >= len(self._shuffled):
+    def current(self) -&gt; Song | None:
+        if self._index &lt; 0 or self._index &gt;= len(self._shuffled):
             return None
-        return self._shuffled[self._index]
-```
+        return self._shuffled[self._index]</code></pre>
 
 </div>
 <div class="tab-content">
 
-```cpp
-#pragma once
-#include <vector>
-#include <algorithm>
-#include <random>
+<pre><code class="language-cpp">#pragma once
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;random&gt;
 #include "PlayMode.h"
 
 class ShuffleMode : public PlayMode {
-    std::vector<Song> shuffled;
+    std::vector&lt;Song&gt; shuffled;
     int currentIndex = -1;
     std::mt19937 rng{std::random_device{}()};
 
     void fisherYatesShuffle() {
-        for (int i = shuffled.size() - 1; i > 0; i--) {
-            std::uniform_int_distribution<int> dist(0, i);
+        for (int i = shuffled.size() - 1; i &gt; 0; i--) {
+            std::uniform_int_distribution&lt;int&gt; dist(0, i);
             std::swap(shuffled[i], shuffled[dist(rng)]);
         }
     }
 
 public:
-    void reset(const std::vector<Song>& songs) override {
+    void reset(const std::vector&lt;Song&gt;&amp; songs) override {
         shuffled = songs;
         fisherYatesShuffle();
         currentIndex = -1;
@@ -618,27 +589,26 @@ public:
     Song* next() override {
         if (shuffled.empty()) return nullptr;
         currentIndex++;
-        if (currentIndex >= (int)shuffled.size()) {
+        if (currentIndex &gt;= (int)shuffled.size()) {
             fisherYatesShuffle();
             currentIndex = 0;
         }
-        return &shuffled[currentIndex];
+        return &amp;shuffled[currentIndex];
     }
 
     Song* previous() override {
         if (shuffled.empty()) return nullptr;
-        if (currentIndex > 0) currentIndex--;
-        return &shuffled[currentIndex];
+        if (currentIndex &gt; 0) currentIndex--;
+        return &amp;shuffled[currentIndex];
     }
 
     bool hasNext() const override { return !shuffled.empty(); }
 
     Song* current() override {
-        if (currentIndex < 0 || currentIndex >= (int)shuffled.size()) return nullptr;
-        return &shuffled[currentIndex];
+        if (currentIndex &lt; 0 || currentIndex &gt;= (int)shuffled.size()) return nullptr;
+        return &amp;shuffled[currentIndex];
     }
-};
-```
+};</code></pre>
 
 </div>
 </div>
@@ -653,39 +623,36 @@ public:
 </div>
 <div class="tab-content active">
 
-```java
-package musicplayer.history;
+<pre><code class="language-java">package musicplayer.history;
 
 import musicplayer.model.Song;
 import java.util.*;
 
 public class PlayHistory {
-    private final Deque<Song> history;
+    private final Deque&lt;Song&gt; history;
     private final int maxSize;
 
     public PlayHistory(int maxSize) {
         this.maxSize = maxSize;
-        this.history = new ArrayDeque<>(maxSize);
+        this.history = new ArrayDeque&lt;&gt;(maxSize);
     }
 
     public void add(Song song) {
         if (song == null) return;
-        if (history.size() >= maxSize) history.removeLast();
+        if (history.size() &gt;= maxSize) history.removeLast();
         history.addFirst(song);
     }
 
     public Song getLastPlayed() { return history.peekFirst(); }
-    public List<Song> getHistory() { return new ArrayList<>(history); }
+    public List&lt;Song&gt; getHistory() { return new ArrayList&lt;&gt;(history); }
     public int size() { return history.size(); }
     public void clear() { history.clear(); }
-}
-```
+}</code></pre>
 
 </div>
 <div class="tab-content">
 
-```python
-from collections import deque
+<pre><code class="language-python">from collections import deque
 
 class PlayHistory:
     def __init__(self, max_size: int = 100):
@@ -695,52 +662,49 @@ class PlayHistory:
         if song:
             self._history.appendleft(song)
 
-    def get_last_played(self) -> Song | None:
+    def get_last_played(self) -&gt; Song | None:
         return self._history[0] if self._history else None
 
-    def get_history(self) -> list[Song]:
+    def get_history(self) -&gt; list[Song]:
         return list(self._history)
 
-    def size(self) -> int:
+    def size(self) -&gt; int:
         return len(self._history)
 
     def clear(self):
-        self._history.clear()
-```
+        self._history.clear()</code></pre>
 
 </div>
 <div class="tab-content">
 
-```cpp
-#pragma once
-#include <deque>
-#include <vector>
+<pre><code class="language-cpp">#pragma once
+#include &lt;deque&gt;
+#include &lt;vector&gt;
 #include "Song.h"
 
 class PlayHistory {
-    std::deque<Song> history;
+    std::deque&lt;Song&gt; history;
     int maxSize;
 
 public:
     PlayHistory(int maxSize = 100) : maxSize(maxSize) {}
 
-    void add(const Song& song) {
-        if (history.size() >= (size_t)maxSize) history.pop_back();
+    void add(const Song&amp; song) {
+        if (history.size() &gt;= (size_t)maxSize) history.pop_back();
         history.push_front(song);
     }
 
     const Song* getLastPlayed() const {
-        return history.empty() ? nullptr : &history.front();
+        return history.empty() ? nullptr : &amp;history.front();
     }
 
-    std::vector<Song> getHistory() const {
+    std::vector&lt;Song&gt; getHistory() const {
         return {history.begin(), history.end()};
     }
 
     int size() const { return history.size(); }
     void clear() { history.clear(); }
-};
-```
+};</code></pre>
 
 </div>
 </div>
@@ -755,8 +719,7 @@ public:
 </div>
 <div class="tab-content active">
 
-```java
-package musicplayer;
+<pre><code class="language-java">package musicplayer;
 
 import musicplayer.history.PlayHistory;
 import musicplayer.model.*;
@@ -781,7 +744,7 @@ public class MusicPlayer {
     private final PlayHistory history = new PlayHistory(100);
     private boolean shuffleEnabled = false;
     private final ReentrantLock lock = new ReentrantLock();
-    private final List<PlayerObserver> observers = new CopyOnWriteArrayList<>();
+    private final List&lt;PlayerObserver&gt; observers = new CopyOnWriteArrayList&lt;&gt;();
 
     public void loadPlaylist(Playlist playlist) {
         lock.lock();
@@ -876,21 +839,19 @@ public class MusicPlayer {
     public boolean isShuffleEnabled() { return shuffleEnabled; }
     public Song getCurrentSong() { return currentSong; }
     public PlayerState getState() { return state; }
-    public List<Song> getHistory() { return history.getHistory(); }
+    public List&lt;Song&gt; getHistory() { return history.getHistory(); }
 
     public void addObserver(PlayerObserver o) { observers.add(o); }
     public void removeObserver(PlayerObserver o) { observers.remove(o); }
 
     private void notifySong(Song s) { for (var o : observers) o.onSongChanged(s); }
     private void notifyState() { for (var o : observers) o.onStateChanged(state); }
-}
-```
+}</code></pre>
 
 </div>
 <div class="tab-content">
 
-```python
-import threading
+<pre><code class="language-python">import threading
 from enum import Enum, auto
 
 class PlayerState(Enum):
@@ -941,7 +902,7 @@ class MusicPlayer:
                 self._state = PlayerState.PAUSED
                 self._notify_state()
 
-    def next(self) -> Song | None:
+    def next(self) -&gt; Song | None:
         with self._lock:
             song = self._play_mode.next()
             if song:
@@ -952,7 +913,7 @@ class MusicPlayer:
                 self._notify_state()
             return song
 
-    def previous(self) -> Song | None:
+    def previous(self) -&gt; Song | None:
         with self._lock:
             song = self._play_mode.previous()
             if song:
@@ -978,18 +939,18 @@ class MusicPlayer:
             print("Shuffle: OFF")
 
     @property
-    def shuffle_enabled(self) -> bool:
+    def shuffle_enabled(self) -&gt; bool:
         return self._shuffle_enabled
 
     @property
-    def current_song(self) -> Song | None:
+    def current_song(self) -&gt; Song | None:
         return self._current_song
 
     @property
-    def state(self) -> PlayerState:
+    def state(self) -&gt; PlayerState:
         return self._state
 
-    def get_history(self) -> list[Song]:
+    def get_history(self) -&gt; list[Song]:
         return self._history.get_history()
 
     def add_observer(self, obs: PlayerObserver):
@@ -1001,18 +962,16 @@ class MusicPlayer:
 
     def _notify_state(self):
         for o in self._observers:
-            o.on_state_changed(self._state)
-```
+            o.on_state_changed(self._state)</code></pre>
 
 </div>
 <div class="tab-content">
 
-```cpp
-#pragma once
-#include <mutex>
-#include <vector>
-#include <memory>
-#include <iostream>
+<pre><code class="language-cpp">#pragma once
+#include &lt;mutex&gt;
+#include &lt;vector&gt;
+#include &lt;memory&gt;
+#include &lt;iostream&gt;
 #include "Song.h"
 #include "Playlist.h"
 #include "PlayMode.h"
@@ -1025,46 +984,46 @@ enum class PlayerState { PLAYING, PAUSED, STOPPED };
 class PlayerObserver {
 public:
     virtual ~PlayerObserver() = default;
-    virtual void onSongChanged(const Song& song) = 0;
+    virtual void onSongChanged(const Song&amp; song) = 0;
     virtual void onStateChanged(PlayerState state) = 0;
 };
 
 class MusicPlayer {
     Playlist* currentPlaylist = nullptr;
-    std::unique_ptr<PlayMode> playMode;
+    std::unique_ptr&lt;PlayMode&gt; playMode;
     PlayerState state = PlayerState::STOPPED;
     Song* currentSong = nullptr;
     PlayHistory history{100};
     bool shuffleEnabled = false;
     std::mutex mtx;
-    std::vector<PlayerObserver*> observers;
+    std::vector&lt;PlayerObserver*&gt; observers;
 
-    void notifySong(const Song& s) {
-        for (auto* o : observers) o->onSongChanged(s);
+    void notifySong(const Song&amp; s) {
+        for (auto* o : observers) o-&gt;onSongChanged(s);
     }
     void notifyState() {
-        for (auto* o : observers) o->onStateChanged(state);
+        for (auto* o : observers) o-&gt;onStateChanged(state);
     }
 
 public:
-    MusicPlayer() : playMode(std::make_unique<SequentialMode>()) {}
+    MusicPlayer() : playMode(std::make_unique&lt;SequentialMode&gt;()) {}
 
-    void loadPlaylist(Playlist& playlist) {
-        std::lock_guard<std::mutex> lock(mtx);
-        currentPlaylist = &playlist;
-        playMode = std::make_unique<SequentialMode>();
-        playMode->reset(playlist.songs);
+    void loadPlaylist(Playlist&amp; playlist) {
+        std::lock_guard&lt;std::mutex&gt; lock(mtx);
+        currentPlaylist = &amp;playlist;
+        playMode = std::make_unique&lt;SequentialMode&gt;();
+        playMode-&gt;reset(playlist.songs);
         state = PlayerState::STOPPED;
         currentSong = nullptr;
     }
 
     void play() {
-        std::lock_guard<std::mutex> lock(mtx);
+        std::lock_guard&lt;std::mutex&gt; lock(mtx);
         if (state == PlayerState::PAUSED) {
             state = PlayerState::PLAYING;
             notifyState();
         } else if (state == PlayerState::STOPPED) {
-            Song* song = playMode->next();
+            Song* song = playMode-&gt;next();
             if (song) {
                 currentSong = song;
                 state = PlayerState::PLAYING;
@@ -1076,7 +1035,7 @@ public:
     }
 
     void pause() {
-        std::lock_guard<std::mutex> lock(mtx);
+        std::lock_guard&lt;std::mutex&gt; lock(mtx);
         if (state == PlayerState::PLAYING) {
             state = PlayerState::PAUSED;
             notifyState();
@@ -1084,8 +1043,8 @@ public:
     }
 
     Song* next() {
-        std::lock_guard<std::mutex> lock(mtx);
-        Song* song = playMode->next();
+        std::lock_guard&lt;std::mutex&gt; lock(mtx);
+        Song* song = playMode-&gt;next();
         if (song) {
             currentSong = song;
             state = PlayerState::PLAYING;
@@ -1097,8 +1056,8 @@ public:
     }
 
     Song* previous() {
-        std::lock_guard<std::mutex> lock(mtx);
-        Song* song = playMode->previous();
+        std::lock_guard&lt;std::mutex&gt; lock(mtx);
+        Song* song = playMode-&gt;previous();
         if (song) {
             currentSong = song;
             state = PlayerState::PLAYING;
@@ -1110,29 +1069,28 @@ public:
     }
 
     void enableShuffle() {
-        std::lock_guard<std::mutex> lock(mtx);
+        std::lock_guard&lt;std::mutex&gt; lock(mtx);
         shuffleEnabled = true;
-        playMode = std::make_unique<ShuffleMode>();
-        playMode->reset(currentPlaylist->songs);
-        std::cout << "Shuffle: ON\n";
+        playMode = std::make_unique&lt;ShuffleMode&gt;();
+        playMode-&gt;reset(currentPlaylist-&gt;songs);
+        std::cout &lt;&lt; "Shuffle: ON\n";
     }
 
     void disableShuffle() {
-        std::lock_guard<std::mutex> lock(mtx);
+        std::lock_guard&lt;std::mutex&gt; lock(mtx);
         shuffleEnabled = false;
-        playMode = std::make_unique<SequentialMode>();
-        playMode->reset(currentPlaylist->songs);
-        std::cout << "Shuffle: OFF\n";
+        playMode = std::make_unique&lt;SequentialMode&gt;();
+        playMode-&gt;reset(currentPlaylist-&gt;songs);
+        std::cout &lt;&lt; "Shuffle: OFF\n";
     }
 
     bool isShuffleEnabled() const { return shuffleEnabled; }
     Song* getCurrentSong() { return currentSong; }
     PlayerState getState() const { return state; }
-    std::vector<Song> getHistory() { return history.getHistory(); }
+    std::vector&lt;Song&gt; getHistory() { return history.getHistory(); }
 
     void addObserver(PlayerObserver* o) { observers.push_back(o); }
-};
-```
+};</code></pre>
 
 </div>
 </div>
@@ -1147,8 +1105,7 @@ public:
 </div>
 <div class="tab-content active">
 
-```java
-package musicplayer;
+<pre><code class="language-java">package musicplayer;
 
 import musicplayer.model.*;
 
@@ -1181,24 +1138,22 @@ public class Demo {
 
         System.out.println("\n--- Shuffle (no repeats) ---");
         player.enableShuffle();
-        for (int i = 0; i < 5; i++) player.next();
+        for (int i = 0; i &lt; 5; i++) player.next();
         System.out.println("All 5 played without repeat!");
 
         System.out.println("\n--- History ---");
         var hist = player.getHistory();
-        for (int i = 0; i < Math.min(5, hist.size()); i++)
+        for (int i = 0; i &lt; Math.min(5, hist.size()); i++)
             System.out.println("  " + (i+1) + ". " + hist.get(i));
 
         System.out.println("\n══════ DONE ══════");
     }
-}
-```
+}</code></pre>
 
 </div>
 <div class="tab-content">
 
-```python
-def demo():
+<pre><code class="language-python">def demo():
     print("══════ MUSIC PLAYER DEMO ══════\n")
 
     class ConsolePrinter(PlayerObserver):
@@ -1240,32 +1195,30 @@ def demo():
     print("\n══════ DONE ══════")
 
 if __name__ == "__main__":
-    demo()
-```
+    demo()</code></pre>
 
 </div>
 <div class="tab-content">
 
-```cpp
-#include <iostream>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
 #include "MusicPlayer.h"
 
 class ConsolePrinter : public PlayerObserver {
 public:
-    void onSongChanged(const Song& s) override {
-        std::cout << "  ♪ Now playing: " << s << "\n";
+    void onSongChanged(const Song&amp; s) override {
+        std::cout &lt;&lt; "  ♪ Now playing: " &lt;&lt; s &lt;&lt; "\n";
     }
     void onStateChanged(PlayerState st) override {
-        std::cout << "  ⏸ State: " << (int)st << "\n";
+        std::cout &lt;&lt; "  ⏸ State: " &lt;&lt; (int)st &lt;&lt; "\n";
     }
 };
 
 int main() {
-    std::cout << "══════ MUSIC PLAYER DEMO ══════\n\n";
+    std::cout &lt;&lt; "══════ MUSIC PLAYER DEMO ══════\n\n";
 
     MusicPlayer player;
     ConsolePrinter printer;
-    player.addObserver(&printer);
+    player.addObserver(&amp;printer);
 
     Playlist pl("Favourites");
     pl.addSong(Song("1", "Blinding Lights", "The Weeknd", 200));
@@ -1276,7 +1229,7 @@ int main() {
 
     player.loadPlaylist(pl);
 
-    std::cout << "--- Sequential ---\n";
+    std::cout &lt;&lt; "--- Sequential ---\n";
     player.play();
     player.next();
     player.next();
@@ -1284,20 +1237,19 @@ int main() {
     player.play();
     player.previous();
 
-    std::cout << "\n--- Shuffle (no repeats) ---\n";
+    std::cout &lt;&lt; "\n--- Shuffle (no repeats) ---\n";
     player.enableShuffle();
-    for (int i = 0; i < 5; i++) player.next();
-    std::cout << "All 5 played without repeat!\n";
+    for (int i = 0; i &lt; 5; i++) player.next();
+    std::cout &lt;&lt; "All 5 played without repeat!\n";
 
-    std::cout << "\n--- History ---\n";
+    std::cout &lt;&lt; "\n--- History ---\n";
     auto hist = player.getHistory();
-    for (int i = 0; i < std::min(5, (int)hist.size()); i++)
-        std::cout << "  " << (i+1) << ". " << hist[i] << "\n";
+    for (int i = 0; i &lt; std::min(5, (int)hist.size()); i++)
+        std::cout &lt;&lt; "  " &lt;&lt; (i+1) &lt;&lt; ". " &lt;&lt; hist[i] &lt;&lt; "\n";
 
-    std::cout << "\n══════ DONE ══════\n";
+    std::cout &lt;&lt; "\n══════ DONE ══════\n";
     return 0;
-}
-```
+}</code></pre>
 
 </div>
 </div>
@@ -1306,14 +1258,12 @@ int main() {
 
 ## State Transitions
 
-```mermaid
-stateDiagram-v2
-    [*] --> STOPPED
-    STOPPED --> PLAYING : play
-    PLAYING --> PAUSED : pause
-    PAUSED --> PLAYING : play or next or previous
-    PLAYING --> PLAYING : next or previous
-```
+<pre><code class="language-mermaid">stateDiagram-v2
+    [*] --&gt; STOPPED
+    STOPPED --&gt; PLAYING : play
+    PLAYING --&gt; PAUSED : pause
+    PAUSED --&gt; PLAYING : play or next or previous
+    PLAYING --&gt; PLAYING : next or previous</code></pre>
 
 ---
 
