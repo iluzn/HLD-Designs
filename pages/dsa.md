@@ -9,34 +9,31 @@ permalink: /dsa
 
 > 📚 **Before diving into problems**, read the [DSA Fundamentals](/dsa-fundamentals) — covers the 12 core patterns, complexity analysis, and how to approach any problem.
 
-Pattern-based DSA problems organized by technique — not by difficulty alone. Each problem will include the intuition, approach, complexity analysis, code, and which companies ask it.
+Pattern-based DSA problems organized by technique — not by difficulty alone. Each problem includes the intuition, approach, complexity analysis, code in Java/Python/C++, and which companies ask it.
 
 ---
 
-## 🚧 Coming Soon
+## 🟢 Live Problems
 
-We're building this section now. It will cover:
+| # | Problem | Pattern | Difficulty | Companies |
+|---|---|---|---|---|
+| 1 | [Two Sum II (Sorted Array)](/dsa/two-sum-ii) | Two Pointers | Easy | Amazon, Google, Microsoft |
+| 2 | [Longest Substring Without Repeating](/dsa/longest-substring-without-repeating) | Sliding Window | Medium | Amazon, Google, Meta, Bloomberg |
+| 3 | [Coin Change](/dsa/coin-change) | Dynamic Programming | Medium | Amazon, Google, Meta, Goldman |
+| 4 | [Merge Intervals](/dsa/merge-intervals) | Greedy / Intervals | Medium | Amazon, Google, Meta, Microsoft |
 
-- **Arrays & Hashing** — Two Sum, Group Anagrams, Top K Frequent
-- **Two Pointers & Sliding Window** — Container With Most Water, Longest Substring
-- **Stack & Monotonic Stack** — Valid Parentheses, Daily Temperatures
-- **Binary Search** — Search in Rotated Array, Median of Two Sorted Arrays
-- **Trees & Graphs** — BFS/DFS, Trie, Shortest Path, Topological Sort
-- **Dynamic Programming** — Knapsack, LCS, Coin Change, Interval DP
-- **Greedy & Intervals** — Merge Intervals, Jump Game, Activity Selection
-- **Backtracking** — Subsets, Permutations, N-Queens
+## 🔜 Coming Next
 
-Each topic will have 5-10 curated problems with:
-- Company tags (Amazon, Google, PhonePe, Flipkart)
-- Pattern identification ("how to recognize this is a sliding window problem")
-- Clean code in Java/Python
-- Time/space complexity analysis
-
----
-
-## Get notified when DSA launches
-
-Star the [GitHub repo](https://github.com/iluzn/HLD-Designs) to get notified when this section goes live.
+| # | Problem | Pattern | Difficulty |
+|---|---|---|---|
+| 5 | Search in Rotated Sorted Array | Binary Search | Medium |
+| 6 | Number of Islands | BFS / DFS | Medium |
+| 7 | Subsets | Backtracking | Medium |
+| 8 | Daily Temperatures | Monotonic Stack | Medium |
+| 9 | Course Schedule | Topological Sort | Medium |
+| 10 | Number of Connected Components | Union-Find | Medium |
+| 11 | Implement Trie | Trie | Medium |
+| 12 | Meeting Rooms II | Intervals / Sweep | Medium |
 
 ---
 
