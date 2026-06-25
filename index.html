@@ -1,7 +1,7 @@
 ---
 layout: none
-title: "SystemCraft — High-Level System Design for Tech Interviews"
-description: "Free HLD system design notes covering notification systems, job schedulers, URL shorteners, digital wallets, and food delivery platforms."
+title: "SystemCraft — System Design, LLD & DSA for Tech Interviews"
+description: "Free interview prep: HLD system design, LLD machine coding, and DSA problems with diagrams, deep dives, and trade-offs."
 ---
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -9,11 +9,11 @@ description: "Free HLD system design notes covering notification systems, job sc
     <meta charset="UTF-8">
     <script>(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SystemCraft — System Design for Tech Interviews</title>
-    <meta name="description" content="Free high-level system design notes. Notification systems, job schedulers, URL shorteners, digital wallets, food delivery and more.">
-    <meta name="keywords" content="system design, HLD, high level design, interview, distributed systems, architecture">
-    <meta property="og:title" content="SystemCraft — System Design for Tech Interviews">
-    <meta property="og:description" content="Free HLD notes for tech interview prep. Real architectures, deep dives, trade-offs.">
+    <title>SystemCraft — System Design, LLD & DSA for Tech Interviews</title>
+    <meta name="description" content="Free interview prep: HLD system design, LLD machine coding, and DSA problems. Diagrams, deep dives, trade-offs.">
+    <meta name="keywords" content="system design, HLD, LLD, DSA, machine coding, interview, distributed systems, architecture">
+    <meta property="og:title" content="SystemCraft — System Design, LLD & DSA for Tech Interviews">
+    <meta property="og:description" content="Free interview prep covering HLD, LLD, and DSA with real architectures and trade-offs.">
     <meta property="og:url" content="https://systemcraft.in">
     <meta property="og:type" content="website">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -23,12 +23,14 @@ description: "Free HLD system design notes covering notification systems, job sc
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { overflow-x: hidden; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg, #09090b);
             color: var(--text, #e2e8f0);
             line-height: 1.6;
             min-height: 100vh;
+            overflow-x: hidden;
             transition: background 0.3s, color 0.3s;
         }
 
@@ -45,7 +47,6 @@ description: "Free HLD system design notes covering notification systems, job sc
             --header-bg: rgba(9,9,11,0.8);
         }
 
-        /* Animated gradient background */
         .bg-gradient {
             position: fixed; top: 0; left: 0; right: 0; height: 600px;
             background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.15), transparent);
@@ -53,7 +54,6 @@ description: "Free HLD system design notes covering notification systems, job sc
         }
         [data-theme="light"] .bg-gradient { opacity: 0.3; }
 
-        /* Header */
         header {
             position: sticky; top: 0; z-index: 100;
             background: var(--header-bg);
@@ -65,90 +65,69 @@ description: "Free HLD system design notes covering notification systems, job sc
             max-width: 1100px; margin: 0 auto; padding: 0 1.5rem;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .logo { font-size: 1.3rem; font-weight: 800; color: var(--text); text-decoration: none; letter-spacing: -0.02em; }
+        .logo { font-size: 1.3rem; font-weight: 800; color: var(--text); text-decoration: none; letter-spacing: -0.02em; white-space: nowrap; }
         .logo span { background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        nav a { color: var(--text-muted); text-decoration: none; margin-left: 1.5rem; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
+        nav { display: flex; align-items: center; gap: 0.2rem; flex-wrap: nowrap; }
+        nav a { color: var(--text-muted); text-decoration: none; margin-left: 1.2rem; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
         nav a:hover { color: var(--text); }
+        nav a.active { color: var(--accent); }
 
-        /* Hero */
         .hero {
             position: relative; z-index: 1;
             max-width: 1100px; margin: 0 auto;
-            padding: 6rem 1.5rem 3.5rem; text-align: center;
+            padding: 5rem 1.5rem 3rem; text-align: center;
         }
-        .hero h1 {
-            font-size: 3.5rem; font-weight: 800; letter-spacing: -0.03em;
-            color: var(--text);
-            margin-bottom: 1.2rem;
-        }
-        .hero h1 em {
-            font-style: normal;
-            background: linear-gradient(135deg, var(--accent), #a78bfa);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .hero p { color: var(--text-muted); font-size: 1.15rem; max-width: 550px; margin: 0 auto 2rem; }
-        .badge {
-            display: inline-block;
-            background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.25);
-            color: var(--accent); padding: 0.35rem 1rem; border-radius: 20px;
-            font-size: 0.78rem; font-weight: 500; margin-bottom: 1.5rem;
-            letter-spacing: 0.02em;
-        }
-        .hero-stats { display: flex; justify-content: center; gap: 2.5rem; margin-top: 1rem; color: var(--text-dim); font-size: 0.85rem; }
-        .hero-stats strong { color: var(--text); font-size: 1.1rem; display: block; }
+        .hero h1 { font-size: 3.2rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text); margin-bottom: 1.2rem; }
+        .hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: var(--text-muted); font-size: 1.1rem; max-width: 550px; margin: 0 auto 2rem; }
+        .badge { display: inline-block; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.25); color: var(--accent); padding: 0.35rem 1rem; border-radius: 20px; font-size: 0.78rem; font-weight: 500; margin-bottom: 1.5rem; letter-spacing: 0.02em; }
 
-        /* Section titles */
+        /* Three pillars */
+        .pillars {
+            position: relative; z-index: 1;
+            max-width: 1100px; margin: 0 auto;
+            padding: 0 1.5rem 3rem;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem;
+        }
+        .pillar {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 16px; padding: 2rem 1.5rem; text-align: center;
+            text-decoration: none; color: var(--text);
+            transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .pillar:hover { border-color: rgba(99,102,241,0.5); transform: translateY(-4px); box-shadow: 0 16px 48px rgba(99,102,241,0.1); }
+        .pillar-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+        .pillar h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .pillar p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem; line-height: 1.5; }
+        .pillar .count { background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--accent-light); padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+
+        /* Recent section */
         .section-label {
             max-width: 1100px; margin: 0 auto; padding: 0 1.5rem;
             font-size: 0.75rem; font-weight: 600; color: var(--accent);
             text-transform: uppercase; letter-spacing: 0.1em;
             margin-bottom: 1rem; position: relative; z-index: 1;
         }
-
-        /* Grid */
-        .designs {
+        .recent-list {
             position: relative; z-index: 1;
             max-width: 1100px; margin: 0 auto;
-            padding: 0 1.5rem 2rem;
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1rem;
+            padding: 0 1.5rem 3rem;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;
         }
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 14px; padding: 1.4rem 1.5rem;
+        .recent-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.2rem 1.4rem;
             text-decoration: none; color: var(--text);
-            transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            transition: border-color 0.3s, transform 0.2s;
             display: flex; flex-direction: column;
-            position: relative; overflow: hidden;
         }
-        .card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent);
-            opacity: 0; transition: opacity 0.3s;
-        }
-        .card:hover { border-color: rgba(99,102,241,0.4); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(99,102,241,0.08); }
-        .card:hover::before { opacity: 1; }
-        .card:hover::after { opacity: 1; }
-        .card::after {
-            content: '→'; position: absolute; right: 1.2rem; top: 50%;
-            transform: translateY(-50%) translateX(-5px);
-            color: var(--accent); font-size: 1.2rem; opacity: 0;
-            transition: opacity 0.2s, transform 0.2s;
-        }
-        .card:hover::after { opacity: 0.7; transform: translateY(-50%) translateX(0); }
-        .card h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
-        .card p { color: var(--text-muted); font-size: 0.85rem; flex-grow: 1; margin-bottom: 0.8rem; line-height: 1.5; }
-        .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-        .tag {
-            background: var(--tag-bg); border: 1px solid var(--tag-border);
-            color: var(--accent-light); padding: 3px 9px; border-radius: 6px;
-            font-size: 0.7rem; font-weight: 500;
-        }
-        .tag-beginner { background: rgba(34,197,94,0.06); border-color: rgba(34,197,94,0.2); color: #86efac; }
-        .tag-advanced { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.2); color: #fca5a5; }
+        .recent-card:hover { border-color: rgba(99,102,241,0.4); transform: translateY(-2px); }
+        .recent-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .recent-card p { color: var(--text-muted); font-size: 0.8rem; flex-grow: 1; }
+        .recent-card .meta { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
+        .recent-card .tag { background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--accent-light); padding: 2px 8px; border-radius: 5px; font-size: 0.68rem; font-weight: 500; }
 
-        /* Footer */
         footer {
             position: relative; z-index: 1;
             border-top: 1px solid var(--border);
@@ -161,12 +140,10 @@ description: "Free HLD system design notes covering notification systems, job sc
 
         @media (max-width: 768px) {
             .hero h1 { font-size: 2rem; }
-            .hero { padding: 3.5rem 1.5rem 2rem; }
-            .designs { grid-template-columns: 1fr; }
-            .header-inner { padding: 0 1rem; }
-            nav a { margin-left: 0.5rem; font-size: 0.75rem; }
-            .hero-stats { gap: 1.2rem; font-size: 0.78rem; }
-            .hero-stats strong { font-size: 0.95rem; }
+            .hero { padding: 3rem 1.5rem 2rem; }
+            .pillars { grid-template-columns: 1fr; gap: 1rem; }
+            .recent-list { grid-template-columns: 1fr; }
+            nav a { margin-left: 0.5rem; font-size: 0.78rem; }
             #theme-btn { padding: 0.3rem 0.5rem; font-size: 0.85rem; }
         }
     </style>
@@ -179,9 +156,10 @@ description: "Free HLD system design notes covering notification systems, job sc
         <div class="header-inner">
             <a href="/" class="logo">System<span>Craft</span></a>
             <nav>
-                <a href="/">Designs</a>
+                <a href="/hld">HLD</a>
+                <a href="/lld">LLD</a>
+                <a href="/dsa">DSA</a>
                 <a href="/concepts">Fundamentals</a>
-                <a href="/about">About</a>
                 <button id="theme-btn" title="Switch to light mode" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;padding:0.3rem;margin-left:0.8rem;line-height:1;border-radius:50%;transition:color 0.2s;">🌙</button>
             </nav>
         </div>
@@ -189,90 +167,74 @@ description: "Free HLD system design notes covering notification systems, job sc
 
     <section class="hero">
         <div class="badge">Free &middot; Open Source &middot; Interview Ready</div>
-        <h1>Master System <em>Design</em></h1>
-        <p>Production-grade architecture notes with diagrams, deep dives, and trade-offs. Built for tech interviews at any level.</p>
-        <div class="hero-stats">
-            <div><strong>13+</strong>Design guides</div>
-            <div><strong>100+</strong>Diagrams</div>
-            <div><strong>All levels</strong>Beginner → Advanced</div>
-        </div>
+        <h1>Master Tech <em>Interviews</em></h1>
+        <p>Production-grade HLD, machine-coding LLD, and DSA with diagrams, deep dives, and trade-offs. Built for interviews at any level.</p>
     </section>
 
-    <div class="section-label">📚 Start Here</div>
-    <div class="designs">
-        <a class="card" href="/concepts" style="grid-column: 1 / -1; border-color: rgba(99,102,241,0.2);">
-            <h3>📚 System Design Fundamentals</h3>
-            <p>CAP theorem, load balancing, caching, sharding, message queues, consistent hashing, idempotency, and estimation. The building blocks every design uses.</p>
-            <div class="tags">
-                <span class="tag tag-beginner">Beginner Friendly</span><span class="tag">Prerequisites</span><span class="tag">Must Read First</span>
-            </div>
+    <!-- Three pillar cards -->
+    <div class="pillars">
+        <a class="pillar" href="/hld">
+            <div class="pillar-icon">🏗️</div>
+            <h2>High-Level Design</h2>
+            <p>Distributed system architectures with diagrams, technology choices, and deep dives.</p>
+            <span class="count">13 designs</span>
+        </a>
+        <a class="pillar" href="/lld">
+            <div class="pillar-icon">⚙️</div>
+            <h2>Low-Level Design</h2>
+            <p>Machine-coding problems with OOP, design patterns, and runnable code.</p>
+            <span class="count">5 problems</span>
+        </a>
+        <a class="pillar" href="/dsa">
+            <div class="pillar-icon">🧮</div>
+            <h2>DSA</h2>
+            <p>Data structures and algorithms with pattern-based approaches and company tags.</p>
+            <span class="count">Coming Soon</span>
         </a>
     </div>
 
-    <div class="section-label">🟢 Beginner</div>
-    <div class="designs">
-        <a class="card" href="/ParkingLot">
-            <h3>🅿️ Parking Lot (LLD)</h3>
-            <p>Object-oriented design with classes, Strategy pattern, and composition. No distributed systems.</p>
-            <div class="tags"><span class="tag tag-beginner">Beginner</span><span class="tag">OOP</span><span class="tag">Strategy</span></div>
-        </a>
-        <a class="card" href="/Leaderboard">
-            <h3>🏆 Real-Time Leaderboard</h3>
-            <p>Redis sorted sets for O(log N) rank queries. Score updates, top-N, player rank — all under 1ms.</p>
-            <div class="tags"><span class="tag tag-beginner">Beginner</span><span class="tag">Redis</span><span class="tag">Sorted Set</span></div>
-        </a>
-        <a class="card" href="/RateLimiter">
-            <h3>🚦 Rate Limiter</h3>
-            <p>Token bucket, sliding window, Redis Lua scripts, multi-layer defense, and graceful degradation.</p>
-            <div class="tags"><span class="tag">Redis</span><span class="tag">Lua</span><span class="tag">API Gateway</span></div>
-        </a>
-    </div>
-
-    <div class="section-label">🟡 Intermediate</div>
-    <div class="designs">
-        <a class="card" href="/URLShortner">
-            <h3>🔗 URL Shortener</h3>
-            <p>Base62 encoding, Snowflake IDs, tiered CDN+Redis+DB caching, and click analytics pipeline.</p>
-            <div class="tags"><span class="tag">CDN</span><span class="tag">Redis</span><span class="tag">Cassandra</span></div>
-        </a>
-        <a class="card" href="/TwitterFeed">
-            <h3>🐦 Twitter/Social Feed</h3>
-            <p>Fan-out on write vs read, hybrid approach for celebrities, timeline caching, and feed ranking.</p>
-            <div class="tags"><span class="tag">Fan-out</span><span class="tag">Redis</span><span class="tag">Kafka</span></div>
-        </a>
-        <a class="card" href="/ChatSystem">
-            <h3>💬 Chat System (WhatsApp)</h3>
-            <p>WebSockets, offline delivery, group fan-out, message ordering, and multi-device sync.</p>
-            <div class="tags"><span class="tag">WebSocket</span><span class="tag">Cassandra</span><span class="tag">Kafka</span></div>
-        </a>
-        <a class="card" href="/NotificationSystem">
+    <!-- Recent additions -->
+    <div class="section-label">🆕 Recently Added</div>
+    <div class="recent-list">
+        <a class="recent-card" href="/NotificationSystem">
             <h3>🔔 Notification System</h3>
-            <p>Multi-channel push, SMS, email with template service, send-time optimization, and engagement tracking.</p>
-            <div class="tags"><span class="tag">Kafka</span><span class="tag">WebSocket</span><span class="tag">Redis</span></div>
+            <p>Multi-channel push, SMS, email with template service and engagement tracking.</p>
+            <div class="meta"><span class="tag">HLD</span><span class="tag">Advanced</span></div>
+        </a>
+        <a class="recent-card" href="/JobScheduler">
+            <h3>⏰ Distributed Job Scheduler</h3>
+            <p>Cron-like scheduler with sharding, retries, and dead-letter reconciliation.</p>
+            <div class="meta"><span class="tag">HLD</span><span class="tag">Advanced</span></div>
+        </a>
+        <a class="recent-card" href="/ParkingLot">
+            <h3>🅿️ Parking Lot</h3>
+            <p>OOP design with Strategy pattern, composition, and pluggable pricing.</p>
+            <div class="meta"><span class="tag">LLD</span><span class="tag">Beginner</span></div>
+        </a>
+        <a class="recent-card" href="/DigitalWallet">
+            <h3>💰 Digital Wallet</h3>
+            <p>Double-entry ledger, idempotent transactions, and bank rail reconciliation.</p>
+            <div class="meta"><span class="tag">HLD</span><span class="tag">Advanced</span></div>
+        </a>
+        <a class="recent-card" href="/Zomato">
+            <h3>🍔 Food Delivery (Zomato)</h3>
+            <p>Search, dispatch, live tracking, and real-time rider assignment.</p>
+            <div class="meta"><span class="tag">HLD</span><span class="tag">Advanced</span></div>
+        </a>
+        <a class="recent-card" href="/URLShortner">
+            <h3>🔗 URL Shortener</h3>
+            <p>Base62 encoding, Snowflake IDs, CDN+Redis caching, analytics.</p>
+            <div class="meta"><span class="tag">HLD</span><span class="tag">Intermediate</span></div>
         </a>
     </div>
 
-    <div class="section-label">🔴 Advanced</div>
-    <div class="designs">
-        <a class="card" href="/JobScheduler">
-            <h3>⏰ Distributed Job Scheduler</h3>
-            <p>Cron-like scheduler with DAG dependencies, sharded execution, retries, and dead-letter reconciliation.</p>
-            <div class="tags"><span class="tag tag-advanced">Advanced</span><span class="tag">Cassandra</span><span class="tag">Kafka</span></div>
-        </a>
-        <a class="card" href="/DelayedTriggerService">
-            <h3>⏱️ Delayed Trigger Service</h3>
-            <p>Two-tier SQS + Cassandra with timing wheel, sweeper, dispatchers, and circuit breakers.</p>
-            <div class="tags"><span class="tag tag-advanced">Advanced</span><span class="tag">SQS</span><span class="tag">Timing Wheel</span></div>
-        </a>
-        <a class="card" href="/DigitalWallet">
-            <h3>💰 Digital Wallet (PhonePe)</h3>
-            <p>Double-entry ledger, idempotent transactions, async bank rails, and reconciliation.</p>
-            <div class="tags"><span class="tag tag-advanced">Advanced</span><span class="tag">Postgres</span><span class="tag">Kafka</span></div>
-        </a>
-        <a class="card" href="/Zomato">
-            <h3>🍔 Food Delivery (Zomato)</h3>
-            <p>Restaurant search, live rider tracking, dispatch matching, and real-time WebSocket updates.</p>
-            <div class="tags"><span class="tag tag-advanced">Advanced</span><span class="tag">Elasticsearch</span><span class="tag">Redis Geo</span></div>
+    <!-- Start here -->
+    <div class="section-label">📚 Start Here</div>
+    <div class="recent-list">
+        <a class="recent-card" href="/concepts" style="border-color: rgba(99,102,241,0.2);">
+            <h3>📚 System Design Fundamentals</h3>
+            <p>CAP theorem, load balancing, caching, sharding, message queues, consistent hashing, and back-of-envelope estimation.</p>
+            <div class="meta"><span class="tag">Prerequisites</span><span class="tag">Must Read First</span></div>
         </a>
     </div>
 
