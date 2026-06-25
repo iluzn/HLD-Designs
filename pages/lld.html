@@ -495,10 +495,8 @@ footer a:hover { text-decoration: underline; }
         cb.className = 'card-check';
         cb.title = 'Mark as completed';
         cb.checked = !!saved[name];
-        cb.addEventListener('click', function(e) {
-            e.preventDefault();
+        cb.addEventListener('change', function(e) {
             e.stopPropagation();
-            cb.checked = !cb.checked;
             if (cb.checked) {
                 saved[name] = true;
             } else {
@@ -506,6 +504,9 @@ footer a:hover { text-decoration: underline; }
             }
             localStorage.setItem(pageKey, JSON.stringify(saved));
             updateProgress();
+        });
+        cb.addEventListener('click', function(e) {
+            e.stopPropagation();
         });
         card.querySelector('.card-top').appendChild(cb);
     });

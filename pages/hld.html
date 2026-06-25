@@ -564,16 +564,13 @@ footer a:hover { text-decoration: underline; }
 
     cards.forEach(function(card) {
         var name = card.querySelector('h3').textContent;
-        // Add checkbox
         var cb = document.createElement('input');
         cb.type = 'checkbox';
         cb.className = 'card-check';
         cb.title = 'Mark as completed';
         cb.checked = !!saved[name];
-        cb.addEventListener('click', function(e) {
-            e.preventDefault();
+        cb.addEventListener('change', function(e) {
             e.stopPropagation();
-            cb.checked = !cb.checked;
             if (cb.checked) {
                 saved[name] = true;
             } else {
@@ -581,6 +578,9 @@ footer a:hover { text-decoration: underline; }
             }
             localStorage.setItem(pageKey, JSON.stringify(saved));
             updateProgress();
+        });
+        cb.addEventListener('click', function(e) {
+            e.stopPropagation();
         });
         card.querySelector('.card-top').appendChild(cb);
     });
