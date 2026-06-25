@@ -394,7 +394,12 @@ nav a.active { border-bottom: 2px solid var(--accent); padding-bottom: 2px; }
 .hero { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 4rem 1.5rem 2rem; text-align: center; }
 .hero-badge { display: inline-block; background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--accent-light); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; }
 .hero h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text); margin-bottom: 1rem; }
-.hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), #a78bfa, #f472b6, var(--accent)); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: gradientShift 6s ease infinite; }
 .hero p { color: var(--text-muted); font-size: 1.05rem; max-width: 620px; margin: 0 auto 1.5rem; }
 .hero-stats { display: flex; justify-content: center; gap: 2.5rem; margin-top: 1.5rem; }
 .hero-stat { text-align: center; }
@@ -424,8 +429,8 @@ nav a.active { border-bottom: 2px solid var(--accent); padding-bottom: 2px; }
 
 /* Problems grid */
 .problems-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-.problem-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 1.4rem; text-decoration: none; color: var(--text); transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s; display: flex; flex-direction: column; }
-.problem-card.available:hover { border-color: rgba(99,102,241,0.5); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(99,102,241,0.08); }
+.problem-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 1.4rem; text-decoration: none; color: var(--text); transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; }
+.problem-card.available:hover { border-color: rgba(129,140,248,0.5); transform: translateY(-4px) rotateX(2deg) rotateY(-1deg); box-shadow: 0 20px 60px rgba(129,140,248,0.12), 0 0 30px rgba(129,140,248,0.05); }
 .problem-card.coming-soon { opacity: 0.6; cursor: default; }
 .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; }
 .card-icon { font-size: 1.5rem; }
@@ -451,6 +456,27 @@ nav a.active { border-bottom: 2px solid var(--accent); padding-bottom: 2px; }
 .grade-num { width: 24px; height: 24px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
 .grade-content strong { display: block; font-size: 0.85rem; color: var(--text); margin-bottom: 0.15rem; }
 .grade-content span { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+
+/* Gradient dividers */
+.section + .section::before {
+    content: '';
+    display: block;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), rgba(167,139,250,0.5), transparent);
+    margin-bottom: 2rem;
+    opacity: 0.3;
+}
+
+/* Scroll reveal */
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
 
 /* Footer */
 footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.82rem; margin-top: 2rem; }
@@ -543,6 +569,31 @@ footer a:hover { text-decoration: underline; }
 <style>
 .card-check { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; margin-left: 0.5rem; }
 </style>
+
+<!-- Scroll reveal -->
+<script>
+(function() {
+    var revealElements = document.querySelectorAll('.section, .stats, .difficulty-group, .grading-card, .start-here, .progress-strip');
+    
+    revealElements.forEach(function(el) {
+        el.classList.add('reveal');
+    });
+
+    function checkReveal() {
+        revealElements.forEach(function(el) {
+            var top = el.getBoundingClientRect().top;
+            var windowHeight = window.innerHeight;
+            if (top < windowHeight - 60) {
+                el.classList.add('visible');
+            }
+        });
+    }
+
+    checkReveal();
+    window.addEventListener('scroll', checkReveal);
+    window.addEventListener('resize', checkReveal);
+})();
+</script>
 
 <!-- Cloudflare Web Analytics -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "46af7c683dec42ceb435ae3e97b8d9a1"}'></script>

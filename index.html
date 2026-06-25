@@ -60,7 +60,12 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
         /* Hero */
         .hero { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 5rem 1.5rem 2rem; text-align: center; }
         .hero h1 { font-size: 3rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text); margin-bottom: 1rem; }
-        .hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), #a78bfa, #f472b6, var(--accent)); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: gradientShift 6s ease infinite; }
         .hero p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto 1.5rem; }
         .hero-cta { display: inline-block; background: var(--accent); color: #fff; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
         .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(99,102,241,0.3); }
@@ -79,8 +84,8 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
 
         /* Path cards */
         .paths { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.2rem; margin-bottom: 3rem; }
-        .path-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; text-decoration: none; color: var(--text); transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s; }
-        .path-card:hover { border-color: rgba(99,102,241,0.5); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(99,102,241,0.08); }
+        .path-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; text-decoration: none; color: var(--text); transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s; }
+        .path-card:hover { border-color: rgba(129,140,248,0.5); transform: translateY(-4px) rotateX(2deg) rotateY(-1deg); box-shadow: 0 20px 60px rgba(129,140,248,0.12), 0 0 30px rgba(129,140,248,0.05); }
         .path-card .icon { font-size: 2rem; margin-bottom: 0.6rem; }
         .path-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; }
         .path-card p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.8rem; line-height: 1.5; }
@@ -89,11 +94,32 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
 
         /* Popular grid */
         .popular { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-        .pop-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.4rem; text-decoration: none; color: var(--text); transition: border-color 0.2s, transform 0.2s; display: flex; flex-direction: column; }
-        .pop-card:hover { border-color: rgba(99,102,241,0.4); transform: translateY(-2px); }
+        .pop-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.4rem; text-decoration: none; color: var(--text); transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; }
+        .pop-card:hover { border-color: rgba(129,140,248,0.5); transform: translateY(-4px) rotateX(2deg) rotateY(-1deg); box-shadow: 0 20px 60px rgba(129,140,248,0.12), 0 0 30px rgba(129,140,248,0.05); }
         .pop-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
         .pop-card p { color: var(--text-muted); font-size: 0.8rem; flex-grow: 1; margin-bottom: 0.6rem; }
         .pop-card .meta { display: flex; gap: 0.4rem; }
+
+        /* Gradient dividers */
+        .section + .section::before {
+            content: '';
+            display: block;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), rgba(167,139,250,0.5), transparent);
+            margin-bottom: 2rem;
+            opacity: 0.3;
+        }
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         /* Footer */
         footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.82rem; }
@@ -270,6 +296,31 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
             if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
         });
     }
+})();
+</script>
+
+<!-- Scroll reveal -->
+<script>
+(function() {
+    var revealElements = document.querySelectorAll('.section, .stats');
+    
+    revealElements.forEach(function(el) {
+        el.classList.add('reveal');
+    });
+
+    function checkReveal() {
+        revealElements.forEach(function(el) {
+            var top = el.getBoundingClientRect().top;
+            var windowHeight = window.innerHeight;
+            if (top < windowHeight - 60) {
+                el.classList.add('visible');
+            }
+        });
+    }
+
+    checkReveal();
+    window.addEventListener('scroll', checkReveal);
+    window.addEventListener('resize', checkReveal);
 })();
 </script>
 

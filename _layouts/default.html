@@ -122,14 +122,14 @@
         .content table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.85rem; display: block; overflow-x: auto; border-radius: 12px; }
         .content th { background: var(--glass); color: var(--text); padding: 0.7rem 0.9rem; text-align: left; font-weight: 600; font-size: 0.8rem; border-bottom: 1px solid var(--glass-border); }
         .content td { padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--border); color: var(--text-muted); transition: background 0.2s; }
-        .content tr:hover td { background: var(--glass); }
+        .content tr:hover td { background: var(--glass); box-shadow: inset 0 0 20px rgba(129,140,248,0.03); }
 
         /* Blockquotes */
         .content blockquote { border-left: 3px solid var(--accent); padding: 0.8rem 1.2rem; margin-bottom: 1rem; background: var(--glass); border-radius: 0 10px 10px 0; backdrop-filter: blur(8px); border: 1px solid var(--glass-border); border-left: 3px solid var(--accent); }
         .content blockquote p { color: var(--accent-light); margin-bottom: 0; font-size: 0.9rem; }
 
         .mermaid { background: var(--code-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; overflow-x: auto; max-width: 100%; backdrop-filter: blur(8px); }
-        .content hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+        .content hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), rgba(167,139,250,0.5), transparent); margin: 2.5rem 0; opacity: 0.4; }
 
         /* Scroll reveal animation */
         .content h2, .content h3, .content p, .content pre, .content table, .content blockquote, .content ul, .content ol { animation: fadeInUp 0.4s ease both; }

@@ -304,7 +304,12 @@ nav a.active { border-bottom: 2px solid var(--accent); padding-bottom: 2px; }
 .hero { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 4rem 1.5rem 2rem; text-align: center; }
 .hero-badge { display: inline-block; background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--accent-light); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; }
 .hero h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text); margin-bottom: 1rem; }
-.hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), #a78bfa, #f472b6, var(--accent)); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: gradientShift 6s ease infinite; }
 .hero p { color: var(--text-muted); font-size: 1.05rem; max-width: 620px; margin: 0 auto 1.5rem; }
 .hero-stats { display: flex; justify-content: center; gap: 2.5rem; margin-top: 1.5rem; }
 .hero-stat { text-align: center; }
@@ -380,6 +385,27 @@ nav a.active { border-bottom: 2px solid var(--accent); padding-bottom: 2px; }
 .practice-content strong { display: block; font-size: 0.85rem; color: var(--text); margin-bottom: 0.15rem; }
 .practice-content span { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
 
+/* Gradient dividers */
+.section + .section::before {
+    content: '';
+    display: block;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), rgba(167,139,250,0.5), transparent);
+    margin-bottom: 2rem;
+    opacity: 0.3;
+}
+
+/* Scroll reveal */
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* Footer */
 footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.82rem; margin-top: 2rem; }
 footer a { color: var(--accent); text-decoration: none; }
@@ -432,6 +458,31 @@ footer a:hover { text-decoration: underline; }
             if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
         });
     }
+})();
+</script>
+
+<!-- Scroll reveal -->
+<script>
+(function() {
+    var revealElements = document.querySelectorAll('.section, .stats, .difficulty-group, .grading-card, .roadmap-card, .start-here, .progress-strip');
+    
+    revealElements.forEach(function(el) {
+        el.classList.add('reveal');
+    });
+
+    function checkReveal() {
+        revealElements.forEach(function(el) {
+            var top = el.getBoundingClientRect().top;
+            var windowHeight = window.innerHeight;
+            if (top < windowHeight - 60) {
+                el.classList.add('visible');
+            }
+        });
+    }
+
+    checkReveal();
+    window.addEventListener('scroll', checkReveal);
+    window.addEventListener('resize', checkReveal);
 })();
 </script>
 
