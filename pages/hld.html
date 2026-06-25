@@ -555,6 +555,20 @@ nav a.active { border-bottom: 2px solid var(--accent); padding-bottom: 2px; }
 .hero, .section, .progress-strip { animation: pageIn 0.4s ease both; }
 @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
+/* Noise/grain texture overlay */
+body::after { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; opacity: 0.02; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); }
+[data-theme="light"] body::after { opacity: 0.015; }
+
+/* Cursor glow on cards */
+.path-card, .pop-card, .problem-card:not(.coming-soon) { position: relative; overflow: hidden; }
+.path-card::before, .pop-card::before, .problem-card:not(.coming-soon)::before { content: ''; position: absolute; top: var(--glow-y, -100px); left: var(--glow-x, -100px); width: 200px; height: 200px; background: radial-gradient(circle, rgba(129,140,248,0.15), transparent 70%); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+.path-card:hover::before, .pop-card:hover::before, .problem-card:not(.coming-soon):hover::before { opacity: 1; }
+
+/* Card border shimmer */
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+.path-card::after, .pop-card::after, .problem-card:not(.coming-soon)::after { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: linear-gradient(90deg, transparent, rgba(129,140,248,0.4), transparent); background-size: 200% 100%; -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.path-card:hover::after, .pop-card:hover::after, .problem-card:not(.coming-soon):hover::after { opacity: 1; animation: shimmer 2s linear infinite; }
+
 /* Footer */
 footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.82rem; }
 footer a { color: var(--accent); text-decoration: none; }
@@ -691,5 +705,67 @@ footer a:hover { text-decoration: underline; }
 
 <!-- Cloudflare Web Analytics -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "46af7c683dec42ceb435ae3e97b8d9a1"}'></script>
+
+<!-- Cursor glow on cards -->
+<script>
+(function() {
+    var cards = document.querySelectorAll('.path-card, .pop-card, .problem-card:not(.coming-soon)');
+    cards.forEach(function(card) {
+        card.addEventListener('mousemove', function(e) {
+            var rect = card.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
+            card.style.setProperty('--glow-x', x + 'px');
+            card.style.setProperty('--glow-y', y + 'px');
+        });
+        card.addEventListener('mouseleave', function() {
+            card.style.removeProperty('--glow-x');
+            card.style.removeProperty('--glow-y');
+        });
+    });
+})();
+</script>
+
+<!-- Animated counter -->
+<script>
+(function() {
+    var counters = document.querySelectorAll('.stat strong, .hero-stat strong');
+    var animated = new Set();
+
+    function animateCounter(el) {
+        var target = parseInt(el.textContent.replace(/[^0-9]/g, ''));
+        var suffix = el.textContent.replace(/[0-9]/g, '');
+        if (isNaN(target) || target === 0) return;
+
+        var duration = 1200;
+        var startTime = null;
+
+        function step(timestamp) {
+            if (!startTime) startTime = timestamp;
+            var progress = Math.min((timestamp - startTime) / duration, 1);
+            var eased = 1 - Math.pow(1 - progress, 3);
+            var current = Math.floor(eased * target);
+            el.textContent = current + suffix;
+            if (progress < 1) requestAnimationFrame(step);
+            else el.textContent = target + suffix;
+        }
+        requestAnimationFrame(step);
+    }
+
+    function checkCounters() {
+        counters.forEach(function(el) {
+            if (animated.has(el)) return;
+            var rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight - 50) {
+                animated.add(el);
+                animateCounter(el);
+            }
+        });
+    }
+
+    checkCounters();
+    window.addEventListener('scroll', checkCounters);
+})();
+</script>
 </body>
 </html>
