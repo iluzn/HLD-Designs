@@ -21,6 +21,7 @@
     <meta name="twitter:image" content="https://systemcraft.in/favicon.svg">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" as="style">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
     <script type="application/ld+json">
     { "@context": "https://schema.org", "@type": "Article", "headline": "{{ page.title }}", "description": "{{ page.description }}", "author": { "@type": "Person", "name": "SystemCraft" }, "publisher": { "@type": "Organization", "name": "SystemCraft" }, "url": "https://systemcraft.in{{ page.url }}" }
     </script>
@@ -97,8 +98,8 @@
         .content h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin-top: 2rem; margin-bottom: 0.7rem; }
         .content h4 { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); margin-top: 1.5rem; margin-bottom: 0.5rem; }
         .content p { margin-bottom: 1rem; color: var(--text-muted); line-height: 1.8; }
-        .content a { color: var(--accent); text-decoration: none; transition: all 0.2s; border-bottom: 1px solid transparent; }
-        .content a:hover { color: var(--accent-light); border-bottom-color: var(--accent-light); }
+        .content a { color: var(--accent); text-decoration: none; background-image: linear-gradient(var(--accent), var(--accent)); background-size: 0% 1px; background-repeat: no-repeat; background-position: left bottom; transition: background-size 0.3s ease, color 0.2s; }
+        .content a:hover { color: var(--accent-light); background-size: 100% 1px; }
         .content strong { color: var(--text); font-weight: 600; }
         .content ul, .content ol { margin-bottom: 1rem; padding-left: 1.5rem; color: var(--text-muted); }
         .content li { margin-bottom: 0.5rem; line-height: 1.7; }
@@ -130,8 +131,9 @@
         .content tr:hover td { background: var(--glass); box-shadow: inset 0 0 20px rgba(129,140,248,0.03); }
 
         /* Blockquotes */
-        .content blockquote { border-left: 3px solid var(--accent); padding: 0.8rem 1.2rem; margin-bottom: 1rem; background: var(--glass); border-radius: 0 10px 10px 0; backdrop-filter: blur(8px); border: 1px solid var(--glass-border); border-left: 3px solid var(--accent); }
-        .content blockquote p { color: var(--accent-light); margin-bottom: 0; font-size: 0.9rem; }
+        .content blockquote { position: relative; border-left: 3px solid var(--accent); padding: 1rem 1.2rem 1rem 2.5rem; margin-bottom: 1.2rem; background: var(--glass); border-radius: 0 12px 12px 0; backdrop-filter: blur(8px); border: 1px solid var(--glass-border); border-left: 3px solid var(--accent); }
+        .content blockquote::before { content: '💡'; position: absolute; left: 0.7rem; top: 0.9rem; font-size: 1rem; }
+        .content blockquote p { color: var(--text-muted); margin-bottom: 0; font-size: 0.88rem; }
 
         .mermaid { background: var(--code-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; overflow-x: auto; max-width: 100%; backdrop-filter: blur(8px); }
         .content hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), rgba(167,139,250,0.5), transparent); margin: 2.5rem 0; opacity: 0.4; }
@@ -156,6 +158,45 @@
 
         footer { position: relative; z-index: 1; border-top: 1px solid var(--glass-border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.8rem; }
         footer a { color: var(--accent); text-decoration: none; }
+
+        /* Page load animation */
+        .page-layout { animation: pageIn 0.4s ease both; }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(129,140,248,0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(129,140,248,0.4); }
+        [data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.15); }
+        [data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.3); }
+
+        /* Selection color */
+        ::selection { background: rgba(129,140,248,0.3); color: var(--text); }
+        [data-theme="light"] ::selection { background: rgba(99,102,241,0.2); }
+
+        /* Override Prism theme to match our glassmorphism */
+        pre[class*="language-"], code[class*="language-"] { font-family: 'JetBrains Mono', monospace !important; font-size: 0.82rem !important; }
+        pre[class*="language-"] { background: var(--code-bg) !important; border: 1px solid var(--glass-border) !important; border-radius: 12px !important; padding: 1.2rem 1.4rem !important; }
+        .token.comment, .token.prolog { color: #6b7280 !important; }
+        .token.keyword { color: #c084fc !important; }
+        .token.string { color: #86efac !important; }
+        .token.function { color: #93c5fd !important; }
+        .token.number { color: #fbbf24 !important; }
+        .token.operator { color: #f472b6 !important; }
+        .token.class-name { color: #67e8f9 !important; }
+        .token.punctuation { color: #94a3b8 !important; }
+        .token.boolean { color: #fbbf24 !important; }
+        .token.annotation { color: #a78bfa !important; }
+        [data-theme="light"] .token.comment, [data-theme="light"] .token.prolog { color: #6b7280 !important; }
+        [data-theme="light"] .token.keyword { color: #7c3aed !important; }
+        [data-theme="light"] .token.string { color: #059669 !important; }
+        [data-theme="light"] .token.function { color: #2563eb !important; }
+        [data-theme="light"] .token.number { color: #d97706 !important; }
+        [data-theme="light"] .token.class-name { color: #0891b2 !important; }
+
+        /* Code language badge */
+        .code-lang-badge { position: absolute; top: 8px; left: 12px; font-size: 0.6rem; font-weight: 700; color: var(--accent); background: var(--glass); border: 1px solid var(--glass-border); padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
 
         @media (max-width: 900px) {
             .page-layout { grid-template-columns: 1fr; }
@@ -365,6 +406,41 @@
                 if (labelEl) labelEl.textContent = currentDone + '/' + total + ' (' + pct + '%)';
             }
         })();
+    </script>
+
+    <!-- Prism.js syntax highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sql.min.js"></script>
+
+    <script>
+    // Add language badge to code blocks
+    document.querySelectorAll('pre code[class*="language-"]').forEach(function(code) {
+        var lang = code.className.match(/language-(\w+)/);
+        if (lang && lang[1] && lang[1] !== 'mermaid') {
+            var badge = document.createElement('span');
+            badge.className = 'code-lang-badge';
+            badge.textContent = lang[1].toUpperCase();
+            code.parentElement.style.position = 'relative';
+            code.parentElement.appendChild(badge);
+        }
+    });
+
+    // Header glow on scroll
+    window.addEventListener('scroll', function() {
+        var header = document.querySelector('header');
+        if (window.scrollY > 20) {
+            header.style.borderBottomColor = 'rgba(129,140,248,0.15)';
+            header.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
+        } else {
+            header.style.borderBottomColor = '';
+            header.style.boxShadow = '';
+        }
+    });
     </script>
 
     <!-- Cloudflare Web Analytics -->
