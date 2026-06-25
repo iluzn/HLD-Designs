@@ -171,7 +171,7 @@ return lo
 <button class="tab-btn">Python</button>
 <button class="tab-btn">C++</button>
 </div>
-<div class="tab-content active">
+<div class="tab-content active" markdown="1">
 
 ```java
 Queue<int[]> queue = new ArrayDeque<>();
@@ -190,7 +190,7 @@ while (!queue.isEmpty()) {
 ```
 
 </div>
-<div class="tab-content">
+<div class="tab-content" markdown="1">
 
 ```python
 from collections import deque
@@ -206,7 +206,7 @@ while queue:
 ```
 
 </div>
-<div class="tab-content">
+<div class="tab-content" markdown="1">
 
 ```cpp
 queue<int> q;
@@ -276,7 +276,7 @@ def backtrack(state):
 <button class="tab-btn">Python</button>
 <button class="tab-btn">C++</button>
 </div>
-<div class="tab-content active">
+<div class="tab-content active" markdown="1">
 
 ```java
 Deque<Integer> stack = new ArrayDeque<>();
@@ -291,7 +291,7 @@ for (int i = 0; i < n; i++) {
 ```
 
 </div>
-<div class="tab-content">
+<div class="tab-content" markdown="1">
 
 ```python
 stack = []
@@ -304,7 +304,7 @@ for i in range(n):
 ```
 
 </div>
-<div class="tab-content">
+<div class="tab-content" markdown="1">
 
 ```cpp
 stack<int> st;
@@ -333,7 +333,7 @@ for (int i = 0; i < n; i++) {
 <button class="tab-btn">Python</button>
 <button class="tab-btn">C++</button>
 </div>
-<div class="tab-content active">
+<div class="tab-content active" markdown="1">
 
 ```java
 int[] parent = new int[n];
@@ -354,7 +354,7 @@ void union(int x, int y) {
 ```
 
 </div>
-<div class="tab-content">
+<div class="tab-content" markdown="1">
 
 ```python
 parent = list(range(n))
@@ -374,7 +374,7 @@ def union(x, y):
 ```
 
 </div>
-<div class="tab-content">
+<div class="tab-content" markdown="1">
 
 ```cpp
 vector<int> parent(n), rank_(n, 0);
@@ -408,7 +408,7 @@ void unite(int x, int y) {
 <button class="tab-btn">Python</button>
 <button class="tab-btn">C++</button>
 </div>
-<div class="tab-content active">
+<div class="tab-content active" markdown="1">
 
 ```java
 int[] inDegree = new int[n];
@@ -429,7 +429,7 @@ if (order.size() != n) { /* cycle exists */ }
 ```
 
 </div>
-<div class="tab-content">
+<div class="tab-content" markdown="1">
 
 ```python
 from collections import deque
@@ -452,7 +452,7 @@ if len(order) != n:  # cycle exists
 ```
 
 </div>
-<div class="tab-content">
+<div class="tab-content" markdown="1">
 
 ```cpp
 vector<int> inDegree(n, 0);
@@ -487,7 +487,7 @@ if (order.size() != n) { /* cycle exists */ }
 <button class="tab-btn">Python</button>
 <button class="tab-btn">C++</button>
 </div>
-<div class="tab-content active">
+<div class="tab-content active" markdown="1">
 
 ```java
 class TrieNode {
@@ -520,7 +520,7 @@ class Trie {
 ```
 
 </div>
-<div class="tab-content">
+<div class="tab-content" markdown="1">
 
 ```python
 class TrieNode:
@@ -549,7 +549,7 @@ class Trie:
 ```
 
 </div>
-<div class="tab-content">
+<div class="tab-content" markdown="1">
 
 ```cpp
 struct TrieNode {
