@@ -165,15 +165,53 @@ return lo
 
 **Examples:** Number of Islands, Word Ladder, Shortest Path in Binary Matrix, Rotting Oranges.
 
+**Java:**
+```java
+Queue<int[]> queue = new ArrayDeque<>();
+Set<Integer> visited = new HashSet<>();
+queue.offer(new int[]{start});
+visited.add(start);
+
+while (!queue.isEmpty()) {
+    int[] node = queue.poll();
+    for (int neighbor : adj(node)) {
+        if (visited.add(neighbor)) {
+            queue.offer(new int[]{neighbor});
+        }
+    }
+}
 ```
-queue = [start]
+
+**Python:**
+```python
+from collections import deque
+queue = deque([start])
 visited = {start}
+
 while queue:
     node = queue.popleft()
     for neighbor in adj(node):
         if neighbor not in visited:
             visited.add(neighbor)
             queue.append(neighbor)
+```
+
+**C++:**
+```cpp
+queue<int> q;
+unordered_set<int> visited;
+q.push(start);
+visited.insert(start);
+
+while (!q.empty()) {
+    int node = q.front(); q.pop();
+    for (int neighbor : adj(node)) {
+        if (!visited.count(neighbor)) {
+            visited.insert(neighbor);
+            q.push(neighbor);
+        }
+    }
+}
 ```
 
 ### 5. DFS / Backtracking
@@ -218,13 +256,41 @@ def backtrack(state):
 
 **Examples:** Daily Temperatures, Next Greater Element, Trapping Rain Water, Largest Rectangle.
 
+**Java:**
+```java
+Deque<Integer> stack = new ArrayDeque<>();
+int[] result = new int[n];
+for (int i = 0; i < n; i++) {
+    while (!stack.isEmpty() && arr[stack.peek()] < arr[i]) {
+        int idx = stack.pop();
+        result[idx] = arr[i]; // arr[i] is the next greater for arr[idx]
+    }
+    stack.push(i);
+}
 ```
+
+**Python:**
+```python
 stack = []
+result = [0] * n
 for i in range(n):
     while stack and arr[stack[-1]] < arr[i]:
         idx = stack.pop()
-        # arr[i] is the next greater for arr[idx]
+        result[idx] = arr[i]  # arr[i] is next greater for arr[idx]
     stack.append(i)
+```
+
+**C++:**
+```cpp
+stack<int> st;
+vector<int> result(n, 0);
+for (int i = 0; i < n; i++) {
+    while (!st.empty() && arr[st.top()] < arr[i]) {
+        int idx = st.top(); st.pop();
+        result[idx] = arr[i];
+    }
+    st.push(i);
+}
 ```
 
 ### 9. Union-Find (Disjoint Set)
@@ -233,12 +299,59 @@ for i in range(n):
 
 **Examples:** Number of Connected Components, Accounts Merge, Redundant Connection.
 
+**Java:**
+```java
+int[] parent = new int[n];
+int[] rank = new int[n];
+for (int i = 0; i < n; i++) parent[i] = i;
+
+int find(int x) {
+    if (parent[x] != x) parent[x] = find(parent[x]); // path compression
+    return parent[x];
+}
+void union(int x, int y) {
+    int px = find(x), py = find(y);
+    if (px == py) return;
+    if (rank[px] < rank[py]) parent[px] = py;       // union by rank
+    else if (rank[px] > rank[py]) parent[py] = px;
+    else { parent[py] = px; rank[px]++; }
+}
 ```
+
+**Python:**
+```python
 parent = list(range(n))
+rank = [0] * n
+
 def find(x):
-    if parent[x] != x: parent[x] = find(parent[x])
+    if parent[x] != x:
+        parent[x] = find(parent[x])  # path compression
     return parent[x]
-def union(x, y): parent[find(x)] = find(y)
+
+def union(x, y):
+    px, py = find(x), find(y)
+    if px == py: return
+    if rank[px] < rank[py]: parent[px] = py
+    elif rank[px] > rank[py]: parent[py] = px
+    else: parent[py] = px; rank[px] += 1
+```
+
+**C++:**
+```cpp
+vector<int> parent(n), rank_(n, 0);
+iota(parent.begin(), parent.end(), 0);
+
+int find(int x) {
+    if (parent[x] != x) parent[x] = find(parent[x]);
+    return parent[x];
+}
+void unite(int x, int y) {
+    int px = find(x), py = find(y);
+    if (px == py) return;
+    if (rank_[px] < rank_[py]) parent[px] = py;
+    else if (rank_[px] > rank_[py]) parent[py] = px;
+    else { parent[py] = px; rank_[px]++; }
+}
 ```
 
 ### 10. Topological Sort
@@ -247,17 +360,63 @@ def union(x, y): parent[find(x)] = find(y)
 
 **Examples:** Course Schedule, Alien Dictionary, Build Order.
 
+**Java:**
+```java
+int[] inDegree = new int[n];
+for (int[] edge : edges) inDegree[edge[1]]++;
+
+Queue<Integer> queue = new ArrayDeque<>();
+for (int i = 0; i < n; i++) if (inDegree[i] == 0) queue.offer(i);
+
+List<Integer> order = new ArrayList<>();
+while (!queue.isEmpty()) {
+    int node = queue.poll();
+    order.add(node);
+    for (int neighbor : adj.get(node)) {
+        if (--inDegree[neighbor] == 0) queue.offer(neighbor);
+    }
+}
+if (order.size() != n) { /* cycle exists */ }
 ```
-in_degree = count incoming edges
-queue = [nodes with in_degree == 0]
+
+**Python:**
+```python
+from collections import deque
+in_degree = [0] * n
+for u, v in edges:
+    in_degree[v] += 1
+
+queue = deque(i for i in range(n) if in_degree[i] == 0)
 order = []
 while queue:
     node = queue.popleft()
     order.append(node)
-    for neighbor in adj(node):
+    for neighbor in adj[node]:
         in_degree[neighbor] -= 1
-        if in_degree[neighbor] == 0: queue.append(neighbor)
-if len(order) != n: cycle exists
+        if in_degree[neighbor] == 0:
+            queue.append(neighbor)
+
+if len(order) != n:  # cycle exists
+    pass
+```
+
+**C++:**
+```cpp
+vector<int> inDegree(n, 0);
+for (auto& [u, v] : edges) inDegree[v]++;
+
+queue<int> q;
+for (int i = 0; i < n; i++) if (inDegree[i] == 0) q.push(i);
+
+vector<int> order;
+while (!q.empty()) {
+    int node = q.front(); q.pop();
+    order.push_back(node);
+    for (int neighbor : adj[node]) {
+        if (--inDegree[neighbor] == 0) q.push(neighbor);
+    }
+}
+if (order.size() != n) { /* cycle exists */ }
 ```
 
 ### 11. Trie
@@ -266,8 +425,92 @@ if len(order) != n: cycle exists
 
 **Examples:** Implement Trie, Word Search II, Design Search Autocomplete.
 
+**Java:**
 ```java
-class TrieNode { TrieNode[] children = new TrieNode[26]; boolean isEnd; }
+class TrieNode {
+    TrieNode[] children = new TrieNode[26];
+    boolean isEnd;
+}
+
+class Trie {
+    TrieNode root = new TrieNode();
+
+    void insert(String word) {
+        TrieNode node = root;
+        for (char c : word.toCharArray()) {
+            if (node.children[c - 'a'] == null)
+                node.children[c - 'a'] = new TrieNode();
+            node = node.children[c - 'a'];
+        }
+        node.isEnd = true;
+    }
+
+    boolean search(String word) {
+        TrieNode node = root;
+        for (char c : word.toCharArray()) {
+            if (node.children[c - 'a'] == null) return false;
+            node = node.children[c - 'a'];
+        }
+        return node.isEnd;
+    }
+}
+```
+
+**Python:**
+```python
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word):
+        node = self.root
+        for c in word:
+            if c not in node.children:
+                node.children[c] = TrieNode()
+            node = node.children[c]
+        node.is_end = True
+
+    def search(self, word):
+        node = self.root
+        for c in word:
+            if c not in node.children: return False
+            node = node.children[c]
+        return node.is_end
+```
+
+**C++:**
+```cpp
+struct TrieNode {
+    TrieNode* children[26] = {};
+    bool isEnd = false;
+};
+
+class Trie {
+    TrieNode* root = new TrieNode();
+public:
+    void insert(string word) {
+        auto node = root;
+        for (char c : word) {
+            if (!node->children[c - 'a'])
+                node->children[c - 'a'] = new TrieNode();
+            node = node->children[c - 'a'];
+        }
+        node->isEnd = true;
+    }
+    bool search(string word) {
+        auto node = root;
+        for (char c : word) {
+            if (!node->children[c - 'a']) return false;
+            node = node->children[c - 'a'];
+        }
+        return node->isEnd;
+    }
+};
 ```
 
 ### 12. Intervals
