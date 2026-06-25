@@ -154,31 +154,36 @@ WebSocket /ws/v1/orders
 
 ### FR1: Place and Match Orders
 
+The first thing a user does is place a buy or sell order. Let's build the simplest path for that.
+
+**New components we need:**
+
+1. **API Gateway** — Entry point for all requests. Handles auth (JWT), rate limiting, and idempotency checks. Idempotency means: if a user's network drops and they retry, we don't accidentally place the order twice.
+2. **Order Management Service (OMS)** — The brain. Validates orders (enough balance? valid symbol? market open?), persists them, and publishes events.
+3. **Kafka** — Our event bus. 💡 *Kafka is a distributed log where events are appended and consumed by multiple services independently. Think of it as a super-reliable conveyor belt for messages.*
+4. **Matching Engine** — Consumes order events and matches buyers with sellers using price-time priority (highest bidder meets lowest seller first).
+5. **Order DB (Postgres)** — Stores all orders and their current state. Source of truth.
+
 ```mermaid
 flowchart LR
-    App["Mobile or Web"]:::client
+    App["Mobile App"]:::client
     GW["API Gateway"]:::edge
-    OMS["Order Management Service"]:::service
-    KF["Kafka orders.placed"]:::async
+    OMS["Order Service"]:::service
+    KF["Kafka"]:::async
     ME["Matching Engine"]:::service
-    KF2["Kafka trades.executed"]:::async
-    DB["Order DB Postgres"]:::data
-    EX["Exchange NSE"]:::external
+    DB["Order DB"]:::data
 
     App --> GW
     GW --> OMS
+    OMS --> DB
     OMS --> KF
     KF --> ME
-    ME --> KF2
-    OMS --> DB
-    ME --> EX
 
     classDef client fill:#FF7043,stroke:#BF360C,color:#fff
     classDef edge fill:#42A5F5,stroke:#1565C0,color:#fff
     classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
     classDef async fill:#AB47BC,stroke:#6A1B9A,color:#fff
     classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
 ```
 
 | Color | Meaning |
@@ -188,36 +193,47 @@ flowchart LR
 | 🟢 Green | Service |
 | 🟣 Purple | Async (Kafka) |
 | 🟡 Yellow | Data store |
-| 🩷 Pink | External |
 
-**Flow (7 steps):**
+**Step-by-step flow:**
 
-1. User submits order via app → hits API Gateway (rate limiting, auth, idempotency check)
-2. Gateway routes to **Order Management Service (OMS)** which validates: sufficient balance, valid symbol, market hours, risk limits
-3. OMS persists order with status `PENDING` in Postgres, deducts blocked funds (soft hold)
-4. OMS publishes `order.placed` event to Kafka (partitioned by symbol for ordering)
-5. **Matching Engine** consumes events for its assigned symbols. For internal matching (dark pool): runs price-time priority against the order book. For exchange routing: forwards to NSE/BSE via FIX protocol.
-6. On match/fill, Matching Engine publishes `trade.executed` event to Kafka
-7. OMS consumes fill event, updates order status to `FILLED`, releases blocked funds, credits securities
+1. User taps "Buy 10 RELIANCE at ₹2,850" in the app → request hits API Gateway
+2. Gateway checks: Is the user authenticated? Has this request been sent before (idempotency key)? Is the user within rate limits?
+3. Gateway forwards to OMS. OMS validates: Does the user have enough cash? Is RELIANCE a valid symbol? Is the market open?
+4. OMS persists the order in Postgres with status `PENDING` and blocks ₹28,500 from the user's available balance (soft hold — money isn't gone yet, just reserved)
+5. OMS publishes an `order.placed` event to Kafka, **partitioned by symbol**
+6. User gets back `202 Accepted` with their orderId — they don't wait for matching
 
-**Why async (Kafka) between OMS and Matching Engine?**
-The matching engine is the bottleneck — it processes one order at a time per symbol. If OMS called it synchronously, every order would block waiting for matching. Kafka decouples them: OMS responds to user instantly ("ACCEPTED"), matching happens async. The user gets a push notification when filled.
+**Why Kafka between OMS and Matching Engine?**
+
+The matching engine processes orders one at a time per symbol. If OMS waited for matching synchronously, every order would block. Instead: OMS responds instantly ("accepted"), matching happens async. The user gets notified when their order fills.
 
 **Why partition by symbol?**
-All orders for RELIANCE must be matched in strict price-time order. Kafka partitioning by symbol ensures a single consumer processes all orders for one symbol sequentially — no distributed locks needed.
+
+All orders for RELIANCE must be matched in strict price-time order. Kafka guarantees ordering within a partition. So we put all RELIANCE orders in one partition → one consumer processes them sequentially → no distributed locks needed.
 
 ---
 
 ### FR2: Show Users Their Transactions
 
+Once orders are filled, users need to see their transaction history and portfolio. But here's the tension: the write path (order placement) needs to be fast and consistent. The read path (portfolio, history) is 100x more frequent and can tolerate 1-2 seconds of staleness.
+
+This is where we use **CQRS**. 💡 *CQRS (Command Query Responsibility Segregation) = separate the system that writes data from the system that reads data. Writes go to the primary DB. Reads go to a separate optimized store (cache + read replica). This lets us scale reads without slowing down writes.*
+
+**New components:**
+
+1. **Event Projector** — A Kafka consumer that listens to `trade.executed` events and updates a read-optimized database. 💡 *Think of it as a translator: it takes raw events and builds the "current state" views that users see.*
+2. **Query Service** — Serves all read requests (portfolio, order history). Hits cache first, falls back to read replica.
+3. **Redis Cache** — Stores hot data (user's current portfolio, recent orders) for sub-10ms reads.
+4. **Postgres Read Replica** — A copy of the DB optimized for reads. Doesn't slow down the write path.
+
 ```mermaid
 flowchart LR
     App["App"]:::client
     GW["Gateway"]:::edge
-    QS["Query Service CQRS"]:::service
+    QS["Query Service"]:::service
     RC["Redis Cache"]:::data
-    RDB["Read Replica Postgres"]:::data
-    KF["Kafka trade events"]:::async
+    RDB["Read Replica"]:::data
+    KF["Kafka events"]:::async
     Proj["Projector"]:::service
 
     App --> GW
@@ -235,34 +251,42 @@ flowchart LR
     classDef data fill:#FFCA28,stroke:#F57F17,color:#000
 ```
 
-**Flow:**
+**Step-by-step flow:**
 
-1. `trade.executed` events flow into a **Projector** service (Kafka consumer)
-2. Projector updates the read-optimized **Portfolio DB** (denormalized: positions, P&L, trade history)
-3. Projector also invalidates/updates **Redis Cache** (user's portfolio, recent orders)
-4. When user opens "Transactions" screen, **Query Service** checks Redis first (cache hit for hot data), falls back to Postgres read replica
-5. Portfolio reflects fills within 500ms of execution (eventual consistency is acceptable for reads)
+1. When a trade executes, the Matching Engine publishes a `trade.executed` event to Kafka
+2. The **Projector** consumes this event and does two things: updates the Read Replica (denormalized portfolio view) and invalidates/updates Redis cache
+3. When user opens "My Orders" screen, the **Query Service** checks Redis first
+4. Cache hit → instant response. Cache miss → query Read Replica → cache the result for 30 seconds
+5. Portfolio reflects fills within ~500ms of execution. Users see near-real-time updates without hammering the write DB.
 
-**Why CQRS here?**
-Write path (order placement) needs ACID and strong consistency. Read path (portfolio, history) is 100x more frequent and tolerates slight staleness. Separating them lets us scale reads independently with caches and replicas.
+**Why not just read from the main Postgres?**
+
+During market open, the primary DB is handling 100K+ writes/sec. If we also run complex read queries on it (join orders + fills + positions), it'll slow down writes. Separating reads into a replica + cache keeps the write path fast.
 
 ---
 
 ### FR3: Send Notifications
 
+When a user's order fills, we need to tell them immediately. If they're in the app, push via WebSocket. If they're not, send a push notification to their phone.
+
+**New components:**
+
+1. **Notification Service** — Consumes fill/reject events from Kafka, resolves user preferences, and routes to the right channel.
+2. **WebSocket Gateway** — Maintains persistent connections with active users. When a user opens the app, they connect here for real-time updates.
+3. **FCM / APNs** — Firebase Cloud Messaging (Android) and Apple Push Notification Service (iOS). External services that deliver push notifications to locked phones.
+4. **Dead Letter Queue (DLQ)** — Where failed notifications go for retry. 💡 *A DLQ is a holding pen for messages that couldn't be processed. A separate job retries them later instead of losing them.*
+
 ```mermaid
 flowchart LR
-    KF["Kafka trade.executed"]:::async
+    KF["Kafka trade events"]:::async
     NS["Notification Service"]:::service
-    TMP["Template Engine"]:::service
-    FCM["FCM or APNs"]:::external
     WS["WebSocket Gateway"]:::service
+    FCM["FCM and APNs"]:::external
     DLQ["Dead Letter Queue"]:::async
 
     KF --> NS
-    NS --> TMP
-    NS --> FCM
     NS --> WS
+    NS --> FCM
     NS --> DLQ
 
     classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
@@ -270,18 +294,19 @@ flowchart LR
     classDef external fill:#EC407A,stroke:#880E4F,color:#fff
 ```
 
-**Flow:**
+**Step-by-step flow:**
 
-1. Notification Service consumes `trade.executed`, `order.rejected`, `price.alert` events from Kafka
-2. Resolves user preferences (push / email / SMS / in-app only)
-3. Templates the message via Template Engine ("Your order to BUY 10 RELIANCE filled at ₹2,847")
-4. For real-time: pushes via **WebSocket Gateway** (user has active connection) — instant delivery
-5. For push: sends to FCM/APNs with retry + exponential backoff
-6. Failed deliveries go to **DLQ** — reconciler retries or flags for manual review
+1. `trade.executed` event arrives at Notification Service from Kafka
+2. Service looks up user preferences: do they want push? email? SMS? in-app only?
+3. Templates the message: "Your order to BUY 10 RELIANCE filled at ₹2,847 ✓"
+4. If user has an active WebSocket connection → push instantly through WebSocket Gateway (sub-100ms delivery)
+5. If user is offline → send via FCM/APNs. Retry with exponential backoff (1s, 2s, 4s, 8s...) on failure.
+6. Permanently failed deliveries → DLQ. A reconciler job retries every 5 minutes or flags for manual review.
 
 **Delivery semantics:**
-- **At-least-once** for notifications — duplicate "order filled" notification is annoying but safe
-- **Exactly-once** for order execution — achieved via idempotency keys + Kafka consumer offsets + DB unique constraints
+
+- **Notifications: at-least-once** — getting "Order filled" twice is annoying but harmless
+- **Order execution: exactly-once** — filling an order twice is a regulatory violation. This is achieved through idempotency keys (explained in Deep Dive 2)
 
 ---
 
