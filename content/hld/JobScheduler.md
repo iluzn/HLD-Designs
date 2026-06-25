@@ -232,6 +232,12 @@ Three passes, one per core functional requirement.
 
 ### 6.1 FR-1: Schedule a job
 
+**New components we need:**
+
+1. **Scheduler API** — the HTTP interface users call to create, query, or cancel jobs. Validates inputs and stores job definitions.
+2. **Postgres (jobs + schedules)** — the durable source of truth. Stores job definitions, cron expressions, and computed `next_fire_time`. 💡 *We use Postgres because job creation needs ACID transactions — if we write the job and its schedule, both must succeed or neither does.*
+3. **Redis Sorted Set (upcoming index)** — holds jobs due within the next hour, scored by `next_fire_time`. 💡 *A sorted set (ZSET) lets us ask "give me everything due before NOW" in O(log N) — the dispatcher polls this instead of scanning millions of rows in Postgres every second.*
+
 ```mermaid
 flowchart LR
     CLIENT["Client"]:::client
@@ -259,12 +265,13 @@ flowchart LR
 | Yellow | Data store |
 | Pink | External |
 
-Flow:
-1. Client POSTs `/v1/jobs`.
-2. API validates the cron expression, the target pool exists, payload size is within limits.
-3. API computes `next_fire_time` from the cron + timezone. Writes a `jobs` row and a `schedules` row in Postgres atomically.
-4. For jobs due within the next hour, API also adds `(next_fire_time, job_id)` to a **Redis sorted set** — the "hot window" index. This is what the dispatcher polls; it doesn't need to scan Postgres for every tick.
-5. Returns 201 with the job ID.
+**Step-by-step flow:**
+
+1. Developer calls `POST /v1/jobs` with a cron expression like `"0 3 * * *"` (run daily at 3am) → hits the Scheduler API
+2. API validates: Is the cron expression valid? Does the target worker pool exist? Is the payload within size limits?
+3. API computes `next_fire_time` from the cron + timezone (e.g., 3:00 AM Pacific = 10:00 UTC), then writes a `jobs` row AND a `schedules` row to Postgres in one atomic transaction
+4. For jobs due within the next hour, API also adds `(next_fire_time, job_id)` to the Redis sorted set — this is the "hot window" that the dispatcher polls. Jobs further out stay only in Postgres until a background hydrator promotes them
+5. Returns `201 Created` with the job ID and next fire time
 
 **Why Postgres for jobs**: ACID for "create + schedule" atomicity, SQL flexibility for admin queries ("show all jobs by tenant X that fired in the last 24h"), indexes on `(next_fire_time, state)` for dispatcher polling.
 
@@ -273,6 +280,15 @@ Flow:
 ### 6.2 FR-2: Execute reliably (the dispatch + retry path)
 
 This is where most of the complexity lives.
+
+**New components we need (in addition to the ones above):**
+
+1. **Dispatcher Pool (leader-elected shards)** — the heartbeat of the system. Each dispatcher continuously polls its slice of the Redis ZSET for due jobs. 💡 *Leader election ensures only ONE dispatcher owns each shard — without it, two dispatchers would both fire the same job, causing duplicate execution.*
+2. **Kafka (per-pool topics)** — decouples dispatch timing from worker availability. When the dispatcher finds a due job, it publishes to Kafka rather than directly calling a worker.
+3. **Workers** — the processes that actually execute your job code. Each worker pool handles a specific class of jobs (e.g., `email-sender`, `batch-etl`).
+4. **Executions table (Postgres)** — one row per attempt to run a job. Append-only history so you can answer "did my job run? when? how long did it take?"
+5. **Worker Heartbeats (Redis)** — workers write a heartbeat every 10s. If a worker crashes, its heartbeat expires and a sweeper reschedules the stuck job. 💡 *This is the "dead man's switch" — if we don't hear from a worker, we assume it's dead and retry the job.*
+6. **Retry Queue** — a delayed Kafka topic where failed jobs wait with exponential backoff before being retried.
 
 ```mermaid
 flowchart LR
@@ -298,26 +314,29 @@ flowchart LR
     classDef data fill:#fde68a,stroke:#b45309,color:#451a03
 ```
 
-Flow:
-1. **Dispatcher shards** continuously poll their slice of the Redis ZSET for `score <= now()`. A typical shard polls every 100-500ms.
-2. When a shard finds due jobs, it atomically claims them via `ZREMRANGEBYSCORE` (returns only the winner in a race with another shard). Redis single-threadedness makes this atomic.
-3. For each claimed job, the shard:
-   - Creates an `executions` row in Postgres (`PENDING`, with a fresh `executionId`).
-   - Publishes a message to Kafka on the target pool's topic, keyed by `executionId` for ordering.
-   - For cron jobs, computes the next fire time and re-adds to the ZSET (or to Postgres if > 1 hour out).
-4. **Workers** in the target pool consume from Kafka. Each worker:
-   - Updates the execution row to `RUNNING` with its worker ID.
-   - Writes a heartbeat to Redis (`worker:{id} -> lastSeen`) every 10s.
-   - Invokes the handler with the payload.
-5. On success, worker marks execution `SUCCEEDED`, commits Kafka offset, moves on.
-6. On failure, worker marks `FAILED`, reads the retry policy, and publishes to a **delayed retry topic** with `nextAttemptAt = now + backoff`.
-7. A **scheduler sweeper** runs periodically to catch executions where `worker_heartbeat_expired && state == RUNNING` — it marks them `FAILED_WORKER_LOST` and enqueues a retry.
+**Step-by-step flow:**
 
-**Why Kafka between dispatcher and workers**: decouples dispatch timing from worker availability, gives durable replay if a worker pool crashes, and per-pool topics let us rate-limit on the consumer side independently.
+1. Dispatcher shards continuously poll their slice of the Redis ZSET: "Give me all jobs with `score <= now()`" — runs every 100-500ms
+2. When a shard finds due jobs, it atomically claims them via `ZREMRANGEBYSCORE` (Redis is single-threaded, so only one dispatcher wins the race)
+3. For each claimed job, the dispatcher:
+   - Creates an `executions` row in Postgres with status `PENDING`
+   - Publishes a message to Kafka on the target pool's topic (e.g., `jobs.batch-etl`)
+   - For cron jobs, computes the NEXT fire time and re-adds it to the ZSET (or Postgres if > 1 hour out)
+4. A worker in the target pool picks up the Kafka message, marks the execution as `RUNNING`, and starts writing heartbeats to Redis every 10s
+5. Worker invokes the job handler with the payload — this is where YOUR code actually runs
+6. On success → worker marks execution `SUCCEEDED`, commits Kafka offset, moves on
+7. On failure → worker marks `FAILED`, reads the retry policy, and publishes to the retry queue with exponential backoff (30s → 2min → 10min → 1h)
+8. A **sweeper** periodically checks: "any executions stuck in RUNNING with expired heartbeats?" If yes → the worker crashed. Mark `FAILED_WORKER_LOST` and trigger a retry
+
+**Why Kafka between dispatcher and workers?** If the dispatcher called workers directly, a pool restart would lose all in-flight jobs. Kafka gives us durability (messages survive worker crashes), replay (reprocess an hour of jobs if a worker had a bug), and independent scaling per pool.
 
 **Why a separate execution row, not just status on the job row**: one job may produce many executions (cron fires daily, retries add more). Executions are append-only, cheap to partition by day, and joinable by job_id for history views.
 
 ### 6.3 FR-3: Inspect and cancel
+
+**New components we need (in addition to the ones above):**
+
+1. **Cancel Set (Redis)** — a short-lived set of `executionId`s that have been cancelled. Workers check this before starting and periodically during execution. 💡 *We can't "un-send" a Kafka message, so instead we let the worker check a cancel flag before it starts working.*
 
 ```mermaid
 flowchart LR
@@ -338,15 +357,19 @@ flowchart LR
     classDef data fill:#fde68a,stroke:#b45309,color:#451a03
 ```
 
-Read path is just a Postgres query by job_id or execution_id — covered by indexes on `(job_id, executionAt desc)`.
+**Step-by-step flow (read path):**
 
-Cancellation has three distinct cases:
+The read path is straightforward: `GET /v1/jobs/:id` hits Postgres with an indexed query by `job_id` — returns the job definition plus recent executions. No drama.
 
-1. **Cancel a future job (not yet due)** — DELETE sets state to `CANCELLED`, removes from Redis ZSET. Simple.
-2. **Cancel a PENDING execution** (dispatched but not yet picked up by a worker) — write to a Redis set `cancelled:{executionId}`. Worker checks this set before starting, skips if present.
-3. **Cancel a RUNNING execution** — worker polls the cancel set every few seconds (or on I/O boundaries). On hit, it sends an interrupt to the handler. Handlers must cooperate — we can't force-kill without losing cleanup.
+**Step-by-step flow (cancellation — the tricky part):**
 
-For recurring jobs: cancelling the job stops future fires; executions already dispatched continue to completion unless explicitly cancelled.
+Cancellation sounds simple but has three distinct timing windows:
+
+1. **Cancel a future job (not yet due)** — easiest case. API sets the job state to `CANCELLED` and removes it from the Redis ZSET. It'll never fire.
+2. **Cancel a PENDING execution (dispatched but worker hasn't started yet)** — write the `executionId` to the Redis cancel set. Worker checks this set before starting; if present, it skips the job entirely.
+3. **Cancel a RUNNING execution (worker is mid-flight)** — worker polls the cancel set every few seconds during execution. On hit, it sends an interrupt to the handler code. Handlers must cooperate — we can't force-kill without risking data corruption.
+
+**Why lazy cancellation via a flag instead of "delete from the queue"?** Kafka doesn't support targeted message deletion. And even if it did, there's a race between the cancel request and the worker consuming the message. A cancel flag checked at execution time is simpler and race-free.
 
 ---
 

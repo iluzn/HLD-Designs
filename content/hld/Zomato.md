@@ -117,6 +117,12 @@ Let's build up the design by walking through each functional requirement.
 
 Customer opens the app → hits our backend through an API Gateway → a Restaurant Service returns a list of nearby restaurants filtered by location, cuisine, and availability.
 
+**New components we need:**
+
+1. **API Gateway** — authenticates users, applies rate limits, and routes to the right service. Every request passes through here first.
+2. **Restaurant Service** — handles restaurant listings and menus. Reads from the database and returns results filtered by location and availability.
+3. **Restaurants and Menus DB** — stores restaurant info, operating hours, and menu items. The source of truth for catalog data.
+
 ```mermaid
 flowchart LR
     CUST["Customer App"]:::client
@@ -145,17 +151,25 @@ flowchart LR
 | 🟡 Yellow | Data |
 | 🩷 Pink | External |
 
-Flow:
-1. Customer sends `GET /v1/restaurants?lat&lng&q` via the API Gateway.
-2. Gateway handles auth and rate limiting.
-3. Restaurant Service queries the DB for restaurants near the customer's coordinates and returns the results.
-4. Customer picks one, hits `GET /v1/restaurants/:id/menu`, same service serves the menu.
+**Step-by-step flow:**
 
-The naive version of this is fine for now; we'll address the cost of geo queries and scale in the deep dives.
+1. Customer opens the app and types "biryani" → app calls `GET /v1/restaurants?lat=12.9&lng=77.6&q=biryani`
+2. API Gateway checks: valid JWT? Within rate limits? Good → forwards to Restaurant Service
+3. Restaurant Service queries the database for restaurants near the customer's coordinates that serve biryani and are currently open
+4. Customer picks "Hyderabad House" and taps it → app calls `GET /v1/restaurants/:id/menu` → same service returns the full menu with prices and availability
+
+The naive version works for now — just a DB query. But at Zomato scale (500K restaurants, 50K search QPS), a raw database query melts. We'll evolve this into an Elasticsearch-powered search in the deep dives.
 
 ### 2) Customers can place and pay for an order
 
 When the customer confirms a cart, we need to create an order, charge them, and move on to dispatch. We add an Order Service and a Payment Service.
+
+**New components we need (in addition to the ones above):**
+
+1. **Order Service** — the order lifecycle manager. Creates orders, validates carts, computes totals, and manages the order state machine from CREATED → DELIVERED. 💡 *This service is the single source of truth for "what's happening with my order?" — every state change goes through it.*
+2. **Payment Service** — handles charging the customer. Wraps the payment gateway and manages the authorization + capture flow.
+3. **Orders DB (Postgres)** — stores order state with strong consistency. We use Postgres because money is involved — ACID transactions prevent double-charges and lost orders.
+4. **Payment Gateway (Razorpay, Stripe, UPI)** — the external service that actually moves money. We don't process cards ourselves — that would require PCI compliance. 💡 *The gateway is a "trusted intermediary" between us and banks.*
 
 ```mermaid
 flowchart LR
@@ -179,18 +193,27 @@ flowchart LR
     classDef external fill:#EC407A,stroke:#880E4F,color:#fff
 ```
 
-Flow:
-1. Customer sends `POST /v1/orders` with an `Idempotency-Key` header.
-2. Order Service validates the cart and computes the authoritative total.
-3. Order Service calls Payment Service, which charges through the gateway.
-4. On success, Order Service writes an `Order` row with status `CONFIRMED`.
-5. Customer gets back an order confirmation.
+**Step-by-step flow:**
 
-The idempotency key protects against double-submission from network retries. The server computes the final amount itself — never trust the client's number.
+1. Customer confirms their cart → app calls `POST /v1/orders` with an `Idempotency-Key` (so accidental retries don't create double orders)
+2. Order Service validates: Are all items still available? Is the restaurant still open? It computes the authoritative total itself — never trust the client's amount (clients can be tampered with)
+3. Order Service calls Payment Service → which authorizes the charge through Razorpay/Stripe/UPI
+4. On payment success → Order Service writes the order with status `CONFIRMED` to Postgres (one atomic transaction: order + payment record)
+5. Customer sees "Order Confirmed! 🎉" — now the dispatch flow kicks in
+
+**Why the idempotency key?** Indian mobile networks are flaky. The user's phone might retry the request when it loses signal for a second. Without an idempotency key, they'd get charged twice. With it, the second request returns the same response as the first — safe retries for free.
 
 ### 3) Match a rider and let the customer track the delivery
 
 Now we introduce a Rider Client, a Location Service that receives live GPS pings, and a Ride Matching Service that picks a rider for each confirmed order. We also need a push channel so the rider gets notified immediately.
+
+**New components we need (in addition to the ones above):**
+
+1. **Location Service** — ingests live GPS pings from rider phones (every 3-5 seconds) and stores them. The "where is everyone right now?" service.
+2. **Location Store (Redis Geo)** — holds live rider positions in memory, sharded by city. 💡 *Redis Geo uses geohashing under the hood — it can answer "find all riders within 3km of this restaurant" in microseconds across 200K riders.*
+3. **Ride Matching Service** — finds the best available rider for a confirmed order. Queries nearby riders, scores them, and sends an offer.
+4. **Notification Service** — pushes the ride offer to the rider's phone via FCM/APNs. Also notifies the customer about order updates.
+5. **FCM / APNs** — Firebase Cloud Messaging and Apple Push Notification service. External services that deliver push notifications to rider phones, even when the app is backgrounded.
 
 ```mermaid
 flowchart LR
@@ -224,15 +247,16 @@ flowchart LR
     classDef external fill:#EC407A,stroke:#880E4F,color:#fff
 ```
 
-Flow:
-1. Riders continuously send GPS updates to the Location Service, which keeps a live position per rider.
-2. Once an order is confirmed, the Order Service asks the Ride Matching Service to find a rider.
-3. Matching queries the location store for nearby available riders and picks the best one.
-4. Notification Service pushes the offer to the rider's phone via FCM or APNs.
-5. Rider taps accept, which sends a `PATCH /v1/rides/:rideId`. Order Service updates the order to `RIDER_ASSIGNED`.
-6. Customer's app subscribes to a tracking channel and sees the rider's position on a map.
+**Step-by-step flow:**
 
-That's the happy path covered. Now the interesting parts.
+1. Riders' phones continuously stream GPS pings to the Location Service (adaptive: 30s when parked, 3-5s when moving). Location Service writes each ping to Redis Geo, keyed by city
+2. Once the order hits `CONFIRMED`, the Order Service fires a "find me a rider" request to the Ride Matching Service
+3. Matching Service queries Redis Geo: "Who's within 3km of Hyderabad House and currently available?" → gets a ranked list of candidates
+4. Matching picks the best rider (closest + high acceptance rate + estimated pickup time) and sends them an offer via the Notification Service → rider's phone buzzes with "New delivery: Hyderabad House → 2.1km away"
+5. Rider taps "Accept" → PATCH request comes in → Order Service updates state to `RIDER_ASSIGNED`
+6. Customer's app opens a WebSocket connection for live tracking → sees the rider's blue dot moving toward the restaurant on a map
+
+**Why Redis Geo instead of a regular database?** 200K riders × 1 ping every 4 seconds = 50K writes/sec. A traditional database would collapse under this write volume. Redis keeps everything in memory — writes are sub-millisecond — and its `GEOSEARCH` command answers "riders within 3km" in microseconds. Perfect for a read pattern that happens on every single order.
 
 ---
 

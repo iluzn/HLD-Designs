@@ -189,6 +189,12 @@ We'll layer in components as the three FRs demand them.
 
 ### FR1: Register a trigger
 
+**New components we need:**
+
+1. **Trigger API** — the HTTP service callers hit to register or cancel triggers. Validates requests and handles idempotency.
+2. **Redis Idempotency Cache** — stores `(callerId, idempotencyKey) → triggerId` so retried requests don't create duplicate triggers. 💡 *Idempotency means: if the caller's network drops and they retry, we return the same triggerId instead of creating a second trigger. Safe retries.*
+3. **Cassandra (partitioned by fire-time bucket)** — durable storage for all triggers. Partitioned by the 1-minute window containing `fireAt`, so the sweeper can efficiently ask "give me all triggers due in minute M" with one partition read.
+
 ```mermaid
 flowchart LR
   Caller["Caller"] --> API["Trigger API"]
@@ -203,11 +209,15 @@ flowchart LR
   class Idem,DB data
 ```
 
-1. Caller POSTs to the **Trigger API** with caller JWT + `Idempotency-Key`.
-2. API checks Redis for `(callerId, idempotencyKey)` — if present, returns the cached triggerId. Idempotency exists to keep retries from creating duplicate triggers when the API responds slowly to the caller.
-3. API computes `fireAt = now + delaySeconds`, generates a ULID `triggerId`, writes the row to Cassandra. Partition key is the **1-minute bucket** containing `fireAt`; clustering key is `triggerId`. This shape lets the sweeper later say "give me all triggers in bucket M" with one partition read.
-4. API caches the `triggerId` in Redis under the idempotency key with TTL = `delaySeconds + grace`.
-5. API returns 200 to the caller.
+**Step-by-step flow:**
+
+1. Caller (e.g., the Order Service) calls `POST /v1/triggers` with a callback URL and `delaySeconds: 420` (7 minutes) → "Call me back in 7 minutes to expire this seat hold"
+2. Trigger API checks Redis: have we seen this `(callerId, idempotencyKey)` before? If yes → return the cached `triggerId` (no duplicate created)
+3. API computes `fireAt = now + 420s`, generates a unique ULID `triggerId`, and writes the row to Cassandra. The partition key is the 1-minute bucket containing `fireAt` (e.g., `14:31`) — this groups triggers by fire time for efficient sweeping later
+4. API caches the `triggerId` in Redis under the idempotency key (TTL = delay + grace period) so future retries short-circuit
+5. Returns `200 OK` with the `triggerId` and exact `fireAt` timestamp
+
+**Why partition by 1-minute buckets?** The sweeper needs to efficiently find "all triggers about to fire." Without bucketing, it would scan millions of rows. With bucketing, it reads one partition per minute — a single disk seek in Cassandra.
 
 ### FR2: Fire the callback at the right time
 
@@ -215,6 +225,13 @@ We split by delay length, borrowing from Dynein:
 
 - **Short delay (≤ 15 min)** — push directly to SQS with `DelaySeconds = delay`. SQS handles the wait, the dispatcher picks up the message when visible. We keep the Cassandra row as the source of truth.
 - **Long delay (> 15 min)** — leave it in Cassandra. The **Sweeper** scans the next bucket every 30 s and, when within 15 min of fireAt, pushes into SQS the same way. This caps the in-memory state and lets the long tail live cheaply in Cassandra.
+
+**New components we need (in addition to the ones above):**
+
+1. **Sweeper (leader-elected, per shard)** — scans Cassandra for triggers due in the next 15 minutes and loads them into the timing wheel. 💡 *Leader election ensures only one sweeper owns each shard — without it, duplicate fires would happen.*
+2. **Timing Wheel (in-process)** — a ring-buffer data structure that fires callbacks at precise times with O(1) insert and expiry. 💡 *Think of it as an alarm clock with thousands of slots — you set the alarm (insert), and when the hand reaches your slot, it goes off (expires). Kafka's internals use this exact structure.*
+3. **SQS (delay queue)** — the execution lane. Once a trigger is within seconds of firing, the timing wheel pushes it to SQS. Dispatchers consume from SQS.
+4. **Dispatcher Pool** — workers that pull from SQS, read the trigger from Cassandra, and POST the callback to the caller's URL. Stateless; scales horizontally.
 
 ```mermaid
 flowchart LR
@@ -236,17 +253,23 @@ flowchart LR
   class DB data
 ```
 
-1. Sweeper runs per shard, leader-elected via ZooKeeper / etcd. Each shard owns a slice of `triggerId hash space` so two replicas can't sweep the same partition. Leader election is needed because a partition without an owner stalls; two owners would double-fire.
-2. Every 30 s, the leader scans Cassandra partition `bucket = floor((now + 15m) / 1m)` — the bucket that's about to enter the SQS-eligible window.
-3. For each row, it inserts into the in-process **hierarchical timing wheel** (Kafka Purgatory style) keyed by `fireAt`. This is O(1) per insert and supports millions of pending timers per shard.
-4. When a wheel slot expires, the entry is enqueued to SQS with `DelaySeconds = fireAt - now` (small positive value — usually 0–60 s of slack). SQS is the durable handoff between the timing wheel and the dispatchers; if the shard process dies after the wheel fires but before the SQS send, the row is still in Cassandra and the next leader's sweeper picks it up.
-5. **Dispatcher pool** consumes SQS, looks up the row in Cassandra, and POSTs to `callbackUrl`. Why go back to Cassandra: the SQS message holds only `triggerId` to keep it small and to ensure the dispatcher always reads the current `status` (the trigger may have been cancelled in flight).
-6. On 2xx, dispatcher writes `status = FIRED` to Cassandra and deletes the SQS message.
-7. On non-2xx or timeout, dispatcher requeues to SQS with exponential backoff (`DelaySeconds`), incrementing `attemptCount`. After N attempts it goes to a DLQ topic.
+**Step-by-step flow:**
 
-**Why the wheel is needed even though SQS has a built-in delay.** SQS's per-message delay is precise to the second but limited to 15 min, and at scale we want to control fan-out into SQS — flooding SQS at the top of the hour with 200K messages all wanting `DelaySeconds=0` would cause throttling. The wheel acts as a **smoothing front-end**: it releases messages into SQS in sub-second slots so the dispatcher pool sees an even rate.
+1. Sweeper runs per shard, leader-elected via ZooKeeper/etcd. Every 30 seconds, it scans Cassandra for the bucket that's about to enter the 15-minute firing window
+2. Each trigger from the scan is inserted into the in-process timing wheel — O(1) per insert, handles millions of pending triggers per shard
+3. When a wheel slot expires (fire time arrives!), the triggerId is pushed to SQS with a tiny `DelaySeconds` (usually 0-60s of slack)
+4. Dispatcher pulls from SQS, reads the current trigger row from Cassandra (checking status — it might have been cancelled!), and POSTs the payload to the callback URL
+5. On `2xx` response → dispatcher writes `status = FIRED` to Cassandra and deletes the SQS message. Done!
+6. On non-2xx or timeout → dispatcher requeues to SQS with exponential backoff (10s → 30s → 2min → 10min → 30min). After N attempts → Dead Letter Queue
+7. If dispatcher crashes after POST but before deleting from SQS → SQS visibility timeout expires → another dispatcher picks up and retries. The caller dedupes on `triggerId` — at-least-once is the contract
+
+**Why the timing wheel when SQS already has delay?** Two reasons: (a) SQS caps at 15-minute delay — not enough for our 30-day triggers. (b) At the top of the hour, 200K triggers all want `DelaySeconds=0` simultaneously. The wheel acts as a smoothing front-end, releasing messages into SQS in sub-second batches so the dispatcher pool sees an even rate instead of a thundering herd.
+
+**Why does the dispatcher read from Cassandra before firing?** The SQS message only holds the `triggerId` (to keep messages small). More importantly, the trigger might have been cancelled since it was enqueued — checking status at fire time is the "lazy cancel" pattern that avoids expensive queue surgery.
 
 ### FR3: Cancel a trigger
+
+**New components we need:** None! Cancellation reuses existing infrastructure — it just flips a status flag in Cassandra that the dispatcher checks at fire time.
 
 ```mermaid
 flowchart LR
@@ -263,10 +286,14 @@ flowchart LR
   class DB2,Drop data
 ```
 
-1. Caller hits `DELETE /triggers/{id}`. API sets `status = CANCELLED` in Cassandra (conditional on `status = PENDING`).
-2. We **don't** try to remove from SQS or the wheel — too racy and SQS doesn't support targeted delete by content. Instead we let the dispatcher check status when the trigger fires.
-3. Dispatcher reads the row at fire time, sees `CANCELLED`, drops the SQS message without firing the callback.
-4. This is "lazy cancel": cancellation is durable instantly but the trigger may sit in the queue until its fire time. Acceptable because callers care that the callback **won't** fire, not when the slot is reclaimed.
+**Step-by-step flow:**
+
+1. Caller hits `DELETE /v1/triggers/{triggerId}` → API sets `status = CANCELLED` in Cassandra (only if current status is `PENDING`)
+2. We DON'T try to remove the trigger from SQS or the timing wheel — that's too racy and SQS doesn't support targeted deletion by content
+3. When the trigger's fire time arrives, the dispatcher reads the row, sees `CANCELLED`, and quietly drops it without firing the callback
+4. This is "lazy cancel": the cancel is durable instantly, but the trigger message may sit in the queue until its fire time before being discarded
+
+**Why not remove from the queue immediately?** SQS doesn't support "find and delete message with triggerId X." And even if it did, there's a race: the message might be in-flight to a dispatcher at the exact moment you try to cancel. Lazy cancel avoids all these races — the flag in Cassandra is the single source of truth, checked at the last possible moment.
 
 ## 6.5. Core Flows
 

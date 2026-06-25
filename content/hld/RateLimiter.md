@@ -91,6 +91,11 @@ Keep a `HashMap<userId, requestCount>` inside the API server. On each request: i
 
 ## The Solution: Shared Counter in Redis
 
+**New components we need:**
+
+1. **Multiple API Pods** — your application servers running behind a load balancer. Requests hit any of them randomly.
+2. **Redis (shared counters)** — a single, blazing-fast in-memory database that ALL pods talk to. It holds the rate-limit counters so every pod sees the same global count.
+
 ```mermaid
 flowchart LR
     CLIENT["Client"]:::client
@@ -260,6 +265,8 @@ flowchart LR
 | **Edge (Cloudflare/WAF)** | DDoS, bots, abusive IPs | IP address | "No IP can send >1000 req/sec" |
 | **Gateway (Kong/Envoy)** | Per-user quota enforcement | API key or user ID | "Free tier: 100/min. Paid: 10000/min" |
 | **Service level** | Domain-specific limits | Per resource | "Max 5 password reset emails/hour" |
+
+**Why three layers instead of one?** Each layer catches a different class of threat at a different cost. Edge blocks volumetric DDoS attacks before they hit your infrastructure (cheapest, highest volume). Gateway enforces business rules like "free vs paid tier" (requires knowing who the user is). Service-level limits handle domain logic only your code understands ("max 5 password resets per hour"). Skipping layers means you're either blocking too much (service-level can't handle DDoS volume) or too little (edge doesn't know your business rules).
 
 > 💡 **Why multiple layers?** Edge blocks volumetric attacks cheaply (before they hit your servers). Gateway enforces business rules. Service handles logic that only your code understands.
 

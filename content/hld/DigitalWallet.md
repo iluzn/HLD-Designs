@@ -229,6 +229,17 @@ So the system accepts the request, returns `202 Processing` immediately, and lea
 
 Each layer backs up the one above it. Industry principle: **rail truth always wins.**
 
+**New components we need:**
+
+1. **API Gateway** — authenticates users, applies rate limits, and routes to the right service.
+2. **Wallet Service** — orchestrates load/withdraw operations. Creates the transaction row BEFORE calling any external rail — the durable record that we attempted this operation.
+3. **Payment Gateway Adapter** — translates our internal "charge this bank" request into the specific API format each rail expects (UPI, card networks, bank ACH). 💡 *Think of it as a universal translator between our system and dozens of different bank APIs.*
+4. **Webhook Handler** — receives signed callbacks from banks when a charge succeeds or fails. This is how we learn the outcome of async operations.
+5. **Reconciler** — a background job that polls rails every 30s for any PENDING transaction older than 2 minutes. The safety net for lost webhooks. 💡 *If the bank's webhook fails to reach us (network blip, our endpoint was down), the reconciler catches it on the next sweep.*
+6. **Ledger Service** — the accounting brain. Posts journal entries (balanced debit + credit) to the ledger. Never creates money from nothing. 💡 *Double-entry ledger means every money movement has two sides that sum to zero. Debit one account, credit another. If the math doesn't balance, the transaction is rejected.*
+7. **Event Bus (Kafka)** — carries transaction events to downstream services (notifications, analytics, fraud) without coupling the hot payment path to any of them.
+8. **Postgres (ledger primary)** — the sacred source of truth. Stores journal entries and ledger lines. ACID transactions ensure money is never created or destroyed.
+
 ```mermaid
 flowchart LR
     APP["Wallet App"]:::client
@@ -264,16 +275,19 @@ flowchart LR
 
 How the Ledger Service actually learns the rail succeeded — **it doesn't actively check anything**. It's a passive consumer of a `rail.confirmed` (or `rail.failed`) event on the event bus. Whoever produces that event — Webhook Handler, Reconciler, or Settlement batch — is responsible for having verified rail truth. Ledger Service just receives "transaction `txn_555` succeeded" and posts the journal entry.
 
-Flow:
-1. App sends `POST /v1/wallets/:userId/load` with an idempotency key.
-2. Wallet Service inserts a `Transaction` row in `PENDING` state with a fresh `txn_id` **before** any network call. This row is the durable record that we attempted this load.
-3. Calls the Payment Gateway Adapter, passing our `txn_id` as the external reference.
-4. Adapter initiates the charge with the rail. The rail responds "accepted, I'll tell you later."
-5. We return `202 Processing` to the app immediately. User sees "pending" in the UI.
-6. Sometime later (seconds to minutes), the rail fires a signed webhook to our Webhook Handler with the final outcome. Handler verifies HMAC and publishes `rail.confirmed` with `txn_id`.
-7. Ledger Service consumes the event: `SELECT FOR UPDATE` the Transaction row, guard on `status = 'PENDING'`, post the journal entry (`DEBIT rail_receivable, CREDIT user_wallet`), update state to `SUCCEEDED`, commit. All atomic.
-8. If the webhook is lost, the Reconciler produces the same `rail.confirmed` event within 30-60s by polling rail status directly.
-9. Notification fires to the user: "₹500 added to your wallet."
+**Step-by-step flow:**
+
+1. User taps "Add ₹500 from HDFC Bank" → app calls `POST /v1/wallets/:userId/load` with an idempotency key
+2. Wallet Service inserts a `Transaction` row in `PENDING` state BEFORE making any network call — this row is our durable promise that we attempted this load
+3. Wallet Service calls the Payment Gateway Adapter with our internal `txn_id` as the reference. Adapter initiates the charge on the UPI rail
+4. Rail responds "accepted, I'll tell you later" — we return `202 Processing` to the app immediately. User sees "pending" in the UI
+5. Seconds to minutes later, the user approves in their bank app. Bank fires a signed webhook to our Webhook Handler with the result, referencing our `txn_id`
+6. Webhook Handler verifies the HMAC signature, then publishes a `rail.confirmed` event to Kafka
+7. Ledger Service consumes the event, locks the Transaction row (`SELECT FOR UPDATE WHERE status = 'PENDING'`), posts a balanced journal entry (`DEBIT rail_receivable ₹500, CREDIT user_wallet ₹500`), flips status to `SUCCEEDED` — all in one atomic DB transaction
+8. If the webhook was lost? No problem — the Reconciler polls the rail within 30-60s and produces the same event
+9. Notification fires: "₹500 added to your wallet!" 🎉
+
+**Why persist BEFORE calling the bank?** If we called the bank first and crashed before recording the result, we'd have no record that money was charged. The durable `PENDING` row means: even if everything explodes, we know a charge attempt exists and can reconcile it later. "Write first, call second" is the golden rule of payment systems.
 
 Tricks that make this safe:
 - **Our `txn_id` passed to the rail on creation** so the webhook can tie back to our row.
@@ -295,6 +309,11 @@ Tricks that make this safe:
 ### 2) User sends money to another wallet user
 
 Pure internal transfer — no bank rail involved. Fastest and most common operation.
+
+**New components we need (in addition to the ones above):**
+
+1. **Transfer Service** — handles peer-to-peer sends. Validates sender balance, recipient existence, and daily limits before asking the Ledger Service to post the entry.
+2. **Notification Service** — tells both sender and recipient about the transfer via push notification.
 
 ```mermaid
 flowchart LR
@@ -322,20 +341,26 @@ flowchart LR
     classDef data fill:#FFCA28,stroke:#F57F17,color:#000
 ```
 
-Flow:
-1. Sender hits `POST /v1/transfers` with an idempotency key and recipient ID.
-2. Transfer Service validates: recipient exists, KYC OK, sender has sufficient balance, not a self-transfer, within limits.
-3. Ledger Service atomically posts a journal entry: debit `user_wallet:{sender}` (reduces sender's balance), credit `user_wallet:{recipient}` (increases recipient's balance). In one DB transaction.
-4. Same transaction writes a `transaction_completed` event to an outbox table.
-5. Debezium (or equivalent CDC) drains outbox to Kafka.
-6. Notification Service consumes the event and pushes to both users.
-7. Response returns to sender with the new balance.
+**Step-by-step flow:**
 
-Key point: **the sender's ledger debit and the recipient's ledger credit are one DB transaction**. Either both happen or neither. No distributed transaction across services, no saga, no two-phase commit.
+1. Sender taps "Send ₹100 to Priya" → app calls `POST /v1/transfers` with an idempotency key
+2. Transfer Service validates: Does Priya exist? Is sender KYC-verified? Does sender have ₹100 available? Not a self-transfer? Within daily limits?
+3. Ledger Service atomically posts a journal entry in ONE database transaction: `DEBIT user_wallet:sender ₹100` + `CREDIT user_wallet:recipient ₹100`. Either BOTH happen or NEITHER — money cannot be lost or created
+4. Same transaction writes a `transaction_completed` event to an outbox table — guarantees the event is published if and only if the ledger entry committed
+5. Debezium (CDC) drains the outbox to Kafka → Notification Service pushes to both users
+6. Response returns to sender with their new balance in ~200ms
+
+**Why one DB transaction instead of a saga?** Both users' wallets are in the same Postgres database. A single transaction gives us atomicity for free — no distributed coordination, no compensating rollbacks, no inconsistency window. This is the beauty of keeping the ledger in one place.
 
 ### 3) Balance and transaction history
 
 Balance is a derived quantity — the sum of all ledger lines on the user's wallet account. History is the list of those lines enriched with user-facing metadata.
+
+**New components we need (in addition to the ones above):**
+
+1. **Read Service** — serves balance checks and transaction history. Reads from caches and replicas to avoid loading the primary ledger DB.
+2. **Redis (balance cache)** — caches the current balance for sub-millisecond reads. Every app screen checks the balance; we can't hit Postgres 100K times/sec for this.
+3. **Cassandra (transaction history feed)** — a denormalized, read-optimized store for "show me my last 50 transactions." Populated from the Kafka event stream.
 
 ```mermaid
 flowchart LR
@@ -358,10 +383,13 @@ flowchart LR
     classDef data fill:#FFCA28,stroke:#F57F17,color:#000
 ```
 
-Flow:
-1. `GET /v1/wallets/:userId/balance` → Read Service checks Redis first (`balance:{userId}`).
-2. On cache miss, sums ledger lines for the user's wallet account up to "now" and caches. Cache is invalidated on every write via CDC (ledger entry → Kafka → cache invalidation).
-3. `GET /v1/wallets/:userId/transactions` pulls from a denormalized history store (ClickHouse / Cassandra) that's populated from the Kafka stream. Fast range queries by user+time.
+**Step-by-step flow:**
+
+1. User opens the app → balance check: Read Service hits Redis first (`balance:{userId}`) — sub-millisecond response, 99.9% cache hit rate
+2. On the rare cache miss, Read Service computes the balance from the ledger and re-caches it. Cache is invalidated automatically on every write via CDC (ledger entry → Kafka → cache invalidation)
+3. User scrolls to transaction history → Read Service queries Cassandra (partitioned by userId, sorted by time). Fast range scans without touching the OLTP database
+
+**Why not just read from Postgres?** Balance reads outnumber writes 100:1. Every app screen triggers a balance check. If we hit Postgres directly, we'd burn half our database capacity on repetitive reads that have a 99.9% chance of returning the same number. Redis absorbs this load for pennies.
 
 ---
 

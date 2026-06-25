@@ -295,6 +295,14 @@ We'll grow the architecture in three passes — one per core functional requirem
 
 Start with the minimum viable pipeline: accept, enqueue, fan out per channel, dispatch to the provider.
 
+**New components we need:**
+
+1. **Notification API** — the single entry point for all product services. Receives "send a notification to user X" requests, validates them, and enqueues for processing.
+2. **Message Broker (Kafka)** — decouples notification intake from delivery. 💡 *Kafka here acts as a buffer — if push notifications are slow today, the queue absorbs the backlog instead of slowing down the checkout flow that triggered the notification.*
+3. **Router** — reads each notification event, decides which channels to use (push? email? SMS?), and fans out one message per channel to channel-specific topics.
+4. **Channel Workers (Push, Email, SMS)** — each specialized worker renders the template and calls the external provider. Isolated so a Twilio outage doesn't affect push delivery.
+5. **External Providers (APNs, SES, Twilio)** — the actual delivery services. We don't send emails ourselves — we hand them to SES/Mailgun, which handles the SMTP complexity.
+
 ```mermaid
 flowchart LR
     APP["Product Service"]:::service
@@ -335,13 +343,14 @@ flowchart LR
 | Yellow | Data store |
 | Orange | Client |
 
-Flow:
-1. Product service calls `POST /v1/notifications` with a template ID, variables, and category.
-2. The Notification API validates the payload, resolves the user, and enriches with user preferences (channels + locale).
-3. It persists the intent to a **notifications table** (audit + dedup) and publishes an event to the message broker.
-4. The Router reads the event, picks the channels based on template rules and user preferences, and fans out — one message per (user, channel) pair — onto a channel-specific topic.
-5. Each channel worker picks up its topic, renders the template in the user's locale, and calls the relevant provider SDK.
-6. Provider response (accepted / rejected) is written as a delivery attempt record for observability.
+**Step-by-step flow:**
+
+1. Order Service calls `POST /v1/notifications` → "Hey, order A-88273 shipped, tell the user via push + email"
+2. Notification API validates the payload, looks up the user's preferences and locale, and persists the intent to a notifications table (audit + dedup)
+3. API publishes an event to Kafka and returns `202 Accepted` in ~20ms — the product service is free to move on
+4. Router consumes the event, checks template rules + user preferences, and fans out: one message to `push` topic, one to `email` topic
+5. Push Worker picks up its message, renders the template in the user's locale ("Your order has shipped! 📦"), and POSTs to APNs/FCM
+6. Provider response (accepted/rejected) is recorded as a delivery attempt for debugging ("why didn't my user get their notification?")
 
 **Why async?** The product service call path has a strict latency budget (checkout is running). Hitting APNs synchronously is a timebomb — provider slowness becomes product slowness. Enqueueing gives us 10-50ms end-to-end on the hot path; the actual send happens on the worker's clock.
 
@@ -350,6 +359,12 @@ Flow:
 ### 6.2 FR-2: Respect user preferences
 
 Preferences live in a dedicated service. Both the Notification API (at intake) and the Router (before fan-out) consult it.
+
+**New components we need (in addition to the ones above):**
+
+1. **Preference Service** — owns all user notification settings: which channels are on/off, which categories they've opted out of, quiet hours, locale, and frequency caps. 💡 *This is the "do not disturb" brain — it prevents us from waking someone at 3am with a marketing push.*
+2. **Preference Cache (Redis)** — since every single notification triggers a preference lookup (50K/sec!), we cache preferences in Redis for microsecond reads instead of hammering Postgres.
+3. **Preference DB (Postgres)** — the durable source of truth for preferences. Updated when users change settings.
 
 ```mermaid
 flowchart LR
@@ -376,13 +391,15 @@ What preferences capture:
 - **Locale + time zone** — for template localization and quiet-hour computation.
 - **Frequency cap** — max N marketing notifications per day.
 
-Flow (Router consulting prefs):
-1. Router receives the event with `category=MARKETING, channels=[PUSH,EMAIL]`.
-2. Queries Preference Service.
-3. Filters: user has SMS=off (not requested anyway), Marketing=on, Push=on, Email=on — keep both channels.
-4. Checks quiet hours: user is in quiet hours → enqueue to **delayed queue** with wake-up time = end of quiet hours.
-5. Checks frequency cap: "user got 4/5 marketing notifications today" — OK.
-6. Fans out to push and email topics.
+**Step-by-step flow (Router consulting preferences):**
+
+1. Router receives the event: "send MARKETING notification to user U via PUSH and EMAIL"
+2. Router asks Preference Service: "What are U's notification preferences?"
+3. Preference Service checks Redis cache (hit 99% of the time) → returns preferences
+4. Router filters: user has Marketing=on, Push=on, Email=on — both channels stay. If they'd opted out of Marketing, the notification would be silently dropped here
+5. Router checks quiet hours: user's timezone says it's 2:30am → enqueue to a **delayed queue** that will fire at 7am when quiet hours end. (Security and transactional notifications bypass quiet hours — your OTP still arrives at 3am)
+6. Router checks frequency cap: "user got 4/5 marketing notifications today" — still under the limit, proceed
+7. Fans out to the push and email channel topics
 
 **Why cache preferences in Redis?** Every notification triggers a preference lookup. 50k/sec sustained = 50k/sec reads minimum. Postgres can do it, but Redis drops the latency from millis to microseconds and takes load off the DB for campaigns.
 
@@ -391,6 +408,12 @@ Flow (Router consulting prefs):
 ### 6.3 FR-3: Guaranteed at-least-once delivery with retries
 
 Channel workers own the retry logic. The key mechanism is the **outbox pattern** between provider state and our own DB.
+
+**New components we need (in addition to the ones above):**
+
+1. **Retry Queue (delayed Kafka topic)** — when a provider returns a transient error (timeout, 5xx, rate-limit 429), the failed message goes here with exponential backoff timing. 💡 *Exponential backoff means: wait 2s, then 10s, then 60s, then 5min before each retry. This prevents hammering a struggling provider.*
+2. **Dead Letter Queue (DLQ)** — where permanently-failed messages go after exhausting all retries. These get reviewed by a human or an automated reconciler.
+3. **Delivery Attempts table (Postgres)** — records every single attempt to deliver a notification, including the provider's response. Essential for debugging "why didn't user X get their OTP?"
 
 ```mermaid
 flowchart LR
@@ -412,6 +435,8 @@ flowchart LR
     classDef data fill:#fde68a,stroke:#b45309,color:#451a03
 ```
 
+**How a channel worker handles each notification (with retries):**
+
 What a worker does for each message:
 1. Read from channel topic.
 2. Render template with user variables + locale.
@@ -421,6 +446,8 @@ What a worker does for each message:
    - **Success** → commit Kafka offset, move on.
    - **Transient failure** (5xx, timeout, 429 throttle) → publish to a delayed retry topic with exponential backoff (2s → 10s → 60s → 5min → 30min; max 5 retries).
    - **Permanent failure** (400 bad token, invalid phone) → revoke the token in our user device table, send to DLQ.
+
+**Why not just retry forever?** Permanent failures (invalid device token, phone number doesn't exist) will never succeed no matter how many times we retry. Sending to DLQ and revoking the bad token prevents infinite loops and keeps the queue healthy. Transient failures (provider overloaded) usually resolve within minutes, so retries with backoff are the right call.
 
 **Why at-least-once, not exactly-once?** Distributed systems can't do exactly-once delivery across a network boundary — only at-least-once + idempotency on the receiving side. The `Idempotency-Key` header upstream and the `dedupKey` on the notification row let us detect dups on retry. Providers also dedupe on `apns-collapse-id` / FCM `collapse_key` — we pass our notification ID as collapse key so a retry doesn't produce two banners on the device.
 

@@ -180,6 +180,13 @@ Let's build up service by service.
 
 The create path is low-QPS (~1K/sec peak) but needs a unique, collision-free short code every time.
 
+**New components we need:**
+
+1. **API Gateway** — the front door. Authenticates API keys, applies per-user rate limits, and routes requests to the right service. 💡 *Think of it as a security guard + receptionist for your backend.*
+2. **Write Service** — handles link creation. Validates the URL, generates the short code, and stores the mapping.
+3. **Snowflake ID Generator** — produces unique numeric IDs without any coordination between servers. 💡 *Snowflake = a distributed ID generator that embeds a timestamp + machine ID + sequence number into a single 64-bit integer. No two machines ever produce the same ID, even without talking to each other.*
+4. **Global KV Store** — where the `short_code → long_url` mapping lives permanently. Needs to survive failures and serve reads worldwide.
+
 ```mermaid
 flowchart LR
     CLIENT["Client"]:::client
@@ -210,16 +217,26 @@ flowchart LR
 | 🟡 Yellow | Data |
 | 🩷 Pink | External |
 
-Flow:
-1. Client `POST`s the long URL with an API key.
-2. Gateway authenticates and rate-limits per user.
-3. Write Service asks the ID Generator for a fresh numeric ID, base62-encodes it to a 7-char code.
-4. Writes `{short_code, long_url, user_id, created_at, expires_at}` to the DB.
-5. Returns the short URL. Done.
+**Step-by-step flow:**
+
+1. User calls `POST /v1/links` with their long URL and API key → request hits the API Gateway
+2. Gateway checks: Is this API key valid? Has this user exceeded their rate limit?
+3. Gateway forwards to Write Service, which asks the Snowflake ID Generator for a fresh numeric ID, then base62-encodes it into a 7-character short code (e.g., `aB3xY9`)
+4. Write Service stores `{short_code, long_url, user_id, created_at, expires_at}` in the Global KV Store
+5. Returns the short URL to the user — done in under 100ms
+
+**Why Snowflake instead of random strings?** Random strings require a "check if it already exists" round-trip on every creation. At 100M+ links, collisions become frequent and expensive. Snowflake IDs are unique by construction — no checking needed, ever.
 
 ### 2) Anyone hits the short URL and gets redirected
 
 This is the hot path — billions of reads per day. Latency and cost both matter.
+
+**New components we need (in addition to the ones above):**
+
+1. **CDN Edge** — servers deployed worldwide (Cloudflare, CloudFront, Fastly) that cache popular redirects close to users. A viral link gets served from the edge in under 10ms without ever touching our origin servers.
+2. **Redirect Service** — the origin server that handles CDN misses. Looks up the short code and returns a `302 Found` with the long URL.
+3. **Redis Cache** — a regional in-memory cache sitting between the Redirect Service and the database. Holds recently-accessed links for sub-millisecond lookups.
+4. **Event Bus** — captures every click as an event for analytics, without slowing down the redirect. 💡 *Fire-and-forget pattern: the redirect returns immediately, and the click event flows through the bus in the background.*
 
 ```mermaid
 flowchart LR
@@ -243,19 +260,27 @@ flowchart LR
     classDef data fill:#FFCA28,stroke:#F57F17,color:#000
 ```
 
-Flow:
-1. Browser hits `sho.rt/aB3xY9`.
-2. CDN edge (Cloudflare / CloudFront / Fastly) checks its cache; for popular links, the redirect is served right at the POP. Edge compute (Workers / Lambda@Edge / Compute@Edge) can serve the 302 directly without calling origin.
-3. On CDN miss, origin request goes to the Redirect Service, which checks a regional Redis (ElastiCache / self-hosted / Upstash).
-4. On Redis miss, reads from the global KV store (DynamoDB Global Tables / Cassandra multi-DC / Spanner) and backfills caches.
-5. Emits a click event to the event bus (Kafka / Kinesis / Pub/Sub), fire-and-forget.
-6. Returns a `302 Found` with the long URL in `Location`.
+**Step-by-step flow:**
 
-Why `302` not `301`? `301` is permanent — browsers cache it aggressively and you lose click analytics for every cached hit. `302` keeps clicks routing through the service. Some platforms use `301` with careful cache-control headers; either is defensible.
+1. User clicks `sho.rt/aB3xY9` → browser sends a GET request
+2. CDN edge checks its local cache — for popular links (that viral tweet everyone's clicking), the redirect is served right there, under 10ms, without ever reaching our servers
+3. On CDN miss → request reaches our Redirect Service, which checks the regional Redis cache
+4. On Redis miss → reads from the Global KV Store and backfills both Redis and CDN caches for next time
+5. Fires a click event to the Event Bus (fire-and-forget — the redirect doesn't wait for analytics)
+6. Returns `302 Found` with the long URL in the `Location` header → browser redirects
+
+**Why `302` and not `301`?** A `301` (permanent redirect) tells the browser to cache it forever. Next time the user clicks that link, the browser goes directly to the destination — we never see the click. That means no analytics. `302` (temporary redirect) forces the browser through us every time, so we count every click.
 
 ### 3) Analytics and stats
 
 Clicks go to Kafka from the hot path. A stream processor aggregates them into per-link counters visible via a stats API.
+
+**New components we need (in addition to the ones above):**
+
+1. **Stream Processor (Flink or Kafka Streams)** — reads raw click events and aggregates them into per-link counters by time bucket, country, and referrer. 💡 *Instead of counting clicks one-by-one on each query, the stream processor pre-computes rollups so dashboard queries are instant.*
+2. **Serving Store (ClickHouse, Pinot, or Timestream)** — a columnar database optimized for fast aggregation queries like "how many clicks did this link get in the last 30 days, broken down by country?"
+3. **Object Storage (S3 / GCS)** — where raw click events are archived as Parquet files for long-term retention and ad-hoc analysis.
+4. **Stats API** — serves pre-aggregated analytics to dashboards. Never scans raw events at query time.
 
 ```mermaid
 flowchart LR

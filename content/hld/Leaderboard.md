@@ -90,6 +90,13 @@ For 10 million players: log₂(10M) ≈ 23 comparisons. Microseconds.
 
 ## Architecture
 
+**New components we need:**
+
+1. **Game Servers** — the backend that runs your game logic and knows when a player's score changes.
+2. **Leaderboard Service** — an API layer that translates "update score" and "get rank" requests into Redis commands.
+3. **Redis Sorted Set** — the star of the show. A data structure that keeps players ordered by score automatically, giving O(log N) rank lookups. 💡 *Think of it as a self-sorting list — you add or update a score, and Redis instantly knows where that player ranks among millions.*
+4. **Postgres** — the durable source of truth for score history and audit trail. If Redis goes down, we rebuild from here.
+
 ```mermaid
 flowchart LR
     GAME["Game Servers"]:::client
@@ -107,6 +114,8 @@ flowchart LR
     classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
     classDef data fill:#FFCA28,stroke:#F57F17,color:#000
 ```
+
+**Why two stores instead of just one database?** Redis gives us microsecond rank lookups (essential for real-time leaderboards at 10K QPS), but it's volatile — a restart could lose data. Postgres gives us durability and SQL flexibility (for "show me all scores from last Tuesday"), but it can't answer "what's player X's rank among 10M players?" without an expensive full-table sort. Together they cover both needs: speed for live rankings, permanence for history.
 
 **Why two stores?**
 - **Redis:** live leaderboard. Fast reads and writes. Volatile (can be rebuilt from DB).

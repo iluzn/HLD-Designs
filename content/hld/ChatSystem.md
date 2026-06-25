@@ -161,6 +161,13 @@ Security: WebSocket authenticated via JWT on handshake. `clientMsgId` is for cli
 
 ### 1) User sends a 1:1 message (both online)
 
+**New components we need:**
+
+1. **WebSocket Servers** — maintain persistent two-way connections with every online user. 💡 *WebSocket = a persistent connection that stays open so the server can push messages instantly without the client asking. Unlike HTTP (ask → answer → done), WebSocket keeps the line open.*
+2. **Chat Service** — the brain. Receives messages, persists them, and figures out where the recipient is connected.
+3. **Message Store (Cassandra)** — permanent storage for all messages. Partitioned by conversation so "load chat history" is a single partition read.
+4. **Connection Registry (Redis)** — a fast lookup table mapping `userId → which WebSocket server they're on`. When a message arrives for Bob, we check Redis to find which server is holding Bob's connection.
+
 ```mermaid
 flowchart LR
     SENDER["Sender"]:::client
@@ -183,17 +190,25 @@ flowchart LR
     classDef data fill:#FFCA28,stroke:#F57F17,color:#000
 ```
 
-**Flow:**
-1. Sender's app sends the message over its WebSocket connection to Server A.
-2. Server A forwards to the Chat Service.
-3. Chat Service persists the message to Cassandra (partition key = `conversationId`, clustering key = `messageId` for ordering).
-4. Chat Service looks up receiver's WebSocket server from Redis connection registry: `ws_conn:{receiverId} → serverB`.
-5. Chat Service pushes the message to Server B (internal pub/sub or direct gRPC).
-6. Server B pushes the message down the receiver's WebSocket.
-7. Receiver's app sends back an `ack` with `status: delivered`.
-8. Server sends `delivered` receipt back to sender.
+**Step-by-step flow:**
+
+1. Sender types "Hey, are you free tonight?" and hits send → message travels over their open WebSocket connection to Server A
+2. Server A forwards the message to the Chat Service
+3. Chat Service persists the message to Cassandra (partition key = `conversationId`, so all messages in a chat live together) — now it's durable, even if everything crashes
+4. Chat Service asks Redis: "Which server is the receiver connected to?" → answer: Server B
+5. Chat Service pushes the message to Server B (via internal gRPC or pub/sub)
+6. Server B pushes the message down the receiver's WebSocket → message appears on their screen instantly
+7. Receiver's app sends back a `delivered` acknowledgment → this receipt flows back to the sender so they see the double-check ✓✓
+
+**Why WebSocket instead of HTTP polling?** With polling, each user would hit our servers every 2 seconds asking "any new messages?" — for 500M users, that's 250M requests/second of mostly-empty responses. WebSocket keeps a persistent connection open so the server pushes messages the instant they arrive — zero wasted requests, sub-second delivery.
 
 ### 2) Receiver is offline — store and forward
+
+**New components we need (in addition to the ones above):**
+
+1. **Offline Queue (Redis sorted set)** — when the receiver isn't connected, we park message IDs here. Scored by sequence number so when they reconnect, we drain messages in perfect order.
+2. **Push Service** — sends push notifications to wake up the user's phone. 💡 *Think of it as the "tap on the shoulder" that tells the user to open the app.*
+3. **FCM / APNs** — Firebase Cloud Messaging (Android) and Apple Push Notification service (iOS). External services that deliver notifications to locked phones.
 
 ```mermaid
 flowchart LR
@@ -216,15 +231,23 @@ flowchart LR
     classDef external fill:#EC407A,stroke:#880E4F,color:#fff
 ```
 
-**Flow:**
-1. Chat Service checks connection registry → receiver not online.
-2. Message persisted to Cassandra (same as before — always store).
-3. Message ID added to receiver's offline queue (Redis sorted set, scored by sequence number).
-4. Push notification sent via FCM/APNs: "You have a new message from X."
-5. When receiver opens the app and reconnects via WebSocket, the server drains the offline queue: sends all pending messages in order.
-6. Receiver acks each; server removes from offline queue.
+**Step-by-step flow:**
+
+1. Chat Service checks the Connection Registry → receiver is NOT online (no WebSocket entry found)
+2. Message is still persisted to Cassandra (same as before — always store first, deliver second)
+3. Message ID is added to the receiver's offline queue in Redis (sorted by sequence number for ordering)
+4. Push Service sends a notification via FCM/APNs: "New message from Alice" → phone buzzes
+5. Later, receiver opens the app and reconnects via WebSocket → server drains the offline queue, sending all pending messages in order
+6. Receiver's app acknowledges each message → server removes them from the offline queue
+
+**Why store-and-forward instead of just "retry later"?** Mobile networks are unreliable. A user might be offline for hours (on a flight, in a tunnel, phone dead). Store-and-forward guarantees zero message loss — once the server acknowledges receipt from the sender, that message WILL reach the recipient eventually, no matter how long it takes.
 
 ### 3) Group message fan-out
+
+**New components we need (in addition to the ones above):**
+
+1. **Kafka** — an event bus for group message fan-out. 💡 *We use Kafka here because group messages need to be delivered to N members reliably. If a fan-out worker crashes mid-delivery, Kafka retries automatically — no message gets lost.*
+2. **Fan-out Workers** — consume group message events and deliver to each member individually (online → push via WebSocket, offline → queue + push notification).
 
 ```mermaid
 flowchart LR
@@ -249,17 +272,15 @@ flowchart LR
     classDef data fill:#FFCA28,stroke:#F57F17,color:#000
 ```
 
-**Flow:**
-1. Sender sends to group `conv_123` (256 members).
-2. Chat Service stores ONE copy of the message (partition key = `conv_123`).
-3. Publishes a fan-out event to Kafka: `{messageId, conversationId, members: [u1..u256]}`.
-4. Fan-out workers consume, look up each member's connection, and push individually.
-5. Online members get real-time delivery. Offline members get offline queue + push notification.
+**Step-by-step flow:**
 
-**Why write-once, fan-out-on-read:**
-- Store 1 copy, not 256. Saves massive storage.
-- Fan-out is async — sender doesn't wait for 256 deliveries.
-- If fan-out worker crashes, Kafka retries (at-least-once delivery).
+1. Sender sends a message to group `conv_123` (256 members) → hits Chat Service
+2. Chat Service stores ONE copy of the message (partition key = `conv_123`) — not 256 copies!
+3. Publishes a fan-out event to Kafka: "deliver message M to these 256 members"
+4. Fan-out workers consume the event and look up each member's connection — online members get real-time WebSocket delivery, offline members get the offline queue + push notification treatment
+5. If a fan-out worker crashes, Kafka retries — at-least-once delivery is guaranteed
+
+**Why store once, fan-out on delivery?** Writing 256 copies of the same message would waste massive storage. Instead, we store one copy and fan out references (message IDs) to each member's timeline. This also makes edits and deletes trivial — change one row, and everyone sees the update.
 
 ## Potential Deep Dives
 
