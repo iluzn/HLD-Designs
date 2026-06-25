@@ -39,4 +39,4 @@ System design interview problems covering distributed architectures, databases, 
 
 ---
 
-*More designs coming every week. [Request one on GitHub →](https://github.com/iluzn/HLD-Designs/issues)*
+*More designs coming every week. Drop a request in the comments below 👇*

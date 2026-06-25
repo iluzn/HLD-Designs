@@ -37,4 +37,4 @@ Machine-coding problems asked at PhonePe, Flipkart, Swiggy, Razorpay, and other 
 
 ---
 
-*More problems coming weekly. [Request one on GitHub →](https://github.com/iluzn/HLD-Designs/issues)*
+*More problems coming weekly. Drop a request in the comments below 👇*
