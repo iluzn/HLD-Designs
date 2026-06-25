@@ -90,9 +90,32 @@ classDiagram
 
 ---
 
+## How It All Fits Together
+
+Here's what happens when the user hits "play":
+
+1. User calls `play()` → MusicPlayer acquires lock (thread-safety)
+2. If STOPPED: delegates to current `PlayMode` for the next song
+3. PlayMode (Sequential or Shuffle) returns the appropriate next track
+4. Song is set as current, state transitions to PLAYING, song added to history
+5. All registered Observers are notified (UI update, scrobbling, etc.)
+6. Lock released, song plays
+
+When the user enables shuffle mid-playback:
+
+1. `enableShuffle()` swaps the PlayMode strategy from Sequential → Shuffle
+2. ShuffleMode receives the playlist and runs Fisher-Yates in-place shuffle
+3. Every subsequent `next()` walks the shuffled array — every song plays exactly once
+4. When all songs have played, it reshuffles and starts a new cycle
+5. `disableShuffle()` swaps back to SequentialMode seamlessly
+
+---
+
 ## Complete Code
 
 ### Song
+
+Song is an immutable value object — once created, it never changes. Immutability means it's safe to share across threads without synchronization. Equality is based on `id` so the same song in different playlists is recognized as identical.
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -183,6 +206,8 @@ public:
 
 ### Playlist
 
+A playlist is simply an ordered collection of songs. It doesn't know about play order or shuffling — that's the PlayMode's job. This separation means the same Playlist can be played sequentially, shuffled, or repeated without modification.
+
 <div class="code-tabs">
 <div class="tab-buttons">
 <button class="tab-btn active">Java</button>
@@ -255,6 +280,10 @@ public:
 
 ### PlayMode (Strategy Interface)
 
+This is the strategy interface that defines how songs are traversed. Sequential and Shuffle are two implementations, but you could add RepeatOne, RepeatAll, or any custom ordering without touching MusicPlayer.
+
+💡 *Strategy pattern = define a family of algorithms, encapsulate each one, and make them interchangeable at runtime. Switching from sequential to shuffle = swap one object, zero if/else branches in the player.*
+
 <div class="code-tabs">
 <div class="tab-buttons">
 <button class="tab-btn active">Java</button>
@@ -323,6 +352,8 @@ public:
 </div>
 
 ### SequentialMode
+
+The simplest play mode — walks through songs in order with wraparound. Index-based traversal gives O(1) for both `next()` and `previous()`. When you reach the end, it wraps to the beginning (and vice versa for `previous()`).
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -453,6 +484,10 @@ public:
 </div>
 
 ### ShuffleMode (Fisher-Yates, No Repeats)
+
+The shuffle implementation guarantees every song plays exactly once before any repeat. On `reset()`, it copies the song list and shuffles it in-place using Fisher-Yates. When all songs have been played (`currentIndex >= size`), it reshuffles for a new cycle.
+
+💡 *Fisher-Yates shuffle guarantees each permutation is equally likely and runs in O(n). Every song plays exactly once before any repeat — unlike naive `random.nextInt(size)` which could repeat songs while skipping others.*
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -615,6 +650,10 @@ public:
 
 ### PlayHistory
 
+A bounded history of played songs, implemented as a deque with max size. When full, the oldest entry is evicted. Using `ArrayDeque`/`deque` gives O(1) for both `addFirst` and `removeLast`.
+
+We use a bounded deque rather than an unbounded list because a user who plays 10,000 songs shouldn't OOM the player. The max size (100) is configurable.
+
 <div class="code-tabs">
 <div class="tab-buttons">
 <button class="tab-btn active">Java</button>
@@ -710,6 +749,12 @@ public:
 </div>
 
 ### MusicPlayer (Main Controller)
+
+The orchestrator that ties everything together. It holds the current PlayMode strategy, manages state transitions (STOPPED → PLAYING → PAUSED), records history, and notifies observers on changes.
+
+💡 *Observer pattern = when something changes, automatically notify all interested parties without the subject knowing who they are. Here, UI components register as observers and get called on every song change or state transition — the player never imports UI code.*
+
+Thread-safety is achieved with `ReentrantLock` — concurrent `next()`/`pause()` calls from UI threads or background timers won't corrupt state.
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -1096,6 +1141,8 @@ public:
 </div>
 
 ### Demo (Runnable)
+
+The demo proves the entire system works end-to-end: loads a playlist, plays sequentially, toggles shuffle, and prints history. The observer prints every state/song change to console.
 
 <div class="code-tabs">
 <div class="tab-buttons">

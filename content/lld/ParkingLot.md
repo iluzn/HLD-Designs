@@ -160,9 +160,33 @@ classDiagram
 
 ---
 
+## How It All Fits Together
+
+Here's what happens when a car arrives at the lot:
+
+1. Driver enters → system calls `parkVehicle(car)`
+2. ParkingLot acquires a lock (thread-safety for concurrent arrivals)
+3. Checks if car is already parked (duplicate prevention via `vehicleTickets` map)
+4. Iterates through floors, asking each for an available MEDIUM or LARGE spot
+5. Floor checks its `Queue<Spot>` for the smallest fitting size first (best-fit strategy)
+6. Spot is assigned, ticket is issued with entry timestamp
+7. Lock is released, ticket returned to driver
+
+When the car leaves:
+
+1. Driver presents ticket → system calls `unparkVehicle(ticketId)`
+2. ParkingLot acquires lock, looks up ticket in O(1) from `activeTickets` map
+3. PricingStrategy calculates fee based on duration and vehicle type
+4. Spot is freed and returned to the floor's available queue
+5. Vehicle tracking removed, payment receipt generated and returned
+
+---
+
 ## Complete Code
 
 ### VehicleType.java
+
+These two enums define the type vocabulary for the entire system. Every sizing/pricing decision branches on these values, so centralizing them as enums prevents stringly-typed bugs.
 
 ```java
 package parkinglot.model;
@@ -180,6 +204,7 @@ public enum VehicleType {
 package parkinglot.model;
 
 public enum SpotSize {
+
     SMALL,
     MEDIUM,
     LARGE
@@ -187,6 +212,8 @@ public enum SpotSize {
 ```
 
 ### Vehicle.java
+
+A vehicle is the "thing being parked." It's an immutable value object identified by its license plate. Equality is based on `licensePlate` so we can use it as a HashMap key for duplicate-parking detection.
 
 ```java
 package parkinglot.model;
@@ -224,6 +251,8 @@ public class Vehicle {
 ```
 
 ### Spot.java
+
+A spot is the atomic unit of the parking lot — it knows its size, whether it's occupied, and which vehicle is in it. The `canFit()` method encodes the sizing rules (motorcycle → any, car → medium/large, truck → large only) so the Floor doesn't need to know vehicle-specific logic.
 
 ```java
 package parkinglot.model;
@@ -293,6 +322,8 @@ public class Spot {
 ```
 
 ### Floor.java
+
+A floor owns a collection of spots and manages availability. The key data structure choice here is `Map<SpotSize, Queue<Spot>>` — a queue per spot size gives us O(1) retrieval of the next available spot instead of scanning all spots linearly. When a vehicle arrives, we try the smallest fitting size first (best-fit) so motorcycles don't waste large spots.
 
 ```java
 package parkinglot.model;
@@ -391,6 +422,8 @@ public class Floor {
 
 ### Ticket.java
 
+A ticket is the proof of parking — it captures which vehicle is in which spot, and when they entered. The UUID-based ID ensures uniqueness without a central counter. This is the link between entry and exit: the driver presents the ticket ID at departure.
+
 ```java
 package parkinglot.model;
 
@@ -425,6 +458,8 @@ public class Ticket {
 
 ### Payment.java
 
+Payment is the output of the unpark flow — it bundles the fee, hours parked, and timestamp into a receipt. Separating it from the pricing logic keeps the "what to charge" decision (strategy) independent from the "record what was charged" concern (this class).
+
 ```java
 package parkinglot.model;
 
@@ -458,6 +493,12 @@ public class Payment {
 
 ### PricingStrategy.java (Strategy Interface)
 
+This is the heart of the extensibility story.
+
+💡 *Strategy pattern = define a family of algorithms, encapsulate each one, and make them interchangeable at runtime. Adding a new pricing model = one new class, zero changes to existing code.*
+
+The interface takes a ticket and exit time, returns a fee. ParkingLot delegates all pricing decisions here — it never contains pricing logic itself.
+
 ```java
 package parkinglot.pricing;
 
@@ -476,6 +517,8 @@ public interface PricingStrategy {
 ```
 
 ### HourlyPricing.java
+
+The default strategy — charges per hour with different rates per vehicle type. Uses ceiling division (`(minutes + 59) / 60`) so even 1 minute counts as a full hour. The `EnumMap` gives us O(1) rate lookup by vehicle type.
 
 ```java
 package parkinglot.pricing;
@@ -523,6 +566,8 @@ public class HourlyPricing implements PricingStrategy {
 
 ### FlatRatePricing.java
 
+A simpler strategy — flat fee per vehicle type regardless of how long they park. Useful for mall parking ("₹50 for the visit") or airport short-term. Demonstrates that strategies can have completely different logic while sharing the same interface.
+
 ```java
 package parkinglot.pricing;
 
@@ -563,6 +608,12 @@ public class FlatRatePricing implements PricingStrategy {
 
 ### WeekendPricing.java (Extension example)
 
+This wraps any existing strategy and applies a multiplier on weekends.
+
+💡 *Decorator pattern = wrap an existing object to add behavior without modifying it. Here we layer "2x on weekends" on top of any base pricing strategy — composable and open for extension.*
+
+This shows how Strategy + Decorator combine: you can do `new WeekendPricing(new HourlyPricing())` to get hourly rates that double on Saturdays/Sundays.
+
 ```java
 package parkinglot.pricing;
 
@@ -602,6 +653,8 @@ public class WeekendPricing implements PricingStrategy {
 
 ### ParkingLotException.java
 
+A domain-specific unchecked exception for parking operations (lot full, duplicate vehicle, invalid ticket). Gives callers a single exception type to catch for all parking-related failures.
+
 ```java
 package parkinglot.exception;
 
@@ -613,6 +666,12 @@ public class ParkingLotException extends RuntimeException {
 ```
 
 ### ParkingLot.java (Main Controller)
+
+The orchestrator — coordinates floors, tickets, and pricing. Uses `ReentrantLock` so two concurrent arrivals can't grab the same spot. The private constructor forces creation through the Builder, which avoids a 6-parameter constructor.
+
+💡 *Builder pattern = construct complex objects step-by-step instead of telescoping constructors with 10 parameters. Here: `new Builder().name("Mall").addFloor(5,10,3).pricingStrategy(hourly).build()`*
+
+We maintain two maps: `activeTickets` (ticketId → Ticket) for O(1) exit lookup, and `vehicleTickets` (plate → Ticket) for O(1) duplicate detection.
 
 ```java
 package parkinglot;
@@ -796,6 +855,8 @@ public class ParkingLot {
 ```
 
 ### Demo.java (Runnable end-to-end)
+
+The demo proves the system works end-to-end: builds a lot, parks vehicles, handles duplicates, unparks with different pricing strategies, and demonstrates thread-safety with concurrent parking from two threads.
 
 ```java
 package parkinglot;
