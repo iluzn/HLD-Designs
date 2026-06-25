@@ -13,7 +13,19 @@ Pattern-based DSA problems organized by technique — not by difficulty alone. E
 
 ---
 
-## 🟢 Live Problems
+## 📋 Curated Problem Lists
+
+Pick based on your prep time:
+
+| List | Problems | Best for | Link |
+|---|---|---|---|
+| **Top 50 Cheatsheet** | 50 | 1-2 week crash course | [View →](/cheatsheet) |
+| **Blind 75** | 75 | 4-5 weeks, covers all patterns | [View →](/blind75) |
+| **NeetCode 150** | 150 | 6-8 weeks, deep coverage | [View →](/neetcode150) |
+
+---
+
+## 🟢 Live Problems (with full solutions)
 
 | # | Problem | Pattern | Difficulty | Companies |
 |---|---|---|---|---|
