@@ -28,4 +28,4 @@ These notes were created while preparing for system design interviews at top tec
 
 ## Contributing
 
-Found a mistake? Have a suggestion? Open an issue or PR on [GitHub](https://github.com/iluzn/HLD-Designs).
+Found a mistake? Have a suggestion? Drop a comment on any page.
