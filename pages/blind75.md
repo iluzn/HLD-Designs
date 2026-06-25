@@ -165,17 +165,4 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 ---
 
-## Completion Tracker
-
-Use this to track your progress (mark ✅ as you solve):
-
-- **Week 1 (15/day):** #1-15 (Arrays, Two Pointers, Sliding Window)
-- **Week 2 (10/day):** #16-36 (Stack, Binary Search, Linked List, Trees)
-- **Week 3 (10/day):** #37-56 (Tries, Heap, Backtracking, Graphs, DP start)
-- **Week 4 (remaining):** #57-75 (DP finish, Intervals, Greedy, Bits)
-
-Target: **4-5 weeks at 3-4 problems/day** to complete the full The 75.
-
----
-
 *For detailed solutions with explanations, check the [DSA section](/dsa). For pattern fundamentals, read [DSA Fundamentals](/dsa-fundamentals).*

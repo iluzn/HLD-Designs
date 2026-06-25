@@ -260,17 +260,6 @@ The expanded interview prep list — 150 problems covering every pattern in dept
 
 ---
 
-## Study Plan
-
-| Week | Problems | Focus |
-|---|---|---|
-| 1-2 | #1-40 | Arrays, Pointers, Window, Stack, Search, Linked List |
-| 3-4 | #41-80 | Trees, Tries, Heaps, Backtracking, Graphs |
-| 5-6 | #81-120 | Advanced Graphs, 1D DP, 2D DP, Greedy |
-| 7-8 | #121-150 | Intervals, Math, Bits, Cleanup + revisit weak spots |
-
-Pace: **~3 problems/day** = done in 7-8 weeks.
-
----
+> ✅ **Your progress is saved automatically** in your browser. Check off problems as you solve them — come back anytime and pick up where you left off.
 
 *For full solutions with walkthroughs, check the [DSA section](/dsa). For the shorter version, see [The 75](/the-75).*

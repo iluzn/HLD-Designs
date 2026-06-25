@@ -372,6 +372,99 @@
             var h = document.documentElement.scrollHeight - window.innerHeight;
             document.getElementById('progress-bar').style.width = (window.scrollY / h * 100) + '%';
         });
+
+        // Problem progress tracker (localStorage checkboxes)
+        (function() {
+            var tables = document.querySelectorAll('.content table');
+            if (!tables.length) return;
+
+            var pageKey = 'progress:' + window.location.pathname;
+            var saved = JSON.parse(localStorage.getItem(pageKey) || '{}');
+            var total = 0, done = 0;
+            var checkboxes = [];
+
+            tables.forEach(function(table) {
+                var headerRow = table.querySelector('thead tr, tr:first-child');
+                if (!headerRow) return;
+                var cells = headerRow.querySelectorAll('th, td');
+                // Only add checkboxes to tables that have a "#" or "Problem" column
+                var hasProblemCol = false;
+                cells.forEach(function(c) {
+                    var text = c.textContent.trim().toLowerCase();
+                    if (text === '#' || text === 'problem') hasProblemCol = true;
+                });
+                if (!hasProblemCol) return;
+
+                // Add "Done" header
+                var th = document.createElement('th');
+                th.textContent = '✓';
+                th.style.width = '30px';
+                th.style.textAlign = 'center';
+                headerRow.insertBefore(th, headerRow.firstChild);
+
+                // Add checkboxes to data rows
+                var rows = table.querySelectorAll('tbody tr, tr:not(:first-child)');
+                rows.forEach(function(row) {
+                    var problemCell = row.querySelectorAll('td')[1]; // 2nd cell is usually the problem name
+                    if (!problemCell) return;
+                    var problemName = problemCell.textContent.trim().substring(0, 60);
+                    if (!problemName || problemName.length < 2) return;
+
+                    total++;
+                    var td = document.createElement('td');
+                    td.style.textAlign = 'center';
+                    var cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.style.cursor = 'pointer';
+                    cb.style.width = '16px';
+                    cb.style.height = '16px';
+                    cb.style.accentColor = 'var(--accent)';
+
+                    var key = problemName;
+                    if (saved[key]) { cb.checked = true; done++; }
+
+                    cb.addEventListener('change', function() {
+                        saved[key] = cb.checked;
+                        if (!cb.checked) delete saved[key];
+                        localStorage.setItem(pageKey, JSON.stringify(saved));
+                        updateProgressBar();
+                    });
+
+                    td.appendChild(cb);
+                    row.insertBefore(td, row.firstChild);
+                    checkboxes.push(cb);
+                });
+            });
+
+            // Progress bar UI
+            if (total > 0) {
+                var bar = document.createElement('div');
+                bar.id = 'problem-progress';
+                bar.style.cssText = 'position:sticky;top:52px;z-index:99;background:var(--bg);padding:0.5rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.8rem;font-size:0.8rem;color:var(--text-muted);';
+                var fill = document.createElement('div');
+                fill.style.cssText = 'flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;';
+                var inner = document.createElement('div');
+                inner.id = 'progress-fill';
+                inner.style.cssText = 'height:100%;background:var(--accent);border-radius:3px;transition:width 0.3s;';
+                fill.appendChild(inner);
+                var label = document.createElement('span');
+                label.id = 'progress-label';
+                bar.appendChild(label);
+                bar.appendChild(fill);
+                var content = document.querySelector('.content');
+                if (content) content.insertBefore(bar, content.firstChild);
+                updateProgressBar();
+            }
+
+            function updateProgressBar() {
+                var currentDone = Object.keys(JSON.parse(localStorage.getItem(pageKey) || '{}')).length;
+                var pct = total > 0 ? Math.round((currentDone / total) * 100) : 0;
+                var fillEl = document.getElementById('progress-fill');
+                var labelEl = document.getElementById('progress-label');
+                if (fillEl) fillEl.style.width = pct + '%';
+                if (labelEl) labelEl.textContent = currentDone + '/' + total + ' (' + pct + '%)';
+            }
+        })();
     </script>
 
     <!-- Cloudflare Web Analytics -->
