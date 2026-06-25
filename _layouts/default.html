@@ -49,6 +49,18 @@
         .theme-toggle { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 0.4rem 0.6rem; border-radius: 6px; cursor: pointer; font-size: 1rem; margin-left: 0.5rem; transition: all 0.2s; }
         .theme-toggle:hover { border-color: var(--accent); color: var(--text); }
 
+        /* Hamburger menu for mobile */
+        .hamburger { display: none; background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; padding: 0.3rem; line-height: 1; }
+        .nav-links { display: flex; align-items: center; gap: 0.2rem; }
+
+        @media (max-width: 600px) {
+            .hamburger { display: block; }
+            .nav-links { display: none; position: absolute; top: 100%; right: 1rem; background: var(--bg-header); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; flex-direction: column; align-items: stretch; min-width: 150px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); backdrop-filter: blur(12px); }
+            .nav-links.open { display: flex; }
+            .nav-links a { padding: 0.6rem 1rem; font-size: 0.9rem; }
+            .theme-toggle { margin: 0.3rem 1rem; }
+        }
+
         .page-layout { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 4rem; display: grid; grid-template-columns: 1fr 220px; gap: 3rem; }
 
         /* TOC */
@@ -125,8 +137,6 @@
             .mobile-toc-btn { display: block; }
             .content h1 { font-size: 1.5rem; }
             .content h2 { font-size: 1.2rem; }
-            nav a { font-size: 0.78rem; padding: 0.3rem 0.4rem; }
-            .theme-toggle { padding: 0.3rem 0.5rem; font-size: 0.9rem; margin-left: 0.2rem; }
         }
     </style>
     <script>
@@ -145,12 +155,15 @@
         <div class="header-inner">
             <a href="/" class="logo">System<span>Craft</span></a>
             <nav>
-                <a href="/">Designs</a>
-                <a href="/concepts">HLD</a>
-                <a href="/lld-fundamentals">LLD</a>
-                <a href="/dsa-fundamentals">DSA</a>
-                <a href="/about">About</a>
-                <button class="theme-toggle" id="theme-btn" title="Toggle theme">🌙</button>
+                <button class="hamburger" id="hamburger-btn" aria-label="Menu">☰</button>
+                <div class="nav-links" id="nav-links">
+                    <a href="/">Designs</a>
+                    <a href="/concepts">HLD</a>
+                    <a href="/lld-fundamentals">LLD</a>
+                    <a href="/dsa-fundamentals">DSA</a>
+                    <a href="/about">About</a>
+                    <button class="theme-toggle" id="theme-btn" title="Toggle theme">🌙</button>
+                </div>
             </nav>
         </div>
     </header>
@@ -260,6 +273,25 @@
             setTheme(current === 'dark' ? 'light' : 'dark');
         });
         setTheme(localStorage.getItem('theme') || 'dark');
+
+        // Hamburger menu
+        var hamburger = document.getElementById('hamburger-btn');
+        var navLinks = document.getElementById('nav-links');
+        if (hamburger && navLinks) {
+            hamburger.addEventListener('click', function() {
+                navLinks.classList.toggle('open');
+            });
+            // Close menu when a link is clicked
+            navLinks.querySelectorAll('a').forEach(function(a) {
+                a.addEventListener('click', function() { navLinks.classList.remove('open'); });
+            });
+            // Close menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+                    navLinks.classList.remove('open');
+                }
+            });
+        }
 
         // TOC
         (function() {
