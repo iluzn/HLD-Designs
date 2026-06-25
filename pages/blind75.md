@@ -54,8 +54,8 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 18 | Find Minimum in Rotated Sorted Array | Binary Search | If `mid > right`, min is in right half | O(log n) |
-| 19 | Search in Rotated Sorted Array | Binary Search | Determine sorted half, check if target is in it | O(log n) |
+| 18 | [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Binary Search | If `mid > right`, min is in right half | O(log n) |
+| 19 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Binary Search | Determine sorted half, check if target is in it | O(log n) |
 
 ## Linked List (6)
 
@@ -150,7 +150,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 69 | Maximum Subarray | Kadane | (duplicate — see #5) | O(n) |
+| 69 | [Maximum Subarray](https://leetcode.com/problems/maximum-subarray/) | Kadane | (duplicate — see #5) | O(n) |
 | 70 | [Jump Game](https://leetcode.com/problems/jump-game/) | Greedy | (duplicate — see #61) | O(n) |
 
 ## Bit Manipulation (5)

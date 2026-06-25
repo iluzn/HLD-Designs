@@ -104,7 +104,7 @@ The expanded interview prep list — 150 problems covering every pattern in dept
 | 55 | [Count Good Nodes](https://leetcode.com/problems/count-good-nodes-in-binary-tree/) | DFS with running max from root | O(n) |
 | 56 | [Validate BST](https://leetcode.com/problems/validate-binary-search-tree/) | DFS with (min, max) bounds | O(n) |
 | 57 | [Kth Smallest in BST](https://leetcode.com/problems/kth-smallest-element-in-a-bst/) | Inorder traversal, stop at k | O(h+k) |
-| 58 | Build Tree from Pre+In | root=pre[0], split inorder, recurse | O(n) |
+| 58 | [Build Tree from Preorder & Inorder](https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/) | Root = preorder[0], split inorder, recurse | O(n) |
 | 59 | [Max Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/) | DFS: node + max(left,right,0); track global | O(n) |
 | 60 | [Serialize/Deserialize](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/) | Preorder with "#" for nulls | O(n) |
 
@@ -192,7 +192,7 @@ The expanded interview prep list — 150 problems covering every pattern in dept
 |---|---|---|---|
 | 109 | [Unique Paths](https://leetcode.com/problems/unique-paths/) | `dp[i][j] = dp[i-1][j] + dp[i][j-1]` | O(m×n) |
 | 110 | [Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) | Match→diag+1, else max(left,up) | O(m×n) |
-| 111 | Best Time Buy/Sell with Cooldown | States: hold, sold, rest | O(n) |
+| 111 | [Best Time Buy/Sell with Cooldown](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/) | States: hold, sold, rest | O(n) |
 | 112 | [Coin Change II (count ways)](https://leetcode.com/problems/coin-change-ii/) | `dp[i] += dp[i-coin]` | O(amount×coins) |
 | 113 | [Target Sum](https://leetcode.com/problems/target-sum/) | 0/1 knapsack on (sum+total)/2 | O(n×sum) |
 | 114 | [Interleaving String](https://leetcode.com/problems/interleaving-string/) | 2D dp[i][j] = can form s3[0..i+j] from s1[0..i] + s2[0..j] | O(m×n) |
@@ -211,7 +211,7 @@ The expanded interview prep list — 150 problems covering every pattern in dept
 | 122 | [Jump Game II](https://leetcode.com/problems/jump-game-ii/) | BFS-style levels (current reach, next reach) | O(n) |
 | 123 | [Gas Station](https://leetcode.com/problems/gas-station/) | If total gas >= total cost, solution exists; find start via running sum | O(n) |
 | 124 | [Hand of Straights](https://leetcode.com/problems/hand-of-straights/) | Sort + greedily form groups with HashMap | O(n log n) |
-| 125 | Merge Triplets to Form Target | For each triplet, check if any coordinate matches without exceeding | O(n) |
+| 125 | [Merge Triplets to Form Target](https://leetcode.com/problems/merge-triplets-to-form-target-triplet/) | For each triplet, check if any coordinate matches without exceeding | O(n) |
 | 126 | [Partition Labels](https://leetcode.com/problems/partition-labels/) | Last occurrence of each char; extend end, split when i == end | O(n) |
 | 127 | [Valid Parenthesis String](https://leetcode.com/problems/valid-parenthesis-string/) | Track min/max open count range | O(n) |
 
@@ -254,9 +254,9 @@ The expanded interview prep list — 150 problems covering every pattern in dept
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 148 | Design Add and Search Words | Trie + DFS on wildcards | O(26^L) |
-| 149 | Maximum Product of Word Lengths | Bitmask per word, compare pairs with no overlap | O(n²) |
-| 150 | Longest Increasing Subsequence | Patience sort + binary search | O(n log n) |
+| 148 | [Design Add and Search Words](https://leetcode.com/problems/design-add-and-search-words-data-structure/) | Trie + DFS on wildcards | O(26^L) |
+| 149 | [Maximum Product of Word Lengths](https://leetcode.com/problems/maximum-product-of-word-lengths/) | Bitmask per word, compare pairs with no overlap | O(n²) |
+| 150 | [Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/) | Patience sort + binary search | O(n log n) |
 
 ---
 

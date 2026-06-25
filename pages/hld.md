@@ -1,44 +1,598 @@
 ---
-layout: default
-title: "High-Level Design Problems"
-description: "System design interview problems with diagrams, technology choices, deep dives, and trade-offs."
+layout: none
+title: "High-Level Design Problems — SystemCraft"
+description: "System design interview problems with diagrams, technology choices, deep dives, and trade-offs. Beginner to Advanced."
 permalink: /hld
 ---
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <script>(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High-Level Design Problems — SystemCraft</title>
+    <meta name="description" content="System design interview problems with diagrams, technology choices, deep dives, and trade-offs.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="canonical" href="https://systemcraft.in/hld">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
 
-# High-Level Design Problems
+<div class="bg-gradient"></div>
 
-> 📚 **New to system design?** Start with the [HLD Fundamentals](/concepts) — covers CAP, caching, sharding, queues, and estimation.
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">System<span>Craft</span></a>
+        <nav>
+            <button class="hamburger" id="hamburger-btn" aria-label="Menu">&#9776;</button>
+            <div class="nav-links" id="nav-links">
+                <a href="/hld" class="active">HLD</a>
+                <a href="/lld">LLD</a>
+                <a href="/dsa">DSA</a>
+                <a href="/cheatsheet">Cheatsheet</a>
+                <a href="/about">About</a>
+                <button id="theme-btn" title="Switch theme">🌙</button>
+            </div>
+        </nav>
+    </div>
+</header>
 
-System design interview problems covering distributed architectures, databases, caching, messaging, and real-time systems. Each design includes diagrams, technology choices, deep dives, and trade-offs.
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-badge">🏗️ System Design</div>
+    <h1>High-Level Design <em>Problems</em></h1>
+    <p>Distributed architectures with diagrams, technology choices, deep dives, and trade-offs. Built for interviews at Amazon, Google, Meta, and top startups.</p>
+    <div class="hero-stats">
+        <div class="hero-stat"><strong>11</strong><span>Designs</span></div>
+        <div class="hero-stat"><strong>3</strong><span>Difficulty Levels</span></div>
+        <div class="hero-stat"><strong>50+</strong><span>Deep Dives</span></div>
+    </div>
+</section>
 
----
+<!-- Progress bar -->
+<div class="progress-strip" id="progress-strip">
+    <div class="progress-inner">
+        <span class="progress-label" id="progress-label">0/11 completed</span>
+        <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+    </div>
+</div>
 
-## 🟢 Beginner
+<!-- Start here callout -->
+<div class="section">
+    <a class="start-here" href="/concepts">
+        <div class="start-here-icon">📚</div>
+        <div class="start-here-content">
+            <strong>New to system design?</strong>
+            <p>Start with HLD Fundamentals — covers CAP theorem, caching, sharding, queues, and back-of-envelope estimation.</p>
+        </div>
+        <div class="start-here-arrow">→</div>
+    </a>
+</div>
 
-| # | Problem | Key Topics |
-|---|---|---|
-| 1 | [🅿️ Parking Lot (LLD/HLD hybrid)](/ParkingLot) | OOP, Strategy pattern, composition |
-| 2 | [🏆 Real-Time Leaderboard](/Leaderboard) | Redis sorted sets, top-N queries |
-| 3 | [🚦 Rate Limiter](/RateLimiter) | Token bucket, sliding window, Redis Lua |
+<!-- Filter tabs -->
+<div class="section">
+    <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="beginner">🟢 Beginner</button>
+        <button class="filter-btn" data-filter="intermediate">🟡 Intermediate</button>
+        <button class="filter-btn" data-filter="advanced">🔴 Advanced</button>
+    </div>
+</div>
 
-## 🟡 Intermediate
+<!-- Problems Grid -->
+<div class="section">
+    <div class="difficulty-group" data-difficulty="beginner">
+        <div class="group-header">
+            <h2><span class="diff-dot green"></span> Beginner</h2>
+            <span class="group-count">3 problems</span>
+        </div>
+        <div class="problems-grid">
 
-| # | Problem | Key Topics |
-|---|---|---|
-| 4 | [🔗 URL Shortener](/URLShortner) | Base62, Snowflake ID, CDN caching, analytics |
-| 5 | [🐦 Twitter / Social Feed](/TwitterFeed) | Fan-out on write vs read, timeline caching |
-| 6 | [💬 Chat System (WhatsApp)](/ChatSystem) | WebSocket, offline delivery, Cassandra |
-| 7 | [🔔 Notification System](/NotificationSystem) | Multi-channel, Kafka, template service, engagement |
+            <a class="problem-card" href="/ParkingLot" data-difficulty="beginner">
+                <div class="card-top">
+                    <span class="card-icon">🅿️</span>
+                    <span class="diff-badge green">Beginner</span>
+                </div>
+                <h3>Parking Lot</h3>
+                <p class="card-desc">LLD/HLD hybrid — OOP composition with system-level thinking.</p>
+                <div class="card-tags">
+                    <span class="tag">OOP</span>
+                    <span class="tag">Strategy Pattern</span>
+                    <span class="tag">Composition</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Flipkart</span>
+                    <span class="company">PhonePe</span>
+                    <span class="company">Amazon</span>
+                </div>
+            </a>
 
-## 🔴 Advanced
+            <a class="problem-card" href="/Leaderboard" data-difficulty="beginner">
+                <div class="card-top">
+                    <span class="card-icon">🏆</span>
+                    <span class="diff-badge green">Beginner</span>
+                </div>
+                <h3>Real-Time Leaderboard</h3>
+                <p class="card-desc">Redis sorted sets, top-N queries, real-time ranking at scale.</p>
+                <div class="card-tags">
+                    <span class="tag">Redis ZSET</span>
+                    <span class="tag">Top-N</span>
+                    <span class="tag">WebSocket</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Dream11</span>
+                    <span class="company">Hotstar</span>
+                </div>
+            </a>
 
-| # | Problem | Key Topics |
-|---|---|---|
-| 8 | [⏰ Distributed Job Scheduler](/JobScheduler) | Redis ZSET, leader election, retries, DLQ |
-| 9 | [⏱️ Delayed Trigger Service](/DelayedTriggerService) | SQS + Cassandra, timing wheel, circuit breaker |
-| 10 | [💰 Digital Wallet (PhonePe)](/DigitalWallet) | Double-entry ledger, idempotency, reconciliation |
-| 11 | [🍔 Food Delivery (Zomato)](/Zomato) | Elasticsearch, Redis Geo, dispatch, live tracking |
+            <a class="problem-card" href="/RateLimiter" data-difficulty="beginner">
+                <div class="card-top">
+                    <span class="card-icon">🚦</span>
+                    <span class="diff-badge green">Beginner</span>
+                </div>
+                <h3>Rate Limiter</h3>
+                <p class="card-desc">Token bucket, sliding window, distributed limiting with Redis Lua scripts.</p>
+                <div class="card-tags">
+                    <span class="tag">Token Bucket</span>
+                    <span class="tag">Sliding Window</span>
+                    <span class="tag">Redis Lua</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Google</span>
+                    <span class="company">Stripe</span>
+                    <span class="company">Cloudflare</span>
+                </div>
+            </a>
+        </div>
+    </div>
 
----
+    <div class="difficulty-group" data-difficulty="intermediate">
+        <div class="group-header">
+            <h2><span class="diff-dot yellow"></span> Intermediate</h2>
+            <span class="group-count">4 problems</span>
+        </div>
+        <div class="problems-grid">
 
-*More designs coming every week. Drop a request in the comments below 👇*
+            <a class="problem-card" href="/URLShortner" data-difficulty="intermediate">
+                <div class="card-top">
+                    <span class="card-icon">🔗</span>
+                    <span class="diff-badge yellow">Intermediate</span>
+                </div>
+                <h3>URL Shortener</h3>
+                <p class="card-desc">Base62 encoding, Snowflake IDs, CDN caching, click analytics pipeline.</p>
+                <div class="card-tags">
+                    <span class="tag">Base62</span>
+                    <span class="tag">Snowflake ID</span>
+                    <span class="tag">CDN</span>
+                    <span class="tag">Analytics</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Google</span>
+                    <span class="company">Amazon</span>
+                    <span class="company">Microsoft</span>
+                </div>
+            </a>
+
+            <a class="problem-card" href="/TwitterFeed" data-difficulty="intermediate">
+                <div class="card-top">
+                    <span class="card-icon">🐦</span>
+                    <span class="diff-badge yellow">Intermediate</span>
+                </div>
+                <h3>Twitter / Social Feed</h3>
+                <p class="card-desc">Fan-out on write vs read, timeline caching, celebrity problem.</p>
+                <div class="card-tags">
+                    <span class="tag">Fan-out</span>
+                    <span class="tag">Timeline Cache</span>
+                    <span class="tag">Celebrity Problem</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Meta</span>
+                    <span class="company">Twitter</span>
+                    <span class="company">LinkedIn</span>
+                </div>
+            </a>
+
+            <a class="problem-card" href="/ChatSystem" data-difficulty="intermediate">
+                <div class="card-top">
+                    <span class="card-icon">💬</span>
+                    <span class="diff-badge yellow">Intermediate</span>
+                </div>
+                <h3>Chat System (WhatsApp)</h3>
+                <p class="card-desc">WebSocket connections, offline delivery queues, Cassandra message store.</p>
+                <div class="card-tags">
+                    <span class="tag">WebSocket</span>
+                    <span class="tag">Offline Delivery</span>
+                    <span class="tag">Cassandra</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Meta</span>
+                    <span class="company">Slack</span>
+                    <span class="company">Discord</span>
+                </div>
+            </a>
+
+            <a class="problem-card" href="/NotificationSystem" data-difficulty="intermediate">
+                <div class="card-top">
+                    <span class="card-icon">🔔</span>
+                    <span class="diff-badge yellow">Intermediate</span>
+                </div>
+                <h3>Notification System</h3>
+                <p class="card-desc">Multi-channel push/email/SMS, Kafka pipelines, template service, engagement tracking.</p>
+                <div class="card-tags">
+                    <span class="tag">Multi-channel</span>
+                    <span class="tag">Kafka</span>
+                    <span class="tag">Template Engine</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Amazon</span>
+                    <span class="company">Uber</span>
+                    <span class="company">PhonePe</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="difficulty-group" data-difficulty="advanced">
+        <div class="group-header">
+            <h2><span class="diff-dot red"></span> Advanced</h2>
+            <span class="group-count">4 problems</span>
+        </div>
+        <div class="problems-grid">
+
+            <a class="problem-card" href="/JobScheduler" data-difficulty="advanced">
+                <div class="card-top">
+                    <span class="card-icon">⏰</span>
+                    <span class="diff-badge red">Advanced</span>
+                </div>
+                <h3>Distributed Job Scheduler</h3>
+                <p class="card-desc">Redis ZSET hot window, leader election, retries, dead-letter queues.</p>
+                <div class="card-tags">
+                    <span class="tag">Redis ZSET</span>
+                    <span class="tag">Leader Election</span>
+                    <span class="tag">DLQ</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Uber</span>
+                    <span class="company">Amazon</span>
+                    <span class="company">Airbnb</span>
+                </div>
+            </a>
+
+            <a class="problem-card" href="/DelayedTriggerService" data-difficulty="advanced">
+                <div class="card-top">
+                    <span class="card-icon">⏱️</span>
+                    <span class="diff-badge red">Advanced</span>
+                </div>
+                <h3>Delayed Trigger Service</h3>
+                <p class="card-desc">SQS + Cassandra, hierarchical timing wheels, circuit breaker patterns.</p>
+                <div class="card-tags">
+                    <span class="tag">Timing Wheel</span>
+                    <span class="tag">SQS</span>
+                    <span class="tag">Circuit Breaker</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">PhonePe</span>
+                    <span class="company">Stripe</span>
+                </div>
+            </a>
+
+            <a class="problem-card" href="/DigitalWallet" data-difficulty="advanced">
+                <div class="card-top">
+                    <span class="card-icon">💰</span>
+                    <span class="diff-badge red">Advanced</span>
+                </div>
+                <h3>Digital Wallet (PhonePe)</h3>
+                <p class="card-desc">Double-entry ledger, idempotency keys, reconciliation, saga pattern.</p>
+                <div class="card-tags">
+                    <span class="tag">Double-Entry Ledger</span>
+                    <span class="tag">Idempotency</span>
+                    <span class="tag">Reconciliation</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">PhonePe</span>
+                    <span class="company">Razorpay</span>
+                    <span class="company">Stripe</span>
+                </div>
+            </a>
+
+            <a class="problem-card" href="/Zomato" data-difficulty="advanced">
+                <div class="card-top">
+                    <span class="card-icon">🍔</span>
+                    <span class="diff-badge red">Advanced</span>
+                </div>
+                <h3>Food Delivery (Zomato)</h3>
+                <p class="card-desc">Elasticsearch search, Redis Geo proximity, dispatch algorithms, live tracking via WebSockets.</p>
+                <div class="card-tags">
+                    <span class="tag">Elasticsearch</span>
+                    <span class="tag">Redis Geo</span>
+                    <span class="tag">Live Tracking</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Zomato</span>
+                    <span class="company">Swiggy</span>
+                    <span class="company">Uber Eats</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Recommended order -->
+<div class="section">
+    <div class="roadmap-card">
+        <h2>📍 Recommended Study Order</h2>
+        <p class="roadmap-sub">Follow this progression to build concepts layer by layer.</p>
+        <div class="roadmap-steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <strong>Fundamentals</strong>
+                    <span>CAP, Caching, Sharding, Queues</span>
+                </div>
+                <a href="/concepts" class="step-link">Read →</a>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <strong>Rate Limiter + Leaderboard</strong>
+                    <span>Single-service designs, Redis patterns</span>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <strong>URL Shortener + Chat System</strong>
+                    <span>Multi-tier, async, real-time</span>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <strong>Twitter Feed + Notifications</strong>
+                    <span>Fan-out, Kafka, multi-channel</span>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">5</div>
+                <div class="step-content">
+                    <strong>Job Scheduler + Wallet + Zomato</strong>
+                    <span>Staff+ level: consistency, geo, payments</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p><a href="/">Home</a> &middot; <a href="/lld">LLD</a> &middot; <a href="/dsa">DSA</a> &middot; <a href="/about">About</a> &middot; <a href="https://github.com/iluzn/HLD-Designs">GitHub</a></p>
+    <p style="margin-top:0.5rem;">&copy; 2026 SystemCraft. Free forever.</p>
+</footer>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+    min-height: 100vh; overflow-x: hidden; transition: background 0.3s, color 0.3s;
+}
+[data-theme="light"] {
+    --bg: #f9fafb; --text: #111827; --text-muted: #374151; --text-dim: #6b7280;
+    --card-bg: #ffffff; --border: rgba(0,0,0,0.08); --accent: #4f46e5;
+    --accent-light: #4338ca; --tag-bg: rgba(79,70,229,0.06); --tag-border: rgba(79,70,229,0.15);
+    --header-bg: rgba(249,250,251,0.95);
+}
+[data-theme="dark"] {
+    --bg: #09090b; --text: #e2e8f0; --text-muted: #94a3b8; --text-dim: #64748b;
+    --card-bg: rgba(15,15,20,0.8); --border: rgba(255,255,255,0.06); --accent: #6366f1;
+    --accent-light: #a5b4fc; --tag-bg: rgba(99,102,241,0.06); --tag-border: rgba(99,102,241,0.15);
+    --header-bg: rgba(9,9,11,0.95);
+}
+
+.bg-gradient { position: fixed; top: 0; left: 0; right: 0; height: 600px; background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.12), transparent); pointer-events: none; z-index: 0; }
+[data-theme="light"] .bg-gradient { opacity: 0.4; }
+
+/* Header */
+header { position: sticky; top: 0; z-index: 100; background: var(--header-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0.9rem 0; }
+.header-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 1.3rem; font-weight: 800; color: var(--text); text-decoration: none; letter-spacing: -0.02em; }
+.logo span { background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; align-items: center; gap: 0.2rem; position: relative; }
+nav a { color: var(--text-muted); text-decoration: none; margin-left: 1.2rem; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
+nav a:hover, nav a.active { color: var(--text); }
+nav a.active { border-bottom: 2px solid var(--accent); padding-bottom: 2px; }
+.hamburger { display: none; background: none; border: none; color: var(--text); cursor: pointer; padding: 0.4rem; font-size: 1.5rem; line-height: 1; }
+.nav-links { display: flex; align-items: center; gap: 0; }
+#theme-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 0.4rem 0.6rem; border-radius: 6px; margin-left: 0.8rem; transition: color 0.2s; }
+
+/* Hero */
+.hero { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 4rem 1.5rem 2rem; text-align: center; }
+.hero-badge { display: inline-block; background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--accent-light); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; }
+.hero h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text); margin-bottom: 1rem; }
+.hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p { color: var(--text-muted); font-size: 1.05rem; max-width: 620px; margin: 0 auto 1.5rem; }
+.hero-stats { display: flex; justify-content: center; gap: 2.5rem; margin-top: 1.5rem; }
+.hero-stat { text-align: center; }
+.hero-stat strong { display: block; font-size: 1.5rem; color: var(--text); font-weight: 700; }
+.hero-stat span { font-size: 0.75rem; color: var(--text-dim); }
+
+/* Progress strip */
+.progress-strip { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto 2rem; padding: 0 1.5rem; }
+.progress-inner { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1.2rem; display: flex; align-items: center; gap: 1rem; }
+.progress-label { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; font-weight: 500; }
+.progress-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #a78bfa); border-radius: 3px; transition: width 0.4s ease; width: 0%; }
+
+/* Section */
+.section { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 2rem; }
+
+/* Start here */
+.start-here { display: flex; align-items: center; gap: 1rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; text-decoration: none; color: var(--text); transition: border-color 0.3s, transform 0.2s; }
+.start-here:hover { border-color: rgba(99,102,241,0.5); transform: translateY(-2px); }
+.start-here-icon { font-size: 2rem; }
+.start-here-content strong { font-size: 0.95rem; color: var(--text); }
+.start-here-content p { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem; }
+.start-here-arrow { font-size: 1.2rem; color: var(--accent); margin-left: auto; }
+
+/* Filter bar */
+.filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+.filter-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.filter-btn:hover { border-color: var(--accent); color: var(--text); }
+.filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* Difficulty groups */
+.difficulty-group { margin-bottom: 2.5rem; }
+.group-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.group-header h2 { font-size: 1.2rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+.group-count { font-size: 0.78rem; color: var(--text-dim); }
+.diff-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.diff-dot.green { background: #22c55e; }
+.diff-dot.yellow { background: #eab308; }
+.diff-dot.red { background: #ef4444; }
+
+/* Problems grid */
+.problems-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+.problem-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 1.4rem; text-decoration: none; color: var(--text); transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s; display: flex; flex-direction: column; }
+.problem-card:hover { border-color: rgba(99,102,241,0.5); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(99,102,241,0.08); }
+.card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; }
+.card-icon { font-size: 1.5rem; }
+.diff-badge { font-size: 0.68rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+.diff-badge.green { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
+.diff-badge.yellow { background: rgba(234,179,8,0.1); color: #eab308; border: 1px solid rgba(234,179,8,0.2); }
+.diff-badge.red { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+.problem-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.4rem; }
+.card-desc { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.8rem; flex-grow: 1; line-height: 1.5; }
+.card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+.tag { background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--accent-light); padding: 2px 8px; border-radius: 5px; font-size: 0.68rem; font-weight: 500; }
+.card-companies { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.company { font-size: 0.68rem; color: var(--text-dim); background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; }
+[data-theme="light"] .company { background: rgba(0,0,0,0.02); }
+
+/* Roadmap card */
+.roadmap-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; }
+.roadmap-card h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.3rem; }
+.roadmap-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+.roadmap-steps { display: flex; flex-direction: column; gap: 0.8rem; }
+.step { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem; background: rgba(99,102,241,0.03); border: 1px solid var(--border); border-radius: 10px; transition: border-color 0.2s; }
+.step:hover { border-color: rgba(99,102,241,0.3); }
+.step-num { width: 28px; height: 28px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
+.step-content strong { display: block; font-size: 0.88rem; color: var(--text); }
+.step-content span { font-size: 0.78rem; color: var(--text-muted); }
+.step-link { margin-left: auto; font-size: 0.82rem; color: var(--accent); text-decoration: none; font-weight: 500; }
+
+/* Footer */
+footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.82rem; }
+footer a { color: var(--accent); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+@media (max-width: 768px) {
+    .hero h1 { font-size: 2rem; }
+    .hero { padding: 3rem 1.5rem 1.5rem; }
+    .hero-stats { gap: 1.5rem; }
+    .problems-grid { grid-template-columns: 1fr; }
+    .hamburger { display: block; }
+    .nav-links { display: none; position: absolute; top: 100%; right: 0; background: var(--header-bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.5rem 0; flex-direction: column; align-items: stretch; min-width: 160px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); margin-top: 0.5rem; }
+    .nav-links.open { display: flex; }
+    .nav-links a { margin-left: 0; padding: 0.7rem 1.2rem; font-size: 0.92rem; border-bottom: 1px solid var(--border); }
+    .nav-links a:last-of-type { border-bottom: none; }
+    #theme-btn { margin: 0.5rem 1.2rem; }
+    .start-here { flex-direction: column; text-align: center; }
+    .start-here-arrow { margin-left: 0; }
+}
+</style>
+
+<script>
+(function() {
+    // Theme
+    var theme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    var btn = document.getElementById('theme-btn');
+    btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+    btn.addEventListener('click', function() {
+        var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        btn.textContent = next === 'dark' ? '☀️' : '🌙';
+    });
+
+    // Hamburger
+    var hamburger = document.getElementById('hamburger-btn');
+    var navLinks = document.getElementById('nav-links');
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', function() { navLinks.classList.toggle('open'); });
+        navLinks.querySelectorAll('a').forEach(function(a) {
+            a.addEventListener('click', function() { navLinks.classList.remove('open'); });
+        });
+        document.addEventListener('click', function(e) {
+            if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
+        });
+    }
+
+    // Filter
+    var filterBtns = document.querySelectorAll('.filter-btn');
+    var groups = document.querySelectorAll('.difficulty-group');
+    filterBtns.forEach(function(fb) {
+        fb.addEventListener('click', function() {
+            filterBtns.forEach(function(b) { b.classList.remove('active'); });
+            fb.classList.add('active');
+            var filter = fb.getAttribute('data-filter');
+            groups.forEach(function(g) {
+                if (filter === 'all' || g.getAttribute('data-difficulty') === filter) {
+                    g.style.display = '';
+                } else {
+                    g.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Progress tracking
+    var pageKey = 'hld-progress';
+    var saved = JSON.parse(localStorage.getItem(pageKey) || '{}');
+    var cards = document.querySelectorAll('.problem-card');
+    var total = cards.length;
+
+    function updateProgress() {
+        var done = Object.keys(JSON.parse(localStorage.getItem(pageKey) || '{}')).length;
+        var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        document.getElementById('progress-label').textContent = done + '/' + total + ' completed';
+        document.getElementById('progress-fill').style.width = pct + '%';
+    }
+
+    cards.forEach(function(card) {
+        var name = card.querySelector('h3').textContent;
+        // Add checkbox
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'card-check';
+        cb.title = 'Mark as completed';
+        cb.checked = !!saved[name];
+        cb.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            cb.checked = !cb.checked;
+            if (cb.checked) {
+                saved[name] = true;
+            } else {
+                delete saved[name];
+            }
+            localStorage.setItem(pageKey, JSON.stringify(saved));
+            updateProgress();
+        });
+        card.querySelector('.card-top').appendChild(cb);
+    });
+    updateProgress();
+})();
+</script>
+
+<style>
+.card-check { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; margin-left: 0.5rem; }
+</style>
+
+<!-- Cloudflare Web Analytics -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "46af7c683dec42ceb435ae3e97b8d9a1"}'></script>
+</body>
+</html>

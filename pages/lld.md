@@ -1,42 +1,523 @@
 ---
-layout: default
-title: "Low-Level Design / Machine Coding"
-description: "Machine coding interview problems with OOP, design patterns, SOLID principles, and runnable code."
+layout: none
+title: "Low-Level Design / Machine Coding — SystemCraft"
+description: "Machine coding interview problems with OOP, design patterns, SOLID principles, and runnable code. PhonePe, Flipkart, Swiggy style."
 permalink: /lld
 ---
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <script>(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Low-Level Design / Machine Coding — SystemCraft</title>
+    <meta name="description" content="Machine coding interview problems with OOP, design patterns, SOLID principles, and runnable code.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="canonical" href="https://systemcraft.in/lld">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
 
-# Low-Level Design / Machine Coding
+<div class="bg-gradient"></div>
 
-> 📚 **New to machine coding?** Start with the [LLD Fundamentals](/lld-fundamentals) — covers SOLID, design patterns, concurrency, and the 90-minute approach.
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">System<span>Craft</span></a>
+        <nav>
+            <button class="hamburger" id="hamburger-btn" aria-label="Menu">&#9776;</button>
+            <div class="nav-links" id="nav-links">
+                <a href="/hld">HLD</a>
+                <a href="/lld" class="active">LLD</a>
+                <a href="/dsa">DSA</a>
+                <a href="/cheatsheet">Cheatsheet</a>
+                <a href="/about">About</a>
+                <button id="theme-btn" title="Switch theme">🌙</button>
+            </div>
+        </nav>
+    </div>
+</header>
 
-Machine-coding problems asked at PhonePe, Flipkart, Swiggy, Razorpay, and other Indian tech companies. Each solution uses OOP, design patterns (Strategy, State, Observer), and is runnable end-to-end with a demo class.
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-badge">⚙️ Machine Coding</div>
+    <h1>Low-Level Design <em>Problems</em></h1>
+    <p>OOP problems with design patterns, runnable code, and company tags. Built for PhonePe, Flipkart, Swiggy, Razorpay-style machine coding rounds.</p>
+    <div class="hero-stats">
+        <div class="hero-stat"><strong>8</strong><span>Problems</span></div>
+        <div class="hero-stat"><strong>6+</strong><span>Design Patterns</span></div>
+        <div class="hero-stat"><strong>90 min</strong><span>Format</span></div>
+    </div>
+</section>
 
----
+<!-- Progress bar -->
+<div class="progress-strip" id="progress-strip">
+    <div class="progress-inner">
+        <span class="progress-label" id="progress-label">0/8 completed</span>
+        <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+    </div>
+</div>
 
-## Problems
+<!-- Start here callout -->
+<div class="section">
+    <a class="start-here" href="/lld-fundamentals">
+        <div class="start-here-icon">📐</div>
+        <div class="start-here-content">
+            <strong>New to machine coding?</strong>
+            <p>Start with LLD Fundamentals — covers SOLID, 8 design patterns, concurrency, state machines, and the 90-minute approach.</p>
+        </div>
+        <div class="start-here-arrow">→</div>
+    </a>
+</div>
 
-| # | Problem | Key Patterns | Companies | Languages |
-|---|---|---|---|---|
-| 1 | [🅿️ Parking Lot](/ParkingLot) | Strategy, Polymorphism, Factory | Flipkart, PhonePe, Amazon | Java |
-| 2 | 🗃️ Multilevel Cache *(coming soon)* | Strategy (LRU/LFU), Composition, Facade | PhonePe, Flipkart | Java, Python |
-| 3 | 📨 Message Broker *(coming soon)* | Facade, Composition, Concurrency | PhonePe, Uber | Java, Python |
-| 4 | 🎫 Customer Issue Resolution *(coming soon)* | Strategy, State Machine, Facade | PhonePe | Java, Python |
-| 5 | 🐍 Snake & Ladder *(coming soon)* | Strategy, State, Command | PhonePe, Flipkart | Java, Python, C++ |
-| 6 | 💸 Splitwise *(coming soon)* | Strategy (split types), Aggregation | PhonePe, Flipkart | Java, Python, C++ |
-| 7 | 🍽️ Restaurant Booking *(coming soon)* | Reservation conflicts, Concurrency | PhonePe | Java |
-| 8 | 📱 App Version Manager *(coming soon)* | Strategy (rollout), Adapter, Factory | PhonePe | Java |
+<!-- Problems Grid -->
+<div class="section">
+    <div class="section-header">
+        <h2>Problems</h2>
+        <span class="section-count">8 problems</span>
+    </div>
+    <div class="problems-grid">
 
----
+        <a class="problem-card available" href="/ParkingLot">
+            <div class="card-top">
+                <span class="card-icon">🅿️</span>
+                <span class="status-badge live">Live</span>
+            </div>
+            <h3>Parking Lot</h3>
+            <p class="card-desc">Multi-floor lot with strategy-based pricing, vehicle assignment, and extensible fee models.</p>
+            <div class="card-tags">
+                <span class="tag">Strategy</span>
+                <span class="tag">Polymorphism</span>
+                <span class="tag">Factory</span>
+            </div>
+            <div class="card-meta">
+                <div class="card-companies">
+                    <span class="company">Flipkart</span>
+                    <span class="company">PhonePe</span>
+                    <span class="company">Amazon</span>
+                </div>
+                <div class="card-lang">
+                    <span class="lang">Java</span>
+                </div>
+            </div>
+        </a>
 
-## What interviewers grade on
+        <div class="problem-card coming-soon">
+            <div class="card-top">
+                <span class="card-icon">🗃️</span>
+                <span class="status-badge soon">Coming Soon</span>
+            </div>
+            <h3>Multilevel Cache</h3>
+            <p class="card-desc">LRU/LFU eviction, composition of cache levels, read-through and write-through patterns.</p>
+            <div class="card-tags">
+                <span class="tag">Strategy (LRU/LFU)</span>
+                <span class="tag">Composition</span>
+                <span class="tag">Facade</span>
+            </div>
+            <div class="card-meta">
+                <div class="card-companies">
+                    <span class="company">PhonePe</span>
+                    <span class="company">Flipkart</span>
+                </div>
+                <div class="card-lang">
+                    <span class="lang">Java</span>
+                    <span class="lang">Python</span>
+                </div>
+            </div>
+        </div>
 
-1. **Working demo class** — must compile and run end-to-end.
-2. **Separation of concerns** — multiple files/classes, each doing one thing.
-3. **Strategy pattern** somewhere — pricing, eviction, assignment, scoring.
-4. **Extensibility** — adding a new variant = one new class, no edits to existing.
-5. **Edge cases** — null inputs, capacity limits, state machine violations.
-6. **Thread-safety** — when shared mutable state exists.
+        <div class="problem-card coming-soon">
+            <div class="card-top">
+                <span class="card-icon">📨</span>
+                <span class="status-badge soon">Coming Soon</span>
+            </div>
+            <h3>Message Broker</h3>
+            <p class="card-desc">Topic-based pub/sub with consumer groups, at-least-once delivery, and offset management.</p>
+            <div class="card-tags">
+                <span class="tag">Facade</span>
+                <span class="tag">Composition</span>
+                <span class="tag">Concurrency</span>
+            </div>
+            <div class="card-meta">
+                <div class="card-companies">
+                    <span class="company">PhonePe</span>
+                    <span class="company">Uber</span>
+                </div>
+                <div class="card-lang">
+                    <span class="lang">Java</span>
+                    <span class="lang">Python</span>
+                </div>
+            </div>
+        </div>
 
----
+        <div class="problem-card coming-soon">
+            <div class="card-top">
+                <span class="card-icon">🎫</span>
+                <span class="status-badge soon">Coming Soon</span>
+            </div>
+            <h3>Customer Issue Resolution</h3>
+            <p class="card-desc">Ticket routing with priority queues, SLA tracking, state machine for issue lifecycle.</p>
+            <div class="card-tags">
+                <span class="tag">Strategy</span>
+                <span class="tag">State Machine</span>
+                <span class="tag">Facade</span>
+            </div>
+            <div class="card-meta">
+                <div class="card-companies">
+                    <span class="company">PhonePe</span>
+                </div>
+                <div class="card-lang">
+                    <span class="lang">Java</span>
+                    <span class="lang">Python</span>
+                </div>
+            </div>
+        </div>
 
-*More problems coming weekly. Drop a request in the comments below 👇*
+        <div class="problem-card coming-soon">
+            <div class="card-top">
+                <span class="card-icon">🐍</span>
+                <span class="status-badge soon">Coming Soon</span>
+            </div>
+            <h3>Snake & Ladder</h3>
+            <p class="card-desc">Turn-based game with configurable board, dice strategies, and multiple player support.</p>
+            <div class="card-tags">
+                <span class="tag">Strategy</span>
+                <span class="tag">State</span>
+                <span class="tag">Command</span>
+            </div>
+            <div class="card-meta">
+                <div class="card-companies">
+                    <span class="company">PhonePe</span>
+                    <span class="company">Flipkart</span>
+                </div>
+                <div class="card-lang">
+                    <span class="lang">Java</span>
+                    <span class="lang">Python</span>
+                    <span class="lang">C++</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="problem-card coming-soon">
+            <div class="card-top">
+                <span class="card-icon">💸</span>
+                <span class="status-badge soon">Coming Soon</span>
+            </div>
+            <h3>Splitwise</h3>
+            <p class="card-desc">Expense splitting with multiple strategies (equal, exact, percentage), debt simplification.</p>
+            <div class="card-tags">
+                <span class="tag">Strategy (Split Types)</span>
+                <span class="tag">Aggregation</span>
+            </div>
+            <div class="card-meta">
+                <div class="card-companies">
+                    <span class="company">PhonePe</span>
+                    <span class="company">Flipkart</span>
+                </div>
+                <div class="card-lang">
+                    <span class="lang">Java</span>
+                    <span class="lang">Python</span>
+                    <span class="lang">C++</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="problem-card coming-soon">
+            <div class="card-top">
+                <span class="card-icon">🍽️</span>
+                <span class="status-badge soon">Coming Soon</span>
+            </div>
+            <h3>Restaurant Booking</h3>
+            <p class="card-desc">Time-slot reservations, conflict detection, waitlist management, concurrency control.</p>
+            <div class="card-tags">
+                <span class="tag">Reservation</span>
+                <span class="tag">Conflicts</span>
+                <span class="tag">Concurrency</span>
+            </div>
+            <div class="card-meta">
+                <div class="card-companies">
+                    <span class="company">PhonePe</span>
+                </div>
+                <div class="card-lang">
+                    <span class="lang">Java</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="problem-card coming-soon">
+            <div class="card-top">
+                <span class="card-icon">📱</span>
+                <span class="status-badge soon">Coming Soon</span>
+            </div>
+            <h3>App Version Manager</h3>
+            <p class="card-desc">Staged rollouts with strategy pattern, version compatibility checks, adapter pattern for platforms.</p>
+            <div class="card-tags">
+                <span class="tag">Strategy (Rollout)</span>
+                <span class="tag">Adapter</span>
+                <span class="tag">Factory</span>
+            </div>
+            <div class="card-meta">
+                <div class="card-companies">
+                    <span class="company">PhonePe</span>
+                </div>
+                <div class="card-lang">
+                    <span class="lang">Java</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- What interviewers grade on -->
+<div class="section">
+    <div class="grading-card">
+        <h2>🎯 What Interviewers Grade On</h2>
+        <div class="grading-grid">
+            <div class="grade-item">
+                <div class="grade-num">1</div>
+                <div class="grade-content">
+                    <strong>Working Demo</strong>
+                    <span>Must compile and run end-to-end with a main/demo class.</span>
+                </div>
+            </div>
+            <div class="grade-item">
+                <div class="grade-num">2</div>
+                <div class="grade-content">
+                    <strong>Separation of Concerns</strong>
+                    <span>Multiple files/classes, each doing one thing well.</span>
+                </div>
+            </div>
+            <div class="grade-item">
+                <div class="grade-num">3</div>
+                <div class="grade-content">
+                    <strong>Strategy Pattern</strong>
+                    <span>At least one strategy — pricing, eviction, assignment, scoring.</span>
+                </div>
+            </div>
+            <div class="grade-item">
+                <div class="grade-num">4</div>
+                <div class="grade-content">
+                    <strong>Extensibility</strong>
+                    <span>Adding a new variant = one new class, no edits to existing code.</span>
+                </div>
+            </div>
+            <div class="grade-item">
+                <div class="grade-num">5</div>
+                <div class="grade-content">
+                    <strong>Edge Cases</strong>
+                    <span>Null inputs, capacity limits, state machine violations.</span>
+                </div>
+            </div>
+            <div class="grade-item">
+                <div class="grade-num">6</div>
+                <div class="grade-content">
+                    <strong>Thread-Safety</strong>
+                    <span>When shared mutable state exists, synchronize correctly.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p><a href="/">Home</a> &middot; <a href="/hld">HLD</a> &middot; <a href="/dsa">DSA</a> &middot; <a href="/about">About</a> &middot; <a href="https://github.com/iluzn/HLD-Designs">GitHub</a></p>
+    <p style="margin-top:0.5rem;">&copy; 2026 SystemCraft. Free forever.</p>
+</footer>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+    min-height: 100vh; overflow-x: hidden; transition: background 0.3s, color 0.3s;
+}
+[data-theme="light"] {
+    --bg: #f9fafb; --text: #111827; --text-muted: #374151; --text-dim: #6b7280;
+    --card-bg: #ffffff; --border: rgba(0,0,0,0.08); --accent: #4f46e5;
+    --accent-light: #4338ca; --tag-bg: rgba(79,70,229,0.06); --tag-border: rgba(79,70,229,0.15);
+    --header-bg: rgba(249,250,251,0.95);
+}
+[data-theme="dark"] {
+    --bg: #09090b; --text: #e2e8f0; --text-muted: #94a3b8; --text-dim: #64748b;
+    --card-bg: rgba(15,15,20,0.8); --border: rgba(255,255,255,0.06); --accent: #6366f1;
+    --accent-light: #a5b4fc; --tag-bg: rgba(99,102,241,0.06); --tag-border: rgba(99,102,241,0.15);
+    --header-bg: rgba(9,9,11,0.95);
+}
+
+.bg-gradient { position: fixed; top: 0; left: 0; right: 0; height: 600px; background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.12), transparent); pointer-events: none; z-index: 0; }
+[data-theme="light"] .bg-gradient { opacity: 0.4; }
+
+/* Header */
+header { position: sticky; top: 0; z-index: 100; background: var(--header-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0.9rem 0; }
+.header-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 1.3rem; font-weight: 800; color: var(--text); text-decoration: none; letter-spacing: -0.02em; }
+.logo span { background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; align-items: center; gap: 0.2rem; position: relative; }
+nav a { color: var(--text-muted); text-decoration: none; margin-left: 1.2rem; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
+nav a:hover, nav a.active { color: var(--text); }
+nav a.active { border-bottom: 2px solid var(--accent); padding-bottom: 2px; }
+.hamburger { display: none; background: none; border: none; color: var(--text); cursor: pointer; padding: 0.4rem; font-size: 1.5rem; line-height: 1; }
+.nav-links { display: flex; align-items: center; gap: 0; }
+#theme-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 0.4rem 0.6rem; border-radius: 6px; margin-left: 0.8rem; transition: color 0.2s; }
+
+/* Hero */
+.hero { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 4rem 1.5rem 2rem; text-align: center; }
+.hero-badge { display: inline-block; background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--accent-light); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; }
+.hero h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text); margin-bottom: 1rem; }
+.hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p { color: var(--text-muted); font-size: 1.05rem; max-width: 620px; margin: 0 auto 1.5rem; }
+.hero-stats { display: flex; justify-content: center; gap: 2.5rem; margin-top: 1.5rem; }
+.hero-stat { text-align: center; }
+.hero-stat strong { display: block; font-size: 1.5rem; color: var(--text); font-weight: 700; }
+.hero-stat span { font-size: 0.75rem; color: var(--text-dim); }
+
+/* Progress strip */
+.progress-strip { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto 2rem; padding: 0 1.5rem; }
+.progress-inner { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1.2rem; display: flex; align-items: center; gap: 1rem; }
+.progress-label { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; font-weight: 500; }
+.progress-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #a78bfa); border-radius: 3px; transition: width 0.4s ease; width: 0%; }
+
+/* Section */
+.section { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 2rem; }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+.section-header h2 { font-size: 1.3rem; font-weight: 700; color: var(--text); }
+.section-count { font-size: 0.78rem; color: var(--text-dim); }
+
+/* Start here */
+.start-here { display: flex; align-items: center; gap: 1rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; text-decoration: none; color: var(--text); transition: border-color 0.3s, transform 0.2s; }
+.start-here:hover { border-color: rgba(99,102,241,0.5); transform: translateY(-2px); }
+.start-here-icon { font-size: 2rem; }
+.start-here-content strong { font-size: 0.95rem; color: var(--text); }
+.start-here-content p { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem; }
+.start-here-arrow { font-size: 1.2rem; color: var(--accent); margin-left: auto; }
+
+/* Problems grid */
+.problems-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+.problem-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 1.4rem; text-decoration: none; color: var(--text); transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s; display: flex; flex-direction: column; }
+.problem-card.available:hover { border-color: rgba(99,102,241,0.5); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(99,102,241,0.08); }
+.problem-card.coming-soon { opacity: 0.6; cursor: default; }
+.card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; }
+.card-icon { font-size: 1.5rem; }
+.status-badge { font-size: 0.68rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+.status-badge.live { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
+.status-badge.soon { background: rgba(234,179,8,0.1); color: #eab308; border: 1px solid rgba(234,179,8,0.2); }
+.problem-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.4rem; }
+.card-desc { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.8rem; flex-grow: 1; line-height: 1.5; }
+.card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+.tag { background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--accent-light); padding: 2px 8px; border-radius: 5px; font-size: 0.68rem; font-weight: 500; }
+.card-meta { display: flex; justify-content: space-between; align-items: center; }
+.card-companies { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.company { font-size: 0.68rem; color: var(--text-dim); background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; }
+[data-theme="light"] .company { background: rgba(0,0,0,0.02); }
+.card-lang { display: flex; gap: 0.3rem; }
+.lang { font-size: 0.65rem; color: var(--accent-light); background: var(--tag-bg); border: 1px solid var(--tag-border); padding: 2px 6px; border-radius: 4px; font-weight: 500; }
+
+/* Grading card */
+.grading-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; }
+.grading-card h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 1.2rem; }
+.grading-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.8rem; }
+.grade-item { display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.8rem 1rem; background: rgba(99,102,241,0.03); border: 1px solid var(--border); border-radius: 10px; }
+.grade-num { width: 24px; height: 24px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+.grade-content strong { display: block; font-size: 0.85rem; color: var(--text); margin-bottom: 0.15rem; }
+.grade-content span { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+
+/* Footer */
+footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.82rem; margin-top: 2rem; }
+footer a { color: var(--accent); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+@media (max-width: 768px) {
+    .hero h1 { font-size: 2rem; }
+    .hero { padding: 3rem 1.5rem 1.5rem; }
+    .hero-stats { gap: 1.5rem; }
+    .problems-grid { grid-template-columns: 1fr; }
+    .grading-grid { grid-template-columns: 1fr; }
+    .hamburger { display: block; }
+    .nav-links { display: none; position: absolute; top: 100%; right: 0; background: var(--header-bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.5rem 0; flex-direction: column; align-items: stretch; min-width: 160px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); margin-top: 0.5rem; }
+    .nav-links.open { display: flex; }
+    .nav-links a { margin-left: 0; padding: 0.7rem 1.2rem; font-size: 0.92rem; border-bottom: 1px solid var(--border); }
+    .nav-links a:last-of-type { border-bottom: none; }
+    #theme-btn { margin: 0.5rem 1.2rem; }
+    .start-here { flex-direction: column; text-align: center; }
+    .start-here-arrow { margin-left: 0; }
+}
+</style>
+
+<script>
+(function() {
+    // Theme
+    var theme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    var btn = document.getElementById('theme-btn');
+    btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+    btn.addEventListener('click', function() {
+        var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        btn.textContent = next === 'dark' ? '☀️' : '🌙';
+    });
+
+    // Hamburger
+    var hamburger = document.getElementById('hamburger-btn');
+    var navLinks = document.getElementById('nav-links');
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', function() { navLinks.classList.toggle('open'); });
+        navLinks.querySelectorAll('a').forEach(function(a) {
+            a.addEventListener('click', function() { navLinks.classList.remove('open'); });
+        });
+        document.addEventListener('click', function(e) {
+            if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
+        });
+    }
+
+    // Progress tracking
+    var pageKey = 'lld-progress';
+    var saved = JSON.parse(localStorage.getItem(pageKey) || '{}');
+    var cards = document.querySelectorAll('.problem-card.available');
+    var total = document.querySelectorAll('.problem-card').length;
+
+    function updateProgress() {
+        var done = Object.keys(JSON.parse(localStorage.getItem(pageKey) || '{}')).length;
+        var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        document.getElementById('progress-label').textContent = done + '/' + total + ' completed';
+        document.getElementById('progress-fill').style.width = pct + '%';
+    }
+
+    cards.forEach(function(card) {
+        var name = card.querySelector('h3').textContent;
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'card-check';
+        cb.title = 'Mark as completed';
+        cb.checked = !!saved[name];
+        cb.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            cb.checked = !cb.checked;
+            if (cb.checked) {
+                saved[name] = true;
+            } else {
+                delete saved[name];
+            }
+            localStorage.setItem(pageKey, JSON.stringify(saved));
+            updateProgress();
+        });
+        card.querySelector('.card-top').appendChild(cb);
+    });
+    updateProgress();
+})();
+</script>
+
+<style>
+.card-check { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; margin-left: 0.5rem; }
+</style>
+
+<!-- Cloudflare Web Analytics -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "46af7c683dec42ceb435ae3e97b8d9a1"}'></script>
+</body>
+</html>
