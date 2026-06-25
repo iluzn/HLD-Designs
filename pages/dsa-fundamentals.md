@@ -171,11 +171,10 @@ return lo
 <button class="tab-btn">Python</button>
 <button class="tab-btn">C++</button>
 </div>
-<div class="tab-content active" markdown="1">
+<div class="tab-content active">
 
-```java
-Queue<int[]> queue = new ArrayDeque<>();
-Set<Integer> visited = new HashSet<>();
+<pre><code class="language-java">Queue&lt;int[]&gt; queue = new ArrayDeque&lt;&gt;();
+Set&lt;Integer&gt; visited = new HashSet&lt;&gt;();
 queue.offer(new int[]{start});
 visited.add(start);
 
@@ -186,14 +185,12 @@ while (!queue.isEmpty()) {
             queue.offer(new int[]{neighbor});
         }
     }
-}
-```
+}</code></pre>
 
 </div>
-<div class="tab-content" markdown="1">
+<div class="tab-content">
 
-```python
-from collections import deque
+<pre><code class="language-python">from collections import deque
 queue = deque([start])
 visited = {start}
 
@@ -202,15 +199,13 @@ while queue:
     for neighbor in adj(node):
         if neighbor not in visited:
             visited.add(neighbor)
-            queue.append(neighbor)
-```
+            queue.append(neighbor)</code></pre>
 
 </div>
-<div class="tab-content" markdown="1">
+<div class="tab-content">
 
-```cpp
-queue<int> q;
-unordered_set<int> visited;
+<pre><code class="language-cpp">queue&lt;int&gt; q;
+unordered_set&lt;int&gt; visited;
 q.push(start);
 visited.insert(start);
 
@@ -222,8 +217,7 @@ while (!q.empty()) {
             q.push(neighbor);
         }
     }
-}
-```
+}</code></pre>
 
 </div>
 </div>
@@ -234,14 +228,12 @@ while (!q.empty()) {
 
 **Examples:** Subsets, Permutations, N-Queens, Word Search, Course Schedule (cycle).
 
-```
-def backtrack(state):
+<pre><code>def backtrack(state):
     if base_case: record answer; return
     for choice in choices:
         make choice
         backtrack(next_state)
-        undo choice  # backtrack
-```
+        undo choice  # backtrack</code></pre>
 
 ### 6. Dynamic Programming
 
@@ -276,47 +268,41 @@ def backtrack(state):
 <button class="tab-btn">Python</button>
 <button class="tab-btn">C++</button>
 </div>
-<div class="tab-content active" markdown="1">
+<div class="tab-content active">
 
-```java
-Deque<Integer> stack = new ArrayDeque<>();
+<pre><code class="language-java">Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;();
 int[] result = new int[n];
-for (int i = 0; i < n; i++) {
-    while (!stack.isEmpty() && arr[stack.peek()] < arr[i]) {
+for (int i = 0; i &lt; n; i++) {
+    while (!stack.isEmpty() &amp;&amp; arr[stack.peek()] &lt; arr[i]) {
         int idx = stack.pop();
         result[idx] = arr[i]; // arr[i] is the next greater for arr[idx]
     }
     stack.push(i);
-}
-```
+}</code></pre>
 
 </div>
-<div class="tab-content" markdown="1">
+<div class="tab-content">
 
-```python
-stack = []
+<pre><code class="language-python">stack = []
 result = [0] * n
 for i in range(n):
-    while stack and arr[stack[-1]] < arr[i]:
+    while stack and arr[stack[-1]] &lt; arr[i]:
         idx = stack.pop()
         result[idx] = arr[i]  # arr[i] is next greater for arr[idx]
-    stack.append(i)
-```
+    stack.append(i)</code></pre>
 
 </div>
-<div class="tab-content" markdown="1">
+<div class="tab-content">
 
-```cpp
-stack<int> st;
-vector<int> result(n, 0);
-for (int i = 0; i < n; i++) {
-    while (!st.empty() && arr[st.top()] < arr[i]) {
+<pre><code class="language-cpp">stack&lt;int&gt; st;
+vector&lt;int&gt; result(n, 0);
+for (int i = 0; i &lt; n; i++) {
+    while (!st.empty() &amp;&amp; arr[st.top()] &lt; arr[i]) {
         int idx = st.top(); st.pop();
         result[idx] = arr[i];
     }
     st.push(i);
-}
-```
+}</code></pre>
 
 </div>
 </div>
@@ -333,12 +319,11 @@ for (int i = 0; i < n; i++) {
 <button class="tab-btn">Python</button>
 <button class="tab-btn">C++</button>
 </div>
-<div class="tab-content active" markdown="1">
+<div class="tab-content active">
 
-```java
-int[] parent = new int[n];
+<pre><code class="language-java">int[] parent = new int[n];
 int[] rank = new int[n];
-for (int i = 0; i < n; i++) parent[i] = i;
+for (int i = 0; i &lt; n; i++) parent[i] = i;
 
 int find(int x) {
     if (parent[x] != x) parent[x] = find(parent[x]);
@@ -347,17 +332,15 @@ int find(int x) {
 void union(int x, int y) {
     int px = find(x), py = find(y);
     if (px == py) return;
-    if (rank[px] < rank[py]) parent[px] = py;
-    else if (rank[px] > rank[py]) parent[py] = px;
+    if (rank[px] &lt; rank[py]) parent[px] = py;
+    else if (rank[px] &gt; rank[py]) parent[py] = px;
     else { parent[py] = px; rank[px]++; }
-}
-```
+}</code></pre>
 
 </div>
-<div class="tab-content" markdown="1">
+<div class="tab-content">
 
-```python
-parent = list(range(n))
+<pre><code class="language-python">parent = list(range(n))
 rank = [0] * n
 
 def find(x):
@@ -368,16 +351,14 @@ def find(x):
 def union(x, y):
     px, py = find(x), find(y)
     if px == py: return
-    if rank[px] < rank[py]: parent[px] = py
-    elif rank[px] > rank[py]: parent[py] = px
-    else: parent[py] = px; rank[px] += 1
-```
+    if rank[px] &lt; rank[py]: parent[px] = py
+    elif rank[px] &gt; rank[py]: parent[py] = px
+    else: parent[py] = px; rank[px] += 1</code></pre>
 
 </div>
-<div class="tab-content" markdown="1">
+<div class="tab-content">
 
-```cpp
-vector<int> parent(n), rank_(n, 0);
+<pre><code class="language-cpp">vector&lt;int&gt; parent(n), rank_(n, 0);
 iota(parent.begin(), parent.end(), 0);
 
 int find(int x) {
@@ -387,11 +368,10 @@ int find(int x) {
 void unite(int x, int y) {
     int px = find(x), py = find(y);
     if (px == py) return;
-    if (rank_[px] < rank_[py]) parent[px] = py;
-    else if (rank_[px] > rank_[py]) parent[py] = px;
+    if (rank_[px] &lt; rank_[py]) parent[px] = py;
+    else if (rank_[px] &gt; rank_[py]) parent[py] = px;
     else { parent[py] = px; rank_[px]++; }
-}
-```
+}</code></pre>
 
 </div>
 </div>
@@ -408,16 +388,15 @@ void unite(int x, int y) {
 <button class="tab-btn">Python</button>
 <button class="tab-btn">C++</button>
 </div>
-<div class="tab-content active" markdown="1">
+<div class="tab-content active">
 
-```java
-int[] inDegree = new int[n];
+<pre><code class="language-java">int[] inDegree = new int[n];
 for (int[] edge : edges) inDegree[edge[1]]++;
 
-Queue<Integer> queue = new ArrayDeque<>();
-for (int i = 0; i < n; i++) if (inDegree[i] == 0) queue.offer(i);
+Queue&lt;Integer&gt; queue = new ArrayDeque&lt;&gt;();
+for (int i = 0; i &lt; n; i++) if (inDegree[i] == 0) queue.offer(i);
 
-List<Integer> order = new ArrayList<>();
+List&lt;Integer&gt; order = new ArrayList&lt;&gt;();
 while (!queue.isEmpty()) {
     int node = queue.poll();
     order.add(node);
@@ -425,14 +404,12 @@ while (!queue.isEmpty()) {
         if (--inDegree[neighbor] == 0) queue.offer(neighbor);
     }
 }
-if (order.size() != n) { /* cycle exists */ }
-```
+if (order.size() != n) { /* cycle exists */ }</code></pre>
 
 </div>
-<div class="tab-content" markdown="1">
+<div class="tab-content">
 
-```python
-from collections import deque
+<pre><code class="language-python">from collections import deque
 in_degree = [0] * n
 for u, v in edges:
     in_degree[v] += 1
@@ -448,20 +425,18 @@ while queue:
             queue.append(neighbor)
 
 if len(order) != n:  # cycle exists
-    pass
-```
+    pass</code></pre>
 
 </div>
-<div class="tab-content" markdown="1">
+<div class="tab-content">
 
-```cpp
-vector<int> inDegree(n, 0);
-for (auto& [u, v] : edges) inDegree[v]++;
+<pre><code class="language-cpp">vector&lt;int&gt; inDegree(n, 0);
+for (auto&amp; [u, v] : edges) inDegree[v]++;
 
-queue<int> q;
-for (int i = 0; i < n; i++) if (inDegree[i] == 0) q.push(i);
+queue&lt;int&gt; q;
+for (int i = 0; i &lt; n; i++) if (inDegree[i] == 0) q.push(i);
 
-vector<int> order;
+vector&lt;int&gt; order;
 while (!q.empty()) {
     int node = q.front(); q.pop();
     order.push_back(node);
@@ -469,8 +444,7 @@ while (!q.empty()) {
         if (--inDegree[neighbor] == 0) q.push(neighbor);
     }
 }
-if (order.size() != n) { /* cycle exists */ }
-```
+if (order.size() != n) { /* cycle exists */ }</code></pre>
 
 </div>
 </div>
@@ -487,10 +461,9 @@ if (order.size() != n) { /* cycle exists */ }
 <button class="tab-btn">Python</button>
 <button class="tab-btn">C++</button>
 </div>
-<div class="tab-content active" markdown="1">
+<div class="tab-content active">
 
-```java
-class TrieNode {
+<pre><code class="language-java">class TrieNode {
     TrieNode[] children = new TrieNode[26];
     boolean isEnd;
 }
@@ -516,14 +489,12 @@ class Trie {
         }
         return node.isEnd;
     }
-}
-```
+}</code></pre>
 
 </div>
-<div class="tab-content" markdown="1">
+<div class="tab-content">
 
-```python
-class TrieNode:
+<pre><code class="language-python">class TrieNode:
     def __init__(self):
         self.children = {}
         self.is_end = False
@@ -545,14 +516,12 @@ class Trie:
         for c in word:
             if c not in node.children: return False
             node = node.children[c]
-        return node.is_end
-```
+        return node.is_end</code></pre>
 
 </div>
-<div class="tab-content" markdown="1">
+<div class="tab-content">
 
-```cpp
-struct TrieNode {
+<pre><code class="language-cpp">struct TrieNode {
     TrieNode* children[26] = {};
     bool isEnd = false;
 };
@@ -563,22 +532,21 @@ public:
     void insert(string word) {
         auto node = root;
         for (char c : word) {
-            if (!node->children[c - 'a'])
-                node->children[c - 'a'] = new TrieNode();
-            node = node->children[c - 'a'];
+            if (!node-&gt;children[c - 'a'])
+                node-&gt;children[c - 'a'] = new TrieNode();
+            node = node-&gt;children[c - 'a'];
         }
-        node->isEnd = true;
+        node-&gt;isEnd = true;
     }
     bool search(string word) {
         auto node = root;
         for (char c : word) {
-            if (!node->children[c - 'a']) return false;
-            node = node->children[c - 'a'];
+            if (!node-&gt;children[c - 'a']) return false;
+            node = node-&gt;children[c - 'a'];
         }
-        return node->isEnd;
+        return node-&gt;isEnd;
     }
-};
-```
+};</code></pre>
 
 </div>
 </div>
@@ -608,31 +576,29 @@ Common mistakes:
 
 ## Java-Specific Tips for DSA Interviews
 
-```java
-// Sorting
+<pre><code class="language-java">// Sorting
 Arrays.sort(arr);                            // primitives: dual-pivot quicksort O(n log n)
-list.sort(Comparator.comparingInt(a -> a));   // objects: TimSort (stable)
+list.sort(Comparator.comparingInt(a -&gt; a));   // objects: TimSort (stable)
 
 // HashMap tricks
 map.getOrDefault(key, 0);
 map.merge(key, 1, Integer::sum);             // increment counter
-map.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+map.computeIfAbsent(key, k -&gt; new ArrayList&lt;&gt;()).add(value);
 
 // PriorityQueue (min-heap by default)
-PriorityQueue<int[]> pq = new PriorityQueue<>((a,b) -> a[0] - b[0]);
+PriorityQueue&lt;int[]&gt; pq = new PriorityQueue&lt;&gt;((a,b) -&gt; a[0] - b[0]);
 
 // Deque for BFS
-Deque<Integer> queue = new ArrayDeque<>();
+Deque&lt;Integer&gt; queue = new ArrayDeque&lt;&gt;();
 
 // StringBuilder for string manipulation
 StringBuilder sb = new StringBuilder();
 sb.append(c); sb.reverse(); sb.toString();
 
 // Bit manipulation
-x & (x - 1);    // remove lowest set bit
-x & (-x);       // isolate lowest set bit
-Integer.bitCount(x);
-```
+x &amp; (x - 1);    // remove lowest set bit
+x &amp; (-x);       // isolate lowest set bit
+Integer.bitCount(x);</code></pre>
 
 ---
 
