@@ -1,7 +1,7 @@
 ---
 permalink: /the-75/
 layout: default
-title: "The 75 — Interview Sprint Cheatsheet"
+title: "Blind 75 — LeetCode Interview Cheatsheet with Progress Tracker"
 description: "75 essential coding problems with LeetCode links, pattern tags, and one-line approaches. Complete your interview prep in 4-5 weeks."
 ---
 

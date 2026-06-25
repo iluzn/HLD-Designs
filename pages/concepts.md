@@ -1,7 +1,7 @@
 ---
 permalink: /concepts/
 layout: default
-title: "System Design Fundamentals"
+title: "System Design Fundamentals — CAP, Caching, Sharding, Queues"
 description: "Core system design concepts: CAP theorem, load balancing, caching, sharding, message queues, and more. Everything you need before diving into HLD problems."
 ---
 

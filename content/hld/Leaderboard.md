@@ -1,7 +1,7 @@
 ---
 permalink: /Leaderboard/
 layout: default
-title: "Designing a Real-Time Leaderboard"
+title: "Design a Real-Time Leaderboard — System Design Interview"
 description: "System design for a gaming leaderboard - Redis sorted sets, rank queries, and scaling to millions of players"
 ---
 
@@ -236,5 +236,7 @@ Or use key per time period: `leaderboard:weekly:2026-W25`, `leaderboard:monthly:
 | "What about persistence?" | Redis for live reads. Postgres for source of truth and history. |
 
 ---
-
-*Related: [Rate Limiter](/RateLimiter) · [System Design Fundamentals](/concepts) · [Parking Lot](/ParkingLot)*
+## Related Designs
+- [Rate Limiter](/RateLimiter) — Redis patterns
+- [URL Shortener](/URLShortner) — caching and CDN
+- [Twitter Feed](/TwitterFeed) — real-time updates to users

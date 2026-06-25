@@ -1,7 +1,7 @@
 ---
 permalink: /the-150/
 layout: default
-title: "The 150 — Complete Interview Prep Cheatsheet"
+title: "NeetCode 150 — Complete Coding Interview Prep Cheatsheet"
 description: "150 coding problems with LeetCode links, pattern tags, and one-line approaches. Complete deep coverage in 6-8 weeks."
 ---
 

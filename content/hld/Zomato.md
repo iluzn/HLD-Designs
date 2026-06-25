@@ -1,7 +1,7 @@
 ---
 permalink: /Zomato/
 layout: default
-title: "Designing a Food Delivery Service Like Zomato"
+title: "Design Zomato — Food Delivery System Design Interview"
 description: "System design for Designing a Food Delivery Service Like Zomato - architecture, deep dives, and trade-offs"
 ---
 
@@ -703,3 +703,10 @@ flowchart LR
 ```
 
 That's the design. Five deep dives in Bad / Good / Great progression, each picking the right primitive for the problem: Redis Geo for live rider locations, Redis locks with fencing tokens for consistent matching, WebSockets plus Pub/Sub for real-time tracking, Temporal for durable multi-step dispatch, and Elasticsearch fed by CDC for catalog search.
+
+
+---
+## Related Designs
+- [Job Scheduler](/JobScheduler) — distributed task processing
+- [Notification System](/NotificationSystem) — multi-channel push delivery
+- [Digital Wallet](/DigitalWallet) — payment processing + idempotency

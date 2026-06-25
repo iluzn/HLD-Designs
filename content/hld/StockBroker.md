@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Designing a Stock Broker Platform (Robinhood / Zerodha)"
+title: "Design Robinhood — Stock Broker System Design Interview"
 description: "System design for a stock broker with order matching, transaction history, notifications, and delivery semantics. Event-driven architecture with Kafka."
 permalink: /StockBroker
 ---
@@ -592,3 +592,10 @@ flowchart LR
 ---
 
 *Drop a comment below if you want a specific deep dive expanded (margin trading, options settlement, FIX protocol) 👇*
+
+
+---
+## Related Designs
+- [Digital Wallet](/DigitalWallet) — financial consistency + idempotency
+- [Notification System](/NotificationSystem) — real-time push to users
+- [Job Scheduler](/JobScheduler) — scheduled batch processing

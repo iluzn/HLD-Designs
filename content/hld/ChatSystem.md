@@ -1,7 +1,7 @@
 ---
 permalink: /ChatSystem/
 layout: default
-title: "Designing a Chat System Like WhatsApp"
+title: "Design WhatsApp — Chat System Design Interview"
 description: "System design for a real-time messaging platform - WebSockets, message delivery, read receipts, group chat, and offline handling"
 ---
 
@@ -429,5 +429,7 @@ flowchart LR
 | **Fan-out** | Delivering one message to multiple recipients (group chat). "Fan-out on write" = copy to each inbox. "Fan-out on read" = store once, each client fetches. |
 
 ---
-
-*Related: [Rate Limiter](/RateLimiter) · [Notification System](/NotificationSystem) · [System Design Fundamentals](/concepts)*
+## Related Designs
+- [Notification System](/NotificationSystem) — similar multi-channel delivery + WebSocket patterns
+- [Twitter Feed](/TwitterFeed) — fan-out and real-time updates
+- [Stock Broker](/StockBroker) — Kafka event streaming + exactly-once semantics

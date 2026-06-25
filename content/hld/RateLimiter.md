@@ -1,7 +1,7 @@
 ---
 permalink: /RateLimiter/
 layout: default
-title: "Designing a Rate Limiter"
+title: "Design a Rate Limiter — System Design Interview"
 description: "System design for a distributed rate limiter - token bucket, sliding window, Redis, edge limiting, and trade-offs. Beginner-friendly with diagrams."
 ---
 
@@ -491,5 +491,7 @@ flowchart LR
 | **HTTP 429** | Standard HTTP status code meaning "Too Many Requests." Client should back off and retry later. |
 
 ---
-
-*Related: [System Design Fundamentals](/concepts) · [URL Shortener](/URLShortner) · [Chat System](/ChatSystem)*
+## Related Designs
+- [URL Shortener](/URLShortner) — high-QPS API design
+- [Leaderboard](/Leaderboard) — Redis patterns
+- [Notification System](/NotificationSystem) — protecting downstream services

@@ -5,6 +5,31 @@ description: "Curated system design and LLD problems asked at Amazon. URL Shorte
 permalink: /companies/amazon
 ---
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What system design questions are asked at Amazon?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Amazon commonly asks: URL Shortener, Chat System, Rate Limiter, Notification System, Job Scheduler for system design. LLD topics include Parking Lot and Music Player design."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Amazon's SDE interview process?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Amazon's SDE loop includes: 1-2 coding rounds (DSA), 1 System Design round (SDE-2+), 1 Object-Oriented Design round, and 2-3 Leadership Principles behavioral rounds."
+      }
+    }
+  ]
+}
+</script>
+
 # Amazon Interview Prep
 
 Amazon's loop for SDE-2 and above includes 1-2 system design rounds alongside coding and behavioral (Leadership Principles) rounds. System design is evaluated on scalability, availability, and the ability to make clear trade-offs. Amazon values operational excellence — expect questions about monitoring, failure modes, and blast radius.

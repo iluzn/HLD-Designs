@@ -1,7 +1,7 @@
 ---
 permalink: /cheatsheet/
 layout: default
-title: "Quick-Fire 50 — Interview Cheatsheet"
+title: "Quick-Fire 50 — Coding Interview Cheatsheet"
 description: "Quick-reference cheatsheet of the 50 most frequently asked coding interview problems. Pattern, approach, and complexity in one glance."
 ---
 

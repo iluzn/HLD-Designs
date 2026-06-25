@@ -1,7 +1,7 @@
 ---
 permalink: /ParkingLot/
 layout: default
-title: "Designing a Parking Lot System"
+title: "Design a Parking Lot — Machine Coding Interview"
 description: "Low-level design for a parking lot with multi-floor spots, strategy-based pricing, vehicle assignment, and extensible fee models. Complete runnable code."
 ---
 
@@ -1050,5 +1050,6 @@ sequenceDiagram
 8. ✅ **Extensibility** — new pricing = one class, new vehicle type = add to enum + update `canFit`
 
 ---
-
-*Related: [Music Player LLD](/MusicPlayer) · [System Design Fundamentals](/concepts)*
+## Related Designs
+- [Music Player](/MusicPlayer) — Strategy and Observer patterns in action
+- [Splitwise](/Splitwise) — Strategy pattern for multiple split algorithms

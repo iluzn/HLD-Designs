@@ -1,7 +1,7 @@
 ---
 permalink: /DigitalWallet/
 layout: default
-title: "Designing a Payment Wallet Like Paytm, PhonePe, Venmo, or Cash App"
+title: "Design PhonePe — Digital Wallet System Design Interview"
 description: "System design for Designing a Payment Wallet Like Paytm, PhonePe, Venmo, or Cash App - architecture, deep dives, and trade-offs"
 ---
 
@@ -827,3 +827,10 @@ flowchart LR
 ```
 
 That's the design. Six deep dives each picking the right primitive: double-entry ledger with chart-of-accounts for correctness, row-locking with `FOR UPDATE` plus partitioned platform accounts for concurrency, tiered balance caches for read scale, continuous-plus-daily reconciliation for integrity with real banks, Orpheus-style three-phase idempotency to kill double-debits, and modeling holds as first-class accounts instead of flags. Correctness first, everything else second — a wallet that occasionally loses money is not a wallet.
+
+
+---
+## Related Designs
+- [Stock Broker](/StockBroker) — financial transactions + exactly-once semantics
+- [Zomato](/Zomato) — end-to-end order lifecycle
+- [Delayed Trigger Service](/DelayedTriggerService) — scheduled payment retries

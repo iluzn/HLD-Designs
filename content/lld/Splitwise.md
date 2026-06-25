@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Designing Splitwise — Expense Splitting System"
+title: "Design Splitwise — Machine Coding Interview"
 description: "Low-level design for Splitwise with multiple split strategies, debt simplification, and group expense management. Strategy pattern with full runnable code."
 permalink: /Splitwise
 ---
@@ -1651,5 +1651,6 @@ int main() {
 7. ✅ Runnable demo — all three split types exercised end-to-end
 
 ---
-
-*Related: [Music Player LLD](/MusicPlayer) · [Parking Lot LLD](/ParkingLot) · [HLD Problems](/hld)*
+## Related Designs
+- [Music Player](/MusicPlayer) — Strategy and Observer patterns
+- [Parking Lot](/ParkingLot) — Strategy-based pricing and extensible design

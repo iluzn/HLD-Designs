@@ -1,7 +1,7 @@
 ---
 permalink: /NotificationSystem/
 layout: default
-title: "Notification System — HLD"
+title: "Design a Notification System — System Design Interview"
 description: "System design for Notification System — HLD - architecture, deep dives, and trade-offs"
 ---
 
@@ -1146,3 +1146,10 @@ flowchart LR
     classDef data fill:#fde68a,stroke:#b45309,color:#451a03
     classDef external fill:#fbcfe8,stroke:#be185d,color:#500724
 ```
+
+
+---
+## Related Designs
+- [Chat System](/ChatSystem) — WebSocket real-time delivery
+- [Job Scheduler](/JobScheduler) — scheduled and delayed notifications
+- [Twitter Feed](/TwitterFeed) — fan-out patterns

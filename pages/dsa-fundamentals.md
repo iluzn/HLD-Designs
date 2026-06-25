@@ -1,7 +1,7 @@
 ---
 permalink: /dsa-fundamentals/
 layout: default
-title: "DSA Fundamentals — Patterns & Problem-Solving Framework"
+title: "DSA Fundamentals — 12 Patterns for Coding Interviews"
 description: "The core DSA patterns, how to recognize them, complexity analysis, and a framework for solving any coding interview problem."
 ---
 

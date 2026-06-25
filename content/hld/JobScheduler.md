@@ -1,7 +1,7 @@
 ---
 permalink: /JobScheduler/
 layout: default
-title: "Distributed Job Scheduler — HLD"
+title: "Design a Distributed Job Scheduler — System Design Interview"
 description: "System design for Distributed Job Scheduler — HLD - architecture, deep dives, and trade-offs"
 ---
 
@@ -767,3 +767,10 @@ flowchart LR
     classDef async fill:#e9d5ff,stroke:#7c3aed,color:#3b0764
     classDef data fill:#fde68a,stroke:#b45309,color:#451a03
 ```
+
+
+---
+## Related Designs
+- [Delayed Trigger Service](/DelayedTriggerService) — timing wheels and scheduled execution
+- [Notification System](/NotificationSystem) — scheduled notification delivery
+- [Zomato](/Zomato) — dispatch and async workflows

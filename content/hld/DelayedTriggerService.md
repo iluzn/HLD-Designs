@@ -1,7 +1,7 @@
 ---
 permalink: /DelayedTriggerService/
 layout: default
-title: "Delayed Trigger Service"
+title: "Design a Delayed Trigger Service — System Design Interview"
 description: "System design for Delayed Trigger Service - architecture, deep dives, and trade-offs"
 ---
 
@@ -539,5 +539,7 @@ flowchart LR
 | **Reconciler** | Hourly safety-net job that finds "stuck" triggers (fire time passed but status still PENDING) and re-injects them. Catches bugs in the sweeper or leader election. |
 
 ---
-
-*Related: [Job Scheduler](/JobScheduler) · [Notification System](/NotificationSystem) · [System Design Fundamentals](/concepts)*
+## Related Designs
+- [Job Scheduler](/JobScheduler) — distributed task scheduling
+- [Digital Wallet](/DigitalWallet) — payment retry workflows
+- [Notification System](/NotificationSystem) — delayed and scheduled delivery

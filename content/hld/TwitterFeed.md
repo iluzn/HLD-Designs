@@ -1,7 +1,7 @@
 ---
 permalink: /TwitterFeed/
 layout: default
-title: "Designing a Social Media Feed Like Twitter"
+title: "Design Twitter Feed — Social Feed System Design Interview"
 description: "System design for a social media news feed - fan-out, timeline generation, caching, ranking, and real-time updates"
 ---
 
@@ -445,5 +445,7 @@ flowchart LR
 | **Hydration** | Converting a list of IDs into full objects. "Hydrate tweet IDs → fetch full tweet with text, likes, media URLs." |
 
 ---
-
-*Related: [Chat System](/ChatSystem) · [Rate Limiter](/RateLimiter) · [System Design Fundamentals](/concepts)*
+## Related Designs
+- [Chat System](/ChatSystem) — real-time message delivery
+- [Notification System](/NotificationSystem) — push to users
+- [Leaderboard](/Leaderboard) — real-time ranking updates

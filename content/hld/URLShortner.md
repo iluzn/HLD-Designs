@@ -1,7 +1,7 @@
 ---
 permalink: /URLShortner/
 layout: default
-title: "Designing a URL Shortener Like Bitly or TinyURL"
+title: "Design a URL Shortener — System Design Interview"
 description: "System design for Designing a URL Shortener Like Bitly or TinyURL - architecture, deep dives, and trade-offs"
 ---
 
@@ -637,3 +637,10 @@ flowchart LR
 ```
 
 That's the design. Five deep dives each picking the right primitive: Snowflake for collision-free distributed ID generation, a CDN-Redis-KV tiered cache for global low-latency reads, local caches with request coalescing to absorb viral spikes, Kafka-to-Flink-to-ClickHouse for analytics that never touches the hot path, and a globally-replicated KV store to eliminate regional bottlenecks. Read-heavy, latency-sensitive, and deceptively simple — the fun is in making it feel trivial at any scale.
+
+
+---
+## Related Designs
+- [Rate Limiter](/RateLimiter) — protecting high-QPS endpoints
+- [Leaderboard](/Leaderboard) — Redis-based caching patterns
+- [Stock Broker](/StockBroker) — idempotency keys for write operations

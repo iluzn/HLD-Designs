@@ -1,7 +1,7 @@
 ---
 permalink: /lld-fundamentals/
 layout: default
-title: "LLD / Machine Coding Fundamentals"
+title: "LLD Fundamentals — SOLID, Design Patterns, Machine Coding Approach"
 description: "Core concepts for Low-Level Design interviews: SOLID principles, design patterns, when to use what, class design approach, and concurrency fundamentals."
 ---
 

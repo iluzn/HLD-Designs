@@ -5,6 +5,31 @@ description: "Curated HLD and LLD problems asked at PhonePe. Digital Wallet, Del
 permalink: /companies/phonpe
 ---
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What system design questions are asked at PhonePe?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PhonePe commonly asks: Digital Wallet design, Delayed Trigger Service, Notification System, and Job Scheduler for HLD rounds. For LLD/Machine Coding: Parking Lot, Splitwise, and Music Player."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is PhonePe's interview process for SDE?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PhonePe's SDE interview typically includes: 1 DSA round, 1 Machine Coding round (90 minutes), 1 System Design round (for SDE-2+), and 1-2 Hiring Manager rounds."
+      }
+    }
+  ]
+}
+</script>
+
 # PhonePe Interview Prep
 
 PhonePe interviews typically consist of 2-3 DSA rounds, 1 machine coding (LLD) round, and 1 system design (HLD) round for SDE-2 and above. The machine coding round is 90 minutes with a focus on design patterns, SOLID principles, and runnable code. System design rounds emphasize fintech-scale problems — payments, wallets, and event-driven architectures.
