@@ -1,0 +1,40 @@
+---
+layout: default
+title: "PhonePe Interview Prep — System Design & Machine Coding"
+description: "Curated HLD and LLD problems asked at PhonePe. Digital Wallet, Delayed Triggers, Splitwise, Parking Lot, and more."
+permalink: /companies/phonpe
+---
+
+# PhonePe Interview Prep
+
+PhonePe interviews typically consist of 2-3 DSA rounds, 1 machine coding (LLD) round, and 1 system design (HLD) round for SDE-2 and above. The machine coding round is 90 minutes with a focus on design patterns, SOLID principles, and runnable code. System design rounds emphasize fintech-scale problems — payments, wallets, and event-driven architectures.
+
+---
+
+## HLD Problems Asked at PhonePe
+
+| # | Problem | Difficulty | Link |
+|---|---------|-----------|------|
+| 1 | Digital Wallet | 🔴 Advanced | [Read →](/DigitalWallet) |
+| 2 | Delayed Trigger Service | 🔴 Advanced | [Read →](/DelayedTriggerService) |
+| 3 | Notification System | 🟡 Intermediate | [Read →](/NotificationSystem) |
+| 4 | Distributed Job Scheduler | 🔴 Advanced | [Read →](/JobScheduler) |
+
+---
+
+## LLD Problems Asked at PhonePe
+
+| # | Problem | Difficulty | Link |
+|---|---------|-----------|------|
+| 1 | Parking Lot | 🟢 Beginner | [Read →](/ParkingLot) |
+| 2 | Splitwise | 🟡 Intermediate | [Read →](/Splitwise) |
+| 3 | Music Player | 🟡 Intermediate | [Read →](/MusicPlayer) |
+
+---
+
+## Tips for PhonePe Interviews
+
+1. **Machine coding is make-or-break.** PhonePe weighs the LLD round heavily. Practice writing clean, extensible code in 90 minutes with at least one Strategy pattern.
+2. **Expect fintech-specific deep dives.** Idempotency, double-entry ledgers, reconciliation, and saga patterns come up frequently in HLD rounds.
+3. **Show concurrency awareness.** PhonePe deals with high-throughput payment systems — discuss thread safety, distributed locks, and exactly-once semantics.
+4. **Keep your demo running.** In machine coding, a working `main()` with sample output matters more than perfect code coverage.

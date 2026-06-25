@@ -14,6 +14,11 @@
     <meta property="og:description" content="{{ page.description }}">
     <meta property="og:url" content="https://systemcraft.in{{ page.url }}">
     <meta property="og:type" content="article">
+    <meta property="og:image" content="https://systemcraft.in/favicon.svg">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ page.title }}">
+    <meta name="twitter:description" content="{{ page.description }}">
+    <meta name="twitter:image" content="https://systemcraft.in/favicon.svg">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" as="style">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script type="application/ld+json">
@@ -364,5 +369,23 @@
 
     <!-- Cloudflare Web Analytics -->
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "46af7c683dec42ceb435ae3e97b8d9a1"}'></script>
+
+    <!-- Reading time -->
+    <script>
+    (function() {
+        var content = document.querySelector('.content');
+        if (!content) return;
+        var text = content.textContent || content.innerText;
+        var words = text.trim().split(/\s+/).length;
+        var minutes = Math.ceil(words / 200);
+        var badge = document.createElement('div');
+        badge.style.cssText = 'font-size:0.78rem;color:var(--text-dim);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;';
+        badge.innerHTML = '<span>⏱️ ' + minutes + ' min read</span>';
+        var breadcrumbs = document.querySelector('.breadcrumbs');
+        if (breadcrumbs && breadcrumbs.nextSibling) {
+            breadcrumbs.parentNode.insertBefore(badge, breadcrumbs.nextSibling);
+        }
+    })();
+    </script>
 </body>
 </html>
