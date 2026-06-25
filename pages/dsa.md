@@ -19,9 +19,9 @@ Pick based on your prep time:
 
 | List | Problems | Best for | Link |
 |---|---|---|---|
-| **Top 50 Cheatsheet** | 50 | 1-2 week crash course | [View →](/cheatsheet) |
-| **Blind 75** | 75 | 4-5 weeks, covers all patterns | [View →](/blind75) |
-| **NeetCode 150** | 150 | 6-8 weeks, deep coverage | [View →](/neetcode150) |
+| **Quick-Fire 50** | 50 | 1-2 week crash course | [View →](/cheatsheet) |
+| **The 75 — Interview Sprint** | 75 | 4-5 weeks, covers all patterns | [View →](/the-75) |
+| **The 150 — Complete Prep** | 150 | 6-8 weeks, deep coverage | [View →](/the-150) |
 
 ---
 

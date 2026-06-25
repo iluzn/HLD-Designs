@@ -1,15 +1,15 @@
 ---
-permalink: /neetcode150/
+permalink: /the-150/
 layout: default
-title: "NeetCode 150 Cheatsheet — All Problems with Pattern & Approach"
-description: "Complete NeetCode 150 list with pattern, one-line approach, and complexity. The expanded Blind 75 that covers more depth per topic."
+title: "The 150 — Complete Interview Prep Cheatsheet"
+description: "150 coding problems with LeetCode links, pattern tags, and one-line approaches. Complete deep coverage in 6-8 weeks."
 ---
 
-# NeetCode 150 — Complete Cheatsheet
+# The 150 — Complete Interview Prep
 
-The expanded version of Blind 75 by NeetCode — 150 problems that cover every pattern in more depth. If you have 6-8 weeks, do this instead of Blind 75.
+The expanded interview prep list — 150 problems covering every pattern in depth. If you have 6-8 weeks, this is the definitive set. Each row links directly to LeetCode.
 
-> 💡 **Format:** Same as the Blind 75 cheatsheet — problem, pattern, one-line approach, complexity. If you already did the Blind 75, the extra 75 problems here fill the gaps.
+> 💡 **Format:** Problem (clickable LeetCode link), one-line approach, complexity. If you already did The 75, the extra problems here fill the gaps.
 
 ---
 
@@ -17,238 +17,238 @@ The expanded version of Blind 75 by NeetCode — 150 problems that cover every p
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 1 | Contains Duplicate | HashSet | O(n) |
-| 2 | Valid Anagram | Sort or count[26] | O(n) |
-| 3 | Two Sum | HashMap complement lookup | O(n) |
-| 4 | Group Anagrams | Sorted string as HashMap key | O(n·k log k) |
-| 5 | Top K Frequent Elements | HashMap + min-heap K or bucket sort | O(n log k) |
-| 6 | Encode and Decode Strings | Length-prefix: `"4#word"` | O(n) |
-| 7 | Product of Array Except Self | Left prefix × right suffix | O(n) |
-| 8 | Valid Sudoku | HashSet per row + col + box | O(81) |
-| 9 | Longest Consecutive Sequence | HashSet, only start if num-1 absent | O(n) |
+| 1 | [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) | HashSet | O(n) |
+| 2 | [Valid Anagram](https://leetcode.com/problems/valid-anagram/) | Sort or count[26] | O(n) |
+| 3 | [Two Sum](https://leetcode.com/problems/two-sum/) | HashMap complement lookup | O(n) |
+| 4 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | Sorted string as HashMap key | O(n·k log k) |
+| 5 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | HashMap + min-heap K or bucket sort | O(n log k) |
+| 6 | [Encode and Decode Strings](https://leetcode.com/problems/encode-and-decode-strings/) | Length-prefix: `"4#word"` | O(n) |
+| 7 | [Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/) | Left prefix × right suffix | O(n) |
+| 8 | [Valid Sudoku](https://leetcode.com/problems/valid-sudoku/) | HashSet per row + col + box | O(81) |
+| 9 | [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/) | HashSet, only start if num-1 absent | O(n) |
 
 ## Two Pointers (5)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 10 | Valid Palindrome | Two pointers inward, skip non-alpha | O(n) |
-| 11 | Two Sum II (Sorted) | Left/right, move based on sum vs target | O(n) |
-| 12 | 3Sum | Sort + fix one + two-pointer | O(n²) |
-| 13 | Container With Most Water | Move shorter side inward | O(n) |
-| 14 | Trapping Rain Water | Two pointers with leftMax/rightMax | O(n) |
+| 10 | [Valid Palindrome](https://leetcode.com/problems/valid-palindrome/) | Two pointers inward, skip non-alpha | O(n) |
+| 11 | [Two Sum II (Sorted)](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/) | Left/right, move based on sum vs target | O(n) |
+| 12 | [3Sum](https://leetcode.com/problems/3sum/) | Sort + fix one + two-pointer | O(n²) |
+| 13 | [Container With Most Water](https://leetcode.com/problems/container-with-most-water/) | Move shorter side inward | O(n) |
+| 14 | [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) | Two pointers with leftMax/rightMax | O(n) |
 
 ## Sliding Window (6)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 15 | Best Time to Buy/Sell Stock | Track min, compute profit at each step | O(n) |
-| 16 | Longest Substring Without Repeating | HashMap last-seen, jump left on conflict | O(n) |
-| 17 | Longest Repeating Character Replacement | `len - maxFreq <= k` window | O(n) |
-| 18 | Permutation in String | Fixed window of size len(s1), compare freq counts | O(n) |
-| 19 | Minimum Window Substring | Expand until valid, shrink to minimize | O(n) |
-| 20 | Sliding Window Maximum | Monotonic decreasing deque | O(n) |
+| 15 | [Best Time to Buy/Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) | Track min, compute profit at each step | O(n) |
+| 16 | [Longest Substring Without Repeating](https://leetcode.com/problems/longest-substring-without-repeating-characters/) | HashMap last-seen, jump left on conflict | O(n) |
+| 17 | [Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) | `len - maxFreq <= k` window | O(n) |
+| 18 | [Permutation in String](https://leetcode.com/problems/permutation-in-string/) | Fixed window of size len(s1), compare freq counts | O(n) |
+| 19 | [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) | Expand until valid, shrink to minimize | O(n) |
+| 20 | [Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/) | Monotonic decreasing deque | O(n) |
 
 ## Stack (7)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 21 | Valid Parentheses | Push open, pop close, check match | O(n) |
-| 22 | Min Stack | Two stacks (values + running min) | O(1) |
-| 23 | Evaluate Reverse Polish Notation | Stack of numbers, pop 2 on operator | O(n) |
-| 24 | Generate Parentheses | Backtracking with open/close count | O(4^n/√n) |
-| 25 | Daily Temperatures | Monotonic decreasing stack, pop when warmer | O(n) |
-| 26 | Car Fleet | Sort by position desc, stack by time to reach target | O(n log n) |
-| 27 | Largest Rectangle in Histogram | Monotonic stack for next-smaller on both sides | O(n) |
+| 21 | [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) | Push open, pop close, check match | O(n) |
+| 22 | [Min Stack](https://leetcode.com/problems/min-stack/) | Two stacks (values + running min) | O(1) |
+| 23 | [Evaluate Reverse Polish Notation](https://leetcode.com/problems/evaluate-reverse-polish-notation/) | Stack of numbers, pop 2 on operator | O(n) |
+| 24 | [Generate Parentheses](https://leetcode.com/problems/generate-parentheses/) | Backtracking with open/close count | O(4^n/√n) |
+| 25 | [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) | Monotonic decreasing stack, pop when warmer | O(n) |
+| 26 | [Car Fleet](https://leetcode.com/problems/car-fleet/) | Sort by position desc, stack by time to reach target | O(n log n) |
+| 27 | [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) | Monotonic stack for next-smaller on both sides | O(n) |
 
 ## Binary Search (7)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 28 | Binary Search | Standard lo/hi with mid | O(log n) |
-| 29 | Search 2D Matrix | Treat as flat sorted array, binary search | O(log(m×n)) |
-| 30 | Koko Eating Bananas | Binary search on speed, check feasibility | O(n log m) |
-| 31 | Find Minimum in Rotated Sorted Array | If mid > right, min in right half | O(log n) |
-| 32 | Search in Rotated Sorted Array | Determine sorted half, check target in it | O(log n) |
-| 33 | Time Based Key-Value Store | HashMap + binary search on timestamps | O(log n) |
-| 34 | Median of Two Sorted Arrays | Binary search on partition of smaller array | O(log min(m,n)) |
+| 28 | [Binary Search](https://leetcode.com/problems/binary-search/) | Standard lo/hi with mid | O(log n) |
+| 29 | [Search 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) | Treat as flat sorted array, binary search | O(log(m×n)) |
+| 30 | [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/) | Binary search on speed, check feasibility | O(n log m) |
+| 31 | [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | If mid > right, min in right half | O(log n) |
+| 32 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Determine sorted half, check target in it | O(log n) |
+| 33 | [Time Based Key-Value Store](https://leetcode.com/problems/time-based-key-value-store/) | HashMap + binary search on timestamps | O(log n) |
+| 34 | [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) | Binary search on partition of smaller array | O(log min(m,n)) |
 
 ## Linked List (11)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 35 | Reverse Linked List | prev/curr/next iterative | O(n) |
-| 36 | Merge Two Sorted Lists | Dummy head, compare, advance | O(n+m) |
-| 37 | Reorder List | Find mid + reverse 2nd half + interleave | O(n) |
-| 38 | Remove Nth Node From End | Fast ahead N, then move both | O(n) |
-| 39 | Copy List with Random Pointer | HashMap old→new or interleave nodes | O(n) |
-| 40 | Add Two Numbers | Carry propagation through both lists | O(max(m,n)) |
-| 41 | Linked List Cycle | Floyd's fast/slow | O(n) |
-| 42 | Find Duplicate Number | Floyd's on index array (cycle start) | O(n) |
-| 43 | LRU Cache | HashMap + doubly-linked list | O(1) |
-| 44 | Merge K Sorted Lists | Min-heap of K heads | O(n log k) |
-| 45 | Reverse Nodes in K-Group | Count K, reverse segment, connect | O(n) |
+| 35 | [Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/) | prev/curr/next iterative | O(n) |
+| 36 | [Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/) | Dummy head, compare, advance | O(n+m) |
+| 37 | [Reorder List](https://leetcode.com/problems/reorder-list/) | Find mid + reverse 2nd half + interleave | O(n) |
+| 38 | [Remove Nth Node From End](https://leetcode.com/problems/remove-nth-node-from-end-of-list/) | Fast ahead N, then move both | O(n) |
+| 39 | [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/) | HashMap old→new or interleave nodes | O(n) |
+| 40 | [Add Two Numbers](https://leetcode.com/problems/add-two-numbers/) | Carry propagation through both lists | O(max(m,n)) |
+| 41 | [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) | Floyd's fast/slow | O(n) |
+| 42 | [Find Duplicate Number](https://leetcode.com/problems/find-the-duplicate-number/) | Floyd's on index array (cycle start) | O(n) |
+| 43 | [LRU Cache](https://leetcode.com/problems/lru-cache/) | HashMap + doubly-linked list | O(1) |
+| 44 | [Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) | Min-heap of K heads | O(n log k) |
+| 45 | [Reverse Nodes in K-Group](https://leetcode.com/problems/reverse-nodes-in-k-group/) | Count K, reverse segment, connect | O(n) |
 
 ## Trees (15)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 46 | Invert Binary Tree | Swap children recursively | O(n) |
-| 47 | Maximum Depth | `1 + max(left, right)` | O(n) |
-| 48 | Diameter of Binary Tree | At each node: leftH + rightH; track global max | O(n) |
-| 49 | Balanced Binary Tree | Check `abs(leftH - rightH) <= 1` at every node | O(n) |
-| 50 | Same Tree | Compare both nodes recursively | O(n) |
-| 51 | Subtree of Another Tree | For each node, isSameTree check | O(m×n) |
-| 52 | Lowest Common Ancestor of BST | BST property: split point is LCA | O(h) |
-| 53 | Level Order Traversal | BFS with queue | O(n) |
-| 54 | Right Side View | BFS, take last node of each level | O(n) |
-| 55 | Count Good Nodes | DFS with running max from root | O(n) |
-| 56 | Validate BST | DFS with (min, max) bounds | O(n) |
-| 57 | Kth Smallest in BST | Inorder traversal, stop at k | O(h+k) |
+| 46 | [Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/) | Swap children recursively | O(n) |
+| 47 | [Maximum Depth](https://leetcode.com/problems/maximum-depth-of-binary-tree/) | `1 + max(left, right)` | O(n) |
+| 48 | [Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree/) | At each node: leftH + rightH; track global max | O(n) |
+| 49 | [Balanced Binary Tree](https://leetcode.com/problems/balanced-binary-tree/) | Check `abs(leftH - rightH) <= 1` at every node | O(n) |
+| 50 | [Same Tree](https://leetcode.com/problems/same-tree/) | Compare both nodes recursively | O(n) |
+| 51 | [Subtree of Another Tree](https://leetcode.com/problems/subtree-of-another-tree/) | For each node, isSameTree check | O(m×n) |
+| 52 | [Lowest Common Ancestor of BST](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/) | BST property: split point is LCA | O(h) |
+| 53 | [Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/) | BFS with queue | O(n) |
+| 54 | [Right Side View](https://leetcode.com/problems/binary-tree-right-side-view/) | BFS, take last node of each level | O(n) |
+| 55 | [Count Good Nodes](https://leetcode.com/problems/count-good-nodes-in-binary-tree/) | DFS with running max from root | O(n) |
+| 56 | [Validate BST](https://leetcode.com/problems/validate-binary-search-tree/) | DFS with (min, max) bounds | O(n) |
+| 57 | [Kth Smallest in BST](https://leetcode.com/problems/kth-smallest-element-in-a-bst/) | Inorder traversal, stop at k | O(h+k) |
 | 58 | Build Tree from Pre+In | root=pre[0], split inorder, recurse | O(n) |
-| 59 | Max Path Sum | DFS: node + max(left,right,0); track global | O(n) |
-| 60 | Serialize/Deserialize | Preorder with "#" for nulls | O(n) |
+| 59 | [Max Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/) | DFS: node + max(left,right,0); track global | O(n) |
+| 60 | [Serialize/Deserialize](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/) | Preorder with "#" for nulls | O(n) |
 
 ## Tries (3)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 61 | Implement Trie | children[26] + isEnd per node | O(L) |
-| 62 | Add and Search Word | DFS on '.' wildcard | O(26^L) worst |
-| 63 | Word Search II | Trie of words + DFS grid | O(m×n×4^L) |
+| 61 | [Implement Trie](https://leetcode.com/problems/implement-trie-prefix-tree/) | children[26] + isEnd per node | O(L) |
+| 62 | [Add and Search Word](https://leetcode.com/problems/design-add-and-search-words-data-structure/) | DFS on '.' wildcard | O(26^L) worst |
+| 63 | [Word Search II](https://leetcode.com/problems/word-search-ii/) | Trie of words + DFS grid | O(m×n×4^L) |
 
 ## Heap / Priority Queue (7)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 64 | Kth Largest Element | Min-heap of size K or quickselect | O(n) avg |
-| 65 | Last Stone Weight | Max-heap, smash top two | O(n log n) |
-| 66 | K Closest Points to Origin | Min-heap by distance or quickselect | O(n log k) |
-| 67 | Task Scheduler | Count max-freq, compute idle slots | O(n) |
-| 68 | Design Twitter | HashMap + merge K sorted (heap of recent 10) | O(k log k) |
-| 69 | Find Median from Data Stream | Max-heap left + min-heap right | O(log n) |
-| 70 | Top K Frequent Elements | (dup — see #5) | O(n log k) |
+| 64 | [Kth Largest Element](https://leetcode.com/problems/kth-largest-element-in-an-array/) | Min-heap of size K or quickselect | O(n) avg |
+| 65 | [Last Stone Weight](https://leetcode.com/problems/last-stone-weight/) | Max-heap, smash top two | O(n log n) |
+| 66 | [K Closest Points to Origin](https://leetcode.com/problems/k-closest-points-to-origin/) | Min-heap by distance or quickselect | O(n log k) |
+| 67 | [Task Scheduler](https://leetcode.com/problems/task-scheduler/) | Count max-freq, compute idle slots | O(n) |
+| 68 | [Design Twitter](https://leetcode.com/problems/design-twitter/) | HashMap + merge K sorted (heap of recent 10) | O(k log k) |
+| 69 | [Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/) | Max-heap left + min-heap right | O(log n) |
+| 70 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | (dup — see #5) | O(n log k) |
 
 ## Backtracking (9)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 71 | Subsets | Include/exclude each element | O(2^n) |
-| 72 | Combination Sum | DFS with remaining, reuse allowed | O(2^t) |
-| 73 | Permutations | Swap-based or used[] array | O(n!) |
-| 74 | Subsets II (with dups) | Sort + skip duplicates at same level | O(2^n) |
-| 75 | Combination Sum II | Sort + skip same value at same depth | O(2^n) |
-| 76 | Word Search | DFS from each cell, backtrack | O(m×n×4^L) |
-| 77 | Palindrome Partitioning | DFS + isPalin check at each split | O(n×2^n) |
-| 78 | Letter Combinations of Phone | DFS through digit→letters mapping | O(4^n) |
-| 79 | N-Queens | Place row-by-row, check col/diag conflicts | O(n!) |
+| 71 | [Subsets](https://leetcode.com/problems/subsets/) | Include/exclude each element | O(2^n) |
+| 72 | [Combination Sum](https://leetcode.com/problems/combination-sum/) | DFS with remaining, reuse allowed | O(2^t) |
+| 73 | [Permutations](https://leetcode.com/problems/permutations/) | Swap-based or used[] array | O(n!) |
+| 74 | [Subsets II (with dups)](https://leetcode.com/problems/subsets-ii/) | Sort + skip duplicates at same level | O(2^n) |
+| 75 | [Combination Sum II](https://leetcode.com/problems/combination-sum-ii/) | Sort + skip same value at same depth | O(2^n) |
+| 76 | [Word Search](https://leetcode.com/problems/word-search/) | DFS from each cell, backtrack | O(m×n×4^L) |
+| 77 | [Palindrome Partitioning](https://leetcode.com/problems/palindrome-partitioning/) | DFS + isPalin check at each split | O(n×2^n) |
+| 78 | [Letter Combinations of Phone](https://leetcode.com/problems/letter-combinations-of-a-phone-number/) | DFS through digit→letters mapping | O(4^n) |
+| 79 | [N-Queens](https://leetcode.com/problems/n-queens/) | Place row-by-row, check col/diag conflicts | O(n!) |
 
 ## Graphs (13)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 80 | Number of Islands | BFS/DFS flood fill | O(m×n) |
-| 81 | Max Area of Island | DFS, count cells per component | O(m×n) |
-| 82 | Clone Graph | BFS/DFS + HashMap old→new | O(V+E) |
-| 83 | Walls and Gates | Multi-source BFS from all gates | O(m×n) |
-| 84 | Rotting Oranges | Multi-source BFS from all rotten | O(m×n) |
-| 85 | Pacific Atlantic Water Flow | DFS from each ocean edge, intersect | O(m×n) |
-| 86 | Surrounded Regions | DFS from border 'O's, mark safe; flip rest | O(m×n) |
-| 87 | Course Schedule | Topological sort (Kahn's) | O(V+E) |
-| 88 | Course Schedule II | Topo sort, return the order | O(V+E) |
-| 89 | Graph Valid Tree | V-1 edges + connected (Union-Find) | O(V+E) |
-| 90 | Number of Connected Components | Union-Find or DFS count | O(V+E) |
-| 91 | Redundant Connection | Union-Find — edge that creates cycle | O(V+E) |
-| 92 | Word Ladder | BFS level-by-level, change one char | O(n×26×L) |
+| 80 | [Number of Islands](https://leetcode.com/problems/number-of-islands/) | BFS/DFS flood fill | O(m×n) |
+| 81 | [Max Area of Island](https://leetcode.com/problems/max-area-of-island/) | DFS, count cells per component | O(m×n) |
+| 82 | [Clone Graph](https://leetcode.com/problems/clone-graph/) | BFS/DFS + HashMap old→new | O(V+E) |
+| 83 | [Walls and Gates](https://leetcode.com/problems/walls-and-gates/) | Multi-source BFS from all gates | O(m×n) |
+| 84 | [Rotting Oranges](https://leetcode.com/problems/rotting-oranges/) | Multi-source BFS from all rotten | O(m×n) |
+| 85 | [Pacific Atlantic Water Flow](https://leetcode.com/problems/pacific-atlantic-water-flow/) | DFS from each ocean edge, intersect | O(m×n) |
+| 86 | [Surrounded Regions](https://leetcode.com/problems/surrounded-regions/) | DFS from border 'O's, mark safe; flip rest | O(m×n) |
+| 87 | [Course Schedule](https://leetcode.com/problems/course-schedule/) | Topological sort (Kahn's) | O(V+E) |
+| 88 | [Course Schedule II](https://leetcode.com/problems/course-schedule-ii/) | Topo sort, return the order | O(V+E) |
+| 89 | [Graph Valid Tree](https://leetcode.com/problems/graph-valid-tree/) | V-1 edges + connected (Union-Find) | O(V+E) |
+| 90 | [Number of Connected Components](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/) | Union-Find or DFS count | O(V+E) |
+| 91 | [Redundant Connection](https://leetcode.com/problems/redundant-connection/) | Union-Find — edge that creates cycle | O(V+E) |
+| 92 | [Word Ladder](https://leetcode.com/problems/word-ladder/) | BFS level-by-level, change one char | O(n×26×L) |
 
 ## Advanced Graphs (6)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 93 | Reconstruct Itinerary | DFS + sort adjacency (Hierholzer's) | O(E log E) |
-| 94 | Min Cost to Connect All Points | Prim's MST with min-heap | O(n² log n) |
-| 95 | Network Delay Time | Dijkstra from source | O((V+E) log V) |
-| 96 | Swim in Rising Water | Binary search + BFS or Dijkstra on grid | O(n² log n) |
-| 97 | Alien Dictionary | Build DAG from word order, topo sort | O(C) |
-| 98 | Cheapest Flights Within K Stops | Bellman-Ford K iterations or BFS with layers | O(K×E) |
+| 93 | [Reconstruct Itinerary](https://leetcode.com/problems/reconstruct-itinerary/) | DFS + sort adjacency (Hierholzer's) | O(E log E) |
+| 94 | [Min Cost to Connect All Points](https://leetcode.com/problems/min-cost-to-connect-all-points/) | Prim's MST with min-heap | O(n² log n) |
+| 95 | [Network Delay Time](https://leetcode.com/problems/network-delay-time/) | Dijkstra from source | O((V+E) log V) |
+| 96 | [Swim in Rising Water](https://leetcode.com/problems/swim-in-rising-water/) | Binary search + BFS or Dijkstra on grid | O(n² log n) |
+| 97 | [Alien Dictionary](https://leetcode.com/problems/alien-dictionary/) | Build DAG from word order, topo sort | O(C) |
+| 98 | [Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/) | Bellman-Ford K iterations or BFS with layers | O(K×E) |
 
 ## 1-D Dynamic Programming (10)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 99 | Climbing Stairs | `dp[i] = dp[i-1] + dp[i-2]` | O(n) |
-| 100 | Min Cost Climbing Stairs | `dp[i] = min(dp[i-1], dp[i-2]) + cost[i]` | O(n) |
-| 101 | House Robber | `dp[i] = max(dp[i-1], dp[i-2]+nums[i])` | O(n) |
-| 102 | House Robber II | Run robber on [0..n-2] and [1..n-1] | O(n) |
-| 103 | Longest Palindromic Substring | Expand from center | O(n²) |
-| 104 | Palindromic Substrings (count) | Expand from each center, count | O(n²) |
-| 105 | Decode Ways | `dp[i]` from 1-digit + 2-digit valid | O(n) |
-| 106 | Coin Change | `dp[i] = min(dp[i-coin]+1)` | O(amount×coins) |
-| 107 | Maximum Product Subarray | Track maxProd, minProd (negatives) | O(n) |
-| 108 | Word Break | `dp[i] = any dp[j] && s[j:i] in dict` | O(n²×L) |
+| 99 | [Climbing Stairs](https://leetcode.com/problems/climbing-stairs/) | `dp[i] = dp[i-1] + dp[i-2]` | O(n) |
+| 100 | [Min Cost Climbing Stairs](https://leetcode.com/problems/min-cost-climbing-stairs/) | `dp[i] = min(dp[i-1], dp[i-2]) + cost[i]` | O(n) |
+| 101 | [House Robber](https://leetcode.com/problems/house-robber/) | `dp[i] = max(dp[i-1], dp[i-2]+nums[i])` | O(n) |
+| 102 | [House Robber II](https://leetcode.com/problems/house-robber-ii/) | Run robber on [0..n-2] and [1..n-1] | O(n) |
+| 103 | [Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring/) | Expand from center | O(n²) |
+| 104 | [Palindromic Substrings (count)](https://leetcode.com/problems/palindromic-substrings/) | Expand from each center, count | O(n²) |
+| 105 | [Decode Ways](https://leetcode.com/problems/decode-ways/) | `dp[i]` from 1-digit + 2-digit valid | O(n) |
+| 106 | [Coin Change](https://leetcode.com/problems/coin-change/) | `dp[i] = min(dp[i-coin]+1)` | O(amount×coins) |
+| 107 | [Maximum Product Subarray](https://leetcode.com/problems/maximum-product-subarray/) | Track maxProd, minProd (negatives) | O(n) |
+| 108 | [Word Break](https://leetcode.com/problems/word-break/) | `dp[i] = any dp[j] && s[j:i] in dict` | O(n²×L) |
 
 ## 2-D Dynamic Programming (11)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 109 | Unique Paths | `dp[i][j] = dp[i-1][j] + dp[i][j-1]` | O(m×n) |
-| 110 | Longest Common Subsequence | Match→diag+1, else max(left,up) | O(m×n) |
+| 109 | [Unique Paths](https://leetcode.com/problems/unique-paths/) | `dp[i][j] = dp[i-1][j] + dp[i][j-1]` | O(m×n) |
+| 110 | [Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) | Match→diag+1, else max(left,up) | O(m×n) |
 | 111 | Best Time Buy/Sell with Cooldown | States: hold, sold, rest | O(n) |
-| 112 | Coin Change II (count ways) | `dp[i] += dp[i-coin]` | O(amount×coins) |
-| 113 | Target Sum | 0/1 knapsack on (sum+total)/2 | O(n×sum) |
-| 114 | Interleaving String | 2D dp[i][j] = can form s3[0..i+j] from s1[0..i] + s2[0..j] | O(m×n) |
-| 115 | Longest Increasing Path in Matrix | DFS + memo on grid | O(m×n) |
-| 116 | Distinct Subsequences | `dp[i][j] = dp[i-1][j] + (match ? dp[i-1][j-1] : 0)` | O(m×n) |
-| 117 | Edit Distance | Insert/delete/replace dp table | O(m×n) |
-| 118 | Burst Balloons | Interval DP: last balloon to burst in range | O(n³) |
-| 119 | Regular Expression Matching | 2D DP for '.' and '*' | O(m×n) |
+| 112 | [Coin Change II (count ways)](https://leetcode.com/problems/coin-change-ii/) | `dp[i] += dp[i-coin]` | O(amount×coins) |
+| 113 | [Target Sum](https://leetcode.com/problems/target-sum/) | 0/1 knapsack on (sum+total)/2 | O(n×sum) |
+| 114 | [Interleaving String](https://leetcode.com/problems/interleaving-string/) | 2D dp[i][j] = can form s3[0..i+j] from s1[0..i] + s2[0..j] | O(m×n) |
+| 115 | [Longest Increasing Path in Matrix](https://leetcode.com/problems/longest-increasing-path-in-a-matrix/) | DFS + memo on grid | O(m×n) |
+| 116 | [Distinct Subsequences](https://leetcode.com/problems/distinct-subsequences/) | `dp[i][j] = dp[i-1][j] + (match ? dp[i-1][j-1] : 0)` | O(m×n) |
+| 117 | [Edit Distance](https://leetcode.com/problems/edit-distance/) | Insert/delete/replace dp table | O(m×n) |
+| 118 | [Burst Balloons](https://leetcode.com/problems/burst-balloons/) | Interval DP: last balloon to burst in range | O(n³) |
+| 119 | [Regular Expression Matching](https://leetcode.com/problems/regular-expression-matching/) | 2D DP for '.' and '*' | O(m×n) |
 
 ## Greedy (8)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 120 | Maximum Subarray | Kadane's | O(n) |
-| 121 | Jump Game | Track farthest reachable | O(n) |
-| 122 | Jump Game II | BFS-style levels (current reach, next reach) | O(n) |
-| 123 | Gas Station | If total gas >= total cost, solution exists; find start via running sum | O(n) |
-| 124 | Hand of Straights | Sort + greedily form groups with HashMap | O(n log n) |
+| 120 | [Maximum Subarray](https://leetcode.com/problems/maximum-subarray/) | Kadane's | O(n) |
+| 121 | [Jump Game](https://leetcode.com/problems/jump-game/) | Track farthest reachable | O(n) |
+| 122 | [Jump Game II](https://leetcode.com/problems/jump-game-ii/) | BFS-style levels (current reach, next reach) | O(n) |
+| 123 | [Gas Station](https://leetcode.com/problems/gas-station/) | If total gas >= total cost, solution exists; find start via running sum | O(n) |
+| 124 | [Hand of Straights](https://leetcode.com/problems/hand-of-straights/) | Sort + greedily form groups with HashMap | O(n log n) |
 | 125 | Merge Triplets to Form Target | For each triplet, check if any coordinate matches without exceeding | O(n) |
-| 126 | Partition Labels | Last occurrence of each char; extend end, split when i == end | O(n) |
-| 127 | Valid Parenthesis String | Track min/max open count range | O(n) |
+| 126 | [Partition Labels](https://leetcode.com/problems/partition-labels/) | Last occurrence of each char; extend end, split when i == end | O(n) |
+| 127 | [Valid Parenthesis String](https://leetcode.com/problems/valid-parenthesis-string/) | Track min/max open count range | O(n) |
 
 ## Intervals (5)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 128 | Insert Interval | Collect before + merge overlap + collect after | O(n) |
-| 129 | Merge Intervals | Sort by start, extend end if overlap | O(n log n) |
-| 130 | Non-Overlapping Intervals | Sort by end, greedily keep earliest | O(n log n) |
-| 131 | Meeting Rooms | Sort, check any overlap | O(n log n) |
-| 132 | Meeting Rooms II | Sweep (sort starts+ends) or min-heap | O(n log n) |
+| 128 | [Insert Interval](https://leetcode.com/problems/insert-interval/) | Collect before + merge overlap + collect after | O(n) |
+| 129 | [Merge Intervals](https://leetcode.com/problems/merge-intervals/) | Sort by start, extend end if overlap | O(n log n) |
+| 130 | [Non-Overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/) | Sort by end, greedily keep earliest | O(n log n) |
+| 131 | [Meeting Rooms](https://leetcode.com/problems/meeting-rooms/) | Sort, check any overlap | O(n log n) |
+| 132 | [Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/) | Sweep (sort starts+ends) or min-heap | O(n log n) |
 
 ## Math & Geometry (8)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 133 | Rotate Image | Transpose + reverse each row | O(n²) |
-| 134 | Spiral Matrix | Boundary tracking (top/bottom/left/right) | O(m×n) |
-| 135 | Set Matrix Zeroes | Use first row/col as markers | O(m×n) |
-| 136 | Happy Number | Fast/slow (Floyd's) on digit-sum sequence | O(log n) |
-| 137 | Plus One | Add from last digit, handle carry | O(n) |
-| 138 | Pow(x, n) | Fast exponentiation (square-and-multiply) | O(log n) |
-| 139 | Multiply Strings | Grade-school multiplication, digit by digit | O(m×n) |
-| 140 | Detect Squares | HashMap of points; for each query, find valid rectangles | O(n) |
+| 133 | [Rotate Image](https://leetcode.com/problems/rotate-image/) | Transpose + reverse each row | O(n²) |
+| 134 | [Spiral Matrix](https://leetcode.com/problems/spiral-matrix/) | Boundary tracking (top/bottom/left/right) | O(m×n) |
+| 135 | [Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes/) | Use first row/col as markers | O(m×n) |
+| 136 | [Happy Number](https://leetcode.com/problems/happy-number/) | Fast/slow (Floyd's) on digit-sum sequence | O(log n) |
+| 137 | [Plus One](https://leetcode.com/problems/plus-one/) | Add from last digit, handle carry | O(n) |
+| 138 | [Pow(x, n)](https://leetcode.com/problems/powx-n/) | Fast exponentiation (square-and-multiply) | O(log n) |
+| 139 | [Multiply Strings](https://leetcode.com/problems/multiply-strings/) | Grade-school multiplication, digit by digit | O(m×n) |
+| 140 | [Detect Squares](https://leetcode.com/problems/detect-squares/) | HashMap of points; for each query, find valid rectangles | O(n) |
 
 ## Bit Manipulation (7)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 141 | Single Number | XOR all → duplicate cancels, single remains | O(n) |
-| 142 | Number of 1 Bits | `n & (n-1)` removes LSB; count | O(32) |
-| 143 | Counting Bits | `dp[i] = dp[i>>1] + (i&1)` | O(n) |
-| 144 | Reverse Bits | Shift result left + OR with (n&1) + shift n right | O(32) |
-| 145 | Missing Number | XOR all indices + all values | O(n) |
-| 146 | Sum of Two Integers | `carry = (a&b)<<1; sum = a^b` repeat | O(32) |
-| 147 | Reverse Integer | Pop digits with %10, push to result, check overflow | O(log n) |
+| 141 | [Single Number](https://leetcode.com/problems/single-number/) | XOR all → duplicate cancels, single remains | O(n) |
+| 142 | [Number of 1 Bits](https://leetcode.com/problems/number-of-1-bits/) | `n & (n-1)` removes LSB; count | O(32) |
+| 143 | [Counting Bits](https://leetcode.com/problems/counting-bits/) | `dp[i] = dp[i>>1] + (i&1)` | O(n) |
+| 144 | [Reverse Bits](https://leetcode.com/problems/reverse-bits/) | Shift result left + OR with (n&1) + shift n right | O(32) |
+| 145 | [Missing Number](https://leetcode.com/problems/missing-number/) | XOR all indices + all values | O(n) |
+| 146 | [Sum of Two Integers](https://leetcode.com/problems/sum-of-two-integers/) | `carry = (a&b)<<1; sum = a^b` repeat | O(32) |
+| 147 | [Reverse Integer](https://leetcode.com/problems/reverse-integer/) | Pop digits with %10, push to result, check overflow | O(log n) |
 
 ## Bonus (3)
 
@@ -273,4 +273,4 @@ Pace: **~3 problems/day** = done in 7-8 weeks.
 
 ---
 
-*For full solutions with walkthroughs, check the [DSA section](/dsa). For the shorter version, see [Blind 75](/blind75).*
+*For full solutions with walkthroughs, check the [DSA section](/dsa). For the shorter version, see [The 75](/the-75).*
