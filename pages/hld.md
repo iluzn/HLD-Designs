@@ -7,6 +7,8 @@ permalink: /hld
 
 # High-Level Design Problems
 
+> 📚 **New to system design?** Start with the [HLD Fundamentals](/concepts) — covers CAP, caching, sharding, queues, and estimation.
+
 System design interview problems covering distributed architectures, databases, caching, messaging, and real-time systems. Each design includes diagrams, technology choices, deep dives, and trade-offs.
 
 ---

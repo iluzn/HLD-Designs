@@ -7,6 +7,8 @@ permalink: /lld
 
 # Low-Level Design / Machine Coding
 
+> 📚 **New to machine coding?** Start with the [LLD Fundamentals](/lld-fundamentals) — covers SOLID, design patterns, concurrency, and the 90-minute approach.
+
 Machine-coding problems asked at PhonePe, Flipkart, Swiggy, Razorpay, and other Indian tech companies. Each solution uses OOP, design patterns (Strategy, State, Observer), and is runnable end-to-end with a demo class.
 
 ---

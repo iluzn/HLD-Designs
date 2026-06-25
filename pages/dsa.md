@@ -7,6 +7,8 @@ permalink: /dsa
 
 # DSA — Data Structures & Algorithms
 
+> 📚 **Before diving into problems**, read the [DSA Fundamentals](/dsa-fundamentals) — covers the 12 core patterns, complexity analysis, and how to approach any problem.
+
 Pattern-based DSA problems organized by technique — not by difficulty alone. Each problem will include the intuition, approach, complexity analysis, code, and which companies ask it.
 
 ---
