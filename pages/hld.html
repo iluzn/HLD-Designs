@@ -43,7 +43,6 @@ permalink: /hld
                 <a href="/lld">LLD</a>
                 <a href="/dsa">DSA</a>
                 <a href="/cheatsheet">Cheatsheet</a>
-                <a href="/approach">Framework</a>
                 <a href="/about">About</a>
                 <button id="theme-btn" title="Switch theme">🌙</button>
             </div>
@@ -80,6 +79,14 @@ permalink: /hld
         <div class="start-here-content">
             <strong>New to system design?</strong>
             <p>Start with HLD Fundamentals — covers CAP theorem, caching, sharding, queues, and back-of-envelope estimation.</p>
+        </div>
+        <div class="start-here-arrow">→</div>
+    </a>
+    <a class="start-here" href="/approach" style="margin-top:0.8rem;">
+        <div class="start-here-icon">🎯</div>
+        <div class="start-here-content">
+            <strong>The 45-Minute Framework</strong>
+            <p>Step-by-step delivery structure for your system design interview. Timings, phases, and what to say at each stage.</p>
         </div>
         <div class="start-here-arrow">→</div>
     </a>
@@ -426,21 +433,21 @@ body {
 .bg-gradient { position: fixed; top: 0; left: 0; right: 0; height: 600px; background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.12), transparent); pointer-events: none; z-index: 0; }
 [data-theme="light"] .bg-gradient { opacity: 0.4; }
 
-/* Header */
-header { position: sticky; top: 0; z-index: 100; background: var(--header-bg); backdrop-filter: blur(12px); border-bottom: none; padding: 0.9rem 0; }
-header::after { content: ''; position: absolute; bottom: 0; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, rgba(129,140,248,0.3), transparent); }
+/* Header — premium glass */
+header { position: sticky; top: 0; z-index: 100; padding: 0.7rem 0; background: var(--header-bg); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); border-bottom: none; }
+header::after { content: ''; position: absolute; bottom: 0; left: 5%; right: 5%; height: 1px; background: linear-gradient(90deg, transparent, rgba(129,140,248,0.25), transparent); }
 .header-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; }
-.logo { font-size: 1.3rem; font-weight: 800; color: var(--text); text-decoration: none; letter-spacing: -0.02em; }
-.logo span { background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.logo-icon { display: inline-block; vertical-align: middle; margin-right: 0.4rem; border-radius: 4px; }
-nav { display: flex; align-items: center; gap: 0.2rem; position: relative; }
-nav a { color: var(--text-muted); text-decoration: none; padding: 0.4rem 0.8rem; font-size: 0.84rem; border-radius: 8px; transition: all 0.2s; font-weight: 500; position: relative; }
-nav a:hover { color: var(--text); background: rgba(129,140,248,0.08); }
+.logo { font-size: 1.15rem; font-weight: 800; color: var(--text); text-decoration: none; letter-spacing: -0.03em; display: flex; align-items: center; gap: 0.4rem; }
+.logo span { background: linear-gradient(135deg, var(--accent), #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.logo-icon { width: 22px; height: 22px; border-radius: 5px; }
+nav { display: flex; align-items: center; gap: 0.15rem; position: relative; }
+nav a { color: var(--text-muted); text-decoration: none; padding: 0.35rem 0.7rem; font-size: 0.82rem; font-weight: 500; border-radius: 6px; transition: all 0.2s; }
+nav a:hover { color: var(--text); background: rgba(129,140,248,0.06); }
 nav a.active { color: var(--accent); background: rgba(129,140,248,0.1); font-weight: 600; }
-.hamburger { display: none; background: rgba(129,140,248,0.08); border: 1px solid rgba(129,140,248,0.15); color: var(--text); cursor: pointer; padding: 0.4rem 0.5rem; font-size: 1.2rem; line-height: 1; border-radius: 8px; transition: all 0.2s; }
-.hamburger:hover { background: rgba(129,140,248,0.15); border-color: rgba(129,140,248,0.3); }
-.nav-links { display: flex; align-items: center; gap: 0; }
-#theme-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 0.4rem 0.6rem; border-radius: 6px; margin-left: 0.8rem; transition: color 0.2s; }
+#theme-btn, .theme-toggle { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-size: 0.9rem; padding: 0.3rem 0.5rem; border-radius: 6px; margin-left: 0.4rem; transition: all 0.2s; line-height: 1; }
+#theme-btn:hover, .theme-toggle:hover { border-color: var(--accent); color: var(--text); }
+.hamburger { display: none; background: none; border: 1px solid var(--border); color: var(--text); cursor: pointer; padding: 0.3rem 0.5rem; font-size: 1.2rem; line-height: 1; border-radius: 6px; }
+.nav-links { display: flex; align-items: center; gap: 0.15rem; }
 
 /* Hero */
 .hero { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 4rem 1.5rem 2rem; text-align: center; }
@@ -584,11 +591,11 @@ footer a:hover { text-decoration: underline; }
     .hero-stats { gap: 1.5rem; }
     .problems-grid { grid-template-columns: 1fr; }
     .hamburger { display: block; }
-    .nav-links { display: none; position: absolute; top: 100%; right: 0; background: var(--header-bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.5rem 0; flex-direction: column; align-items: stretch; min-width: 160px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); margin-top: 0.5rem; }
+    .nav-links { display: none; position: absolute; top: calc(100% + 0.5rem); right: 0; background: var(--header-bg); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); border: 1px solid var(--border); border-radius: 12px; padding: 0.4rem; flex-direction: column; align-items: stretch; min-width: 160px; box-shadow: 0 16px 48px rgba(0,0,0,0.4); }
     .nav-links.open { display: flex; }
-    .nav-links a { margin-left: 0; padding: 0.7rem 1.2rem; font-size: 0.92rem; border-bottom: 1px solid var(--border); border-radius: 0; }
-    .nav-links a:last-of-type { border-bottom: none; }
-    #theme-btn { margin: 0.5rem 1.2rem; }
+    .nav-links a { margin: 0; padding: 0.6rem 1rem; font-size: 0.88rem; border-radius: 8px; }
+    .nav-links a:hover { background: rgba(129,140,248,0.08); }
+    #theme-btn, .theme-toggle { margin: 0.3rem 0.5rem; }
     .start-here { flex-direction: column; text-align: center; }
     .start-here-arrow { margin-left: 0; }
 }
