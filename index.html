@@ -244,20 +244,40 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
 
 <!-- Global progress -->
 <div class="section" id="global-progress" style="padding-bottom:1.5rem;">
-    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1.2rem;">
-        <div style="position:relative;width:52px;height:52px;flex-shrink:0;">
-            <svg width="52" height="52" viewBox="0 0 52 52">
-                <circle cx="26" cy="26" r="22" fill="none" stroke="var(--border)" stroke-width="4"/>
-                <circle id="gp-ring" cx="26" cy="26" r="22" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" stroke-dasharray="138.2" stroke-dashoffset="138.2" transform="rotate(-90 26 26)" style="transition:stroke-dashoffset 1s ease;"/>
-            </svg>
-            <span id="gp-pct" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:var(--text);">0%</span>
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.5rem;">
+        <div style="display:flex;align-items:center;gap:1.2rem;margin-bottom:1rem;">
+            <div style="position:relative;width:48px;height:48px;flex-shrink:0;">
+                <svg width="48" height="48" viewBox="0 0 48 48">
+                    <circle cx="24" cy="24" r="20" fill="none" stroke="var(--border)" stroke-width="3.5"/>
+                    <circle id="gp-ring" cx="24" cy="24" r="20" fill="none" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="125.7" stroke-dashoffset="125.7" transform="rotate(-90 24 24)" style="transition:stroke-dashoffset 1s ease;"/>
+                </svg>
+                <span id="gp-pct" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;color:var(--text);">0%</span>
+            </div>
+            <div style="flex:1;">
+                <div style="font-size:0.85rem;font-weight:600;color:var(--text);" id="gp-title">Start your first design</div>
+                <div style="font-size:0.7rem;color:var(--text-dim);margin-top:0.2rem;">Track progress by checking ✓ on each design page</div>
+            </div>
         </div>
-        <div style="flex:1;">
-            <div style="font-size:0.85rem;font-weight:600;color:var(--text);margin-bottom:0.25rem;" id="gp-title">Start your first design</div>
-            <div style="display:flex;gap:1.2rem;font-size:0.75rem;color:var(--text-muted);">
-                <span id="gp-hld">🏗️ HLD: 0/17</span>
-                <span id="gp-lld">⚙️ LLD: 0/6</span>
-                <span style="opacity:0.6;">— mark complete on each page</span>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;">
+            <div style="display:flex;align-items:center;gap:0.6rem;">
+                <span style="font-size:0.7rem;color:var(--text-muted);width:85px;">🟢 Beginner</span>
+                <div id="gp-dots-beginner" style="display:flex;gap:4px;"></div>
+                <span id="gp-count-beginner" style="font-size:0.65rem;color:var(--text-dim);margin-left:auto;">0/3</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.6rem;">
+                <span style="font-size:0.7rem;color:var(--text-muted);width:85px;">🟡 Intermediate</span>
+                <div id="gp-dots-intermediate" style="display:flex;gap:4px;"></div>
+                <span id="gp-count-intermediate" style="font-size:0.65rem;color:var(--text-dim);margin-left:auto;">0/6</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.6rem;">
+                <span style="font-size:0.7rem;color:var(--text-muted);width:85px;">🔴 Advanced</span>
+                <div id="gp-dots-advanced" style="display:flex;gap:4px;"></div>
+                <span id="gp-count-advanced" style="font-size:0.65rem;color:var(--text-dim);margin-left:auto;">0/8</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.2rem;padding-top:0.4rem;border-top:1px solid var(--border);">
+                <span style="font-size:0.7rem;color:var(--text-muted);width:85px;">⚙️ LLD</span>
+                <div id="gp-dots-lld" style="display:flex;gap:4px;"></div>
+                <span id="gp-count-lld" style="font-size:0.65rem;color:var(--text-dim);margin-left:auto;">0/6</span>
             </div>
         </div>
     </div>
@@ -475,30 +495,63 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
 <!-- Global progress -->
 <script>
 (function() {
-    var hldDone = Object.keys(JSON.parse(localStorage.getItem('hld-progress') || '{}')).length;
-    var lldDone = Object.keys(JSON.parse(localStorage.getItem('lld-progress') || '{}')).length;
+    var hldProgress = JSON.parse(localStorage.getItem('hld-progress') || '{}');
+    var lldProgress = JSON.parse(localStorage.getItem('lld-progress') || '{}');
+
+    // HLD problems by difficulty (names match the card h3 text)
+    var beginner = ['Parking Lot', 'Real-Time Leaderboard', 'Rate Limiter'];
+    var intermediate = ['URL Shortener', 'Twitter / Social Feed', 'Chat System (WhatsApp)', 'Notification System', 'Photo Sharing (Instagram)', 'Ticket Booking (BookMyShow)'];
+    var advanced = ['Distributed Job Scheduler', 'Delayed Trigger Service', 'Digital Wallet (PhonePe)', 'Food Delivery (Zomato)', 'Stock Broker (Robinhood)', 'Ride Sharing (Uber)', 'Video Streaming (Netflix)', 'Collaborative Editing (Google Docs)'];
+    var lldProblems = ['Parking Lot', 'Music Player', 'Splitwise', 'Snake & Ladder', 'Multilevel Cache', 'Multilevel Cache'];
+
+    function countDone(list, progress) {
+        return list.filter(function(name) { return progress[name]; }).length;
+    }
+
+    function renderDots(containerId, total, done) {
+        var container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        for (var i = 0; i < total; i++) {
+            var dot = document.createElement('span');
+            dot.style.cssText = 'width:8px;height:8px;border-radius:50%;display:inline-block;transition:background 0.3s;';
+            dot.style.background = i < done ? 'var(--accent)' : 'var(--border)';
+            container.appendChild(dot);
+        }
+    }
+
+    var bDone = countDone(beginner, hldProgress);
+    var iDone = countDone(intermediate, hldProgress);
+    var aDone = countDone(advanced, hldProgress);
+    var lDone = Object.keys(lldProgress).length;
+
+    renderDots('gp-dots-beginner', 3, bDone);
+    renderDots('gp-dots-intermediate', 6, iDone);
+    renderDots('gp-dots-advanced', 8, aDone);
+    renderDots('gp-dots-lld', 6, lDone);
+
+    document.getElementById('gp-count-beginner').textContent = bDone + '/3';
+    document.getElementById('gp-count-intermediate').textContent = iDone + '/6';
+    document.getElementById('gp-count-advanced').textContent = aDone + '/8';
+    document.getElementById('gp-count-lld').textContent = lDone + '/6';
+
+    // Ring
     var total = 17 + 6;
-    var done = hldDone + lldDone;
+    var done = bDone + iDone + aDone + lDone;
     var pct = Math.round((done / total) * 100);
-
-    document.getElementById('gp-hld').textContent = '🏗️ HLD: ' + hldDone + '/17';
-    document.getElementById('gp-lld').textContent = '⚙️ LLD: ' + lldDone + '/6';
     document.getElementById('gp-pct').textContent = pct + '%';
-
-    // Animate ring
     var ring = document.getElementById('gp-ring');
-    var circumference = 138.2;
-    var offset = circumference - (pct / 100) * circumference;
-    setTimeout(function() { ring.style.strokeDashoffset = offset; }, 300);
+    var circumference = 125.7;
+    setTimeout(function() { ring.style.strokeDashoffset = circumference - (pct / 100) * circumference; }, 300);
 
-    // Motivational title
+    // Title
     var title = document.getElementById('gp-title');
     if (done === 0) title.textContent = 'Start your first design →';
     else if (pct < 25) title.textContent = 'Good start! Keep going 🔥';
-    else if (pct < 50) title.textContent = 'Making progress! ' + done + ' completed';
+    else if (pct < 50) title.textContent = done + ' completed — making progress!';
     else if (pct < 75) title.textContent = 'Over halfway! 💪 ' + done + '/' + total;
     else if (pct < 100) title.textContent = 'Almost there! ' + (total - done) + ' remaining';
-    else title.textContent = 'All done! You are interview-ready 🎉';
+    else title.textContent = 'All done! Interview-ready 🎉';
 })();
 </script>
 </body>
