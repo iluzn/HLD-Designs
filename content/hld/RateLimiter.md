@@ -141,123 +141,334 @@ All pods check the SAME counter in Redis. Doesn't matter which pod handles the r
 
 ## Rate Limiting Algorithms
 
-There are 4 main approaches. You need to know all 4 for interviews, but **Token Bucket** is the most common in production.
+There are 5 main approaches. You need to know all of them for interviews, but **Token Bucket** and **Sliding Window Counter** are the most common in production.
 
-### Algorithm 1: Fixed Window
+---
+
+### Algorithm 1: Fixed Window Counter
+
+**How it works:**
+Divide time into fixed intervals (e.g., every 60 seconds). Maintain one counter per user per window. Each request increments the counter. If counter exceeds the limit → reject. At window boundary → counter resets to 0.
+
+**Example with numbers:**
+- Limit: 100 requests per minute
+- Window: 12:00:00 – 12:00:59
+- User sends request #73 at 12:00:45 → counter = 73 → ✅ ALLOW
+- User sends request #101 at 12:00:58 → counter = 101 → ❌ REJECT (429)
+- Clock hits 12:01:00 → counter resets to 0
+
+**Redis implementation:**
+```
+key = "rate:{userId}:{minute_number}"
+count = INCR key
+if count == 1: EXPIRE key 60   ← auto-cleanup
+if count > limit: REJECT
+else: ALLOW
+```
+
+**The boundary burst problem:**
+- User sends 100 requests at 12:00:58 (end of window 1) → allowed
+- User sends 100 requests at 12:01:01 (start of window 2) → allowed
+- Result: 200 requests in 3 seconds, but technically "within limits" in both windows
 
 ```mermaid
 flowchart LR
-    subgraph Window1["Window: 12:00 - 12:01"]
-        C1["count = 73"]
+    subgraph W1["Window 12:00-12:01"]
+        A["100 requests at 12:00:58"]
     end
-    subgraph Window2["Window: 12:01 - 12:02"]
-        C2["count = 12"]
+    subgraph W2["Window 12:01-12:02"]
+        B["100 requests at 12:01:01"]
     end
+    RESULT["200 requests in 3 seconds!"]:::client
+
+    A --> RESULT
+    B --> RESULT
 
     classDef default fill:#1e1e2e,stroke:#6366f1,color:#e2e8f0
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
 ```
 
-- Divide time into fixed 1-minute windows.
-- One counter per window. At window boundary → reset to 0.
-- **Redis key:** `rate:{userId}:{minute_number}` with 60-second TTL.
-- ✅ Simple. One `INCR` command.
-- ❌ **Boundary burst problem:** 100 requests at 11:59:59 + 100 at 12:00:00 = 200 in 2 seconds.
+| Pros | Cons |
+|---|---|
+| ✅ Dead simple — one INCR + one EXPIRE | ❌ Boundary burst allows 2× the limit |
+| ✅ Minimal memory — 1 counter per user | ❌ Not accurate for tight limits |
+| ✅ O(1) per request | ❌ Resets abruptly |
 
-### Algorithm 2: Sliding Window (approximate)
+**Used by:** GitHub API (60/hour for unauthenticated), Twitter/X (15-minute fixed windows), Slack API.
 
-💡 *Sliding window = counts requests in a rolling time window (not fixed clock intervals). More accurate than fixed windows because it avoids the "boundary burst" problem.*
+---
 
-Instead of hard window boundaries, use a weighted combination:
+### Algorithm 2: Sliding Window Log
+
+**How it works:**
+Store the exact timestamp of EVERY request in a sorted list (Redis Sorted Set). When a new request arrives:
+1. Remove all entries older than `now - window_size`
+2. Count remaining entries
+3. If count < limit → allow and add new timestamp; else → reject
+
+**Example with numbers:**
+- Limit: 5 requests per 60 seconds
+- Current time: 12:01:30
+- Stored timestamps: `[12:00:25, 12:00:45, 12:01:05, 12:01:20, 12:01:28]`
+- Purge entries before 12:00:30 → removes `12:00:25`
+- Remaining count: 4
+- 4 < 5 → ✅ ALLOW, add `12:01:30` to the set
+
+**Redis implementation:**
+```
+key = "rate:{userId}"
+now = current_timestamp_ms
+
+ZREMRANGEBYSCORE key 0 (now - window_ms)  ← purge old
+count = ZCARD key                          ← count remaining
+if count < limit:
+    ZADD key now now                       ← log this request
+    ALLOW
+else:
+    REJECT
+```
+
+| Pros | Cons |
+|---|---|
+| ✅ Perfectly accurate — zero boundary burst | ❌ Memory-heavy: stores every timestamp |
+| ✅ True rolling window | ❌ 10K req/min limit = 10K entries per user |
+| ✅ No approximation | ❌ O(n) cleanup on each request |
+
+**Memory:** For a user with 10,000 requests/hour limit, that is 10,000 timestamps stored per user. At 8 bytes each = 80KB per user. With 1M users = 80GB. Expensive.
+
+**Used by:** Payment/billing systems where exact counts are non-negotiable. Not practical for high-volume public APIs.
+
+---
+
+### Algorithm 3: Sliding Window Counter (Cloudflare's approach)
+
+💡 *This is the "best of both worlds" — accuracy of sliding window + memory of fixed window.*
+
+**How it works:**
+Keep TWO counters: one for the current fixed window, one for the previous window. Estimate the rolling count using a weighted formula:
 
 ```
-estimated_count = current_window_count + previous_window_count × overlap_ratio
+estimated_count = current_window_count + (previous_window_count × overlap_percentage)
 ```
 
-**Example:** At 12:00:45 (45 seconds into the new window):
-- Current window (12:00-12:01): 30 requests
-- Previous window (11:59-12:00): 80 requests
-- Overlap: 15 seconds remaining of old window = 15/60 = 25%
-- Estimate: 30 + 80 × 0.25 = **50**
+The overlap percentage = how much of the previous window is still "within" our rolling window.
 
-✅ Smooth. No boundary bursts. ~1% accuracy.
-✅ Only stores 2 counters (current + previous). Same memory as fixed window.
-❌ Approximate — could allow 1-2% over the limit.
-
-> 💡 **Cloudflare uses this** for billions of rate-limit checks per day. The 1% inaccuracy is acceptable.
-
-### Algorithm 3: Token Bucket ⭐ (most common)
-
-💡 *Token bucket = imagine a bucket that fills with tokens at a steady rate (e.g., 10/sec). Each request consumes one token. If the bucket is empty, the request is rejected. Allows bursts up to bucket capacity.*
+**Example with numbers:**
+- Limit: 100 requests per minute
+- Current time: 12:01:45 (we're 45 seconds into the current window)
+- Previous window (12:00–12:01): 80 requests
+- Current window (12:01–12:02): 30 requests so far
+- Overlap: we're 45s into the new window, so 15s of the old window still counts = 15/60 = 25%
+- Estimated count: 30 + (80 × 0.25) = 30 + 20 = **50** → under 100 → ✅ ALLOW
 
 ```mermaid
-flowchart TD
-    BUCKET["Bucket<br/>max = 10 tokens<br/>current = 7"]:::data
-    REFILL["Refill: +1 token every 6 seconds"]:::service
-    REQ["Request arrives<br/>costs 1 token"]:::client
+flowchart LR
+    subgraph PREV["Previous Window 12:00-12:01<br/>80 requests"]
+        OVERLAP["Last 15s<br/>still counts<br/>80 x 0.25 = 20"]:::data
+    end
+    subgraph CURR["Current Window 12:01-12:02<br/>30 requests so far"]
+        NOW["We are here<br/>at 12:01:45"]:::client
+    end
+    TOTAL["Estimated: 30 + 20 = 50"]:::service
 
-    REFILL -->|"adds tokens"| BUCKET
-    REQ -->|"removes 1 token"| BUCKET
+    OVERLAP --> TOTAL
+    CURR --> TOTAL
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-**How it works:**
-1. Each user has a "bucket" with a maximum capacity (say 10 tokens).
-2. Tokens refill at a steady rate (say 1 token every 6 seconds = 10/minute).
-3. Each request costs 1 token.
-4. If bucket is empty → reject (429).
-
-**Why it's the best for APIs:**
-- ✅ Allows short bursts (bucket can be full = 10 instant requests).
-- ✅ But caps sustained rate (only 10 per minute average).
-- ✅ Simple Redis implementation: store `{tokens: float, last_refill_time: timestamp}`.
-
-**Redis implementation (pseudocode):**
+**Redis implementation:**
 ```
-tokens = current_tokens + (now - last_refill) * refill_rate
-tokens = min(tokens, max_tokens)   -- cap at bucket size
-if tokens >= 1:
-    tokens -= 1
+prev_key = "rate:{userId}:{prev_minute}"
+curr_key = "rate:{userId}:{curr_minute}"
+elapsed = seconds_into_current_window
+weight = (window_size - elapsed) / window_size
+
+estimated = GET curr_key + GET prev_key × weight
+if estimated < limit:
+    INCR curr_key
     ALLOW
 else:
-    REJECT (429)
+    REJECT
 ```
 
-> 💡 **Stripe, GitHub, and most production APIs use Token Bucket.** It gives the best UX because it allows natural burst behavior.
+| Pros | Cons |
+|---|---|
+| ✅ Smooth — no boundary bursts | ❌ Approximate (~0.003% error rate) |
+| ✅ O(1) memory — just 2 counters per user | ❌ Slightly more logic than fixed window |
+| ✅ Cloudflare tested: 400M requests, 0.003% error | |
 
-### Algorithm 4: Sliding Window Log
+**Memory:** Same as fixed window — 2 integers per user. At 1M users: ~16MB. Negligible.
 
-- Store the timestamp of EVERY request in a sorted set.
-- Count entries within `[now - window, now]`.
-- ✅ Perfectly accurate. Zero over-count.
-- ❌ Stores every timestamp. 10K requests/min = 10K entries per user. Memory-heavy.
-- Used when you need exact precision (billing APIs, credit-based systems).
+**Used by:** Cloudflare (45M+ req/sec), most modern REST APIs. The go-to choice when you need accuracy without the memory cost of sliding log.
 
-### Which to pick?
+---
+
+### Algorithm 4: Token Bucket ⭐ (most popular in production)
+
+💡 *Think of a bucket that fills with tokens at a steady rate. Each request costs one token. If the bucket is empty, request is rejected. This allows controlled bursts.*
+
+**How it works:**
+1. Each user has a bucket with a maximum capacity (e.g., 10 tokens)
+2. Tokens are added at a fixed refill rate (e.g., 1 token every 6 seconds = 10/minute)
+3. Each request consumes 1 token
+4. If bucket is empty → reject with 429
+5. Tokens never exceed max capacity (bucket overflows)
+
+**Example with numbers:**
+- Bucket capacity: 10 tokens
+- Refill rate: 1 token every 6 seconds (10/minute)
+- At 12:00:00 → bucket is full (10 tokens)
+- User sends 8 requests instantly → 8 tokens consumed → 2 remaining → all ✅ ALLOWED
+- At 12:00:06 → 1 token refilled → bucket = 3
+- At 12:00:12 → 1 more token → bucket = 4
+- User sends 5 requests → 5 tokens consumed → bucket now has -1? No → 4 used, 1 rejected
+
+**Why bursts are OK here:** The bucket starts full, so a user can "burst" up to 10 requests instantly. But then they must wait for refills. Over time, the average rate converges to the refill rate (10/min). This matches real user behavior — people don't send requests at a perfectly steady rate.
 
 ```mermaid
 flowchart TD
-    START["What do you need?"]:::client
-    BURST["Allow short bursts?"]:::service
-    EXACT["Need exact precision?"]:::service
-    TB["Token Bucket ⭐"]:::data
-    SWC["Sliding Window Counter"]:::data
-    SWL["Sliding Window Log"]:::data
-    FW["Fixed Window"]:::data
+    BUCKET["🪣 Token Bucket<br/>capacity = 10<br/>current = 7 tokens"]:::data
+    REFILL["⏰ Refill<br/>+1 token every 6 sec"]:::service
+    REQ["📨 Request arrives<br/>costs 1 token"]:::client
+    CHECK{"tokens >= 1?"}:::service
+    ALLOW["✅ Allow<br/>tokens -= 1"]:::data
+    REJECT["❌ 429 Reject"]:::client
 
-    START -->|"Yes bursts OK"| BURST
-    START -->|"No just hard cap"| EXACT
-    BURST -->|"Yes"| TB
-    EXACT -->|"Yes exact"| SWL
-    EXACT -->|"No approx fine"| SWC
+    REFILL -->|"adds tokens up to max"| BUCKET
+    REQ --> CHECK
+    CHECK -->|"yes"| ALLOW
+    CHECK -->|"no"| REJECT
+    BUCKET --> CHECK
+
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+```
+
+**Redis implementation (lazy refill — no background timer):**
+```
+key = "bucket:{userId}"
+stored = GET key → {tokens: 7, last_refill: 1750000000}
+
+elapsed = now - last_refill
+new_tokens = elapsed × refill_rate
+tokens = min(capacity, stored.tokens + new_tokens)
+
+if tokens >= 1:
+    tokens -= 1
+    SET key {tokens, last_refill: now}
+    ALLOW
+else:
+    SET key {tokens, last_refill: now}
+    REJECT
+```
+
+> 💡 **Lazy refill:** Instead of a background timer adding tokens, we calculate how many tokens SHOULD have been added since the last request. Same result, zero background processes.
+
+| Pros | Cons |
+|---|---|
+| ✅ Allows natural burst behavior | ❌ Two values stored per user (tokens + timestamp) |
+| ✅ Smooth long-term rate enforcement | ❌ Tuning capacity + refill rate takes thought |
+| ✅ Memory efficient — ~50 bytes per user | ❌ In distributed systems, need Redis for sync |
+| ✅ Best UX for API consumers | |
+
+**Used by:** Stripe, AWS API Gateway, GitHub, Amazon. The industry default for public APIs.
+
+---
+
+### Algorithm 5: Leaky Bucket
+
+💡 *Like token bucket but inverted: requests go INTO the bucket, and leak out at a constant rate. If the bucket overflows, requests are dropped.*
+
+**How it works:**
+1. Incoming requests are added to a queue (the bucket) with a fixed capacity
+2. A background worker processes requests from the queue at a constant, steady rate
+3. If the queue is full when a new request arrives → drop it (429)
+
+**Think of it as:** Water (requests) pouring into a bucket with a small hole at the bottom. Water drains at a constant rate. If you pour too fast, the bucket overflows and water spills (requests are rejected).
+
+**Example with numbers:**
+- Bucket size: 5 requests
+- Leak rate: 1 request processed every 200ms (5/sec outflow)
+- 10 requests arrive simultaneously
+- First 5 fill the bucket → queued
+- Next 5 → bucket full → ❌ REJECTED
+- Over the next second, the 5 queued requests are processed one every 200ms
+
+```mermaid
+flowchart LR
+    IN["Burst of 10 requests"]:::client
+    BUCKET["🪣 Leaky Bucket<br/>capacity = 5<br/>leak rate = 1 per 200ms"]:::data
+    OUT["Steady output<br/>1 req every 200ms"]:::service
+    DROP["❌ Dropped<br/>5 requests overflow"]:::client
+
+    IN -->|"5 fit"| BUCKET
+    IN -->|"5 overflow"| DROP
+    BUCKET -->|"constant drip"| OUT
+
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+```
+
+**Key difference from Token Bucket:**
+- **Token Bucket:** controls how many requests a user can SEND (input shaping)
+- **Leaky Bucket:** controls how fast requests are PROCESSED (output shaping)
+
+Token Bucket allows bursts; Leaky Bucket smooths everything to a constant output rate.
+
+| Pros | Cons |
+|---|---|
+| ✅ Perfectly smooth output — protects backends | ❌ No burst tolerance — strict constant rate |
+| ✅ Prevents downstream overload | ❌ Adds latency (requests wait in queue) |
+| ✅ Simple FIFO queue implementation | ❌ Old requests processed before new ones |
+
+**Used by:** Shopify REST API (40 bucket size, 2/sec leak rate), Netflix (streaming traffic shaping). Best for protecting downstream services that can't handle spikes.
+
+---
+
+### Comparison Table
+
+| Algorithm | Memory per user | Burst handling | Accuracy | Best for |
+|---|---|---|---|---|
+| **Fixed Window** | ~8 bytes (1 counter) | ❌ 2× burst at boundaries | Low | Simple internal APIs, MVPs |
+| **Sliding Window Log** | O(n) — 80KB+ at scale | ✅ None (perfect) | Perfect | Billing, payment systems |
+| **Sliding Window Counter** | ~16 bytes (2 counters) | ✅ Smooth | ~99.99% | Most public REST APIs |
+| **Token Bucket** ⭐ | ~50 bytes (token + timestamp) | ✅ Controlled bursts | High | User-facing APIs (Stripe, AWS) |
+| **Leaky Bucket** | ~50 bytes or 1KB (queue) | ❌ None (smooths all) | High | Traffic shaping, backend protection |
+
+### Decision flowchart:
+
+```mermaid
+flowchart TD
+    START["What does your system need?"]:::client
+    Q1{"Allow short bursts?"}:::service
+    Q2{"Need exact precision?"}:::service
+    Q3{"Shaping outbound traffic?"}:::service
+    TB["Token Bucket ⭐<br/>Stripe, AWS, GitHub"]:::data
+    SWC["Sliding Window Counter<br/>Cloudflare, most APIs"]:::data
+    SWL["Sliding Window Log<br/>Payment and billing systems"]:::data
+    LB["Leaky Bucket<br/>Shopify, Netflix"]:::data
+    FW["Fixed Window<br/>Simple internal use"]:::data
+
+    START --> Q1
+    Q1 -->|"Yes"| TB
+    Q1 -->|"No"| Q2
+    Q2 -->|"Yes exact"| SWL
+    Q2 -->|"No approx OK"| Q3
+    Q3 -->|"Yes smooth output"| LB
+    Q3 -->|"No just cap input"| SWC
     START -->|"Simplest possible"| FW
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
+
+> 💡 **Interview tip:** Start with Token Bucket as your default answer. If the interviewer asks "what if we can't tolerate any burst?" → switch to Sliding Window Counter. If they ask "what if we need to protect a fragile downstream?" → Leaky Bucket.
 
 ---
 
