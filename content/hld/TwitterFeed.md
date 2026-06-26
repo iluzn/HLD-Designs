@@ -58,6 +58,14 @@ flowchart LR
 - Average user follows ~400 accounts
 - Median follower count: ~200. Top accounts: 50M+
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 500M DAU, 400 avg follows per user
+- **Write QPS:** ~6K tweets/sec (500M tweets/day), fan-out generates 200B+ cache writes/day
+- **Read QPS:** 100K feed loads/sec at peak (each user opens feed 10+ times/day)
+- **Storage:** ~3TB tweet storage/year (text + metadata, media stored separately in S3)
+- **Bandwidth:** ~50 Gbps at peak for feed API responses + media CDN
+
 ---
 
 ## Naive First Cut
@@ -84,6 +92,15 @@ On each feed request: `SELECT * FROM tweets WHERE author_id IN (SELECT followee_
 - ❌ No caching — same expensive query repeated every few seconds
 - ❌ No ranking — just chronological, no relevance
 - ❌ Celebrity tweet → 50M users all running this query simultaneously
+
+---
+
+## Prior Art We're Drawing From
+
+- **Twitter Fan-out Service** — The original implementation that coined "fan-out on write." Pre-computes timelines for users with < 500K followers; assembles on-read for celebrities. Processes 500M tweets/day into 200B+ timeline writes. ([Twitter Engineering blog](https://blog.twitter.com/engineering/en_us/topics/infrastructure))
+- **Facebook TAO** — Graph-aware caching layer serving the social graph at billions of QPS. Demonstrates that follow relationships must be cached separately from content for performance. ([Facebook TAO paper](https://www.usenix.org/conference/atc13/technical-sessions/presentation/bronson))
+- **Instagram Feed Ranking** — Moved from chronological to ML-ranked feed. Two-stage pipeline: candidate generation (pull from timeline) → ranking model predicting engagement probability. ([Instagram Engineering](https://instagram-engineering.com/))
+- **LinkedIn Feed Architecture** — Uses a "feed mixer" pattern that merges multiple content sources (network updates, sponsored content, recommendations) into a single ranked stream. ([LinkedIn Engineering blog](https://engineering.linkedin.com/blog/2016/03/followfeed--linkedins-feed-made-faster-and-smarter))
 
 ---
 
@@ -443,6 +460,24 @@ flowchart LR
 | **Cassandra** | Wide-column NoSQL database. Stores tweets durably. Good for high write volume and partition-per-user access patterns. |
 | **CDN** | Content Delivery Network. Serves media (images, videos) from edge servers close to users. |
 | **Hydration** | Converting a list of IDs into full objects. "Hydrate tweet IDs → fetch full tweet with text, likes, media URLs." |
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Produce a working design with tweet storage and basic feed assembly. Recognize that JOIN-based feed queries don't scale. With prompting, propose pre-computing timelines (fan-out on write) so that feed reads are a simple cache lookup rather than a complex multi-table query.
+
+### Senior
+
+Articulate the fan-out-on-write vs fan-out-on-read tradeoff without prompting. Propose the hybrid approach for celebrities (>10K followers skip fan-out, merged at read time). Discuss Redis sorted sets or Cassandra for timeline cache. Explain how to handle the celebrity problem (50M followers) and why naive fan-out would generate 50M writes per tweet.
+
+### Staff+
+
+Address feed ranking vs chronological ordering trade-offs and the ML pipeline needed for relevance scoring. Discuss real-time feed injection (new tweets appearing without refresh via WebSocket/SSE), tweet deletion propagation across cached timelines, and the operational cost of fan-out at Twitter scale (500M users × 400 followers = 200B cache writes/day). Cover cache eviction strategies for inactive users.
 
 ---
 ## 🎯 Key Takeaways

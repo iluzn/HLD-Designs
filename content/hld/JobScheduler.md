@@ -162,6 +162,14 @@ Quick reference so nothing in this doc is a black box:
 - Sub-100ms precision for far-future jobs.
 - Strict fairness across tenants (we'll do weighted, not strict).
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 10M scheduled jobs at rest, thousands of internal service tenants
+- **Write QPS:** 1K new job registrations/sec, 100K executions/hour at peak
+- **Read QPS:** 10K job status queries/sec, 1K "what's due now?" sweeps/sec
+- **Storage:** 500GB job metadata/year (definitions + execution history)
+- **Bandwidth:** 99.9% on-time execution SLA — dispatch within 1s of scheduled time
+
 ---
 
 ## 4. Core Entities
@@ -768,6 +776,24 @@ flowchart LR
     classDef data fill:#fde68a,stroke:#b45309,color:#451a03
 ```
 
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Design a system that stores jobs with execution times and triggers them when due. Propose a polling mechanism or priority queue for finding due jobs. Understand why a single timer thread doesn't scale — one machine crashing means jobs don't fire.
+
+### Senior
+
+Propose Redis ZSET for the hot window of upcoming jobs (score = execution timestamp). Explain leader election for preventing duplicate execution across multiple scheduler instances. Discuss retry logic with exponential backoff and dead-letter queues for permanently failed jobs. Articulate the difference between at-least-once and exactly-once execution guarantees.
+
+### Staff+
+
+Address multi-tenant fair scheduling (one user's million jobs shouldn't starve others) using weighted queues with per-tenant token buckets. Discuss timing wheel data structures for sub-second precision without polling overhead, sharding strategies for the job store (partition by tenant + time bucket), and exactly-once execution guarantees using fencing tokens to prevent stale workers from completing zombie executions.
 
 ---
 ## 🎯 Key Takeaways

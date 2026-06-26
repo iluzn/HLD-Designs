@@ -48,11 +48,29 @@ flowchart LR
 
 **Why is this asked in interviews?** It's one of the simplest system design problems — even easier than a URL shortener because there's no redirect logic. But it still covers real design concepts: unique ID generation, storage decisions, caching, and data lifecycle management.
 
+---
+
+## Prior Art We're Drawing From
+
+- **GitHub Gist** — Stores code snippets with Git-backed versioning. Content lives in object storage, metadata in Postgres. Demonstrates the separation of content from metadata at scale. ([GitHub Engineering](https://github.blog/engineering/))
+- **Hastebin (haste-server)** — Minimal open-source paste service. Shows that the core problem is just ID generation + blob storage + serve. No auth needed for the basic case. ([GitHub: haste-server](https://github.com/toptal/haste-server))
+- **Cloudflare Workers KV** — Globally distributed key-value store with CDN-like read performance. Demonstrates how immutable content (like pastes) benefits from aggressive edge caching. ([Cloudflare Workers KV docs](https://developers.cloudflare.com/kv/))
+
+---
+
 **Real examples:**
 - Pastebin.com: 18M+ pastes per month
 - GitHub Gist: code snippet sharing
 - Hastebin: minimal paste tool for developers
 - Privatebin: encrypted paste service
+
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 5M DAU (creators + readers combined)
+- **Write QPS:** 1K new pastes/sec (peak during work hours)
+- **Read QPS:** 10K reads/sec (10:1 read-write ratio)
+- **Storage:** 10TB paste content/year (assuming avg paste ~1KB, max 10MB)
+- **Bandwidth:** ~1 Gbps at peak for content delivery (CDN absorbs most reads)
 
 ---
 
@@ -299,6 +317,24 @@ flowchart LR
 | "Why not store content in DB?" | 10MB blobs bloat the table, slow backups, and cost 5-10× more than object storage. |
 | "How to prevent abuse?" | Rate limit by IP, max paste size (10MB), optional CAPTCHA for anonymous users. |
 | "What about syntax highlighting?" | Store the `language` field in metadata. Highlighting is done client-side (Prism.js or highlight.js). |
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Design basic paste creation and retrieval. Propose object storage (S3) for content and a database for metadata. Understand Base62 ID generation (same pattern as URL shortener). Explain why storing large text blobs directly in a relational DB is a bad idea.
+
+### Senior
+
+Explain the separation of content (S3/object storage) from metadata (Postgres) — different access patterns, different cost profiles. Propose CDN caching for immutable pastes (write-once, read-many = perfect cache-hit ratio). Discuss expiry handling with lazy deletion on read plus background cleanup jobs for storage reclamation.
+
+### Staff+
+
+Address abuse prevention (rate limiting per IP, content scanning for malware/spam, CAPTCHA for anonymous users). Discuss storage cost optimization via content-hash deduplication (same content = same S3 key, share the blob). Cover multi-region replication for read latency (replicate to CDN edge, not the origin) and the operational cost of managing expiry at scale with billions of pastes.
 
 ---
 

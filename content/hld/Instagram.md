@@ -92,6 +92,14 @@ The rest of the doc evolves this into a globally distributed media platform with
 - Multi-region disaster recovery
 - Content moderation pipeline
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 2B MAU, 500M DAU, 50M feed loads/day at peak
+- **Write QPS:** 400M resize ops/day (100M photos/day × 4 variants = ~4,600 resize ops/sec sustained)
+- **Read QPS:** 50M feed loads/day peak = ~580K feed reads/sec + image CDN requests
+- **Storage:** ~200TB new storage/day before dedup (100M photos × 4 variants × 500KB avg)
+- **Bandwidth:** ~15 Tbps at peak (500M users × avg 10 images/session × 200KB per image)
+
 ---
 
 ## Technology Choices
@@ -621,6 +629,24 @@ flowchart LR
 ---
 
 *Want a deep dive on Stories (ephemeral content with TTL), Explore page (recommendation engine), or Direct Messages? Drop a comment below 👇*
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Design the upload → process → store flow. Understand fan-out-on-write for feed generation and why it works for most users. Propose object storage + CDN for images. With prompting, recognize the celebrity problem — that fan-out-on-write breaks when a user has 100M followers.
+
+### Senior
+
+Propose hybrid fan-out (write for normal users, read for celebrities with >500K followers). Explain the CDN strategy with immutable URLs and aggressive TTLs. Discuss Cassandra for the feed store and why it beats Postgres for write-heavy fan-out workloads. Propose an image processing pipeline with auto-scaling workers and explain why the upload path must be async.
+
+### Staff+
+
+Address storage lifecycle optimization (hot/warm/cold tiers with S3 Standard → IA → Glacier). Discuss the feed ranking ML pipeline — candidate generation plus a lightweight ranker that runs in <10ms. Proactively mention BlurHash for instant placeholder rendering, perceptual deduplication (pHash) for storage savings, and a full cost breakdown at scale showing how tiering reduces monthly storage from $4.6M to under $1M.
 
 ---
 ## 🎯 Key Takeaways

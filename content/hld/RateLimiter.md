@@ -60,6 +60,23 @@ flowchart LR
 
 ---
 
+## Prior Art We're Drawing From
+
+- **Stripe Rate Limiting** — Uses token bucket with Redis Lua scripts. Publishes rate limit headers (X-RateLimit-Limit, Remaining, Reset) as the API industry standard. ([Stripe Engineering blog](https://stripe.com/blog/rate-limiters))
+- **Cloudflare Rate Limiting** — Processes 45M+ HTTP requests/sec. Uses sliding window counters at the edge for IP-level limits, with per-customer limits at the application layer. ([Cloudflare blog](https://blog.cloudflare.com/counting-things-a-lot-of-different-things/))
+- **Kong Gateway** — Open-source API gateway with pluggable rate limiting (local, Redis-backed, or cluster-wide). Shows the three-tier pattern: edge → gateway → service. ([Kong rate limiting plugin](https://docs.konghq.com/hub/kong-inc/rate-limiting/))
+- **Google Cloud Armor** — Demonstrates adaptive rate limiting that adjusts thresholds based on request patterns rather than fixed rules. ([Google Cloud docs](https://cloud.google.com/armor/docs/rate-limiting-overview))
+
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** Millions of API clients (both internal services and external developers)
+- **Write QPS:** 1M rate-limit checks/sec (every API request triggers a counter check)
+- **Read QPS:** Same as write — each check is a read-modify-write on the counter
+- **Storage:** ~10GB counter storage in Redis (key per client per window, short TTL)
+- **Bandwidth:** Sub-ms latency per check — rate limiter must not become the bottleneck
+
+---
+
 ## Naive First Cut
 
 The simplest possible rate limiter:
@@ -495,6 +512,24 @@ flowchart LR
 | **CDN / Edge** | Servers at the "edge" of the network, close to users worldwide. Cloudflare, CloudFront. First line of defense. |
 | **Token Bucket** | Algorithm: bucket of tokens, refills at steady rate. Each request costs a token. Empty bucket = rejected. |
 | **HTTP 429** | Standard HTTP status code meaning "Too Many Requests." Client should back off and retry later. |
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Explain the token bucket or fixed window algorithm. Propose Redis INCR for counting requests per time window. Understand why in-memory counters fail across multiple servers — each server has its own count, so a client can exceed limits by hitting different servers.
+
+### Senior
+
+Compare token bucket vs sliding window vs sliding window log — articulate the tradeoffs (burst tolerance, memory, precision). Propose Redis Lua scripts for atomic check-and-increment. Discuss multi-tier limiting (edge + gateway + service) and what happens when Redis goes down (fail-open vs fail-closed tradeoff).
+
+### Staff+
+
+Address distributed rate limiting across multiple regions with eventual consistency (local counters + periodic sync vs centralized Redis). Discuss adaptive rate limits that adjust dynamically based on system load (shed traffic before the backend saturates). Cover per-endpoint granularity (expensive operations like writes get tighter limits than cheap reads) and cost-based limiting where each operation has a "weight" consuming tokens proportionally.
 
 ---
 ## 🎯 Key Takeaways

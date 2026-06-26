@@ -49,6 +49,22 @@ All in real-time (< 50ms).
 
 ---
 
+## Prior Art We're Drawing From
+
+- **Redis Sorted Sets (Internal Design)** — Skip-list backed sorted set giving O(log N) for all rank operations. The de-facto standard for real-time leaderboards. Used by Dream11, Riot Games, and most gaming platforms. ([Redis documentation](https://redis.io/docs/data-types/sorted-sets/))
+- **Riot Games Leaderboard** — Handles 100M+ ranked players across multiple regions with composite scoring (MMR + LP). Uses Redis with regional sharding and periodic compaction. ([Riot Engineering](https://technology.riotgames.com/))
+- **Discord Activity Status** — Real-time presence and activity leaderboards for millions of concurrent users using Redis pub/sub + sorted sets. ([Discord Engineering blog](https://discord.com/blog/how-discord-stores-trillions-of-messages))
+
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 10M players, 1M concurrent during live events
+- **Write QPS:** 50K score updates/sec during live events (game ticks, match completions)
+- **Read QPS:** 100K rank queries/sec (leaderboard page loads, "my rank" checks)
+- **Storage:** ~100GB score data/year (playerId + score + metadata per game mode)
+- **Bandwidth:** ~5 Gbps at peak for leaderboard API responses during live tournaments
+
+---
+
 ## Why Not Just Use a Database?
 
 ```sql
@@ -234,6 +250,24 @@ Or use key per time period: `leaderboard:weekly:2026-W25`, `leaderboard:monthly:
 | "How to handle 100M players?" | Single Redis ZSET handles it (~6GB). Shard if needed. |
 | "How to handle ties?" | Encode timestamp into score for tie-breaking |
 | "What about persistence?" | Redis for live reads. Postgres for source of truth and history. |
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Propose Redis Sorted Set for storing scores. Understand ZADD for updates and ZREVRANK for rank queries. Explain why SQL `ORDER BY` doesn't scale for real-time rank lookups — it's O(N log N) per query versus O(log N) in Redis.
+
+### Senior
+
+Discuss sharding strategies for 100M+ players (by region, game mode, or score range). Explain tie-breaking with timestamp encoding in the score (combine score + timestamp into a single float). Propose Postgres as a durable backup with Redis as the fast path, handling the write-through pattern.
+
+### Staff+
+
+Address real-time leaderboard push updates to millions of viewers via WebSocket (only push rank changes for visible positions, not all 100M updates). Discuss weekly/monthly reset strategies (swap ZSET keys atomically, archive old data), anti-cheat validation before score acceptance (server-authoritative scoring), and the memory cost of maintaining sorted sets at 100M entries (~6GB per leaderboard).
 
 ---
 ## 🎯 Key Takeaways

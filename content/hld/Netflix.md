@@ -92,6 +92,14 @@ The rest of the doc evolves this into a globally distributed streaming platform 
 - Recommendation freshness: incorporate new viewing signals within 1 hour
 - Multi-region disaster recovery for control plane
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 200M concurrent streams at peak (Sunday evening globally)
+- **Write QPS:** 20M heartbeats/10s = 2M writes/sec (playback position tracking)
+- **Read QPS:** 5M recommendation requests/sec at homepage load (200M users × periodic refreshes)
+- **Storage:** ~100PB total content (15,000 titles × 30 encoding variants × avg 2GB per variant)
+- **Bandwidth:** ~200 Tbps aggregate at peak (200M streams × avg 5 Mbps adaptive bitrate)
+
 ---
 
 ## Technology Choices
@@ -686,6 +694,25 @@ flowchart LR
 ---
 
 *Want a deep dive on DRM (content protection), offline downloads, multi-language audio switching, or live streaming (sports events)? Drop a comment below 👇*
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Outline the upload → encode → store → stream flow. Understand why a CDN is needed for latency and bandwidth at scale. Describe HLS/DASH at a high level — the idea of splitting video into segments and serving a manifest. With prompting, discuss adaptive bitrate and why users can't just download a single fixed-quality file.
+
+### Senior
+
+Propose per-title encoding optimization (different bitrate ladders for animated vs action content). Explain the CDN cache hierarchy (edge → regional → origin) and why three tiers matter. Discuss the recommendation pipeline (offline batch candidate generation + online re-ranking). Articulate the ABR algorithm trade-offs — buffer-based vs throughput-based — and why client-side ABR beats server-side.
+
+### Staff+
+
+Address custom CDN economics (Open Connect vs commercial CDN at Netflix scale — $0.001/GB vs $0.02/GB). Discuss predictive pre-positioning of content based on popularity models and how overnight off-peak bandwidth is leveraged. Explain DRM license serving architecture and the cold-start recommendation problem. Articulate what happens when a new blockbuster drops and millions hit play simultaneously — cache warming, origin shielding, and steering.
+
 
 ---
 ## 🎯 Key Takeaways

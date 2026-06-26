@@ -95,6 +95,14 @@ The rest of the doc evolves this into a production-grade real-time collaborative
 - Support 10M+ daily active users across all documents
 - Sub-second document open time (cold start)
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 100M DAU, 5M concurrent editing sessions at peak
+- **Write QPS:** 10K ops/sec per popular document, 500M total ops/sec across all documents
+- **Read QPS:** 50K document opens/sec (initial state load + presence sync)
+- **Storage:** ~10TB document storage (500M documents × avg 20KB per document + version history)
+- **Bandwidth:** ~100 Gbps WebSocket traffic for real-time operation broadcast
+
 ---
 
 ## Technology Choices
@@ -726,6 +734,24 @@ flowchart LR
 ---
 
 *Want a deep dive on rich text OT (formatting operations), offline editing with CRDT fallback, or access control for shared documents? Drop a comment below 👇*
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Understand the core problem — multiple users editing the same document simultaneously. Propose a server that broadcasts changes to all connected clients via WebSocket. With prompting, recognize that conflicts arise when edits overlap and that naive "last writer wins" destroys data.
+
+### Senior
+
+Explain OT (Operational Transformation) or CRDT for conflict resolution — articulate how concurrent operations are transformed to maintain consistency. Propose WebSocket for real-time sync. Discuss cursor/presence indicators, document versioning, and how to handle offline edits that merge on reconnect using buffered operations.
+
+### Staff+
+
+Compare OT vs CRDT trade-offs at scale (OT needs a central server for linear ordering, CRDT is peer-to-peer but has larger payloads and tombstone overhead). Discuss undo/redo in collaborative context (transforming undo against concurrent operations), document permissions model with real-time access revocation, and how Google scales this to millions of concurrent docs with strong consistency per document using per-document session processes.
 
 ---
 ## 🎯 Key Takeaways

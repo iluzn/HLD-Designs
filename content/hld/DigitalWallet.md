@@ -164,6 +164,14 @@ Why Kafka as the event bus:
 - Globally multi-region active-active (single-region-primary with regional read replicas is fine to start)
 - Sub-100ms tail latencies (bounded by downstream banks and card rails anyway)
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 50M DAU, 10M transactions/day
+- **Write QPS:** 500 txns/sec peak (double-entry = 1000 ledger writes/sec)
+- **Read QPS:** 5K balance checks/sec, 2K transaction history queries/sec
+- **Storage:** ~1TB ledger data/year (immutable append-only entries)
+- **Bandwidth:** Zero tolerance for balance inconsistency — strong consistency on the write path
+
 ---
 
 ## Core Entities
@@ -830,6 +838,24 @@ flowchart LR
 
 That's the design. Six deep dives each picking the right primitive: double-entry ledger with chart-of-accounts for correctness, row-locking with `FOR UPDATE` plus partitioned platform accounts for concurrency, tiered balance caches for read scale, continuous-plus-daily reconciliation for integrity with real banks, Orpheus-style three-phase idempotency to kill double-debits, and modeling holds as first-class accounts instead of flags. Correctness first, everything else second — a wallet that occasionally loses money is not a wallet.
 
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Design a basic wallet with balance storage and transfer capability. Understand why double-spend is the core problem — two concurrent requests draining the same balance must not both succeed. Propose database transactions for atomic balance updates and explain why check-then-deduct is a race condition.
+
+### Senior
+
+Propose double-entry ledger (every transaction creates two entries: debit + credit). Explain idempotency keys for safe retries without double-charging. Discuss saga pattern for multi-party transfers involving external banks and reconciliation with external payment gateways. Articulate why eventual consistency is unacceptable for balance operations.
+
+### Staff+
+
+Address distributed ledger consistency across shards (partitioned platform accounts to avoid hot-key contention). Discuss settlement and clearing processes with partner banks, regulatory compliance (PCI-DSS, RBI guidelines for prepaid instruments), and fraud detection patterns (velocity checks, device fingerprinting). Cover how to handle partial failures in multi-step payment flows using three-phase idempotency and the cost of strong consistency at scale.
 
 ---
 ## 🎯 Key Takeaways

@@ -127,6 +127,14 @@ Why this breaks:
 - Exactly-once delivery (at-least-once + client-side dedupe is acceptable)
 - Multi-device sync (web + mobile + desktop)
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 500M DAU, 50M concurrent connections at peak
+- **Write QPS:** 100K messages/sec sustained, 10B messages/day
+- **Read QPS:** 200K message fetches/sec (history sync + offline drain)
+- **Storage:** ~5TB message storage/year (compressed, Cassandra)
+- **Bandwidth:** ~500 Gbps aggregate WebSocket traffic at peak
+
 ## Core Entities
 
 - **User** — identified by phone number or userId. Has online/offline status.
@@ -427,6 +435,24 @@ flowchart LR
 | **Sequence Number** | A monotonically increasing integer per conversation. Guarantees message ordering regardless of clock differences between servers. |
 | **Store-and-Forward** | Pattern where the server stores a message durably first, then delivers it when the recipient is available. Ensures zero message loss. |
 | **Fan-out** | Delivering one message to multiple recipients (group chat). "Fan-out on write" = copy to each inbox. "Fan-out on read" = store once, each client fetches. |
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Design basic 1:1 messaging with a server relaying messages. Propose WebSocket for real-time delivery. Understand offline message storage and why polling is wasteful. With prompting, discuss how to handle group messages by fanning out to multiple recipients.
+
+### Senior
+
+Propose Cassandra for message storage (partition by conversation). Explain connection-level routing — how does a message find the right WebSocket server? Discuss read receipts, message ordering guarantees (per-conversation sequence numbers), and offline delivery queues. Articulate why eventual consistency is acceptable for message delivery.
+
+### Staff+
+
+Address end-to-end encryption key exchange (Signal protocol double-ratchet), multi-device sync with ordered-log cursors, and message fan-out for large groups (1000+ members) using the hybrid push/pull model. Discuss graceful degradation when the chat service is overloaded (backpressure on WebSocket connections). Cover message retention policies and GDPR right-to-deletion across replicated stores.
 
 ---
 ## 🎯 Key Takeaways

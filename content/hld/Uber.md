@@ -94,6 +94,14 @@ The rest of the doc evolves this into a production-grade real-time matching and 
 - Sub-second location update delivery to riders (live tracking)
 - Multi-region deployment for global coverage
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 30M DAU, 500K+ concurrent rides at peak
+- **Write QPS:** 500K location writes/sec (2M active drivers × 1 ping every 4 seconds)
+- **Read QPS:** 50K matching queries/sec (each ride request triggers geo-radius lookups)
+- **Storage:** ~1TB ride data/year (10M rides/day × ride metadata + location history)
+- **Bandwidth:** ~5 Gbps at peak (location ingestion + WebSocket tracking fan-out)
+
 ---
 
 ## Technology Choices
@@ -715,6 +723,25 @@ flowchart LR
 *Want a deep dive on carpooling matching (UberPool), payment splitting, or driver incentive algorithms? Drop a comment below 👇*
 
 ---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Produce a high-level design with ride request, driver matching, and trip management. Understand why proximity queries need a specialized store rather than vanilla Postgres. Propose Redis or similar for location data with prompting. You should be able to sketch the ride lifecycle state machine and explain why polling for "nearest driver" doesn't scale.
+
+### Senior
+
+Drive the conversation around consistent hashing for geo-sharding, distributed locking for double-booking prevention, and WebSocket for live tracking. Articulate the fan-out strategy for location updates and the read/write asymmetry (500K writes/sec vs 50K match queries/sec). Proactively propose the TTL-based expiry pattern for stale driver entries without being asked.
+
+### Staff+
+
+Discuss multi-region dispatch, surge pricing zone calculations using H3 hexagons, counter-based range allocation for IDs across regions, and graceful degradation during peak demand. Proactively address what happens when the matching service crashes mid-offer — explain fencing tokens, lock TTL recovery, and the reconciler pattern. Show cost awareness of Redis Geo at 2M drivers and articulate why Redlock is overkill here.
+
+
+---
 ## 🎯 Key Takeaways
 
 - **Redis Geo** with geohash sharding handles 500K location pings/sec
@@ -724,6 +751,3 @@ flowchart LR
 
 ---
 ## Related Designs
-- [Food Delivery (Zomato)](/Zomato) — similar geo-matching, dispatch, live tracking
-- [Notification System](/NotificationSystem) — multi-channel push delivery
-- [Job Scheduler](/JobScheduler) — delayed triggers, timeout management

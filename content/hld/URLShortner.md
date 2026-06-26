@@ -138,6 +138,14 @@ Rule of thumb: **managed > self-hosted** when the workload isn't a differentiato
 - Strict ordering of click events
 - Sub-100ms link creation latency (creation is rare; can be 500ms)
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 100M DAU (link creators + clickers combined)
+- **Write QPS:** 1K new URLs/sec (100M new links/day)
+- **Read QPS:** 100K redirects/sec (100:1 read-write ratio, 10B redirects/day)
+- **Storage:** 500GB URL mapping data/year (~200B rows at 5-year retention)
+- **Bandwidth:** ~50 Gbps at peak for redirect responses + analytics event ingestion
+
 ---
 
 ## Core Entities
@@ -640,6 +648,24 @@ flowchart LR
 
 That's the design. Five deep dives each picking the right primitive: Snowflake for collision-free distributed ID generation, a CDN-Redis-KV tiered cache for global low-latency reads, local caches with request coalescing to absorb viral spikes, Kafka-to-Flink-to-ClickHouse for analytics that never touches the hot path, and a globally-replicated KV store to eliminate regional bottlenecks. Read-heavy, latency-sensitive, and deceptively simple — the fun is in making it feel trivial at any scale.
 
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Design basic URL creation and redirect flow. Propose a database for storing long-to-short mappings. Understand Base62 encoding for generating short codes from numeric IDs. Explain the difference between 301 (permanent) vs 302 (temporary) redirects and when each is appropriate.
+
+### Senior
+
+Propose a counter-based or hash-based ID generation strategy (Snowflake or similar). Discuss caching with Redis for popular URLs and CDN for redirect responses at the edge. Explain horizontal scaling of the write service with a distributed counter (range allocation per instance). Articulate the 100:1 read-write ratio and how it drives the architecture.
+
+### Staff+
+
+Address multi-region deployment with counter range allocation per region (no cross-region coordination on writes). Discuss the analytics pipeline — click tracking without adding latency to the redirect hot path (fire-and-forget to Kafka, process async). Cover URL expiration cleanup (background TTL sweeper vs lazy deletion), and the security implications of predictable sequential codes (enumeration attacks, phishing detection).
 
 ---
 ## 🎯 Key Takeaways

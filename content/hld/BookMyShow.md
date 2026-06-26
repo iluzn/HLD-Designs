@@ -96,6 +96,14 @@ The rest of the doc evolves this into a production-grade booking system with dis
 - Payment processing SLA: < 10 seconds
 - Support 50K+ shows across 1000+ cinemas
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 10M DAU, 100K+ concurrent during hot event launch (Avengers premiere, IPL final)
+- **Write QPS:** 50K booking attempts/min peak (~833/sec sustained, bursty during on-sale windows)
+- **Read QPS:** 300K seat-status reads/sec during on-sale (50K users refreshing seat maps every 2-3s)
+- **Storage:** ~500GB booking data/year (5M bookings/day × booking + payment metadata)
+- **Bandwidth:** ~1 Gbps at peak (seat map pushes via SSE + API responses)
+
 ---
 
 ## Technology Choices
@@ -753,6 +761,24 @@ flowchart LR
 ---
 
 *Want a deep dive on multi-cinema franchise inventory aggregation, dynamic pricing (surge for hot shows), or fraud detection (bot-booking prevention)? Drop a comment below 👇*
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Design a basic seat selection and booking system with a database. Recognize the concurrency problem — two users selecting the same seat simultaneously. Propose a locking mechanism with prompting. You should articulate why naive check-then-act creates race conditions and sketch a happy-path flow from seat selection through payment.
+
+### Senior
+
+Propose Redis SET NX with TTL for seat holds. Explain atomic multi-seat locking via a Lua script (all-or-nothing semantics). Discuss the payment saga pattern and idempotency without prompting. Recognize the need for a hold expiry reconciler to keep Postgres consistent with Redis TTL state. Articulate why Postgres row-level locks fail under 100K concurrent users.
+
+### Staff+
+
+Address the thundering herd problem on hot events by proposing a virtual waiting room or queue-based admission control. Discuss Postgres as a backstop with unique constraints even when Redis is the fast path. Proactively mention how CDN invalidation works for seat maps, zombie payment handling (success webhook after hold expiry), and the cost trade-off of keeping expired holds in Redis vs background cleanup. Quantify the peak load numbers and explain capacity planning.
 
 ---
 ## 🎯 Key Takeaways

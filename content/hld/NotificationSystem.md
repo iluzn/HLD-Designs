@@ -125,6 +125,14 @@ The rest of the doc evolves this into a queue-based, multi-channel, preference-a
 - Per-tenant isolation (if multi-tenant SaaS).
 - Compliance reports (TCPA/GDPR opt-in audit trails).
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 500M DAU, generating events across all product surfaces
+- **Write QPS:** 100K notifications/sec peak (5B notifications/day across 3 channels)
+- **Read QPS:** 50K preference lookups/sec, 10K status queries/sec
+- **Storage:** ~2TB notification metadata/year (attempts + audit trail)
+- **Bandwidth:** ~10 Gbps outbound to providers at peak campaign burst
+
 ---
 
 ## 4. Core Entities
@@ -1147,6 +1155,24 @@ flowchart LR
     classDef external fill:#fbcfe8,stroke:#be185d,color:#500724
 ```
 
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Design a basic system that receives events and sends notifications via push/email. Propose a queue between event generation and delivery. Understand why async processing matters — synchronous dispatch blocks the product service and can't handle provider slowdowns gracefully.
+
+### Senior
+
+Propose Kafka for event ingestion with consumer groups per channel. Discuss template service for message rendering, user preference management (opt-in/out per channel), and rate limiting per user. Explain retry strategies with exponential backoff and DLQ for permanently failed deliveries. Articulate the outbox pattern for guaranteed event capture.
+
+### Staff+
+
+Address notification deduplication across channels (Air Traffic Control pattern from LinkedIn), priority queuing (critical alerts skip the queue), and A/B testing delivery times for engagement optimization. Discuss cost analysis across channels (SMS costs $0.01/msg vs push at $0) and provider routing for cost optimization. Cover regulatory compliance (CAN-SPAM, GDPR consent) and the operational cost of maintaining per-user frequency caps at scale.
 
 ---
 ## 🎯 Key Takeaways

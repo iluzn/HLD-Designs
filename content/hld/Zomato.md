@@ -80,6 +80,14 @@ flowchart LR
 - CI/CD and zero-downtime deploys
 - Full observability stack
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 20M DAU, 200K peak concurrent
+- **Write QPS:** 200K rider location writes/sec (200K active riders × 1 ping/sec during peak)
+- **Read QPS:** 50K search queries/sec (20M DAU × ~10 searches/day concentrated in dinner rush)
+- **Storage:** ~500GB orders DB/year (100K orders/hour peak × order metadata)
+- **Bandwidth:** ~2 Gbps at peak (search responses + tracking WebSocket streams)
+
 ---
 
 ## Core Entities
@@ -711,6 +719,24 @@ flowchart LR
 ```
 
 That's the design. Five deep dives in Bad / Good / Great progression, each picking the right primitive for the problem: Redis Geo for live rider locations, Redis locks with fencing tokens for consistent matching, WebSockets plus Pub/Sub for real-time tracking, Temporal for durable multi-step dispatch, and Elasticsearch fed by CDC for catalog search.
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Produce a working 3-service design (search, order, dispatch). Recognize the need for geo-queries and a basic payment flow. With prompting, discuss caching for search. You should be able to articulate why a regular SQL query won't work for "restaurants near me" at scale, and sketch a happy-path order flow from placement to delivery.
+
+### Senior
+
+Drive the design proactively. Propose Elasticsearch for search with CDC sync, Redis Geo for rider proximity, and idempotency for orders. Discuss real-time tracking trade-offs (polling vs WebSocket vs SSE) without prompting. You should articulate the fan-out problem for location updates and explain why the dispatch workflow needs durability beyond a simple queue.
+
+### Staff+
+
+Address dispatch workflow durability (Temporal/Cadence), fencing tokens for preventing double-assignment of riders, adaptive location pinging to reduce write volume, and operational concerns like what happens during Redis failover. Show awareness of cost at scale — quantify rider location write volume, explain why city-sharded Redis Geo is cheaper than DynamoDB, and discuss graceful degradation when the matching service is overloaded.
 
 
 ---

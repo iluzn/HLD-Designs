@@ -93,6 +93,14 @@ The rest of the doc evolves this into a production-grade event-driven architectu
 - Multi-region DR (but matching engine is single-leader)
 - Sub-second portfolio updates after fills
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 5M DAU, 500K+ concurrent at market open (09:15 IST)
+- **Write QPS:** 50K orders/sec peak (80% of daily volume in first 30 minutes of market open)
+- **Read QPS:** 100K price updates/sec streaming to clients (5000 symbols × 20 updates/sec each)
+- **Storage:** ~2TB trade history/year (10M trades/day × trade + fill + audit event metadata)
+- **Bandwidth:** ~3 Gbps at peak (WebSocket price streams + order confirmations to 500K clients)
+
 ---
 
 ## Technology Choices
@@ -595,6 +603,25 @@ flowchart LR
 
 
 ---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Design a basic order placement and execution flow. Understand the need for an order book — that buy and sell orders must be matched by price. Propose a database for storing trades and a queue for processing orders asynchronously. With prompting, discuss why exactly-once delivery matters and what happens if an order is processed twice.
+
+### Senior
+
+Propose event sourcing for the order lifecycle — every state change is an immutable event. Explain CQRS and why separating the write model from the read model matters for a broker. Discuss Kafka for event streaming with partitions ordered by symbol. Articulate idempotency for order submission (client-generated keys + DB unique constraints) and the need for sequence numbers to detect gaps.
+
+### Staff+
+
+Address matching engine internals — price-time priority with a TreeMap per side, single-threaded per symbol partition (LMAX-style). Discuss market data fan-out to millions of clients via tiered pub-sub or multicast. Proactively mention regulatory requirements (7-year audit trail, trade reconstruction from event log), split-brain scenarios during network partition (matching engine is single-leader with standby failover), and the cost of real-time position calculation at scale.
+
+
+---
 ## 🎯 Key Takeaways
 
 - **Exactly-once** via idempotency keys + Kafka transactions — no double fills
@@ -604,6 +631,3 @@ flowchart LR
 
 ---
 ## Related Designs
-- [Digital Wallet](/DigitalWallet) — financial consistency + idempotency
-- [Notification System](/NotificationSystem) — real-time push to users
-- [Job Scheduler](/JobScheduler) — scheduled batch processing

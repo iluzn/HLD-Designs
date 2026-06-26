@@ -55,6 +55,23 @@ flowchart LR
 
 ---
 
+## Prior Art We're Drawing From
+
+- **Amazon DynamoDB (Dynamo Paper)** — Introduced consistent hashing with virtual nodes, vector clocks for conflict resolution, and tunable consistency (W, R, N quorum). The foundational paper for distributed KV stores. ([Amazon Dynamo Paper](https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf))
+- **Google Bigtable / LevelDB** — Pioneered the LSM-tree storage engine (memtable → SSTable → compaction) that powers most modern KV stores. LevelDB is the reference implementation. ([Bigtable Paper](https://static.googleusercontent.com/media/research.google.com/en//archive/bigtable-osdi06.pdf))
+- **Apache Cassandra** — Combines Dynamo's partitioning with Bigtable's storage model. Demonstrates tunable consistency at massive scale (Apple runs 160K+ Cassandra nodes). ([Cassandra Architecture](https://cassandra.apache.org/doc/latest/architecture/))
+- **etcd / Raft Consensus** — Shows how strong consistency can be achieved in a distributed KV store using the Raft consensus algorithm. Used by Kubernetes for cluster state. ([etcd.io](https://etcd.io/))
+
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** Millions of clients (internal services + applications)
+- **Write QPS:** 500K writes/sec (mixed PUTs and DELETEs)
+- **Read QPS:** 1M reads/sec (GETs dominate in most workloads)
+- **Storage:** 10TB total data distributed across the cluster, 3x replication = 30TB raw
+- **Bandwidth:** Sub-10ms P99 latency target, ~100 Gbps aggregate cluster throughput
+
+---
+
 ## Naive First Cut
 
 A single server with an in-memory hashmap:
@@ -310,6 +327,24 @@ flowchart LR
 | "How data is stored on disk?" | LSM tree: memtable → flush to SSTable → compaction. WAL for crash recovery. |
 | "How to find data fast?" | Bloom filter to skip SSTables that don't have the key |
 | "What about hot keys?" | Cache popular keys in front. Or split hot keys across sub-keys (shard the shard). |
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Understand the basic API (GET/PUT/DELETE by key). Propose a hash map for storage. Recognize that a single server can't hold all data — need to split across machines. With prompting, explain consistent hashing as a way to distribute keys across nodes without reshuffling everything when a node is added or removed.
+
+### Senior
+
+Explain consistent hashing with virtual nodes for even distribution. Discuss replication factor and quorum reads/writes (W+R>N for strong consistency). Propose LSM tree storage engine for write optimization (memtable → SSTable flush → compaction). Articulate the CAP theorem trade-off for this system — which guarantee do you sacrifice?
+
+### Staff+
+
+Address vector clocks for conflict detection in multi-master writes, Merkle trees for anti-entropy repair (detecting divergence between replicas), hinted handoff during temporary node failures (sloppy quorum), and read repair as a protocol for healing stale reads. Discuss tunable consistency per operation (some keys need strong, others can be eventual) and the operational cost of compaction in LSM trees (write amplification, space amplification).
 
 ---
 

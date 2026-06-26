@@ -137,6 +137,14 @@ Two non-obvious picks worth a note:
 
 **Below the line:** strict-once delivery, sub-millisecond jitter, multi-region failover.
 
+## Scale Estimation (Back-of-Envelope)
+
+- **Users:** 50M pending triggers at any given time across all callers
+- **Write QPS:** 500K new triggers/hour (~140 triggers/sec), 10K fires/sec at peak
+- **Read QPS:** Sweeper scans 1K buckets/sec, 5K status queries/sec from callers
+- **Storage:** 200GB trigger metadata/year (Cassandra, with TTL cleanup after firing)
+- **Bandwidth:** <1s jitter SLA for firing — timing wheel precision in the 100ms range
+
 ## 4. Core Entities
 
 - **Trigger** — id, callerId, callbackUrl, payload, fireAt, status (PENDING / IN_FLIGHT / FIRED / FAILED / CANCELLED), attemptCount.
@@ -539,6 +547,24 @@ flowchart LR
 | **Circuit Breaker** | Pattern that stops calling a failing service after N errors. "Opens" the circuit, fast-fails for a cooldown period, then retries. Protects dispatchers from bad callback endpoints. |
 | **DLQ (Dead Letter Queue)** | Where messages go after failing N retries. Allows manual investigation without blocking the main queue. |
 | **Reconciler** | Hourly safety-net job that finds "stuck" triggers (fire time passed but status still PENDING) and re-injects them. Catches bugs in the sweeper or leader election. |
+
+---
+
+## What's Expected at Each Level
+
+> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+
+### Mid-level
+
+Understand the problem — schedule an action to happen at a future time (e.g., "send reminder in 30 min"). Propose a simple DB + polling mechanism. Recognize why polling every second doesn't scale to millions of triggers — scanning the entire table is O(N) per tick.
+
+### Senior
+
+Propose SQS delay queues or hierarchical timing wheels for efficient scheduling. Explain how to shard triggers by time bucket so sweepers only scan a small partition. Discuss idempotent trigger execution and what happens if a trigger fires twice (callers must be idempotent, we provide execution IDs).
+
+### Staff+
+
+Address sub-second precision at scale using timing wheels (Kafka-style HashedWheelTimer with O(1) insert and fire). Discuss circuit breaker patterns for downstream callback services, multi-region trigger consistency (what if the primary region fails mid-sweep), and cost comparison of managed SQS vs self-managed timing infrastructure at 10K fires/sec. Cover the reconciler as a safety net for leaked triggers.
 
 ---
 ## 🎯 Key Takeaways
