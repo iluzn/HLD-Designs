@@ -644,11 +644,11 @@
 
     <script>
     (function() {
-        var isHLD = window.location.pathname.match(/^\/(Zomato|Uber|BookMyShow|Instagram|Netflix|StockBroker|DigitalWallet|ChatSystem|TwitterFeed|GoogleDocs|URLShortner|RateLimiter|Leaderboard|JobScheduler|DelayedTriggerService|NotificationSystem|Pastebin|KeyValueStore)/);
-        if (!isHLD) return;
+        var isDesignPage = window.location.pathname.match(/^\/(Zomato|Uber|BookMyShow|Instagram|Netflix|StockBroker|DigitalWallet|ChatSystem|TwitterFeed|GoogleDocs|URLShortner|RateLimiter|Leaderboard|JobScheduler|DelayedTriggerService|NotificationSystem|Pastebin|KeyValueStore|MultilevelCache|MusicPlayer|ParkingLot|SnakeLadder|Splitwise)/);
+        if (!isDesignPage) return;
 
         // Mark as read in localStorage when user scrolls to 80%
-        var readKey = 'hld-read:' + window.location.pathname;
+        var readKey = 'design-read:' + window.location.pathname;
         var triggered = false;
         window.addEventListener('scroll', function() {
             if (triggered) return;
