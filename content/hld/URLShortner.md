@@ -651,6 +651,20 @@ That's the design. Five deep dives each picking the right primitive: Snowflake f
 
 ---
 
+## Key Technologies Mentioned
+
+| Term | What it is |
+|---|---|
+| **Base62 Encoding** | Converts numeric IDs into compact alphanumeric strings using [0-9a-zA-Z] — 7 characters yield 3.5 trillion unique short codes. |
+| **Snowflake ID** | Distributed 64-bit ID generator embedding timestamp + machine ID + sequence — unique by construction with no coordination per request. |
+| **Redis Cache** | Regional in-memory cache holding recently-accessed link mappings for sub-millisecond redirect lookups on CDN misses. |
+| **CDN** | Content Delivery Network serving redirect responses from edge PoPs worldwide — hot links resolved in under 10ms without hitting origin. |
+| **301 / 302 Redirect** | HTTP status codes: 301 (permanent, browser caches forever — no analytics) vs 302 (temporary, always routes through us — enables click counting). |
+| **Bloom Filter** | Probabilistic data structure in each service pod that fast-rejects invalid short codes (guaranteed 404) without hitting Redis or the DB. |
+| **Kafka** | Event bus carrying click events from the redirect hot path to the analytics pipeline without adding latency to redirects. |
+
+---
+
 ## What's Expected at Each Level
 
 > This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.

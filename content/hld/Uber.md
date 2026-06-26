@@ -724,6 +724,21 @@ flowchart LR
 
 ---
 
+## Key Technologies Mentioned
+
+| Term | What it is |
+|---|---|
+| **Redis Geo** | In-memory geospatial index using sorted sets with geohash encoding — handles 500K+ location writes/sec with sub-ms proximity queries. |
+| **Geohash** | Encoding scheme that maps 2D coordinates into a 1D string where nearby points share a common prefix, enabling geographic sharding. |
+| **H3 Hexagonal Grid** | Uber's hierarchical hex grid system providing uniform-area cells for surge pricing zones and supply-demand balancing without edge distortion. |
+| **WebSocket** | Persistent bidirectional connection streaming real-time driver location updates to riders during active rides. |
+| **Kafka** | Event bus carrying ride lifecycle events and location streams, decoupling the write path from downstream consumers. |
+| **Distributed Lock with Fencing** | Redis SET NX with TTL plus a monotonic fence token preventing stale locks from causing double-assignment of drivers. |
+| **ETA Service** | Component that computes estimated arrival times using mapping APIs, used as the primary matching signal over raw distance. |
+| **Surge Pricing** | Dynamic fare multiplier calculated per H3 zone based on real-time supply-demand ratio, incentivizing driver redistribution. |
+
+---
+
 ## What's Expected at Each Level
 
 > This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.

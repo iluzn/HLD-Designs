@@ -779,6 +779,21 @@ flowchart LR
 
 ---
 
+## Key Technologies Mentioned
+
+| Term | What it is |
+|---|---|
+| **Redis Sorted Set (ZSET)** | In-memory data structure scored by fire-time timestamp — O(log N) insert and range queries power the "what's due now?" dispatcher hot path. |
+| **Timing Wheel** | Alternative scheduling structure with O(1) insert and fire for time-bucketed events — used in some dispatcher implementations for high-volume ticks. |
+| **Leader Election** | Coordination mechanism (via etcd/ZooKeeper/Consul) ensuring only one dispatcher owns each shard — prevents duplicate job firing. |
+| **Kafka** | Durable message broker decoupling dispatch timing from worker execution — survives worker restarts and enables per-pool topic scaling. |
+| **Cron Expression** | Standard syntax (e.g., `0 3 * * *`) for defining recurring schedules, parsed with timezone-aware libraries to compute next fire times. |
+| **Heartbeat** | Periodic signal (every 10s) from workers to Redis with TTL — missed heartbeats trigger sweeper-based retry of stuck jobs. |
+| **Dead Letter Queue** | Holding queue for jobs that exhausted all retry attempts — surfaced to an ops dashboard for manual investigation. |
+| **Temporal** | Durable workflow engine for complex multi-step job orchestration with built-in retries, timeouts, and crash recovery. |
+
+---
+
 ## What's Expected at Each Level
 
 > This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.

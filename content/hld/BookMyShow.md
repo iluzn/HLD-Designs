@@ -764,6 +764,20 @@ flowchart LR
 
 ---
 
+## Key Technologies Mentioned
+
+| Term | What it is |
+|---|---|
+| **Redis SET NX (distributed lock)** | Atomic "set if not exists" command used to acquire a seat lock — only one caller succeeds, preventing double-booking. |
+| **TTL-based hold** | Lock keys expire automatically after 10 minutes, releasing seats if payment isn't completed. |
+| **CQRS** | Command Query Responsibility Segregation — separating the write path (seat locks, bookings) from read path (seat map browsing) for independent scaling. |
+| **Kafka** | Event bus carrying booking lifecycle events to downstream services (notifications, analytics, seat map invalidation). |
+| **WebSocket** | Persistent connection for pushing real-time seat availability updates to users viewing the same show. |
+| **Postgres** | ACID-compliant relational DB serving as the booking source of truth with unique constraints as a double-booking backstop. |
+| **Idempotency Key** | Client-generated UUID ensuring payment retries never double-charge — gateway returns the same result for repeated keys. |
+
+---
+
 ## What's Expected at Each Level
 
 > This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.

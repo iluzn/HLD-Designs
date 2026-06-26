@@ -722,6 +722,21 @@ That's the design. Five deep dives in Bad / Good / Great progression, each picki
 
 ---
 
+## Key Technologies Mentioned
+
+| Term | What it is |
+|---|---|
+| **Elasticsearch** | Search engine with inverted indexes, geo-point filters, and function_score queries powering restaurant search with text + location + ranking in one call. |
+| **Redis Geo** | In-memory geospatial index for sub-millisecond "find riders within 3km" queries on 200K+ active delivery partners. |
+| **WebSocket** | Persistent connection streaming live rider location to customers for real-time order tracking on the map. |
+| **Kafka** | Event bus carrying order confirmations, location streams, and CDC events between decoupled services. |
+| **Dispatch Algorithm** | Scoring-based matching that picks the best rider using distance, acceptance rate, and estimated pickup time — not just proximity. |
+| **Rider Assignment** | Redis SET NX with fencing tokens ensuring one order is offered to exactly one rider at a time, preventing double-dispatch. |
+| **ETA** | Estimated Time of Arrival calculated from mapping APIs, used for rider ranking and customer-facing delivery predictions. |
+| **CDN** | Content Delivery Network caching restaurant images and static assets at edge nodes for fast app loading. |
+
+---
+
 ## What's Expected at Each Level
 
 > This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.

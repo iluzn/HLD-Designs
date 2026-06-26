@@ -737,6 +737,20 @@ flowchart LR
 
 ---
 
+## Key Technologies Mentioned
+
+| Term | What it is |
+|---|---|
+| **Operational Transformation (OT)** | Algorithm that adjusts concurrent edit positions so multiple users' changes merge without conflicts or data loss. |
+| **CRDT** | Conflict-free Replicated Data Type — a data structure that converges to the same state across replicas without coordination; used in peer-to-peer/offline-first editors. |
+| **WebSocket** | Persistent bidirectional connection between client and server enabling sub-100ms operation push to all collaborators. |
+| **Kafka** | Event bus used for async document lifecycle events (snapshots, version summaries, change notifications). |
+| **Redis Pub/Sub** | In-memory publish/subscribe messaging used to route transformed operations to the correct WebSocket Gateway instance holding each user's connection. |
+| **Postgres** | Relational DB storing document metadata, permissions, and snapshot version pointers with ACID guarantees. |
+| **Version Vector** | Data structure tracking the latest version each client has seen, enabling the server to identify which operations need transformation on arrival. |
+
+---
+
 ## What's Expected at Each Level
 
 > This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.

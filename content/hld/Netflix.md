@@ -697,6 +697,23 @@ flowchart LR
 
 ---
 
+## Key Technologies Mentioned
+
+| Term | What it is |
+|---|---|
+| **HLS / DASH** | HTTP-based streaming protocols that split video into small segments and let the player pick quality per segment. |
+| **ABR (Adaptive Bitrate)** | Client-side algorithm that switches video quality in real-time based on available bandwidth and buffer level. |
+| **CDN / Open Connect** | Content Delivery Network; Netflix's custom CDN places appliances inside ISPs to serve 95%+ of traffic locally. |
+| **Per-Title Encoding** | Analyzing each title's visual complexity to assign optimal bitrate per resolution instead of a fixed ladder. |
+| **Temporal / Cadence** | Durable workflow engines that checkpoint multi-step encoding jobs so crashed steps retry without restarting the whole pipeline. |
+| **Kafka** | Distributed event log used here for user activity streaming, encoding events, and decoupling services. |
+| **Cassandra** | Wide-column NoSQL store used for high-write user activity data (watch history, play events). |
+| **Redis** | In-memory cache used for recommendation results, session state, and playback position tracking. |
+| **Elasticsearch** | Search engine powering full-text title search and genre browsing with faceted filtering. |
+| **DRM (Widevine / FairPlay)** | Digital Rights Management systems that encrypt video content and issue device-specific playback licenses. |
+
+---
+
 ## What's Expected at Each Level
 
 > This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.

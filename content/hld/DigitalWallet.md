@@ -841,6 +841,21 @@ That's the design. Six deep dives each picking the right primitive: double-entry
 
 ---
 
+## Key Technologies Mentioned
+
+| Term | What it is |
+|---|---|
+| **Double-entry Ledger** | Accounting model where every money movement creates balanced debit + credit entries that sum to zero — money can never be created or destroyed. |
+| **Idempotency Key** | Client-generated UUID attached to every payment request ensuring retries produce the same result without double-charging. |
+| **Saga Pattern** | Sequence of local transactions with compensating actions (e.g., refund) used when operations span multiple services that can't share a DB transaction. |
+| **Optimistic Locking (CAS)** | Compare-and-swap via a version column — UPDATE succeeds only if the version matches, detecting concurrent modifications without holding locks. |
+| **Materialized Balance** | A cached running total derived from the ledger; updated atomically with ledger writes and used for fast balance checks. |
+| **Reconciliation** | Periodic comparison of internal ledger state against external bank statements to detect and resolve discrepancies. |
+| **Kafka** | Distributed event bus carrying transaction events (via CDC/outbox) to notifications, analytics, and the history feed. |
+| **Postgres** | ACID relational database serving as the ledger source of truth with row-level locking for concurrency control on balances. |
+
+---
+
 ## What's Expected at Each Level
 
 > This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.

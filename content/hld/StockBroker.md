@@ -604,6 +604,21 @@ flowchart LR
 
 ---
 
+## Key Technologies Mentioned
+
+| Term | What it is |
+|---|---|
+| **CQRS** | Command Query Responsibility Segregation — separating the fast write path (order placement) from the scalable read path (portfolio, history) so each scales independently. |
+| **Event Sourcing** | Storing every order state change as an immutable event in Kafka, enabling full audit replay and point-in-time reconstruction for regulators. |
+| **Kafka** | Distributed event log partitioned by symbol ensuring ordered matching per stock and enabling multiple independent consumers (matcher, notifier, auditor). |
+| **Order Matching Engine** | In-memory TreeMap-based order book with price-time priority — single-threaded per symbol for lock-free matching at millions of ops/sec. |
+| **WebSocket** | Persistent connection pushing real-time order fills and market price updates to active clients without polling. |
+| **Redis** | In-memory cache for market data, user sessions, portfolio snapshots, and Pub/Sub routing for WebSocket fan-out. |
+| **Postgres** | ACID relational DB for order state, balance management, and idempotency key storage with partitioning by date. |
+| **Dead Letter Queue** | Holding queue for failed notifications or unprocessable events — retried by a sweeper or escalated for manual review. |
+
+---
+
 ## What's Expected at Each Level
 
 > This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.

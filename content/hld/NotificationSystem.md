@@ -1158,6 +1158,21 @@ flowchart LR
 
 ---
 
+## Key Technologies Mentioned
+
+| Term | What it is |
+|---|---|
+| **Kafka** | Distributed event log decoupling notification intake from delivery — absorbs burst traffic so product services never block on slow providers. |
+| **APNs (Apple Push)** | Apple Push Notification Service — the only gateway for delivering push notifications to iOS devices. |
+| **FCM (Firebase Cloud Messaging)** | Google's push notification gateway for Android (and web) — your server can't push directly to phones without going through FCM. |
+| **SES / Twilio** | Amazon SES for email delivery, Twilio for SMS — external provider adapters wrapped behind channel workers. |
+| **Template Engine** | Renders per-channel, per-locale message content from pre-approved templates with variable interpolation (e.g., `{{firstName}}`). |
+| **Dead Letter Queue** | Parking spot for permanently-failed messages after max retries — reviewed by ops or an automated reconciler. |
+| **Exponential Backoff** | Retry strategy that waits progressively longer between attempts (2s → 10s → 60s → 5min) to avoid hammering a struggling provider. |
+| **Rate Limiting** | Token bucket per provider and per tenant preventing any single sender from exhausting push/email/SMS quotas for everyone. |
+
+---
+
 ## What's Expected at Each Level
 
 > This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.

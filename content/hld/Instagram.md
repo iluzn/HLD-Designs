@@ -632,6 +632,20 @@ flowchart LR
 
 ---
 
+## Key Technologies Mentioned
+
+| Term | What it is |
+|---|---|
+| **CDN** | Content Delivery Network caching images at 200+ global edge nodes so users fetch media from the nearest PoP in under 20ms. |
+| **Object Storage (S3)** | Durable blob storage (11 nines) for original and resized images — write once, serve via CDN forever. |
+| **Fan-out on Write** | Pre-computing each user's feed by pushing new postIds to all followers' feed partitions at post time — feed reads become a single partition scan. |
+| **Redis Sorted Set** | In-memory sorted data structure used for the social graph (follower/following sets) and hot feed caching with O(1) membership checks. |
+| **Kafka** | Event bus carrying upload events, fan-out triggers, and post-published signals to downstream services. |
+| **Cassandra** | Write-optimized wide-column store used for pre-computed feed storage — partitioned by userId with posts sorted by timestamp. |
+| **Elasticsearch** | Search engine for hashtag, location, and user search with full-text and faceted filtering (used in Explore/discovery). |
+
+---
+
 ## What's Expected at Each Level
 
 > This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
