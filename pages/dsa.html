@@ -560,6 +560,24 @@ document.querySelectorAll('a').forEach(function(a) {
 })();
 </script>
 
+<!-- DSA list progress bars -->
+<script>
+(function() {
+    var lists = {
+        'qf50': { key: 'progress:/cheatsheet/', total: 50 },
+        'the75': { key: 'progress:/the-75/', total: 75 },
+        'the150': { key: 'progress:/the-150/', total: 150 }
+    };
+    for (var id in lists) {
+        var saved = JSON.parse(localStorage.getItem(lists[id].key) || '{}');
+        var done = Object.keys(saved).length;
+        var pct = Math.round((done / lists[id].total) * 100);
+        var fills = document.querySelectorAll('[data-key="' + id + '"]');
+        fills.forEach(function(fill) { fill.style.width = pct + '%'; });
+    }
+})();
+</script>
+
 <!-- Animated counter -->
 <script>
 (function() {
