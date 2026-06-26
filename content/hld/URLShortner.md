@@ -30,10 +30,10 @@ flowchart LR
     RS --> REDIS
     RS --> DB
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **In 3 sentences:** User submits a long URL → system generates a unique short code (base62 of a Snowflake ID) → stores the mapping. On redirect, the system looks up the short code through CDN → Redis → DB tiers and returns a 302. Analytics events fire async to Kafka without slowing the redirect.
@@ -61,9 +61,9 @@ flowchart LR
     USER --> API
     API --> DB
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 Receive a URL, generate a random code, store `{short, long}` in a DB, look it up on redirect. Works for 100 users. Breaks at scale:
@@ -202,10 +202,10 @@ flowchart LR
     WS --> IDG
     WS --> DB
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 ### Color Legend
@@ -255,11 +255,11 @@ flowchart LR
     RS --> DB
     RS --> K
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **Step-by-step flow:**
@@ -304,10 +304,10 @@ flowchart LR
     CLIENT --> ADHOC
     ADHOC --> RAW
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 Flow:
@@ -387,10 +387,10 @@ flowchart LR
     RS --> REDIS
     RS --> KV
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **Cache invalidation.** Two mechanisms:
@@ -631,11 +631,11 @@ flowchart LR
     CLIENT --> STATS
     STATS --> CH
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 That's the design. Five deep dives each picking the right primitive: Snowflake for collision-free distributed ID generation, a CDN-Redis-KV tiered cache for global low-latency reads, local caches with request coalescing to absorb viral spikes, Kafka-to-Flink-to-ClickHouse for analytics that never touches the hot path, and a globally-replicated KV store to eliminate regional bottlenecks. Read-heavy, latency-sensitive, and deceptively simple — the fun is in making it feel trivial at any scale.

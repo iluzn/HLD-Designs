@@ -28,9 +28,9 @@ flowchart LR
     API --> REDIS
     USER --> API
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **In 3 sentences:** Player completes a level → game server sends the new score. Redis Sorted Set stores `(score, playerId)` and automatically maintains rank order. To get "top 100" or "my rank," Redis answers in microseconds.
@@ -110,9 +110,9 @@ flowchart LR
     API --> DB
     USER --> API
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **Why two stores instead of just one database?** Redis gives us microsecond rank lookups (essential for real-time leaderboards at 10K QPS), but it's volatile — a restart could lose data. Postgres gives us durability and SQL flexibility (for "show me all scores from last Tuesday"), but it can't answer "what's player X's rank among 10M players?" without an expensive full-table sort. Together they cover both needs: speed for live rankings, permanence for history.

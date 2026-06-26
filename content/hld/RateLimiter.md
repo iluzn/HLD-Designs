@@ -33,10 +33,10 @@ flowchart LR
     GW -->|"allowed"| API
     GW -->|"rejected 429"| CLIENT
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **In 3 sentences:** Every request passes through a rate limiter before reaching your API. The limiter checks a counter in Redis — if under the limit, allow and increment; if over, reject with HTTP 429. Multiple layers (edge + gateway + service) protect different things.
@@ -73,9 +73,9 @@ flowchart LR
     CLIENT --> API
     API --> DB
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 Keep a `HashMap<userId, requestCount>` inside the API server. On each request: if count < limit → allow, else → reject.
@@ -111,9 +111,9 @@ flowchart LR
     POD2 --> REDIS
     POD3 --> REDIS
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 All pods check the SAME counter in Redis. Doesn't matter which pod handles the request — the global count is always accurate.
@@ -181,9 +181,9 @@ flowchart TD
     REFILL -->|"adds tokens"| BUCKET
     REQ -->|"removes 1 token"| BUCKET
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **How it works:**
@@ -237,9 +237,9 @@ flowchart TD
     EXACT -->|"No approx fine"| SWC
     START -->|"Simplest possible"| FW
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 ---
@@ -259,9 +259,9 @@ flowchart LR
     L2 --> L3
     L3 --> API
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
 ```
 
 | Layer | What it blocks | Key | Example |
@@ -295,9 +295,9 @@ flowchart TD
     FO -->|"⚠️ No protection"| OK["Backend might overload"]:::client
     FB -->|"✅ Graceful"| GOOD["Slightly inaccurate but safe"]:::client
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **Best answer for interviews:** "Fail-open with a local fallback. If Redis is unreachable, each pod switches to a local in-memory token bucket. Less accurate (each pod enforces limit/N independently) but the API stays up. Alert on Redis being down so ops investigates."
@@ -389,9 +389,9 @@ flowchart LR
         R3 --> REDIS
     end
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **Three approaches:**
@@ -426,9 +426,9 @@ flowchart TD
     SUSTAIN -->|"pass"| ALLOW
     SUSTAIN -->|"fail"| REJECT
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 Both limits must pass:
@@ -460,11 +460,11 @@ flowchart LR
     GW -->|"allowed"| API
     RL --> K
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 ---

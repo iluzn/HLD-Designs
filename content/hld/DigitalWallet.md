@@ -34,11 +34,11 @@ flowchart LR
     API --> BANK
     LEDGER --> K
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 **In 3 sentences:** Users load money from banks (async, webhook-confirmed), send to each other (instant, single DB transaction), and withdraw (async again). The core is a double-entry ledger in Postgres — every balance change creates both a debit and a credit line that sum to zero. Redis caches balances for fast reads; Kafka fans out events to notifications and analytics.
@@ -64,10 +64,10 @@ flowchart LR
     API --> DB
     API --> BANK
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 Store a `balance` column on the user row, `UPDATE users SET balance = balance - 100 WHERE user_id = A` and `... + 100 WHERE user_id = B`. This breaks in every way that matters for money:
@@ -265,12 +265,12 @@ flowchart LR
     L --> DB
     WS --> DB
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 How the Ledger Service actually learns the rail succeeded — **it doesn't actively check anything**. It's a passive consumer of a `rail.confirmed` (or `rail.failed`) event on the event bus. Whoever produces that event — Webhook Handler, Reconciler, or Settlement batch — is responsible for having verified rail truth. Ledger Service just receives "transaction `txn_555` succeeded" and posts the journal entry.
@@ -334,11 +334,11 @@ flowchart LR
     K --> NOTIF
     NOTIF --> RCV
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **Step-by-step flow:**
@@ -379,10 +379,10 @@ flowchart LR
     READ --> LEDGER
     READ --> HIST
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **Step-by-step flow:**
@@ -535,10 +535,10 @@ flowchart LR
     CDC --> K
     K --> REDIS
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 ### Deep Dive 4 — How do we keep our wallet balances reconciled with the real money in our bank account?
@@ -820,12 +820,12 @@ flowchart LR
 
     NOTIF --> PUSH
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 That's the design. Six deep dives each picking the right primitive: double-entry ledger with chart-of-accounts for correctness, row-locking with `FOR UPDATE` plus partitioned platform accounts for concurrency, tiered balance caches for read scale, continuous-plus-daily reconciliation for integrity with real banks, Orpheus-style three-phase idempotency to kill double-debits, and modeling holds as first-class accounts instead of flags. Correctness first, everything else second — a wallet that occasionally loses money is not a wallet.

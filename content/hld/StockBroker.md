@@ -30,10 +30,10 @@ flowchart LR
     API --> DB
     API --> Exchange
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 **How this breaks:**
@@ -179,11 +179,11 @@ flowchart LR
     OMS --> KF
     KF --> ME
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#1565C0,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef async fill:#AB47BC,stroke:#6A1B9A,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 | Color | Meaning |
@@ -244,11 +244,11 @@ flowchart LR
     Proj --> RDB
     Proj --> RC
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#1565C0,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef async fill:#AB47BC,stroke:#6A1B9A,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **Step-by-step flow:**
@@ -289,9 +289,9 @@ flowchart LR
     NS --> FCM
     NS --> DLQ
 
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef async fill:#AB47BC,stroke:#6A1B9A,color:#fff
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 **Step-by-step flow:**
@@ -405,9 +405,9 @@ flowchart LR
     MATCH -->|Yes| FILL["Execute Trade"]:::service
     MATCH -->|No| REST["Add to Book"]:::data
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **Mechanism:** When a BUY order arrives at price P:
@@ -581,12 +581,12 @@ flowchart LR
     REC --> KF
     KF --> S3
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#1565C0,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef async fill:#AB47BC,stroke:#6A1B9A,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 ---

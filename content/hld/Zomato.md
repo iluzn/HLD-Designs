@@ -37,9 +37,9 @@ flowchart LR
     LOC --> WS
     WS --> CUST
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **In 3 sentences:** Customer searches for restaurants (Elasticsearch with geo + relevance scoring), places an order (Postgres with idempotency), and the system finds a nearby rider (Redis Geo for proximity, Temporal for the multi-step dispatch workflow). The rider's live location streams to the customer via WebSocket. Each component is independently scalable.
@@ -138,10 +138,10 @@ flowchart LR
     GW --> RESTSVC
     RESTSVC --> DB
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 ### Color Legend
@@ -190,11 +190,11 @@ flowchart LR
     ORDER --> PAY
     PAY --> PG
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 **Step-by-step flow:**
@@ -244,11 +244,11 @@ flowchart LR
     PUSH --> RIDER
     RIDER -->|"accept"| GW
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 **Step-by-step flow:**
@@ -307,10 +307,10 @@ flowchart LR
     LOC --> K
     K --> DW
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 ### Deep Dive 2 — How do we make sure one rider isn't offered the same order twice, and one order isn't offered to two riders at the same time?
@@ -452,11 +452,11 @@ flowchart LR
     K --> IDX
     IDX --> ES
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 This is why a separate search tier matters: we get text, geo, facets, and relevance ranking in one system, decoupled from the OLTP database that owns the truth.
@@ -702,12 +702,12 @@ flowchart LR
     NOTIF --> PUSH
     MATCH --> ORDER
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 That's the design. Five deep dives in Bad / Good / Great progression, each picking the right primitive for the problem: Redis Geo for live rider locations, Redis locks with fencing tokens for consistent matching, WebSockets plus Pub/Sub for real-time tracking, Temporal for durable multi-step dispatch, and Elasticsearch fed by CDC for catalog search.

@@ -35,11 +35,11 @@ flowchart LR
     CHAT --> PUSH
     WS --> RECEIVER
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 **In 3 sentences:** Clients maintain a persistent WebSocket connection to the server. When a message is sent, the server persists it, looks up which server the receiver is connected to, and pushes it down their WebSocket. If the receiver is offline, the message waits in a queue and a push notification is sent.
@@ -63,9 +63,9 @@ flowchart LR
     API --> DB
     RECEIVER --> API
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 Sender POSTs message to an API, stored in a DB. Receiver polls the API every 5 seconds for new messages.
@@ -185,9 +185,9 @@ flowchart LR
     ROUTE --> WS2
     WS2 --> RECEIVER
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **Step-by-step flow:**
@@ -225,10 +225,10 @@ flowchart LR
     CHAT --> PUSH
     PUSH --> FCM
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 **Step-by-step flow:**
@@ -266,10 +266,10 @@ flowchart LR
     FAN --> WS
     WS --> MEMBERS
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
 **Step-by-step flow:**
@@ -391,12 +391,12 @@ flowchart LR
     CHAT --> PUSH
     PUSH --> FCM
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef edge fill:#42A5F5,stroke:#0D47A1,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 ## Summary

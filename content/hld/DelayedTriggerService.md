@@ -35,11 +35,11 @@ flowchart LR
     SQS --> DISP
     DISP --> TARGET
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef data fill:#FFCA28,stroke:#F57F17,color:#000
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 **In 3 sentences:** Services register "call me back in X minutes" requests. The system persists the trigger durably, then fires the HTTP callback at the right time with retries. Two tiers: short delays use a managed queue (SQS); long delays sit in a database until a sweeper promotes them.

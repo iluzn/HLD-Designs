@@ -36,10 +36,10 @@ flowchart LR
     SMS --> USER
     EMAIL --> USER
 
-    classDef client fill:#FF7043,stroke:#BF360C,color:#fff
-    classDef service fill:#66BB6A,stroke:#1B5E20,color:#fff
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
-    classDef external fill:#EC407A,stroke:#880E4F,color:#fff
+    classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
 **In 3 sentences:** Backend services emit events ("order confirmed") to Kafka. The notification service consumes these, renders a template, picks the channel (push/SMS/email based on user preferences), and dispatches. Delivery tracking, retries, and send-time optimization ensure messages reach users when they're most likely to engage.
