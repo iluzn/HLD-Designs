@@ -665,7 +665,7 @@
         window.addEventListener('scroll', function() {
             if (triggered) return;
             var scrollPct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-            if (scrollPct > 0.8) {
+            if (scrollPct > 0.95) {
                 triggered = true;
                 if (!localStorage.getItem(readKey)) {
                     localStorage.setItem(readKey, Date.now());
