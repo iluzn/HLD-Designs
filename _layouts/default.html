@@ -486,5 +486,110 @@
         }
     })();
     </script>
+
+    <!-- Completion celebration + self-assessment (psychology: completion reward + reflection) -->
+    <script>
+    (function() {
+        var isHLD = window.location.pathname.match(/^\/(Zomato|Uber|BookMyShow|Instagram|Netflix|StockBroker|DigitalWallet|ChatSystem|TwitterFeed|GoogleDocs|URLShortner|RateLimiter|Leaderboard|JobScheduler|DelayedTriggerService|NotificationSystem|Pastebin|KeyValueStore)/);
+        if (!isHLD) return;
+
+        // Mark as read in localStorage when user scrolls to 80%
+        var readKey = 'hld-read:' + window.location.pathname;
+        var triggered = false;
+        window.addEventListener('scroll', function() {
+            if (triggered) return;
+            var scrollPct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+            if (scrollPct > 0.8) {
+                triggered = true;
+                if (!localStorage.getItem(readKey)) {
+                    localStorage.setItem(readKey, Date.now());
+                    showCompletionBanner();
+                }
+            }
+        });
+
+        function showCompletionBanner() {
+            var banner = document.createElement('div');
+            banner.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(129,140,248,0.15),rgba(167,139,250,0.1));backdrop-filter:blur(12px);border:1px solid rgba(129,140,248,0.3);border-radius:14px;padding:1rem 1.5rem;z-index:200;display:flex;align-items:center;gap:1rem;box-shadow:0 12px 40px rgba(0,0,0,0.4);animation:slideUp 0.4s ease;max-width:90vw;';
+            banner.innerHTML = '<span style="font-size:1.5rem;">🎉</span><div><strong style="color:var(--text);font-size:0.85rem;">Design completed!</strong><p style="color:var(--text-muted);font-size:0.75rem;margin:0.2rem 0 0;">You just finished reading this design. Try explaining it to a friend in 3 minutes.</p></div><button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:1.1rem;padding:0.3rem;">&times;</button>';
+            document.body.appendChild(banner);
+            setTimeout(function() { banner.remove(); }, 8000);
+        }
+
+        // Add "Test Yourself" self-assessment at the bottom (before comments)
+        var commentsSection = document.getElementById('comments-section');
+        if (commentsSection) {
+            var selfTest = document.createElement('div');
+            selfTest.style.cssText = 'max-width:900px;margin:0 auto;padding:0 1.5rem 2rem;position:relative;z-index:1;';
+            selfTest.innerHTML = '<div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:1.5rem;backdrop-filter:blur(8px);">' +
+                '<h3 style="color:var(--text);font-size:1rem;margin-bottom:0.8rem;">🧠 Test Yourself — Can You Answer These?</h3>' +
+                '<p style="color:var(--text-muted);font-size:0.82rem;margin-bottom:1rem;">Close this page and try to answer from memory. If you can explain these to a friend, you own this design.</p>' +
+                '<div id="self-test-questions" style="display:flex;flex-direction:column;gap:0.5rem;"></div>' +
+                '<div style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border);">' +
+                '<p style="color:var(--text-dim);font-size:0.75rem;margin-bottom:0.5rem;">How confident do you feel about this design?</p>' +
+                '<div style="display:flex;gap:0.5rem;" id="confidence-btns"></div>' +
+                '</div></div>';
+            commentsSection.parentNode.insertBefore(selfTest, commentsSection);
+
+            // Generate questions from h3 headings (deep dives become questions)
+            var headings = document.querySelectorAll('.content h3');
+            var questions = [];
+            headings.forEach(function(h) {
+                var text = h.textContent.trim();
+                if (text.match(/deep dive|how|what|why|flow/i) && text.length > 10 && text.length < 120) {
+                    questions.push(text.replace(/^\d+[\.\)]\s*/, '').replace(/^Deep Dive \d+[\s—:]+/i, ''));
+                }
+            });
+            // Also extract from interview cheat sheet if present
+            var cheatRows = document.querySelectorAll('.content table tr');
+            cheatRows.forEach(function(row) {
+                var cells = row.querySelectorAll('td');
+                if (cells.length >= 1) {
+                    var q = cells[0].textContent.trim().replace(/^[""]|[""]$/g, '');
+                    if (q.length > 5 && q.length < 100 && q !== 'Question') questions.push(q);
+                }
+            });
+            // Show max 5 unique questions
+            var seen = {};
+            var unique = questions.filter(function(q) { var k = q.toLowerCase(); if (seen[k]) return false; seen[k] = true; return true; }).slice(0, 5);
+            var container = document.getElementById('self-test-questions');
+            unique.forEach(function(q, i) {
+                var div = document.createElement('div');
+                div.style.cssText = 'background:rgba(129,140,248,0.05);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.9rem;font-size:0.82rem;color:var(--text-muted);cursor:pointer;transition:all 0.2s;';
+                div.textContent = (i + 1) + '. ' + q;
+                div.addEventListener('mouseenter', function() { div.style.borderColor = 'var(--accent)'; div.style.color = 'var(--text)'; });
+                div.addEventListener('mouseleave', function() { div.style.borderColor = 'var(--border)'; div.style.color = 'var(--text-muted)'; });
+                container.appendChild(div);
+            });
+
+            // Confidence buttons
+            var confContainer = document.getElementById('confidence-btns');
+            var levels = [
+                { emoji: '😰', label: 'Need to re-read' },
+                { emoji: '🤔', label: 'Got the gist' },
+                { emoji: '😊', label: 'Could explain it' },
+                { emoji: '🔥', label: 'Interview ready' }
+            ];
+            levels.forEach(function(l) {
+                var btn = document.createElement('button');
+                btn.style.cssText = 'background:var(--glass);border:1px solid var(--border);border-radius:8px;padding:0.4rem 0.7rem;cursor:pointer;font-size:0.75rem;color:var(--text-muted);transition:all 0.2s;display:flex;align-items:center;gap:0.3rem;';
+                btn.innerHTML = l.emoji + ' <span>' + l.label + '</span>';
+                btn.addEventListener('click', function() {
+                    confContainer.querySelectorAll('button').forEach(function(b) { b.style.borderColor = 'var(--border)'; b.style.background = 'var(--glass)'; });
+                    btn.style.borderColor = 'var(--accent)';
+                    btn.style.background = 'rgba(129,140,248,0.1)';
+                    localStorage.setItem('confidence:' + window.location.pathname, l.label);
+                });
+                var saved = localStorage.getItem('confidence:' + window.location.pathname);
+                if (saved === l.label) { btn.style.borderColor = 'var(--accent)'; btn.style.background = 'rgba(129,140,248,0.1)'; }
+                confContainer.appendChild(btn);
+            });
+        }
+    })();
+    </script>
+
+    <style>
+    @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    </style>
 </body>
 </html>
