@@ -44,7 +44,6 @@ permalink: /lld
                 <a href="/dsa">DSA</a>
                 <a href="/cheatsheet">Cheatsheet</a>
                 <a href="/about">About</a>
-                <button id="theme-btn" title="Switch theme">🌙</button>
             </div>
         </nav>
     </div>
@@ -397,8 +396,8 @@ nav { display: flex; align-items: center; gap: 0.15rem; position: relative; }
 nav a { color: var(--text-muted); text-decoration: none; padding: 0.35rem 0.7rem; font-size: 0.82rem; font-weight: 500; border-radius: 6px; transition: all 0.2s; }
 nav a:hover { color: var(--text); background: rgba(129,140,248,0.06); }
 nav a.active { color: var(--accent); background: rgba(129,140,248,0.1); font-weight: 600; }
-#theme-btn, .theme-toggle { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-size: 0.9rem; padding: 0.3rem 0.5rem; border-radius: 6px; margin-left: 0.4rem; transition: all 0.2s; line-height: 1; }
-#theme-btn:hover, .theme-toggle:hover { border-color: var(--accent); color: var(--text); }
+#theme-btn, .theme-toggle { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; padding: 0.3rem 0.5rem; border-radius: 6px; margin-left: 0.4rem; transition: all 0.2s; line-height: 1; }
+#theme-btn:hover, .theme-toggle:hover { color: var(--text); }
 .hamburger { display: none; background: none; border: 1px solid var(--border); color: var(--text); cursor: pointer; padding: 0.3rem 0.5rem; font-size: 1.2rem; line-height: 1; border-radius: 6px; }
 .nav-links { display: flex; align-items: center; gap: 0.15rem; }
 
