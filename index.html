@@ -81,6 +81,17 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
         .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(99,102,241,0.3); }
         .hero-sub { margin-top: 0.8rem; font-size: 0.82rem; color: var(--text-dim); }
 
+        /* Hero badge line */
+        .hero-badge-line { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1rem; font-weight: 500; letter-spacing: 0.01em; }
+
+        /* Hero preview */
+        .hero-preview { margin-top: 2rem; display: flex; justify-content: center; }
+        .preview-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: left; max-width: 400px; width: 100%; position: relative; transition: border-color 0.3s; }
+        .preview-card:hover { border-color: rgba(129,140,248,0.3); }
+        .preview-badge { position: absolute; top: -10px; left: 16px; background: var(--accent); color: #fff; font-size: 0.65rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+        .preview-card strong { display: block; font-size: 0.92rem; color: var(--text); margin-top: 0.5rem; }
+        .preview-topics { display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; }
+
         /* Stats strip */
         .stats { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 1.5rem; display: flex; justify-content: center; gap: 3rem; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
         .stat { text-align: center; }
@@ -204,10 +215,20 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
 
 <!-- HERO — one clear message + one CTA -->
 <section class="hero">
-    <h1>Ace your next tech <em>interview</em></h1>
-    <p>Free system design, machine coding, and DSA prep — with diagrams, multi-language code, and the patterns interviewers actually test.</p>
-    <a class="hero-cta" href="/hld">Explore System Designs →</a>
-    <div class="hero-sub">Free &middot; No signup required</div>
+    <div class="hero-badge-line">For engineers interviewing at Amazon, Google, Meta, PhonePe, Flipkart & startups</div>
+    <h1>System Design Prep That <em>Actually Works</em></h1>
+    <p>Production-grade HLD, machine coding, and DSA — with architecture diagrams, deep dives, and the patterns interviewers test. Used by 500+ engineers.</p>
+    <a class="hero-cta" href="/hld">Start with the Most-Asked Design →</a>
+    <div class="hero-sub">Free &middot; No signup &middot; New designs weekly</div>
+
+    <!-- Preview card — shows what you get -->
+    <div class="hero-preview">
+        <div class="preview-card">
+            <span class="preview-badge">Most Popular</span>
+            <strong>🍔 Design Zomato — Food Delivery</strong>
+            <span class="preview-topics">Elasticsearch · Redis Geo · Live Tracking · Dispatch</span>
+        </div>
+    </div>
 </section>
 
 <!-- STATS — trust strip -->
@@ -220,8 +241,8 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
 
 <!-- PICK YOUR PATH — guided entry points -->
 <div class="section">
-    <div class="section-title">📍 Pick your prep path</div>
-    <div class="section-sub">Choose based on your interview type or timeline.</div>
+    <div class="section-title">Choose your interview round</div>
+    <div class="section-sub">Each path is tailored to a specific round type. Pick yours and start.</div>
 
     <div class="paths">
         <a class="path-card" href="/hld">
