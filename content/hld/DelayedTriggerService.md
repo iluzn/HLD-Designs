@@ -1,5 +1,5 @@
 ---
-permalink: /DelayedTriggerService/
+permalink: /hld/DelayedTriggerService/
 layout: default
 title: "Design a Delayed Trigger Service — System Design Interview"
 description: "System design for Delayed Trigger Service - architecture, deep dives, and trade-offs"
@@ -576,6 +576,6 @@ Address sub-second precision at scale using timing wheels (Kafka-style HashedWhe
 
 ---
 ## Related Designs
-- [Job Scheduler](/JobScheduler) — distributed task scheduling
-- [Digital Wallet](/DigitalWallet) — payment retry workflows
-- [Notification System](/NotificationSystem) — delayed and scheduled delivery
+- [Job Scheduler](/hld/JobScheduler) — distributed task scheduling
+- [Digital Wallet](/hld/DigitalWallet) — payment retry workflows
+- [Notification System](/hld/NotificationSystem) — delayed and scheduled delivery

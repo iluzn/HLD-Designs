@@ -2,7 +2,7 @@
 layout: default
 title: "Design Google Docs / Notion — Collaborative Editing System Design Interview"
 description: "System design for Google Docs / Notion with real-time collaborative editing, conflict resolution, OT/CRDT, presence indicators, and version history."
-permalink: /GoogleDocs
+permalink: /hld/GoogleDocs/
 ---
 
 # Designing a Collaborative Editing Platform (Google Docs / Notion)
@@ -777,6 +777,6 @@ Compare OT vs CRDT trade-offs at scale (OT needs a central server for linear ord
 
 ---
 ## Related Designs
-- [Chat System (WhatsApp)](/ChatSystem) — similar WebSocket fan-out, presence tracking
-- [Notification System](/NotificationSystem) — multi-channel push delivery
-- [Stock Broker (Robinhood)](/StockBroker) — event sourcing, ordered operations
+- [Chat System (WhatsApp)](/hld/ChatSystem) — similar WebSocket fan-out, presence tracking
+- [Notification System](/hld/NotificationSystem) — multi-channel push delivery
+- [Stock Broker (Robinhood)](/hld/StockBroker) — event sourcing, ordered operations

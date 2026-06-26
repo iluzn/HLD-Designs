@@ -1,5 +1,5 @@
 ---
-permalink: /NotificationSystem/
+permalink: /hld/NotificationSystem/
 layout: default
 title: "Design a Notification System — System Design Interview"
 description: "System design for Notification System — HLD - architecture, deep dives, and trade-offs"
@@ -1199,6 +1199,6 @@ Address notification deduplication across channels (Air Traffic Control pattern 
 
 ---
 ## Related Designs
-- [Chat System](/ChatSystem) — WebSocket real-time delivery
-- [Job Scheduler](/JobScheduler) — scheduled and delayed notifications
-- [Twitter Feed](/TwitterFeed) — fan-out patterns
+- [Chat System](/hld/ChatSystem) — WebSocket real-time delivery
+- [Job Scheduler](/hld/JobScheduler) — scheduled and delayed notifications
+- [Twitter Feed](/hld/TwitterFeed) — fan-out patterns

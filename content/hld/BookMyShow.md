@@ -2,7 +2,7 @@
 layout: default
 title: "Design BookMyShow / Ticketmaster — Ticket Booking System Design Interview"
 description: "System design for BookMyShow / Ticketmaster with seat selection, concurrent booking, payment, and inventory management. Distributed locking and exactly-once booking."
-permalink: /BookMyShow
+permalink: /hld/BookMyShow/
 ---
 
 # Designing a Ticket Booking Platform (BookMyShow / Ticketmaster)
@@ -804,6 +804,6 @@ Address the thundering herd problem on hot events by proposing a virtual waiting
 
 ---
 ## Related Designs
-- [Stock Broker (Robinhood)](/StockBroker) — exactly-once processing, order matching
-- [Digital Wallet (PhonePe)](/DigitalWallet) — payment orchestration, saga pattern, idempotency
-- [Job Scheduler](/JobScheduler) — TTL expiry management, delayed triggers
+- [Stock Broker (Robinhood)](/hld/StockBroker) — exactly-once processing, order matching
+- [Digital Wallet (PhonePe)](/hld/DigitalWallet) — payment orchestration, saga pattern, idempotency
+- [Job Scheduler](/hld/JobScheduler) — TTL expiry management, delayed triggers

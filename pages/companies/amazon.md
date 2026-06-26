@@ -40,11 +40,11 @@ Amazon's loop for SDE-2 and above includes 1-2 system design rounds alongside co
 
 | # | Problem | Difficulty | Link |
 |---|---------|-----------|------|
-| 1 | URL Shortener | 🟡 Intermediate | [Read →](/URLShortner) |
-| 2 | Chat System (WhatsApp) | 🟡 Intermediate | [Read →](/ChatSystem) |
-| 3 | Rate Limiter | 🟢 Beginner | [Read →](/RateLimiter) |
-| 4 | Notification System | 🟡 Intermediate | [Read →](/NotificationSystem) |
-| 5 | Distributed Job Scheduler | 🔴 Advanced | [Read →](/JobScheduler) |
+| 1 | URL Shortener | 🟡 Intermediate | [Read →](/hld/URLShortner) |
+| 2 | Chat System (WhatsApp) | 🟡 Intermediate | [Read →](/hld/ChatSystem) |
+| 3 | Rate Limiter | 🟢 Beginner | [Read →](/hld/RateLimiter) |
+| 4 | Notification System | 🟡 Intermediate | [Read →](/hld/NotificationSystem) |
+| 5 | Distributed Job Scheduler | 🔴 Advanced | [Read →](/hld/JobScheduler) |
 
 ---
 
@@ -52,8 +52,8 @@ Amazon's loop for SDE-2 and above includes 1-2 system design rounds alongside co
 
 | # | Problem | Difficulty | Link |
 |---|---------|-----------|------|
-| 1 | Parking Lot | 🟢 Beginner | [Read →](/ParkingLot) |
-| 2 | Music Player | 🟡 Intermediate | [Read →](/MusicPlayer) |
+| 1 | Parking Lot | 🟢 Beginner | [Read →](/lld/ParkingLot) |
+| 2 | Music Player | 🟡 Intermediate | [Read →](/lld/MusicPlayer) |
 
 ---
 

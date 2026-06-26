@@ -2,7 +2,7 @@
 layout: default
 title: "Design Multilevel Cache — Machine Coding Interview"
 description: "Low-level design for a multilevel cache with LRU/LFU eviction strategies, read-through and write-through patterns. Strategy pattern with full runnable code."
-permalink: /MultilevelCache
+permalink: /lld/MultilevelCache/
 ---
 
 # Designing Multilevel Cache — Hierarchical Caching System
@@ -1492,5 +1492,5 @@ int main() {
 
 ## Related Designs
 
-- [Splitwise](/Splitwise) — Strategy pattern and Facade
-- [Snake & Ladder](/SnakeLadder) — Strategy and Command patterns
+- [Splitwise](/lld/Splitwise) — Strategy pattern and Facade
+- [Snake & Ladder](/lld/SnakeLadder) — Strategy and Command patterns

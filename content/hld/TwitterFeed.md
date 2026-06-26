@@ -1,5 +1,5 @@
 ---
-permalink: /TwitterFeed/
+permalink: /hld/TwitterFeed/
 layout: default
 title: "Design Twitter (X) Feed — Social Feed System Design Interview"
 description: "System design for a social media news feed like Twitter (X) or Threads - fan-out, timeline generation, caching, ranking, and real-time updates"
@@ -489,6 +489,6 @@ Address feed ranking vs chronological ordering trade-offs and the ML pipeline ne
 
 ---
 ## Related Designs
-- [Chat System](/ChatSystem) — real-time message delivery
-- [Notification System](/NotificationSystem) — push to users
-- [Leaderboard](/Leaderboard) — real-time ranking updates
+- [Chat System](/hld/ChatSystem) — real-time message delivery
+- [Notification System](/hld/NotificationSystem) — push to users
+- [Leaderboard](/hld/Leaderboard) — real-time ranking updates

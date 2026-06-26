@@ -2,7 +2,7 @@
 layout: default
 title: "Design Instagram / Pinterest — Photo Sharing System Design Interview"
 description: "System design for Instagram / Pinterest with photo upload, news feed, stories, CDN delivery, and fan-out. Complete HLD with diagrams."
-permalink: /Instagram
+permalink: /hld/Instagram/
 ---
 
 # Designing Instagram / Pinterest — Photo Sharing Platform
@@ -672,6 +672,6 @@ Address storage lifecycle optimization (hot/warm/cold tiers with S3 Standard →
 
 ---
 ## Related Designs
-- [Twitter Feed](/TwitterFeed) — fan-out patterns and timeline caching
-- [Notification System](/NotificationSystem) — push delivery for likes and follows
-- [Chat System](/ChatSystem) — real-time messaging infrastructure
+- [Twitter Feed](/hld/TwitterFeed) — fan-out patterns and timeline caching
+- [Notification System](/hld/NotificationSystem) — push delivery for likes and follows
+- [Chat System](/hld/ChatSystem) — real-time messaging infrastructure

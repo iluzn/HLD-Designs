@@ -1,5 +1,5 @@
 ---
-permalink: /KeyValueStore/
+permalink: /hld/KeyValueStore/
 layout: default
 title: "Design a Key-Value Store — System Design Interview"
 description: "System design for a distributed key-value store like Redis or DynamoDB - consistent hashing, replication, partitioning, and consistency trade-offs. Beginner-friendly with diagrams."
@@ -359,6 +359,6 @@ Address vector clocks for conflict detection in multi-master writes, Merkle tree
 ---
 
 ## Related Designs
-- [Rate Limiter](/RateLimiter) — uses Redis (a KV store) for counters
-- [Leaderboard](/Leaderboard) — Redis sorted sets are a specialized KV structure
-- [URL Shortener](/URLShortner) — simple KV mapping of short code → URL
+- [Rate Limiter](/hld/RateLimiter) — uses Redis (a KV store) for counters
+- [Leaderboard](/hld/Leaderboard) — Redis sorted sets are a specialized KV structure
+- [URL Shortener](/hld/URLShortner) — simple KV mapping of short code → URL

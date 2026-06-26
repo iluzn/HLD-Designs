@@ -1,5 +1,5 @@
 ---
-permalink: /ChatSystem/
+permalink: /hld/ChatSystem/
 layout: default
 title: "Design WhatsApp / iMessage — Chat System Design Interview"
 description: "System design for a real-time messaging platform like WhatsApp or iMessage - WebSockets, message delivery, read receipts, group chat, and offline handling"
@@ -464,6 +464,6 @@ Address end-to-end encryption key exchange (Signal protocol double-ratchet), mul
 
 ---
 ## Related Designs
-- [Notification System](/NotificationSystem) — similar multi-channel delivery + WebSocket patterns
-- [Twitter Feed](/TwitterFeed) — fan-out and real-time updates
-- [Stock Broker](/StockBroker) — Kafka event streaming + exactly-once semantics
+- [Notification System](/hld/NotificationSystem) — similar multi-channel delivery + WebSocket patterns
+- [Twitter Feed](/hld/TwitterFeed) — fan-out and real-time updates
+- [Stock Broker](/hld/StockBroker) — Kafka event streaming + exactly-once semantics

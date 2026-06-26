@@ -1,5 +1,5 @@
 ---
-permalink: /DigitalWallet/
+permalink: /hld/DigitalWallet/
 layout: default
 title: "Design PhonePe / Venmo — Digital Wallet System Design Interview"
 description: "System design for Designing a Payment Wallet Like PhonePe, Venmo, Cash App, or Paytm - architecture, deep dives, and trade-offs"
@@ -882,6 +882,6 @@ Address distributed ledger consistency across shards (partitioned platform accou
 
 ---
 ## Related Designs
-- [Stock Broker](/StockBroker) — financial transactions + exactly-once semantics
-- [Zomato](/Zomato) — end-to-end order lifecycle
-- [Delayed Trigger Service](/DelayedTriggerService) — scheduled payment retries
+- [Stock Broker](/hld/StockBroker) — financial transactions + exactly-once semantics
+- [Zomato](/hld/Zomato) — end-to-end order lifecycle
+- [Delayed Trigger Service](/hld/DelayedTriggerService) — scheduled payment retries

@@ -2,7 +2,7 @@
 layout: default
 title: "Design Uber / Lyft — Ride Sharing System Design Interview"
 description: "System design for Uber / Lyft with real-time driver matching, location tracking, ride lifecycle, surge pricing, and ETA calculation. Complete HLD with diagrams."
-permalink: /Uber
+permalink: /hld/Uber/
 ---
 
 # Designing a Ride Sharing Platform (Uber / Lyft)

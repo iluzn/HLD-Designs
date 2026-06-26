@@ -2,7 +2,7 @@
 layout: default
 title: "Design Netflix / YouTube — Video Streaming System Design Interview"
 description: "System design for Netflix / YouTube with video encoding, CDN delivery, recommendation engine, and adaptive bitrate streaming. Complete HLD."
-permalink: /Netflix
+permalink: /hld/Netflix/
 ---
 
 # Designing Netflix / YouTube — Video Streaming Platform
@@ -741,6 +741,6 @@ Address custom CDN economics (Open Connect vs commercial CDN at Netflix scale �
 
 ---
 ## Related Designs
-- [URL Shortener](/URLShortner) — CDN caching patterns and redirect optimization
-- [Chat System](/ChatSystem) — real-time delivery and session management
-- [Notification System](/NotificationSystem) — push notification infrastructure
+- [URL Shortener](/hld/URLShortner) — CDN caching patterns and redirect optimization
+- [Chat System](/hld/ChatSystem) — real-time delivery and session management
+- [Notification System](/hld/NotificationSystem) — push notification infrastructure

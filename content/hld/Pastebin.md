@@ -1,5 +1,5 @@
 ---
-permalink: /Pastebin/
+permalink: /hld/Pastebin/
 layout: default
 title: "Design Pastebin — System Design Interview"
 description: "System design for a text-sharing service like Pastebin - unique ID generation, object storage, metadata DB, CDN reads, and expiry cleanup. Beginner-friendly with diagrams."
@@ -162,7 +162,7 @@ Headers: Authorization: Bearer <token>
 → 204 No Content
 ```
 
-> 💡 **Security note:** Creating pastes can be anonymous, but deleting requires ownership proof. Rate-limit paste creation by IP to prevent spam (see [Rate Limiter](/RateLimiter)).
+> 💡 **Security note:** Creating pastes can be anonymous, but deleting requires ownership proof. Rate-limit paste creation by IP to prevent spam (see [Rate Limiter](/hld/RateLimiter)).
 
 ---
 
@@ -349,7 +349,7 @@ Address abuse prevention (rate limiting per IP, content scanning for malware/spa
 ---
 
 ## Related Designs
-- [URL Shortener](/URLShortner) — same ID generation pattern, simpler storage
-- [Rate Limiter](/RateLimiter) — protecting the paste API from abuse
-- [Instagram](/Instagram) — object storage patterns for media
+- [URL Shortener](/hld/URLShortner) — same ID generation pattern, simpler storage
+- [Rate Limiter](/hld/RateLimiter) — protecting the paste API from abuse
+- [Instagram](/hld/Instagram) — object storage patterns for media
 

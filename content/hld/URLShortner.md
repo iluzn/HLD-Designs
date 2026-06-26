@@ -1,5 +1,5 @@
 ---
-permalink: /URLShortner/
+permalink: /hld/URLShortner/
 layout: default
 title: "Design a URL Shortener — System Design Interview"
 description: "System design for Designing a URL Shortener Like Bitly or TinyURL - architecture, deep dives, and trade-offs"
@@ -691,6 +691,6 @@ Address multi-region deployment with counter range allocation per region (no cro
 
 ---
 ## Related Designs
-- [Rate Limiter](/RateLimiter) — protecting high-QPS endpoints
-- [Leaderboard](/Leaderboard) — Redis-based caching patterns
-- [Stock Broker](/StockBroker) — idempotency keys for write operations
+- [Rate Limiter](/hld/RateLimiter) — protecting high-QPS endpoints
+- [Leaderboard](/hld/Leaderboard) — Redis-based caching patterns
+- [Stock Broker](/hld/StockBroker) — idempotency keys for write operations

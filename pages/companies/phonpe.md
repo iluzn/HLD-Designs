@@ -40,10 +40,10 @@ PhonePe interviews typically consist of 2-3 DSA rounds, 1 machine coding (LLD) r
 
 | # | Problem | Difficulty | Link |
 |---|---------|-----------|------|
-| 1 | Digital Wallet | 🔴 Advanced | [Read →](/DigitalWallet) |
-| 2 | Delayed Trigger Service | 🔴 Advanced | [Read →](/DelayedTriggerService) |
-| 3 | Notification System | 🟡 Intermediate | [Read →](/NotificationSystem) |
-| 4 | Distributed Job Scheduler | 🔴 Advanced | [Read →](/JobScheduler) |
+| 1 | Digital Wallet | 🔴 Advanced | [Read →](/hld/DigitalWallet) |
+| 2 | Delayed Trigger Service | 🔴 Advanced | [Read →](/hld/DelayedTriggerService) |
+| 3 | Notification System | 🟡 Intermediate | [Read →](/hld/NotificationSystem) |
+| 4 | Distributed Job Scheduler | 🔴 Advanced | [Read →](/hld/JobScheduler) |
 
 ---
 
@@ -51,9 +51,9 @@ PhonePe interviews typically consist of 2-3 DSA rounds, 1 machine coding (LLD) r
 
 | # | Problem | Difficulty | Link |
 |---|---------|-----------|------|
-| 1 | Parking Lot | 🟢 Beginner | [Read →](/ParkingLot) |
-| 2 | Splitwise | 🟡 Intermediate | [Read →](/Splitwise) |
-| 3 | Music Player | 🟡 Intermediate | [Read →](/MusicPlayer) |
+| 1 | Parking Lot | 🟢 Beginner | [Read →](/lld/ParkingLot) |
+| 2 | Splitwise | 🟡 Intermediate | [Read →](/lld/Splitwise) |
+| 3 | Music Player | 🟡 Intermediate | [Read →](/lld/MusicPlayer) |
 
 ---
 

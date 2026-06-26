@@ -2,7 +2,7 @@
 layout: default
 title: "Design a Music Player — Machine Coding Interview"
 description: "Low-level design for a music player with shuffle, history tracking, play/pause, and next/previous navigation. Strategy pattern, Observer, and thread-safe design."
-permalink: /MusicPlayer
+permalink: /lld/MusicPlayer/
 ---
 
 # Designing a Music Player
@@ -1336,5 +1336,5 @@ int main() {
 
 ---
 ## Related Designs
-- [Parking Lot](/ParkingLot) — Strategy and Factory patterns
-- [Splitwise](/Splitwise) — Strategy pattern for multiple algorithms
+- [Parking Lot](/lld/ParkingLot) — Strategy and Factory patterns
+- [Splitwise](/lld/Splitwise) — Strategy pattern for multiple algorithms

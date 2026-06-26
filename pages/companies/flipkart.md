@@ -40,9 +40,9 @@ Flipkart's interview process for SDE-2+ includes 2 DSA rounds, 1 machine coding 
 
 | # | Problem | Difficulty | Link |
 |---|---------|-----------|------|
-| 1 | URL Shortener | 🟡 Intermediate | [Read →](/URLShortner) |
-| 2 | Twitter / Social Feed | 🟡 Intermediate | [Read →](/TwitterFeed) |
-| 3 | Notification System | 🟡 Intermediate | [Read →](/NotificationSystem) |
+| 1 | URL Shortener | 🟡 Intermediate | [Read →](/hld/URLShortner) |
+| 2 | Twitter / Social Feed | 🟡 Intermediate | [Read →](/hld/TwitterFeed) |
+| 3 | Notification System | 🟡 Intermediate | [Read →](/hld/NotificationSystem) |
 
 ---
 
@@ -50,8 +50,8 @@ Flipkart's interview process for SDE-2+ includes 2 DSA rounds, 1 machine coding 
 
 | # | Problem | Difficulty | Link |
 |---|---------|-----------|------|
-| 1 | Parking Lot | 🟢 Beginner | [Read →](/ParkingLot) |
-| 2 | Splitwise | 🟡 Intermediate | [Read →](/Splitwise) |
+| 1 | Parking Lot | 🟢 Beginner | [Read →](/lld/ParkingLot) |
+| 2 | Splitwise | 🟡 Intermediate | [Read →](/lld/Splitwise) |
 
 ---
 

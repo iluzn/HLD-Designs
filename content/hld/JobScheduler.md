@@ -1,5 +1,5 @@
 ---
-permalink: /JobScheduler/
+permalink: /hld/JobScheduler/
 layout: default
 title: "Design a Distributed Job Scheduler — System Design Interview"
 description: "System design for Distributed Job Scheduler — HLD - architecture, deep dives, and trade-offs"
@@ -820,6 +820,6 @@ Address multi-tenant fair scheduling (one user's million jobs shouldn't starve o
 
 ---
 ## Related Designs
-- [Delayed Trigger Service](/DelayedTriggerService) — timing wheels and scheduled execution
-- [Notification System](/NotificationSystem) — scheduled notification delivery
-- [Zomato](/Zomato) — dispatch and async workflows
+- [Delayed Trigger Service](/hld/DelayedTriggerService) — timing wheels and scheduled execution
+- [Notification System](/hld/NotificationSystem) — scheduled notification delivery
+- [Zomato](/hld/Zomato) — dispatch and async workflows

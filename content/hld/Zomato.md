@@ -1,5 +1,5 @@
 ---
-permalink: /Zomato/
+permalink: /hld/Zomato/
 layout: default
 title: "Design Zomato / Uber Eats — Food Delivery System Design Interview"
 description: "System design for Designing a Food Delivery Service Like Zomato, Uber Eats, or DoorDash - architecture, deep dives, and trade-offs"
@@ -764,6 +764,6 @@ Address dispatch workflow durability (Temporal/Cadence), fencing tokens for prev
 
 ---
 ## Related Designs
-- [Job Scheduler](/JobScheduler) — distributed task processing
-- [Notification System](/NotificationSystem) — multi-channel push delivery
-- [Digital Wallet](/DigitalWallet) — payment processing + idempotency
+- [Job Scheduler](/hld/JobScheduler) — distributed task processing
+- [Notification System](/hld/NotificationSystem) — multi-channel push delivery
+- [Digital Wallet](/hld/DigitalWallet) — payment processing + idempotency

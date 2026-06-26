@@ -2,7 +2,7 @@
 layout: default
 title: "Design Robinhood / Zerodha — Stock Broker System Design Interview"
 description: "System design for a stock broker like Robinhood or Zerodha with order matching, transaction history, notifications, and delivery semantics. Event-driven architecture with Kafka."
-permalink: /StockBroker
+permalink: /hld/StockBroker/
 ---
 
 # Designing a Stock Broker Platform (Robinhood / Zerodha)

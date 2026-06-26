@@ -1,5 +1,5 @@
 ---
-permalink: /Leaderboard/
+permalink: /hld/Leaderboard/
 layout: default
 title: "Design a Real-Time Leaderboard — System Design Interview"
 description: "System design for a gaming leaderboard - Redis sorted sets, rank queries, and scaling to millions of players"
@@ -381,6 +381,6 @@ Design the tiered architecture for global live events: regional Redis for fast w
 
 ---
 ## Related Designs
-- [Rate Limiter](/RateLimiter) — Redis patterns
-- [URL Shortener](/URLShortner) — caching and CDN
-- [Twitter Feed](/TwitterFeed) — real-time updates to users
+- [Rate Limiter](/hld/RateLimiter) — Redis patterns
+- [URL Shortener](/hld/URLShortner) — caching and CDN
+- [Twitter Feed](/hld/TwitterFeed) — real-time updates to users

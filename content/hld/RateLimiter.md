@@ -1,5 +1,5 @@
 ---
-permalink: /RateLimiter/
+permalink: /hld/RateLimiter/
 layout: default
 title: "Design a Rate Limiter — System Design Interview"
 description: "System design for a distributed rate limiter - token bucket, sliding window, Redis, edge limiting, and trade-offs. Beginner-friendly with diagrams."
@@ -752,6 +752,6 @@ Address distributed rate limiting across multiple regions with eventual consiste
 
 ---
 ## Related Designs
-- [URL Shortener](/URLShortner) — high-QPS API design
-- [Leaderboard](/Leaderboard) — Redis patterns
-- [Notification System](/NotificationSystem) — protecting downstream services
+- [URL Shortener](/hld/URLShortner) — high-QPS API design
+- [Leaderboard](/hld/Leaderboard) — Redis patterns
+- [Notification System](/hld/NotificationSystem) — protecting downstream services

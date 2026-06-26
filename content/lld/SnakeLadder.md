@@ -2,7 +2,7 @@
 layout: default
 title: "Design Snake & Ladder — Machine Coding Interview"
 description: "Low-level design for Snake & Ladder with configurable board, multiple players, dice strategies, and game loop. State pattern with full runnable code."
-permalink: /SnakeLadder
+permalink: /lld/SnakeLadder/
 ---
 
 # Designing Snake & Ladder — Turn-Based Board Game
@@ -1418,5 +1418,5 @@ int main() {
 
 ## Related Designs
 
-- [Splitwise](/Splitwise) — Strategy pattern and Observer
-- [Parking Lot](/ParkingLot) — Strategy-based assignment and extensible design
+- [Splitwise](/lld/Splitwise) — Strategy pattern and Observer
+- [Parking Lot](/lld/ParkingLot) — Strategy-based assignment and extensible design
