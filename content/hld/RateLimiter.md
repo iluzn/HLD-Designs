@@ -716,13 +716,13 @@ flowchart LR
 | Term | What it is |
 |---|---|
 | **Redis** | An in-memory database. Responds in < 1ms. Used for counters, caches, and fast lookups. |
-| **Lua script** | A tiny program that runs INSIDE Redis. Lets you read + check + write atomically in one network call. |
-
-💡 *Redis Lua scripts execute atomically on the server — no race conditions between "check count" and "increment count". Critical for distributed rate limiting.*
+| **Lua script** | A tiny program that runs INSIDE Redis. Lets you read + check + write atomically in one network call. No race conditions between "check count" and "increment count". |
 | **API Gateway** | A server that sits in front of your APIs. Handles auth, rate limiting, routing. Examples: Kong, Envoy, AWS API Gateway. |
 | **CDN / Edge** | Servers at the "edge" of the network, close to users worldwide. Cloudflare, CloudFront. First line of defense. |
 | **Token Bucket** | Algorithm: bucket of tokens, refills at steady rate. Each request costs a token. Empty bucket = rejected. |
 | **HTTP 429** | Standard HTTP status code meaning "Too Many Requests." Client should back off and retry later. |
+
+> 💡 Redis Lua scripts execute atomically on the server — critical for distributed rate limiting where multiple pods check the same counter.
 
 ---
 
