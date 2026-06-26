@@ -574,6 +574,7 @@ footer a:hover { text-decoration: underline; }
     var saved = JSON.parse(localStorage.getItem(pageKey) || '{}');
     var cards = document.querySelectorAll('.problem-card.available');
     var total = document.querySelectorAll('.problem-card').length;
+    var checkableTotal = cards.length;
 
     function updateProgress() {
         var done = Object.keys(JSON.parse(localStorage.getItem(pageKey) || '{}')).length;
@@ -598,9 +599,9 @@ footer a:hover { text-decoration: underline; }
             }
             localStorage.setItem(pageKey, JSON.stringify(saved));
             updateProgress();
-            // Check if all completed
+            // Check if all available designs completed
             var done = Object.keys(JSON.parse(localStorage.getItem(pageKey) || '{}')).length;
-            if (done === total) {
+            if (done >= checkableTotal && checkableTotal > 0) {
                 triggerCelebration('All LLD Designs Completed!', 'Machine coding mastery unlocked. You own OOP + design patterns. 🔥');
             }
         });
