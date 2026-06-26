@@ -516,17 +516,30 @@
         var content = document.querySelector('.content');
         if (!content) return;
 
-        // Find all paragraphs that start with **Bad, **Good, **Great
-        var allElements = content.querySelectorAll('p, h4, h3');
+        // Walk ALL direct and nested elements in order to properly detect boundaries
+        var allElements = content.querySelectorAll('p, h2, h3, h4, hr, pre, table, blockquote, ul, ol, div.mermaid');
         var deepDiveGroups = [];
         var currentGroup = null;
 
         allElements.forEach(function(el) {
             var text = el.textContent.trim();
-            var html = el.innerHTML;
-            var isBad = /^\*?\*?Bad[\s:—\*]/.test(text) || html.match(/^<strong>Bad/);
-            var isGood = /^\*?\*?Good[\s:—\*]/.test(text) || html.match(/^<strong>Good/);
-            var isGreat = /^\*?\*?Great[\s:—\*]/.test(text) || html.match(/^<strong>Great/);
+            var html = el.innerHTML || '';
+            var tag = el.tagName.toLowerCase();
+
+            // Boundary detection: end current group on h2, h3 (non Bad/Good/Great), or hr
+            var isBoundary = tag === 'h2' || tag === 'hr';
+            if (tag === 'h3' && !/^\*?\*?(Bad|Good|Great)[\s:—\*]/.test(text) && !html.match(/^<strong>(Bad|Good|Great)/)) {
+                isBoundary = true;
+            }
+
+            if (isBoundary) {
+                currentGroup = null;
+                return;
+            }
+
+            var isBad = (tag === 'p' || tag === 'h4') && (/^\*?\*?Bad[\s:—\*]/.test(text) || html.match(/^<strong>Bad/));
+            var isGood = (tag === 'p' || tag === 'h4') && (/^\*?\*?Good[\s:—\*]/.test(text) || html.match(/^<strong>Good/));
+            var isGreat = (tag === 'p' || tag === 'h4') && (/^\*?\*?Great[\s:—\*]/.test(text) || html.match(/^<strong>Great/));
 
             if (isBad) {
                 currentGroup = { bad: { trigger: el, content: [] }, good: null, great: null };
