@@ -1,11 +1,11 @@
 ---
 layout: default
-title: "Design Robinhood — Stock Broker System Design Interview"
-description: "System design for a stock broker with order matching, transaction history, notifications, and delivery semantics. Event-driven architecture with Kafka."
+title: "Design Robinhood / Zerodha — Stock Broker System Design Interview"
+description: "System design for a stock broker like Robinhood or Zerodha with order matching, transaction history, notifications, and delivery semantics. Event-driven architecture with Kafka."
 permalink: /StockBroker
 ---
 
-# Designing a Stock Broker Platform
+# Designing a Stock Broker Platform (Robinhood / Zerodha)
 
 ⚡ **Difficulty:** Advanced 🏷️ **Topics:** Order Matching, Event Sourcing, CQRS, Kafka, Delivery Semantics 🏢 **Asked at:** Robinhood, Zerodha, Groww, Upstox, Goldman Sachs
 

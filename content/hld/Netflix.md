@@ -1,11 +1,11 @@
 ---
 layout: default
-title: "Design Netflix — Video Streaming System Design Interview"
-description: "System design for Netflix with video encoding, CDN delivery, recommendation engine, and adaptive bitrate streaming. Complete HLD."
+title: "Design Netflix / YouTube — Video Streaming System Design Interview"
+description: "System design for Netflix / YouTube with video encoding, CDN delivery, recommendation engine, and adaptive bitrate streaming. Complete HLD."
 permalink: /Netflix
 ---
 
-# Designing Netflix — Video Streaming Platform
+# Designing Netflix / YouTube — Video Streaming Platform
 
 ⚡ **Difficulty:** Advanced 🏷️ **Topics:** Video Encoding Pipeline, CDN, Adaptive Bitrate Streaming, Recommendation Engine, Content Catalog 🏢 **Asked at:** Netflix, YouTube, Disney+, Amazon Prime Video, Hotstar
 

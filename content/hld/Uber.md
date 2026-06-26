@@ -1,13 +1,13 @@
 ---
 layout: default
-title: "Design Uber — Ride Sharing System Design Interview"
-description: "System design for Uber with real-time driver matching, location tracking, ride lifecycle, surge pricing, and ETA calculation. Complete HLD with diagrams."
+title: "Design Uber / Lyft — Ride Sharing System Design Interview"
+description: "System design for Uber / Lyft with real-time driver matching, location tracking, ride lifecycle, surge pricing, and ETA calculation. Complete HLD with diagrams."
 permalink: /Uber
 ---
 
-# Designing a Ride Sharing Platform (Uber)
+# Designing a Ride Sharing Platform (Uber / Lyft)
 
-⚡ **Difficulty:** Advanced 🏷️ **Topics:** Real-Time Matching, Location Tracking, WebSocket, Surge Pricing, Geohash 🏢 **Asked at:** Uber, Ola, Lyft, Grab, Google, Amazon
+⚡ **Difficulty:** Advanced 🏷️ **Topics:** Real-Time Matching, Location Tracking, WebSocket, Surge Pricing, Geohash 🏢 **Asked at:** Uber, Lyft, Ola, Grab, Google, Amazon
 
 ---
 

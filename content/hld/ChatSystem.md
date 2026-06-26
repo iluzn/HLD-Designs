@@ -1,11 +1,11 @@
 ---
 permalink: /ChatSystem/
 layout: default
-title: "Design WhatsApp — Chat System Design Interview"
-description: "System design for a real-time messaging platform - WebSockets, message delivery, read receipts, group chat, and offline handling"
+title: "Design WhatsApp / iMessage — Chat System Design Interview"
+description: "System design for a real-time messaging platform like WhatsApp or iMessage - WebSockets, message delivery, read receipts, group chat, and offline handling"
 ---
 
-# Designing a Chat System Like WhatsApp
+# Designing a Chat System Like WhatsApp / iMessage
 
 ⚡ **Difficulty:** Intermediate
 📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Message Queues and Caching

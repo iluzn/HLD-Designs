@@ -1,13 +1,13 @@
 ---
 layout: default
-title: "Design BookMyShow — Ticket Booking System Design Interview"
-description: "System design for BookMyShow with seat selection, concurrent booking, payment, and inventory management. Distributed locking and exactly-once booking."
+title: "Design BookMyShow / Ticketmaster — Ticket Booking System Design Interview"
+description: "System design for BookMyShow / Ticketmaster with seat selection, concurrent booking, payment, and inventory management. Distributed locking and exactly-once booking."
 permalink: /BookMyShow
 ---
 
-# Designing a Ticket Booking Platform (BookMyShow)
+# Designing a Ticket Booking Platform (BookMyShow / Ticketmaster)
 
-⚡ **Difficulty:** Intermediate 🏷️ **Topics:** Distributed Locking, Seat Reservation, Payment Saga, TTL Holds, Inventory Management 🏢 **Asked at:** BookMyShow, Amazon, Flipkart, Ticketmaster, PhonePe
+⚡ **Difficulty:** Intermediate 🏷️ **Topics:** Distributed Locking, Seat Reservation, Payment Saga, TTL Holds, Inventory Management 🏢 **Asked at:** Ticketmaster, BookMyShow, Amazon, Flipkart, PhonePe
 
 ---
 

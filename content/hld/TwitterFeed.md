@@ -1,11 +1,11 @@
 ---
 permalink: /TwitterFeed/
 layout: default
-title: "Design Twitter Feed — Social Feed System Design Interview"
-description: "System design for a social media news feed - fan-out, timeline generation, caching, ranking, and real-time updates"
+title: "Design Twitter (X) Feed — Social Feed System Design Interview"
+description: "System design for a social media news feed like Twitter (X) or Threads - fan-out, timeline generation, caching, ranking, and real-time updates"
 ---
 
-# Designing a Social Media Feed (Twitter/X)
+# Designing a Social Media Feed (Twitter / X / Threads)
 
 ⚡ **Difficulty:** Intermediate
 📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Caching and Message Queues

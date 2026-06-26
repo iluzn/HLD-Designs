@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Design Splitwise — Machine Coding Interview"
-description: "Low-level design for Splitwise with multiple split strategies, debt simplification, and group expense management. Strategy pattern with full runnable code."
+description: "Low-level design for Splitwise / expense-splitting app with multiple split strategies, debt simplification, and group expense management. Strategy pattern with full runnable code."
 permalink: /Splitwise
 ---
 

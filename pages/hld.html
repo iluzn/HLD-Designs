@@ -28,6 +28,9 @@ permalink: /hld
     <meta name="twitter:title" content="High-Level Design Problems">
     <meta name="twitter:description" content="System design interview problems with diagrams and deep dives">
     <meta name="twitter:image" content="https://systemcraft.in/favicon.svg">
+    <script type="application/ld+json">
+    { "@context": "https://schema.org", "@type": "WebSite", "name": "SystemCraft", "alternateName": "System Craft", "url": "https://systemcraft.in" }
+    </script>
 </head>
 <body>
 
@@ -181,7 +184,7 @@ permalink: /hld
                     <span class="card-icon">🐦</span>
                     <span class="diff-badge yellow">Intermediate</span>
                 </div>
-                <h3>Twitter / Social Feed</h3>
+                <h3>Twitter (X) / Threads — Social Feed</h3>
                 <p class="card-desc">Fan-out on write vs read, timeline caching, celebrity problem.<span class="card-time">⏱️ ~12 min read</span></p>
                 <div class="card-tags">
                     <span class="tag">Fan-out</span>
@@ -200,7 +203,7 @@ permalink: /hld
                     <span class="card-icon">💬</span>
                     <span class="diff-badge yellow">Intermediate</span>
                 </div>
-                <h3>Chat System (WhatsApp)</h3>
+                <h3>Chat System (WhatsApp / iMessage)</h3>
                 <p class="card-desc">WebSocket connections, offline delivery queues, Cassandra message store.<span class="card-time">⏱️ ~12 min read</span></p>
                 <div class="card-tags">
                     <span class="tag">WebSocket</span>
@@ -238,7 +241,7 @@ permalink: /hld
                     <span class="card-icon">📸</span>
                     <span class="diff-badge yellow">Intermediate</span>
                 </div>
-                <h3>Photo Sharing (Instagram)</h3>
+                <h3>Photo Sharing (Instagram / Pinterest)</h3>
                 <p class="card-desc">Media upload pipeline, CDN delivery, news feed generation, fan-out, image optimization.<span class="card-time">⏱️ ~12 min read</span></p>
                 <div class="card-tags">
                     <span class="tag">CDN</span>
@@ -257,7 +260,7 @@ permalink: /hld
                     <span class="card-icon">🎬</span>
                     <span class="diff-badge yellow">Intermediate</span>
                 </div>
-                <h3>Ticket Booking (BookMyShow)</h3>
+                <h3>Ticket Booking (BookMyShow / Ticketmaster)</h3>
                 <p class="card-desc">Seat selection, distributed locking, temporary holds, payment integration, no double-booking.<span class="card-time">⏱️ ~12 min read</span></p>
                 <div class="card-tags">
                     <span class="tag">Distributed Lock</span>
@@ -322,7 +325,7 @@ permalink: /hld
                     <span class="card-icon">💰</span>
                     <span class="diff-badge red">Advanced</span>
                 </div>
-                <h3>Digital Wallet (PhonePe)</h3>
+                <h3>Digital Wallet (PhonePe / Venmo)</h3>
                 <p class="card-desc">Double-entry ledger, idempotency keys, reconciliation, saga pattern.<span class="card-time">⏱️ ~18 min read</span></p>
                 <div class="card-tags">
                     <span class="tag">Double-Entry Ledger</span>
@@ -331,6 +334,7 @@ permalink: /hld
                 </div>
                 <div class="card-companies">
                     <span class="company">PhonePe</span>
+                    <span class="company">Venmo</span>
                     <span class="company">Razorpay</span>
                     <span class="company">Stripe</span>
                 </div>
@@ -341,7 +345,7 @@ permalink: /hld
                     <span class="card-icon">🍔</span>
                     <span class="diff-badge red">Advanced</span>
                 </div>
-                <h3>Food Delivery (Zomato)</h3>
+                <h3>Food Delivery (Zomato / Uber Eats)</h3>
                 <p class="card-desc">Elasticsearch search, Redis Geo proximity, dispatch algorithms, live tracking via WebSockets.<span class="card-time">⏱️ ~18 min read</span></p>
                 <div class="card-tags">
                     <span class="tag">Elasticsearch</span>
@@ -350,8 +354,9 @@ permalink: /hld
                 </div>
                 <div class="card-companies">
                     <span class="company">Zomato</span>
-                    <span class="company">Swiggy</span>
                     <span class="company">Uber Eats</span>
+                    <span class="company">DoorDash</span>
+                    <span class="company">Swiggy</span>
                 </div>
             </a>
 
@@ -360,7 +365,7 @@ permalink: /hld
                     <span class="card-icon">📈</span>
                     <span class="diff-badge red">Advanced</span>
                 </div>
-                <h3>Stock Broker (Robinhood)</h3>
+                <h3>Stock Broker (Robinhood / Zerodha)</h3>
                 <p class="card-desc">Order matching engine, CQRS event sourcing, exactly-once delivery, Kafka, real-time notifications.<span class="card-time">⏱️ ~18 min read</span></p>
                 <div class="card-tags">
                     <span class="tag">Order Matching</span>
@@ -370,6 +375,7 @@ permalink: /hld
                 <div class="card-companies">
                     <span class="company">Robinhood</span>
                     <span class="company">Zerodha</span>
+                    <span class="company">Fidelity</span>
                     <span class="company">Groww</span>
                 </div>
             </a>
@@ -379,7 +385,7 @@ permalink: /hld
                     <span class="card-icon">🚗</span>
                     <span class="diff-badge red">Advanced</span>
                 </div>
-                <h3>Ride Sharing (Uber)</h3>
+                <h3>Ride Sharing (Uber / Lyft)</h3>
                 <p class="card-desc">Real-time driver matching, location tracking, ride lifecycle, surge pricing, ETA calculation.<span class="card-time">⏱️ ~18 min read</span></p>
                 <div class="card-tags">
                     <span class="tag">Redis Geo</span>
@@ -388,8 +394,8 @@ permalink: /hld
                 </div>
                 <div class="card-companies">
                     <span class="company">Uber</span>
-                    <span class="company">Ola</span>
                     <span class="company">Lyft</span>
+                    <span class="company">Ola</span>
                 </div>
             </a>
 
@@ -398,7 +404,7 @@ permalink: /hld
                     <span class="card-icon">🎬</span>
                     <span class="diff-badge red">Advanced</span>
                 </div>
-                <h3>Video Streaming (Netflix)</h3>
+                <h3>Video Streaming (Netflix / YouTube)</h3>
                 <p class="card-desc">Video encoding pipeline, CDN edge caching, adaptive bitrate streaming, recommendation engine.<span class="card-time">⏱️ ~18 min read</span></p>
                 <div class="card-tags">
                     <span class="tag">CDN</span>
@@ -417,7 +423,7 @@ permalink: /hld
                     <span class="card-icon">📝</span>
                     <span class="diff-badge red">Advanced</span>
                 </div>
-                <h3>Collaborative Editing (Google Docs)</h3>
+                <h3>Collaborative Editing (Google Docs / Notion)</h3>
                 <p class="card-desc">Real-time multi-user editing, OT/CRDT conflict resolution, presence tracking, version history.<span class="card-time">⏱️ ~18 min read</span></p>
                 <div class="card-tags">
                     <span class="tag">CRDT</span>
@@ -458,7 +464,7 @@ permalink: /hld
             <div class="step">
                 <div class="step-num">3</div>
                 <div class="step-content">
-                    <strong>Chat System + Notification System + BookMyShow</strong>
+                    <strong>Chat System + Notification System + BookMyShow / Ticketmaster</strong>
                     <span>Multi-tier, async, WebSocket, distributed locks, payment flows.</span>
                 </div>
             </div>
@@ -472,7 +478,7 @@ permalink: /hld
             <div class="step">
                 <div class="step-num">5</div>
                 <div class="step-content">
-                    <strong>Zomato + Uber</strong>
+                    <strong>Zomato / Uber Eats + Uber / Lyft</strong>
                     <span>Geo-proximity, live tracking, matching algorithms, surge pricing.</span>
                 </div>
             </div>
@@ -480,13 +486,13 @@ permalink: /hld
                 <div class="step-num">6</div>
                 <div class="step-content">
                     <strong>Digital Wallet + Stock Broker</strong>
-                    <span>Staff+ level: financial consistency, event sourcing, exactly-once.</span>
+                    <span>Staff+ level: financial consistency, event sourcing, exactly-once (PhonePe/Venmo, Robinhood/Zerodha).</span>
                 </div>
             </div>
             <div class="step">
                 <div class="step-num">7</div>
                 <div class="step-content">
-                    <strong>Netflix + Google Docs + Job Scheduler</strong>
+                    <strong>Netflix / YouTube + Google Docs / Notion + Job Scheduler</strong>
                     <span>Expert level: encoding pipelines, CRDT/OT, distributed coordination.</span>
                 </div>
             </div>

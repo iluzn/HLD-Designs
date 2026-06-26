@@ -1,11 +1,11 @@
 ---
 permalink: /DigitalWallet/
 layout: default
-title: "Design PhonePe — Digital Wallet System Design Interview"
-description: "System design for Designing a Payment Wallet Like Paytm, PhonePe, Venmo, or Cash App - architecture, deep dives, and trade-offs"
+title: "Design PhonePe / Venmo — Digital Wallet System Design Interview"
+description: "System design for Designing a Payment Wallet Like PhonePe, Venmo, Cash App, or Paytm - architecture, deep dives, and trade-offs"
 ---
 
-# Designing a Payment Wallet Like Paytm, PhonePe, Venmo, or Cash App
+# Designing a Payment Wallet Like PhonePe / Venmo / Cash App
 
 ⚡ **Difficulty:** Advanced
 📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Databases, Consistency, and Message Queues

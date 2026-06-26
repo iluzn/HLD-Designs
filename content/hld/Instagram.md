@@ -1,11 +1,11 @@
 ---
 layout: default
-title: "Design Instagram — Photo Sharing System Design Interview"
-description: "System design for Instagram with photo upload, news feed, stories, CDN delivery, and fan-out. Complete HLD with diagrams."
+title: "Design Instagram / Pinterest — Photo Sharing System Design Interview"
+description: "System design for Instagram / Pinterest with photo upload, news feed, stories, CDN delivery, and fan-out. Complete HLD with diagrams."
 permalink: /Instagram
 ---
 
-# Designing Instagram — Photo Sharing Platform
+# Designing Instagram / Pinterest — Photo Sharing Platform
 
 ⚡ **Difficulty:** Intermediate 🏷️ **Topics:** CDN, Object Storage, Fan-out, Media Processing, Feed Ranking 🏢 **Asked at:** Meta, Pinterest, Snap, Google, Amazon
 

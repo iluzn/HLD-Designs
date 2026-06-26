@@ -1,11 +1,11 @@
 ---
 layout: default
-title: "Design Google Docs — Collaborative Editing System Design Interview"
-description: "System design for Google Docs with real-time collaborative editing, conflict resolution, OT/CRDT, presence indicators, and version history."
+title: "Design Google Docs / Notion — Collaborative Editing System Design Interview"
+description: "System design for Google Docs / Notion with real-time collaborative editing, conflict resolution, OT/CRDT, presence indicators, and version history."
 permalink: /GoogleDocs
 ---
 
-# Designing a Collaborative Editing Platform (Google Docs)
+# Designing a Collaborative Editing Platform (Google Docs / Notion)
 
 ⚡ **Difficulty:** Advanced 🏷️ **Topics:** Real-Time Collaboration, OT/CRDT, WebSocket, Conflict Resolution, Presence Awareness 🏢 **Asked at:** Google, Notion, Figma, Microsoft, Amazon
 

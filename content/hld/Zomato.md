@@ -1,11 +1,11 @@
 ---
 permalink: /Zomato/
 layout: default
-title: "Design Zomato — Food Delivery System Design Interview"
-description: "System design for Designing a Food Delivery Service Like Zomato - architecture, deep dives, and trade-offs"
+title: "Design Zomato / Uber Eats — Food Delivery System Design Interview"
+description: "System design for Designing a Food Delivery Service Like Zomato, Uber Eats, or DoorDash - architecture, deep dives, and trade-offs"
 ---
 
-# Designing a Food Delivery Service Like Zomato
+# Designing a Food Delivery Service Like Zomato / Uber Eats / DoorDash
 
 ⚡ **Difficulty:** Intermediate–Advanced
 📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Message Queues, Caching, and Databases
@@ -50,7 +50,7 @@ flowchart LR
 
 ## Understanding the Problem
 
-🍔 **What is Zomato?** Zomato is an on-demand food delivery platform that connects customers with nearby restaurants. Customers browse menus, place orders, pay, and watch their food travel from the restaurant to their door via a delivery partner.
+🍔 **What is Zomato?** Zomato (known as Uber Eats or DoorDash in the US) is an on-demand food delivery platform that connects customers with nearby restaurants. Customers browse menus, place orders, pay, and watch their food travel from the restaurant to their door via a delivery partner.
 
 ## Functional Requirements
 
