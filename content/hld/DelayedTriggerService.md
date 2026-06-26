@@ -431,6 +431,8 @@ flowchart LR
 
 **Great** — circuit breaker per caller (e.g., Resilience4j). Track success rate per `callerId`; if >50% errors over the last 30s, open the circuit and fast-fail callbacks to that caller for 60s, dumping them to a per-caller delayed retry SQS. This both protects the dispatcher pool and gives the caller breathing room to recover. Pair with a dashboard surfacing "callers with open circuit" so on-call can reach out. Borrowed from Netflix Hystrix-style isolation.
 
+💡 *Circuit breaker = if a downstream service fails X times in a row, stop calling it for a cooldown period (the circuit "opens"). Prevents cascading failures and gives the failing service time to recover.*
+
 ```mermaid
 flowchart LR
   SQS["main SQS"] --> Disp["Dispatcher"]

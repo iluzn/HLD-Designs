@@ -36,8 +36,8 @@
         }
         [data-theme="light"] {
             --bg: #fafbff; --bg-card: rgba(255,255,255,0.7); --bg-header: rgba(250,251,255,0.85);
-            --text: #0f172a; --text-muted: #475569; --text-dim: #94a3b8;
-            --accent: #6366f1; --accent-light: #4f46e5;
+            --text: #0f172a; --text-muted: #374151; --text-dim: #6b7280;
+            --accent: #4f46e5; --accent-light: #4338ca;
             --border: rgba(0,0,0,0.06); --border-hover: rgba(99,102,241,0.4);
             --code-bg: rgba(241,245,249,0.9); --glow: rgba(99,102,241,0.08);
             --glass: rgba(255,255,255,0.6); --glass-border: rgba(0,0,0,0.06);
@@ -115,7 +115,7 @@
         /* Code blocks — glassmorphism */
         .content code { font-family: 'JetBrains Mono', monospace; font-size: 0.83em; padding: 2px 7px; border-radius: 5px; }
         [data-theme="dark"] .content code { background: rgba(30,30,50,0.8); color: #c4b5fd; border: 1px solid rgba(255,255,255,0.08); }
-        [data-theme="light"] .content code { background: rgba(99,102,241,0.08); color: #4f46e5; border: 1px solid rgba(99,102,241,0.15); }
+        [data-theme="light"] .content code { background: rgba(79,70,229,0.08); color: #3730a3; border: 1px solid rgba(79,70,229,0.15); }
         .content pre { position: relative; background: var(--code-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.2rem 1.4rem; overflow-x: auto; margin-bottom: 1.5rem; backdrop-filter: blur(8px); }
         .content pre code { background: none !important; border: none !important; padding: 0 !important; color: inherit !important; font-size: 0.82rem; }
 
@@ -145,6 +145,7 @@
         .content blockquote p { color: var(--text-muted); margin-bottom: 0; font-size: 0.88rem; }
 
         .mermaid { background: var(--code-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; overflow-x: auto; max-width: 100%; backdrop-filter: blur(8px); }
+        .mermaid .node rect, .mermaid .node polygon, .mermaid .node circle { opacity: 0.85; }
         .content hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), rgba(167,139,250,0.5), transparent); margin: 2.5rem 0; opacity: 0.4; }
 
         /* Scroll reveal animation */
@@ -297,7 +298,7 @@
     <script>
         var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
-            themeVariables: isDark ? { primaryColor:'#818cf8', primaryTextColor:'#f1f5f9', primaryBorderColor:'#6366f1', lineColor:'#94a3b8', secondaryColor:'#1e1e2e', tertiaryColor:'#0a0a0f', background:'#06060a', mainBkg:'#1e1e2e', nodeBorder:'#6366f1' } : {}
+            themeVariables: isDark ? { primaryColor:'#2d2b55', primaryTextColor:'#e2e8f0', primaryBorderColor:'#818cf8', lineColor:'#6b7280', secondaryColor:'#1e1b4b', tertiaryColor:'#1e1b4b', background:'#111118', mainBkg:'#2d2b55', nodeBorder:'#818cf8', clusterBkg:'#1e1b4b', titleColor:'#e2e8f0', edgeLabelBackground:'#1e1b4b' } : { primaryColor:'#ede9fe', primaryTextColor:'#1e293b', primaryBorderColor:'#6366f1', lineColor:'#6b7280', secondaryColor:'#f5f3ff', tertiaryColor:'#f5f3ff', background:'#ffffff', mainBkg:'#ede9fe', nodeBorder:'#6366f1', clusterBkg:'#f5f3ff', titleColor:'#1e293b', edgeLabelBackground:'#ffffff' }
         });
         document.querySelectorAll('pre code.language-mermaid').forEach(function(el) {
             var div = document.createElement('div'); div.className = 'mermaid'; div.textContent = el.textContent; el.parentElement.replaceWith(div);

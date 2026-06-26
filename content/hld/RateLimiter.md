@@ -148,6 +148,8 @@ flowchart LR
 
 ### Algorithm 2: Sliding Window (approximate)
 
+💡 *Sliding window = counts requests in a rolling time window (not fixed clock intervals). More accurate than fixed windows because it avoids the "boundary burst" problem.*
+
 Instead of hard window boundaries, use a weighted combination:
 
 ```
@@ -167,6 +169,8 @@ estimated_count = current_window_count + previous_window_count × overlap_ratio
 > 💡 **Cloudflare uses this** for billions of rate-limit checks per day. The 1% inaccuracy is acceptable.
 
 ### Algorithm 3: Token Bucket ⭐ (most common)
+
+💡 *Token bucket = imagine a bucket that fills with tokens at a steady rate (e.g., 10/sec). Each request consumes one token. If the bucket is empty, the request is rejected. Allows bursts up to bucket capacity.*
 
 ```mermaid
 flowchart TD
@@ -485,6 +489,8 @@ flowchart LR
 |---|---|
 | **Redis** | An in-memory database. Responds in < 1ms. Used for counters, caches, and fast lookups. |
 | **Lua script** | A tiny program that runs INSIDE Redis. Lets you read + check + write atomically in one network call. |
+
+💡 *Redis Lua scripts execute atomically on the server — no race conditions between "check count" and "increment count". Critical for distributed rate limiting.*
 | **API Gateway** | A server that sits in front of your APIs. Handles auth, rate limiting, routing. Examples: Kong, Envoy, AWS API Gateway. |
 | **CDN / Edge** | Servers at the "edge" of the network, close to users worldwide. Cloudflare, CloudFront. First line of defense. |
 | **Token Bucket** | Algorithm: bucket of tokens, refills at steady rate. Each request costs a token. Empty bucket = rejected. |

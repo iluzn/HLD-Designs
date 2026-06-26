@@ -17,6 +17,8 @@ description: "System design for Designing a Food Delivery Service Like Zomato - 
 
 A food delivery platform connects customers, restaurants, and riders. The system handles search (Elasticsearch), ordering (Postgres), live rider tracking (Redis Geo + WebSocket), and dispatch matching (Temporal workflow).
 
+💡 *Elasticsearch is a search engine optimized for full-text search, filtering, and faceted queries. It indexes data in inverted indexes for sub-100ms search across millions of documents.*
+
 ```mermaid
 flowchart LR
     CUST["Customer App"]:::client
@@ -41,6 +43,8 @@ flowchart LR
 ```
 
 **In 3 sentences:** Customer searches for restaurants (Elasticsearch with geo + relevance scoring), places an order (Postgres with idempotency), and the system finds a nearby rider (Redis Geo for proximity, Temporal for the multi-step dispatch workflow). The rider's live location streams to the customer via WebSocket. Each component is independently scalable.
+
+💡 *WebSocket is a persistent two-way connection. Unlike HTTP (ask → answer → done), WebSocket stays open so the server can push updates instantly.*
 
 ---
 
@@ -281,6 +285,8 @@ Sharding by `city_id` keeps each Redis shard small (say 10K riders) and evenly d
 
 Freshness over durability is the right tradeoff here — if Redis loses a few seconds of pings, the rider just shows up again on the next ping. We still tee every ping to Kafka for a durable history stream consumed by analytics and fraud detection, not by the matching hot path.
 
+💡 *Kafka is a distributed event log. Producers append events, consumers read at their own pace. Perfect for decoupling services that produce data from those that consume it.*
+
 Client-side optimization matters too. Instead of dumb 5s intervals, the rider app can adapt:
 - Stationary rider → 30s interval.
 - Moving rider → 3-5s interval.
@@ -420,6 +426,8 @@ A query blends relevance + distance + rating in one shot:
 ```
 
 **Keeping the index in sync.** Restaurants and menus live in the primary DB (Postgres or Mongo). We don't dual-write — that leads to drift. Instead, Debezium tails the DB's change log and publishes to a Kafka topic; a Kafka consumer materializes the search document and bulk-indexes it into Elasticsearch. End-to-end lag under 3 seconds is fine for a catalog that changes slowly.
+
+💡 *CDC (Change Data Capture) watches the database transaction log and streams every insert/update/delete as an event — keeps other systems in sync without polling.*
 
 **Adding a cache in front.** Popular queries (`"pizza near me"` in Bangalore CBD) repeat constantly. Cache the top results in Redis with a key like `search:{geohash5}:{query_hash}` and a 60-second TTL. Use single-flight / request coalescing on cache miss so a viral query doesn't stampede Elasticsearch.
 

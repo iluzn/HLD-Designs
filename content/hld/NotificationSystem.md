@@ -301,7 +301,7 @@ Start with the minimum viable pipeline: accept, enqueue, fan out per channel, di
 2. **Message Broker (Kafka)** — decouples notification intake from delivery. 💡 *Kafka here acts as a buffer — if push notifications are slow today, the queue absorbs the backlog instead of slowing down the checkout flow that triggered the notification.*
 3. **Router** — reads each notification event, decides which channels to use (push? email? SMS?), and fans out one message per channel to channel-specific topics.
 4. **Channel Workers (Push, Email, SMS)** — each specialized worker renders the template and calls the external provider. Isolated so a Twilio outage doesn't affect push delivery.
-5. **External Providers (APNs, SES, Twilio)** — the actual delivery services. We don't send emails ourselves — we hand them to SES/Mailgun, which handles the SMTP complexity.
+5. **External Providers (APNs, SES, Twilio)** — the actual delivery services. We don't send emails ourselves — we hand them to SES/Mailgun, which handles the SMTP complexity. 💡 *FCM (Firebase Cloud Messaging) and APNs (Apple Push Notification Service) are the only way to send push notifications to Android and iOS devices respectively. Your server can't push directly to phones — it must go through these gateways.*
 
 ```mermaid
 flowchart LR

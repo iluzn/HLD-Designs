@@ -36,7 +36,7 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
             min-height: 100vh; overflow-x: hidden; transition: background 0.3s, color 0.3s;
         }
         [data-theme="light"] {
-            --bg: #f9fafb; --text: #111827; --text-muted: #374151; --text-dim: #6b7280;
+            --bg: #f9fafb; --text: #0f172a; --text-muted: #374151; --text-dim: #6b7280;
             --card-bg: #ffffff; --border: rgba(0,0,0,0.08); --accent: #4f46e5;
             --accent-light: #4338ca; --tag-bg: rgba(79,70,229,0.06); --tag-border: rgba(79,70,229,0.15);
             --header-bg: rgba(249,250,251,0.95);
@@ -93,9 +93,9 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
         .preview-topics { display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; }
 
         /* Stats strip */
-        .stats { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 1.5rem; display: flex; justify-content: center; gap: 3rem; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        .stats { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 1.5rem; display: flex; justify-content: center; gap: 3rem; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 3rem; min-height: 70px; }
         .stat { text-align: center; }
-        .stat strong { display: block; font-size: 1.4rem; color: var(--text); font-weight: 700; }
+        .stat strong { display: inline-block; min-width: 2.5rem; text-align: center; font-size: 1.4rem; color: var(--text); font-weight: 700; }
         .stat span { font-size: 0.78rem; color: var(--text-dim); }
 
         /* Section */
@@ -178,9 +178,12 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
         footer a:hover { text-decoration: underline; }
 
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2rem; }
-            .hero { padding: 3rem 1.5rem 1.5rem; }
-            .stats { gap: 1.5rem; flex-wrap: wrap; }
+            .hero h1 { font-size: 1.8rem; }
+            .hero { padding: 2.5rem 1.5rem 1.5rem; }
+            .hero p { font-size: 0.92rem; }
+            .hero-badge-line { font-size: 0.72rem; }
+            .stats { gap: 1.5rem; flex-wrap: wrap; padding: 1rem; }
+            .stat strong { font-size: 1.2rem; }
             .paths { grid-template-columns: 1fr; }
             .popular { grid-template-columns: 1fr; }
             .hamburger { display: block; }
@@ -188,7 +191,7 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
             .nav-links.open { display: flex; }
             .nav-links a { margin: 0; padding: 0.6rem 1rem; font-size: 0.88rem; border-radius: 8px; }
             .nav-links a:hover { background: rgba(129,140,248,0.08); }
-            #theme-btn, .theme-toggle { margin: 0.3rem 0.5rem; }
+            #theme-btn { margin-right: 0.3rem; }
         }
     </style>
 </head>
@@ -200,6 +203,7 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
     <div class="header-inner">
         <a href="/" class="logo"><svg class="logo-icon" width="22" height="22" viewBox="0 0 64 64" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c4b5fd"/></linearGradient></defs><rect width="64" height="64" rx="14" fill="url(#lg)"/><line x1="22" y1="20" x2="42" y2="20" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="42" y1="20" x2="32" y2="40" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="22" y1="20" x2="32" y2="40" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="22" cy="20" r="5" fill="#fff"/><circle cx="42" cy="20" r="5" fill="#fff"/><circle cx="32" cy="40" r="5" fill="#fff"/><circle cx="22" cy="20" r="2.5" fill="#818cf8"/><circle cx="42" cy="20" r="2.5" fill="#818cf8"/><circle cx="32" cy="40" r="2.5" fill="#818cf8"/></svg>System<span>Craft</span></a>
         <nav>
+            <button id="theme-btn" title="Switch theme">🌙</button>
             <button class="hamburger" id="hamburger-btn" aria-label="Menu">&#9776;</button>
             <div class="nav-links" id="nav-links">
                 <a href="/hld">HLD</a>
@@ -207,7 +211,6 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
                 <a href="/dsa">DSA</a>
                 <a href="/cheatsheet">Cheatsheet</a>
                 <a href="/about">About</a>
-                <button id="theme-btn" title="Switch theme">🌙</button>
             </div>
         </nav>
     </div>
@@ -362,7 +365,7 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
 <!-- Scroll reveal -->
 <script>
 (function() {
-    var revealElements = document.querySelectorAll('.section, .stats');
+    var revealElements = document.querySelectorAll('.section');
     
     revealElements.forEach(function(el) {
         el.classList.add('reveal');

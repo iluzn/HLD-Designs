@@ -165,7 +165,7 @@ Security: WebSocket authenticated via JWT on handshake. `clientMsgId` is for cli
 
 1. **WebSocket Servers** — maintain persistent two-way connections with every online user. 💡 *WebSocket = a persistent connection that stays open so the server can push messages instantly without the client asking. Unlike HTTP (ask → answer → done), WebSocket keeps the line open.*
 2. **Chat Service** — the brain. Receives messages, persists them, and figures out where the recipient is connected.
-3. **Message Store (Cassandra)** — permanent storage for all messages. Partitioned by conversation so "load chat history" is a single partition read.
+3. **Message Store (Cassandra)** — permanent storage for all messages. Partitioned by conversation so "load chat history" is a single partition read. 💡 *Cassandra is a distributed wide-column database designed for heavy writes. Partitioning by conversation_id means loading a chat history is a single-partition read — O(1) regardless of total messages in the system.*
 4. **Connection Registry (Redis)** — a fast lookup table mapping `userId → which WebSocket server they're on`. When a message arrives for Bob, we check Redis to find which server is holding Bob's connection.
 
 ```mermaid

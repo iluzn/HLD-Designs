@@ -38,6 +38,8 @@ flowchart LR
 
 **In 3 sentences:** User submits a long URL → system generates a unique short code (base62 of a Snowflake ID) → stores the mapping. On redirect, the system looks up the short code through CDN → Redis → DB tiers and returns a 302. Analytics events fire async to Kafka without slowing the redirect.
 
+💡 *Base62 encoding uses [0-9a-zA-Z] (62 characters) to represent numbers compactly. A 7-char Base62 string gives 62^7 = 3.5 trillion unique short codes.*
+
 ---
 
 ## Understanding the Problem
@@ -233,7 +235,7 @@ This is the hot path — billions of reads per day. Latency and cost both matter
 
 **New components we need (in addition to the ones above):**
 
-1. **CDN Edge** — servers deployed worldwide (Cloudflare, CloudFront, Fastly) that cache popular redirects close to users. A viral link gets served from the edge in under 10ms without ever touching our origin servers.
+1. **CDN Edge** — servers deployed worldwide (Cloudflare, CloudFront, Fastly) that cache popular redirects close to users. A viral link gets served from the edge in under 10ms without ever touching our origin servers. 💡 *CDN (Content Delivery Network) caches content at edge servers worldwide. Users get served from the nearest edge, cutting latency from 200ms to <20ms.*
 2. **Redirect Service** — the origin server that handles CDN misses. Looks up the short code and returns a `302 Found` with the long URL.
 3. **Redis Cache** — a regional in-memory cache sitting between the Redirect Service and the database. Holds recently-accessed links for sub-millisecond lookups.
 4. **Event Bus** — captures every click as an event for analytics, without slowing down the redirect. 💡 *Fire-and-forget pattern: the redirect returns immediately, and the click event flows through the bus in the background.*

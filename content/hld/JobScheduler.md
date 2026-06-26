@@ -106,7 +106,7 @@ Quick reference so nothing in this doc is a black box:
 - **etcd** / **ZooKeeper** / **Consul** — distributed coordination services. They store a tiny amount of data very reliably and let N nodes race for a "lease" (temporary exclusive lock). We use them for **leader election** — picking one dispatcher among N to own a shard.
 - **Kubernetes Lease** — K8s's built-in version of the same leader-election idea.
 - **Raft / Paxos** — consensus protocols that make coordination services (etcd, ZooKeeper) tolerate node failures without split-brain. You don't implement them; you use a service that does.
-- **DLQ (Dead Letter Queue)** — a parking spot for messages that failed N retries. Ops reviews them manually.
+- **DLQ (Dead Letter Queue)** — a parking spot for messages that failed N retries. Ops reviews them manually. 💡 *DLQ (Dead Letter Queue) = a holding queue for messages that failed processing after max retries. Operators can inspect and reprocess them later.*
 
 **External / reference names in Prior Art**
 - **Airbnb Dynein** — Airbnb's internal delayed-job system.
