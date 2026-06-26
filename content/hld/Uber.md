@@ -715,6 +715,14 @@ flowchart LR
 *Want a deep dive on carpooling matching (UberPool), payment splitting, or driver incentive algorithms? Drop a comment below 👇*
 
 ---
+## 🎯 Key Takeaways
+
+- **Redis Geo** with geohash sharding handles 500K location pings/sec
+- **Distributed lock with TTL** prevents double-booking drivers
+- **WebSocket + Kafka** for real-time location streaming to riders
+- **Surge pricing** uses H3 hexagonal zones with supply/demand signals
+
+---
 ## Related Designs
 - [Food Delivery (Zomato)](/Zomato) — similar geo-matching, dispatch, live tracking
 - [Notification System](/NotificationSystem) — multi-channel push delivery

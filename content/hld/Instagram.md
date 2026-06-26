@@ -623,6 +623,14 @@ flowchart LR
 *Want a deep dive on Stories (ephemeral content with TTL), Explore page (recommendation engine), or Direct Messages? Drop a comment below 👇*
 
 ---
+## 🎯 Key Takeaways
+
+- **Hybrid fan-out**: write for normal users, read for celebrities (>500K followers)
+- **CDN + Object Storage** for global image delivery — 95%+ cache hit ratio
+- **Async media pipeline**: user doesn't wait for image processing
+- **BlurHash placeholders** for instant feed skeleton rendering
+
+---
 ## Related Designs
 - [Twitter Feed](/TwitterFeed) — fan-out patterns and timeline caching
 - [Notification System](/NotificationSystem) — push delivery for likes and follows

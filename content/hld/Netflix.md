@@ -688,6 +688,14 @@ flowchart LR
 *Want a deep dive on DRM (content protection), offline downloads, multi-language audio switching, or live streaming (sports events)? Drop a comment below 👇*
 
 ---
+## 🎯 Key Takeaways
+
+- **Per-shot encoding** optimizes bitrate per scene complexity — saves 20-30% bandwidth
+- **Open Connect CDN** inside ISPs serves 95% of traffic locally
+- **Adaptive Bitrate (ABR)** driven by buffer level, not just throughput
+- **Two-stage recommendation**: collaborative filtering (offline) → neural ranker (online)
+
+---
 ## Related Designs
 - [URL Shortener](/URLShortner) — CDN caching patterns and redirect optimization
 - [Chat System](/ChatSystem) — real-time delivery and session management

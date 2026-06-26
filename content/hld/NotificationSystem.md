@@ -1149,6 +1149,14 @@ flowchart LR
 
 
 ---
+## 🎯 Key Takeaways
+
+- **Multi-channel** (push + email + SMS) with per-user preference routing
+- **Kafka** decouples event producers from notification delivery
+- **Template engine** separates content from channel logic
+- **At-least-once delivery** with dedup on the client side
+
+---
 ## Related Designs
 - [Chat System](/ChatSystem) — WebSocket real-time delivery
 - [Job Scheduler](/JobScheduler) — scheduled and delayed notifications

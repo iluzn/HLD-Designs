@@ -429,6 +429,14 @@ flowchart LR
 | **Fan-out** | Delivering one message to multiple recipients (group chat). "Fan-out on write" = copy to each inbox. "Fan-out on read" = store once, each client fetches. |
 
 ---
+## 🎯 Key Takeaways
+
+- **WebSocket** for real-time delivery — persistent connection, server pushes
+- **Cassandra** for message storage — partitioned by conversation for fast reads
+- **Store-and-forward** for offline users — deliver when they reconnect
+- **Connection registry** in Redis routes messages to the right WebSocket server
+
+---
 ## Related Designs
 - [Notification System](/NotificationSystem) — similar multi-channel delivery + WebSocket patterns
 - [Twitter Feed](/TwitterFeed) — fan-out and real-time updates

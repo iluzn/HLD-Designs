@@ -242,6 +242,23 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
     <div class="stat"><strong>100%</strong><span>Free</span></div>
 </div>
 
+<!-- Global progress -->
+<div class="section" id="global-progress" style="padding-bottom:1.5rem;">
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;">
+        <span style="font-size:1.2rem;">📊</span>
+        <div style="flex:1;">
+            <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.3rem;">Your Progress</div>
+            <div style="display:flex;gap:1.5rem;font-size:0.75rem;color:var(--text-muted);">
+                <span id="gp-hld">HLD: 0/17</span>
+                <span id="gp-lld">LLD: 0/6</span>
+            </div>
+        </div>
+        <div style="width:100px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+            <div id="gp-fill" style="height:100%;background:linear-gradient(90deg,var(--accent),#a78bfa);border-radius:3px;transition:width 0.4s;width:0%;"></div>
+        </div>
+    </div>
+</div>
+
 <!-- PICK YOUR PATH — guided entry points -->
 <div class="section">
     <div class="section-title">Choose your interview round</div>
@@ -449,6 +466,22 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
 
     checkCounters();
     window.addEventListener('scroll', checkCounters);
+})();
+</script>
+<!-- Global progress -->
+<script>
+(function() {
+    var hldDone = Object.keys(JSON.parse(localStorage.getItem('hld-progress') || '{}')).length;
+    var lldDone = Object.keys(JSON.parse(localStorage.getItem('lld-progress') || '{}')).length;
+    var total = 17 + 6;
+    var done = hldDone + lldDone;
+    var pct = Math.round((done / total) * 100);
+    var hldEl = document.getElementById('gp-hld');
+    var lldEl = document.getElementById('gp-lld');
+    var fillEl = document.getElementById('gp-fill');
+    if (hldEl) hldEl.textContent = 'HLD: ' + hldDone + '/17';
+    if (lldEl) lldEl.textContent = 'LLD: ' + lldDone + '/6';
+    if (fillEl) fillEl.style.width = pct + '%';
 })();
 </script>
 </body>

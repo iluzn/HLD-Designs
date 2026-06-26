@@ -445,6 +445,14 @@ flowchart LR
 | **Hydration** | Converting a list of IDs into full objects. "Hydrate tweet IDs → fetch full tweet with text, likes, media URLs." |
 
 ---
+## 🎯 Key Takeaways
+
+- **Fan-out on write** pre-computes feeds — reads are instant
+- **Celebrity exception** skips fan-out for >500K followers — merged at read time
+- **Kafka** decouples posting from feed distribution
+- **Redis** caches hot timelines for active users
+
+---
 ## Related Designs
 - [Chat System](/ChatSystem) — real-time message delivery
 - [Notification System](/NotificationSystem) — push to users

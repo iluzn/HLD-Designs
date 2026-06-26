@@ -541,6 +541,14 @@ flowchart LR
 | **Reconciler** | Hourly safety-net job that finds "stuck" triggers (fire time passed but status still PENDING) and re-injects them. Catches bugs in the sweeper or leader election. |
 
 ---
+## 🎯 Key Takeaways
+
+- **Timing wheel** gives O(1) insert and fire for scheduled events
+- **Two-tier**: Redis for near-term (<1hr), Cassandra for far-term timers
+- **Circuit breaker** protects downstream services during cascade failures
+- **Lazy cancellation** — mark as cancelled, skip on fire (cheaper than deleting from wheel)
+
+---
 ## Related Designs
 - [Job Scheduler](/JobScheduler) — distributed task scheduling
 - [Digital Wallet](/DigitalWallet) — payment retry workflows

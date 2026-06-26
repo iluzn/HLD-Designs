@@ -236,6 +236,14 @@ Or use key per time period: `leaderboard:weekly:2026-W25`, `leaderboard:monthly:
 | "What about persistence?" | Redis for live reads. Postgres for source of truth and history. |
 
 ---
+## 🎯 Key Takeaways
+
+- **Redis Sorted Set (ZSET)** gives O(log N) rank queries and updates
+- **ZREVRANGE** for top-N, **ZREVRANK** for "what's my rank" — both sub-millisecond
+- **Separate hot store (Redis) from cold store (DB)** for different access patterns
+- **WebSocket** for real-time rank updates without polling
+
+---
 ## Related Designs
 - [Rate Limiter](/RateLimiter) — Redis patterns
 - [URL Shortener](/URLShortner) — caching and CDN

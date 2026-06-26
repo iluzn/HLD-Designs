@@ -595,6 +595,14 @@ flowchart LR
 
 
 ---
+## 🎯 Key Takeaways
+
+- **Exactly-once** via idempotency keys + Kafka transactions — no double fills
+- **CQRS** separates write path (fast, consistent) from read path (scalable, eventually consistent)
+- **Partition by symbol** in Kafka ensures ordered matching per stock
+- **Reconciler** catches edge cases that the primary path misses
+
+---
 ## Related Designs
 - [Digital Wallet](/DigitalWallet) — financial consistency + idempotency
 - [Notification System](/NotificationSystem) — real-time push to users

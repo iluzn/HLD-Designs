@@ -497,6 +497,14 @@ flowchart LR
 | **HTTP 429** | Standard HTTP status code meaning "Too Many Requests." Client should back off and retry later. |
 
 ---
+## 🎯 Key Takeaways
+
+- **Token bucket** allows bursts; **sliding window** is smoother but more complex
+- **Redis Lua scripts** make check-and-increment atomic — no race conditions
+- **Apply at multiple levels**: per-user, per-IP, per-endpoint, global
+- **Return 429 with Retry-After header** — good API citizenship
+
+---
 ## Related Designs
 - [URL Shortener](/URLShortner) — high-QPS API design
 - [Leaderboard](/Leaderboard) — Redis patterns

@@ -770,6 +770,14 @@ flowchart LR
 
 
 ---
+## 🎯 Key Takeaways
+
+- **Redis ZSET scored by execution time** enables O(log N) "what's due now?" queries
+- **Leader election** ensures exactly one worker processes the hot window
+- **Dead letter queue** catches permanently failing jobs without blocking others
+- **Idempotent execution** — jobs must be safe to retry
+
+---
 ## Related Designs
 - [Delayed Trigger Service](/DelayedTriggerService) — timing wheels and scheduled execution
 - [Notification System](/NotificationSystem) — scheduled notification delivery

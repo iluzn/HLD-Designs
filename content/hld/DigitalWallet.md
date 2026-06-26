@@ -832,6 +832,14 @@ That's the design. Six deep dives each picking the right primitive: double-entry
 
 
 ---
+## 🎯 Key Takeaways
+
+- **Double-entry ledger** — every transaction has debit + credit; sum must be zero
+- **Persist before calling external** — write intent to DB, then call bank; never the reverse
+- **Idempotency key** on every payment — retries are safe
+- **Reconciler** compares our ledger with bank statements daily
+
+---
 ## Related Designs
 - [Stock Broker](/StockBroker) — financial transactions + exactly-once semantics
 - [Zomato](/Zomato) — end-to-end order lifecycle

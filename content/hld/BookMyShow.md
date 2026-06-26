@@ -755,6 +755,14 @@ flowchart LR
 *Want a deep dive on multi-cinema franchise inventory aggregation, dynamic pricing (surge for hot shows), or fraud detection (bot-booking prevention)? Drop a comment below 👇*
 
 ---
+## 🎯 Key Takeaways
+
+- **Redis SET NX EX** gives atomic seat locking with auto-release via TTL
+- **All-or-nothing Lua script** prevents partial seat holds
+- **Saga pattern** with idempotency keys handles payment failures safely
+- **Virtual waiting room** protects the system during hot event on-sales
+
+---
 ## Related Designs
 - [Stock Broker (Robinhood)](/StockBroker) — exactly-once processing, order matching
 - [Digital Wallet (PhonePe)](/DigitalWallet) — payment orchestration, saga pattern, idempotency

@@ -728,6 +728,14 @@ flowchart LR
 *Want a deep dive on rich text OT (formatting operations), offline editing with CRDT fallback, or access control for shared documents? Drop a comment below 👇*
 
 ---
+## 🎯 Key Takeaways
+
+- **Operational Transform (OT)** resolves concurrent edits by transforming positions
+- **Server-mediated OT** gives linear version history — simpler than CRDT for online editing
+- **Snapshot + operation log** avoids writing full document on every keystroke
+- **Redis Pub/Sub** routes operations to the correct WebSocket gateway
+
+---
 ## Related Designs
 - [Chat System (WhatsApp)](/ChatSystem) — similar WebSocket fan-out, presence tracking
 - [Notification System](/NotificationSystem) — multi-channel push delivery

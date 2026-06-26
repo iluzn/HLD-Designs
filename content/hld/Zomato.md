@@ -714,6 +714,14 @@ That's the design. Five deep dives in Bad / Good / Great progression, each picki
 
 
 ---
+## 🎯 Key Takeaways
+
+- **Elasticsearch** for restaurant search with geo-filtering — not a regular DB
+- **Redis Geo** for driver proximity (nearest available rider) — O(log N) queries
+- **Kafka** decouples order placement from dispatch — user doesn't wait for driver assignment
+- **WebSocket** for live tracking — don't poll, push
+
+---
 ## Related Designs
 - [Job Scheduler](/JobScheduler) — distributed task processing
 - [Notification System](/NotificationSystem) — multi-channel push delivery

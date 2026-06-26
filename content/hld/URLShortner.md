@@ -642,6 +642,14 @@ That's the design. Five deep dives each picking the right primitive: Snowflake f
 
 
 ---
+## 🎯 Key Takeaways
+
+- **Base62 encoding** turns numeric IDs into short 7-char codes (3.5T unique codes)
+- **302 redirect** enables analytics; **301** for permanent redirects without tracking
+- **CDN caching** at the edge handles redirect QPS without hitting origin
+- **Snowflake ID** eliminates the need for a centralized ID counter
+
+---
 ## Related Designs
 - [Rate Limiter](/RateLimiter) — protecting high-QPS endpoints
 - [Leaderboard](/Leaderboard) — Redis-based caching patterns
