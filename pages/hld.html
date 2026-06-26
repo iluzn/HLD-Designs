@@ -628,9 +628,9 @@ nav a.active { color: var(--accent); background: rgba(129,140,248,0.1); font-wei
 .group-header h2 { font-size: 1.2rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
 .group-count { font-size: 0.78rem; color: var(--text-dim); }
 .diff-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-.diff-dot.green { background: #22c55e; }
-.diff-dot.yellow { background: #eab308; }
-.diff-dot.red { background: #ef4444; }
+.diff-dot.green { background: #34d399; }
+.diff-dot.yellow { background: #fbbf24; }
+.diff-dot.red { background: #f87171; }
 
 /* Problems grid */
 .problems-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
@@ -639,9 +639,12 @@ nav a.active { color: var(--accent); background: rgba(129,140,248,0.1); font-wei
 .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; }
 .card-icon { font-size: 1.5rem; }
 .diff-badge { font-size: 0.68rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
-.diff-badge.green { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
-.diff-badge.yellow { background: rgba(234,179,8,0.1); color: #eab308; border: 1px solid rgba(234,179,8,0.2); }
-.diff-badge.red { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+.diff-badge.green { background: rgba(52,211,153,0.1); color: #10b981; border: 1px solid rgba(52,211,153,0.2); }
+.diff-badge.yellow { background: rgba(251,191,36,0.1); color: #d97706; border: 1px solid rgba(251,191,36,0.2); }
+.diff-badge.red { background: rgba(248,113,113,0.1); color: #ef4444; border: 1px solid rgba(248,113,113,0.2); }
+[data-theme="light"] .diff-badge.green { background: rgba(16,185,129,0.08); color: #059669; border-color: rgba(16,185,129,0.2); }
+[data-theme="light"] .diff-badge.yellow { background: rgba(217,119,6,0.08); color: #b45309; border-color: rgba(217,119,6,0.2); }
+[data-theme="light"] .diff-badge.red { background: rgba(220,38,38,0.08); color: #dc2626; border-color: rgba(220,38,38,0.2); }
 .problem-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.4rem; }
 .card-desc { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.8rem; flex-grow: 1; line-height: 1.5; }
 .card-time { display: block; margin-top: 0.5rem; font-size: 0.7rem; color: var(--text-dim); }
