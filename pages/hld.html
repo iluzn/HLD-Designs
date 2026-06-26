@@ -55,7 +55,7 @@ permalink: /hld
     <h1>High-Level Design <em>Problems</em></h1>
     <p>Distributed architectures with diagrams, technology choices, deep dives, and trade-offs. Built for interviews at Amazon, Google, Meta, and top startups.</p>
     <div class="hero-stats">
-        <div class="hero-stat"><strong>15</strong><span>Designs</span></div>
+        <div class="hero-stat"><strong>17</strong><span>Designs</span></div>
         <div class="hero-stat"><strong>3</strong><span>Difficulty Levels</span></div>
         <div class="hero-stat"><strong>50+</strong><span>Deep Dives</span></div>
     </div>
@@ -64,7 +64,7 @@ permalink: /hld
 <!-- Progress bar -->
 <div class="progress-strip" id="progress-strip">
     <div class="progress-inner">
-        <span class="progress-label" id="progress-label">0/15 completed</span>
+        <span class="progress-label" id="progress-label">0/17 completed</span>
         <div class="progress-bar-track">
             <div class="progress-bar-fill" id="progress-fill"></div>
         </div>
@@ -171,7 +171,7 @@ permalink: /hld
     <div class="difficulty-group" data-difficulty="intermediate">
         <div class="group-header">
             <h2><span class="diff-dot yellow"></span> Intermediate</h2>
-            <span class="group-count">5 problems</span>
+            <span class="group-count">6 problems</span>
         </div>
         <div class="problems-grid">
 
@@ -270,13 +270,32 @@ permalink: /hld
                     <span class="company">Snap</span>
                 </div>
             </a>
+
+            <a class="problem-card" href="/BookMyShow" data-difficulty="intermediate">
+                <div class="card-top">
+                    <span class="card-icon">🎬</span>
+                    <span class="diff-badge yellow">Intermediate</span>
+                </div>
+                <h3>Ticket Booking (BookMyShow)</h3>
+                <p class="card-desc">Seat selection, distributed locking, temporary holds, payment integration, no double-booking.</p>
+                <div class="card-tags">
+                    <span class="tag">Distributed Lock</span>
+                    <span class="tag">TTL Holds</span>
+                    <span class="tag">Payment Saga</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">BookMyShow</span>
+                    <span class="company">Ticketmaster</span>
+                    <span class="company">Amazon</span>
+                </div>
+            </a>
         </div>
     </div>
 
     <div class="difficulty-group" data-difficulty="advanced">
         <div class="group-header">
             <h2><span class="diff-dot red"></span> Advanced</h2>
-            <span class="group-count">7 problems</span>
+            <span class="group-count">8 problems</span>
         </div>
         <div class="problems-grid">
 
@@ -409,6 +428,25 @@ permalink: /hld
                     <span class="company">Netflix</span>
                     <span class="company">YouTube</span>
                     <span class="company">Disney+</span>
+                </div>
+            </a>
+
+            <a class="problem-card" href="/GoogleDocs" data-difficulty="advanced">
+                <div class="card-top">
+                    <span class="card-icon">📝</span>
+                    <span class="diff-badge red">Advanced</span>
+                </div>
+                <h3>Collaborative Editing (Google Docs)</h3>
+                <p class="card-desc">Real-time multi-user editing, OT/CRDT conflict resolution, presence tracking, version history.</p>
+                <div class="card-tags">
+                    <span class="tag">CRDT</span>
+                    <span class="tag">WebSocket</span>
+                    <span class="tag">Conflict Resolution</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Google</span>
+                    <span class="company">Notion</span>
+                    <span class="company">Figma</span>
                 </div>
             </a>
         </div>
