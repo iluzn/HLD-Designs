@@ -244,17 +244,20 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
 
 <!-- Global progress -->
 <div class="section" id="global-progress" style="padding-bottom:1.5rem;">
-    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;">
-        <span style="font-size:1.2rem;">📊</span>
-        <div style="flex:1;">
-            <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.3rem;">Your Progress</div>
-            <div style="display:flex;gap:1.5rem;font-size:0.75rem;color:var(--text-muted);">
-                <span id="gp-hld">HLD: 0/17</span>
-                <span id="gp-lld">LLD: 0/6</span>
-            </div>
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1.2rem;">
+        <div style="position:relative;width:52px;height:52px;flex-shrink:0;">
+            <svg width="52" height="52" viewBox="0 0 52 52">
+                <circle cx="26" cy="26" r="22" fill="none" stroke="var(--border)" stroke-width="4"/>
+                <circle id="gp-ring" cx="26" cy="26" r="22" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" stroke-dasharray="138.2" stroke-dashoffset="138.2" transform="rotate(-90 26 26)" style="transition:stroke-dashoffset 1s ease;"/>
+            </svg>
+            <span id="gp-pct" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:var(--text);">0%</span>
         </div>
-        <div style="width:100px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-            <div id="gp-fill" style="height:100%;background:linear-gradient(90deg,var(--accent),#a78bfa);border-radius:3px;transition:width 0.4s;width:0%;"></div>
+        <div style="flex:1;">
+            <div style="font-size:0.85rem;font-weight:600;color:var(--text);margin-bottom:0.25rem;" id="gp-title">Start your first design</div>
+            <div style="display:flex;gap:1.2rem;font-size:0.75rem;color:var(--text-muted);">
+                <span id="gp-hld">🏗️ HLD: 0/17</span>
+                <span id="gp-lld">⚙️ LLD: 0/6</span>
+            </div>
         </div>
     </div>
 </div>
@@ -476,12 +479,25 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
     var total = 17 + 6;
     var done = hldDone + lldDone;
     var pct = Math.round((done / total) * 100);
-    var hldEl = document.getElementById('gp-hld');
-    var lldEl = document.getElementById('gp-lld');
-    var fillEl = document.getElementById('gp-fill');
-    if (hldEl) hldEl.textContent = 'HLD: ' + hldDone + '/17';
-    if (lldEl) lldEl.textContent = 'LLD: ' + lldDone + '/6';
-    if (fillEl) fillEl.style.width = pct + '%';
+
+    document.getElementById('gp-hld').textContent = '🏗️ HLD: ' + hldDone + '/17';
+    document.getElementById('gp-lld').textContent = '⚙️ LLD: ' + lldDone + '/6';
+    document.getElementById('gp-pct').textContent = pct + '%';
+
+    // Animate ring
+    var ring = document.getElementById('gp-ring');
+    var circumference = 138.2;
+    var offset = circumference - (pct / 100) * circumference;
+    setTimeout(function() { ring.style.strokeDashoffset = offset; }, 300);
+
+    // Motivational title
+    var title = document.getElementById('gp-title');
+    if (done === 0) title.textContent = 'Start your first design →';
+    else if (pct < 25) title.textContent = 'Good start! Keep going 🔥';
+    else if (pct < 50) title.textContent = 'Making progress! ' + done + ' completed';
+    else if (pct < 75) title.textContent = 'Over halfway! 💪 ' + done + '/' + total;
+    else if (pct < 100) title.textContent = 'Almost there! ' + (total - done) + ' remaining';
+    else title.textContent = 'All done! You are interview-ready 🎉';
 })();
 </script>
 </body>
