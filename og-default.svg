@@ -1,0 +1,47 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#111118"/>
+      <stop offset="100%" stop-color="#1a1a2e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="4" fill="url(#accent)"/>
+  
+  <!-- Logo -->
+  <rect x="80" y="80" width="44" height="44" rx="10" fill="url(#accent)"/>
+  <rect x="86" y="90" width="16" height="6" rx="2.5" fill="#fff" opacity="0.9"/>
+  <rect x="90" y="100" width="16" height="6" rx="2.5" fill="#fff" opacity="0.7"/>
+  <rect x="94" y="110" width="16" height="6" rx="2.5" fill="#fff" opacity="0.5"/>
+  
+  <!-- Brand name -->
+  <text x="138" y="113" font-family="Inter, -apple-system, sans-serif" font-size="28" font-weight="800" fill="#e8edf3">System</text>
+  <text x="268" y="113" font-family="Inter, -apple-system, sans-serif" font-size="28" font-weight="800" fill="#818cf8">Craft</text>
+  
+  <!-- Main title -->
+  <text x="80" y="250" font-family="Inter, -apple-system, sans-serif" font-size="56" font-weight="800" fill="#e8edf3">System Design, LLD &amp; DSA</text>
+  <text x="80" y="320" font-family="Inter, -apple-system, sans-serif" font-size="56" font-weight="800" fill="#e8edf3">Interview Prep</text>
+  
+  <!-- Subtitle -->
+  <text x="80" y="390" font-family="Inter, -apple-system, sans-serif" font-size="24" fill="#9ba3b0">Production-grade architectures with diagrams, deep dives,</text>
+  <text x="80" y="425" font-family="Inter, -apple-system, sans-serif" font-size="24" fill="#9ba3b0">and the patterns interviewers actually test.</text>
+  
+  <!-- Tags -->
+  <rect x="80" y="480" width="90" height="32" rx="6" fill="#818cf8" opacity="0.12"/>
+  <text x="101" y="502" font-family="Inter, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#818cf8">18 HLD</text>
+  <rect x="185" y="480" width="80" height="32" rx="6" fill="#10b981" opacity="0.12"/>
+  <text x="203" y="502" font-family="Inter, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#10b981">5 LLD</text>
+  <rect x="280" y="480" width="110" height="32" rx="6" fill="#f59e0b" opacity="0.12"/>
+  <text x="298" y="502" font-family="Inter, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#f59e0b">225+ DSA</text>
+  
+  <!-- URL -->
+  <text x="80" y="580" font-family="Inter, -apple-system, sans-serif" font-size="18" fill="#6b7280">systemcraft.in</text>
+  
+  <!-- Decorative -->
+  <circle cx="1050" cy="180" r="100" fill="#818cf8" opacity="0.04"/>
+  <circle cx="1100" cy="480" r="140" fill="#a78bfa" opacity="0.03"/>
+</svg>
