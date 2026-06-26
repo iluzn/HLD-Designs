@@ -58,7 +58,7 @@ permalink: /hld
     <h1>High-Level Design <em>Problems</em></h1>
     <p>Distributed architectures with diagrams, technology choices, deep dives, and trade-offs. Built for interviews at Amazon, Google, Meta, and top startups.</p>
     <div class="hero-stats">
-        <div class="hero-stat"><strong>16</strong><span>Designs</span></div>
+        <div class="hero-stat"><strong>18</strong><span>Designs</span></div>
         <div class="hero-stat"><strong>3</strong><span>Difficulty Levels</span></div>
         <div class="hero-stat"><strong>50+</strong><span>Deep Dives</span></div>
     </div>
@@ -67,7 +67,7 @@ permalink: /hld
 <!-- Progress bar -->
 <div class="progress-strip" id="progress-strip">
     <div class="progress-inner">
-        <span class="progress-label" id="progress-label">0/16 completed</span>
+        <span class="progress-label" id="progress-label">0/18 completed</span>
         <div class="progress-bar-track">
             <div class="progress-bar-fill" id="progress-fill"></div>
         </div>
@@ -109,7 +109,7 @@ permalink: /hld
     <div class="difficulty-group" data-difficulty="beginner">
         <div class="group-header">
             <h2><span class="diff-dot green"></span> Beginner</h2>
-            <span class="group-count">2 problems</span>
+            <span class="group-count">5 problems</span>
         </div>
         <div class="problems-grid">
 
@@ -149,22 +149,51 @@ permalink: /hld
                     <span class="company">Cloudflare</span>
                 </div>
             </a>
-        </div>
-    </div>
 
-    <div class="difficulty-group" data-difficulty="intermediate">
-        <div class="group-header">
-            <h2><span class="diff-dot yellow"></span> Intermediate</h2>
-            <span class="group-count">6 problems</span>
-        </div>
-        <div class="problems-grid">
+            <a class="problem-card" href="/Pastebin" data-difficulty="beginner">
+                <div class="card-top">
+                    <span class="card-icon">📋</span>
+                    <span class="diff-badge green">Beginner</span>
+                </div>
+                <h3>Pastebin / Text Sharing</h3>
+                <p class="card-desc">Unique ID generation, object storage, CDN caching, and expiry cleanup. The easiest full system design.<span class="card-time">⏱️ ~10 min read</span></p>
+                <div class="card-tags">
+                    <span class="tag">Base62 IDs</span>
+                    <span class="tag">Object Storage</span>
+                    <span class="tag">CDN</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Google</span>
+                    <span class="company">Amazon</span>
+                    <span class="company">Meta</span>
+                </div>
+            </a>
 
-            <a class="problem-card" href="/URLShortner" data-difficulty="intermediate">
+            <a class="problem-card" href="/KeyValueStore" data-difficulty="beginner">
+                <div class="card-top">
+                    <span class="card-icon">🗄️</span>
+                    <span class="diff-badge green">Beginner</span>
+                </div>
+                <h3>Key-Value Store (Redis / DynamoDB)</h3>
+                <p class="card-desc">Consistent hashing, replication, quorum reads/writes, LSM trees. Foundation of all distributed DBs.<span class="card-time">⏱️ ~12 min read</span></p>
+                <div class="card-tags">
+                    <span class="tag">Consistent Hashing</span>
+                    <span class="tag">Replication</span>
+                    <span class="tag">Quorum</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Amazon</span>
+                    <span class="company">Google</span>
+                    <span class="company">Databricks</span>
+                </div>
+            </a>
+
+            <a class="problem-card" href="/URLShortner" data-difficulty="beginner">
                 <div class="card-top">
                     <span class="card-icon">🔗</span>
-                    <span class="diff-badge yellow">Intermediate</span>
+                    <span class="diff-badge green">Beginner</span>
                 </div>
-                <h3>URL Shortener</h3>
+                <h3>URL Shortener (Bitly / TinyURL)</h3>
                 <p class="card-desc">Base62 encoding, Snowflake IDs, CDN caching, click analytics pipeline.<span class="card-time">⏱️ ~12 min read</span></p>
                 <div class="card-tags">
                     <span class="tag">Base62</span>
@@ -178,6 +207,15 @@ permalink: /hld
                     <span class="company">Microsoft</span>
                 </div>
             </a>
+        </div>
+    </div>
+
+    <div class="difficulty-group" data-difficulty="intermediate">
+        <div class="group-header">
+            <h2><span class="diff-dot yellow"></span> Intermediate</h2>
+            <span class="group-count">5 problems</span>
+        </div>
+        <div class="problems-grid">
 
             <a class="problem-card" href="/TwitterFeed" data-difficulty="intermediate">
                 <div class="card-top">
@@ -457,8 +495,8 @@ permalink: /hld
             <div class="step">
                 <div class="step-num">2</div>
                 <div class="step-content">
-                    <strong>Rate Limiter + Leaderboard + URL Shortener</strong>
-                    <span>Single-service designs. Redis patterns. CDN basics.</span>
+                    <strong>Rate Limiter + Leaderboard + Pastebin + Key-Value Store + URL Shortener</strong>
+                    <span>Single-service designs. Redis patterns. CDN basics. Storage fundamentals.</span>
                 </div>
             </div>
             <div class="step">
