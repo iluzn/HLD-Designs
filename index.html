@@ -275,9 +275,14 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
                 <span id="gp-count-advanced" style="font-size:0.65rem;color:var(--text-dim);margin-left:auto;">0/8</span>
             </div>
             <div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.2rem;padding-top:0.4rem;border-top:1px solid var(--border);">
-                <span style="font-size:0.7rem;color:var(--text-muted);width:85px;">⚙️ LLD</span>
-                <div id="gp-dots-lld" style="display:flex;gap:4px;"></div>
-                <span id="gp-count-lld" style="font-size:0.65rem;color:var(--text-dim);margin-left:auto;">0/6</span>
+                <span style="font-size:0.7rem;color:var(--text-muted);width:85px;">⚙️ LLD Easy</span>
+                <div id="gp-dots-lld-easy" style="display:flex;gap:4px;"></div>
+                <span id="gp-count-lld-easy" style="font-size:0.65rem;color:var(--text-dim);margin-left:auto;">0/2</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.6rem;">
+                <span style="font-size:0.7rem;color:var(--text-muted);width:85px;">⚙️ LLD Medium</span>
+                <div id="gp-dots-lld-med" style="display:flex;gap:4px;"></div>
+                <span id="gp-count-lld-med" style="font-size:0.65rem;color:var(--text-dim);margin-left:auto;">0/3</span>
             </div>
         </div>
     </div>
@@ -502,7 +507,8 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
     var beginner = ['Parking Lot', 'Real-Time Leaderboard', 'Rate Limiter'];
     var intermediate = ['URL Shortener', 'Twitter / Social Feed', 'Chat System (WhatsApp)', 'Notification System', 'Photo Sharing (Instagram)', 'Ticket Booking (BookMyShow)'];
     var advanced = ['Distributed Job Scheduler', 'Delayed Trigger Service', 'Digital Wallet (PhonePe)', 'Food Delivery (Zomato)', 'Stock Broker (Robinhood)', 'Ride Sharing (Uber)', 'Video Streaming (Netflix)', 'Collaborative Editing (Google Docs)'];
-    var lldProblems = ['Parking Lot', 'Music Player', 'Splitwise', 'Snake & Ladder', 'Multilevel Cache', 'Multilevel Cache'];
+    var lldEasy = ['Parking Lot', 'Snake & Ladder'];
+    var lldMed = ['Music Player', 'Splitwise', 'Multilevel Cache'];
 
     function countDone(list, progress) {
         return list.filter(function(name) { return progress[name]; }).length;
@@ -523,21 +529,24 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
     var bDone = countDone(beginner, hldProgress);
     var iDone = countDone(intermediate, hldProgress);
     var aDone = countDone(advanced, hldProgress);
-    var lDone = Object.keys(lldProgress).length;
+    var leasyDone = countDone(lldEasy, lldProgress);
+    var lmedDone = countDone(lldMed, lldProgress);
 
     renderDots('gp-dots-beginner', 3, bDone);
     renderDots('gp-dots-intermediate', 6, iDone);
     renderDots('gp-dots-advanced', 8, aDone);
-    renderDots('gp-dots-lld', 6, lDone);
+    renderDots('gp-dots-lld-easy', 2, leasyDone);
+    renderDots('gp-dots-lld-med', 3, lmedDone);
 
     document.getElementById('gp-count-beginner').textContent = bDone + '/3';
     document.getElementById('gp-count-intermediate').textContent = iDone + '/6';
     document.getElementById('gp-count-advanced').textContent = aDone + '/8';
-    document.getElementById('gp-count-lld').textContent = lDone + '/6';
+    document.getElementById('gp-count-lld-easy').textContent = leasyDone + '/2';
+    document.getElementById('gp-count-lld-med').textContent = lmedDone + '/3';
 
     // Ring
-    var total = 17 + 6;
-    var done = bDone + iDone + aDone + lDone;
+    var total = 17 + 5;
+    var done = bDone + iDone + aDone + leasyDone + lmedDone;
     var pct = Math.round((done / total) * 100);
     document.getElementById('gp-pct').textContent = pct + '%';
     var ring = document.getElementById('gp-ring');
