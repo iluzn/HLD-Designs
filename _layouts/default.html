@@ -453,6 +453,16 @@
     });
     </script>
 
+    <!-- External links open in new tab -->
+    <script>
+    document.querySelectorAll('.content a').forEach(function(a) {
+        if (a.hostname && a.hostname !== window.location.hostname) {
+            a.setAttribute('target', '_blank');
+            a.setAttribute('rel', 'noopener noreferrer');
+        }
+    });
+    </script>
+
     <!-- Cloudflare Web Analytics -->
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "46af7c683dec42ceb435ae3e97b8d9a1"}'></script>
 
