@@ -163,6 +163,28 @@
         .mermaid .node rect, .mermaid .node polygon, .mermaid .node circle { opacity: 0.85; }
         .content hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), rgba(167,139,250,0.5), transparent); margin: 2.5rem 0; opacity: 0.4; }
 
+        /* Deep Dive styling */
+        .deep-dive-section { margin-bottom: 2rem; }
+        .deep-dive-section > h3 { position: relative; padding-left: 0; border-left: 3px solid var(--accent); padding: 0.6rem 1rem; background: rgba(129,140,248,0.05); border-radius: 0 10px 10px 0; margin-bottom: 1rem; font-size: 1rem; }
+        [data-theme="light"] .deep-dive-section > h3 { background: rgba(79,70,229,0.04); }
+
+        .deep-dive-tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 1px solid var(--border); }
+        .deep-dive-tab { padding: 0.5rem 1rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; border: none; background: none; color: var(--text-dim); border-bottom: 2px solid transparent; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem; }
+        .deep-dive-tab:hover { color: var(--text-muted); background: var(--glass); }
+        .deep-dive-tab.active { border-bottom-color: var(--accent); color: var(--text); }
+        .deep-dive-tab .tab-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .deep-dive-tab .tab-dot.dot-bad { background: #ef4444; }
+        .deep-dive-tab .tab-dot.dot-good { background: #f59e0b; }
+        .deep-dive-tab .tab-dot.dot-great { background: #10b981; }
+
+        .deep-dive-panel { display: none; padding: 1rem 0; animation: dd-fadein 0.25s ease; }
+        .deep-dive-panel.active { display: block; }
+        @keyframes dd-fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        .deep-dive-panel[data-level="bad"] { border-left: 3px solid #ef4444; padding-left: 1rem; margin-left: 0.2rem; }
+        .deep-dive-panel[data-level="good"] { border-left: 3px solid #f59e0b; padding-left: 1rem; margin-left: 0.2rem; }
+        .deep-dive-panel[data-level="great"] { border-left: 3px solid #10b981; padding-left: 1rem; margin-left: 0.2rem; }
+
         /* Scroll reveal animation */
         .content h2, .content h3, .content p, .content pre, .content table, .content blockquote, .content ul, .content ol { animation: fadeInUp 0.4s ease both; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
@@ -486,6 +508,116 @@
             a.setAttribute('rel', 'noopener noreferrer');
         }
     });
+    </script>
+
+    <!-- Deep dive Bad/Good/Great tabs -->
+    <script>
+    (function() {
+        var content = document.querySelector('.content');
+        if (!content) return;
+
+        // Find all paragraphs that start with **Bad, **Good, **Great
+        var allElements = content.querySelectorAll('p, h4, h3');
+        var deepDiveGroups = [];
+        var currentGroup = null;
+
+        allElements.forEach(function(el) {
+            var text = el.textContent.trim();
+            var html = el.innerHTML;
+            var isBad = /^\*?\*?Bad[\s:—\*]/.test(text) || html.match(/^<strong>Bad/);
+            var isGood = /^\*?\*?Good[\s:—\*]/.test(text) || html.match(/^<strong>Good/);
+            var isGreat = /^\*?\*?Great[\s:—\*]/.test(text) || html.match(/^<strong>Great/);
+
+            if (isBad) {
+                currentGroup = { bad: { trigger: el, content: [] }, good: null, great: null };
+                deepDiveGroups.push(currentGroup);
+            } else if (isGood && currentGroup) {
+                currentGroup.good = { trigger: el, content: [] };
+            } else if (isGreat && currentGroup) {
+                currentGroup.great = { trigger: el, content: [] };
+            } else if (currentGroup) {
+                // Collect content between triggers
+                if (currentGroup.great) {
+                    currentGroup.great.content.push(el);
+                } else if (currentGroup.good) {
+                    currentGroup.good.content.push(el);
+                } else if (currentGroup.bad) {
+                    currentGroup.bad.content.push(el);
+                }
+            }
+        });
+
+        // Now for each group that has at least bad + good, build tabbed UI
+        deepDiveGroups.forEach(function(group) {
+            if (!group.bad || !group.good) return;
+
+            var levels = [];
+            if (group.bad) levels.push({ key: 'bad', label: 'Bad', data: group.bad });
+            if (group.good) levels.push({ key: 'good', label: 'Good', data: group.good });
+            if (group.great) levels.push({ key: 'great', label: 'Great', data: group.great });
+
+            // Create wrapper
+            var wrapper = document.createElement('div');
+            wrapper.className = 'deep-dive-tabs-container';
+
+            // Tab bar
+            var tabBar = document.createElement('div');
+            tabBar.className = 'deep-dive-tabs';
+            levels.forEach(function(level, idx) {
+                var tab = document.createElement('button');
+                tab.className = 'deep-dive-tab' + (idx === 0 ? ' active' : '');
+                tab.innerHTML = '<span class="tab-dot dot-' + level.key + '"></span>' + level.label;
+                tab.setAttribute('data-level', level.key);
+                tab.addEventListener('click', function() {
+                    tabBar.querySelectorAll('.deep-dive-tab').forEach(function(t) { t.classList.remove('active'); });
+                    tab.classList.add('active');
+                    wrapper.querySelectorAll('.deep-dive-panel').forEach(function(p) { p.classList.remove('active'); });
+                    wrapper.querySelector('.deep-dive-panel[data-level="' + level.key + '"]').classList.add('active');
+                });
+                tabBar.appendChild(tab);
+            });
+            wrapper.appendChild(tabBar);
+
+            // Panels
+            levels.forEach(function(level, idx) {
+                var panel = document.createElement('div');
+                panel.className = 'deep-dive-panel' + (idx === 0 ? ' active' : '');
+                panel.setAttribute('data-level', level.key);
+                // Add trigger text as the panel content
+                var triggerClone = level.data.trigger.cloneNode(true);
+                panel.appendChild(triggerClone);
+                level.data.content.forEach(function(el) {
+                    panel.appendChild(el.cloneNode(true));
+                });
+                wrapper.appendChild(panel);
+            });
+
+            // Insert wrapper before the bad trigger, then hide originals
+            group.bad.trigger.parentNode.insertBefore(wrapper, group.bad.trigger);
+
+            // Hide original elements
+            group.bad.trigger.style.display = 'none';
+            group.bad.content.forEach(function(el) { el.style.display = 'none'; });
+            if (group.good) {
+                group.good.trigger.style.display = 'none';
+                group.good.content.forEach(function(el) { el.style.display = 'none'; });
+            }
+            if (group.great) {
+                group.great.trigger.style.display = 'none';
+                group.great.content.forEach(function(el) { el.style.display = 'none'; });
+            }
+        });
+
+        // Highlight deep dive headings (h3 containing "Deep Dive")
+        content.querySelectorAll('h3').forEach(function(h3) {
+            if (/deep dive/i.test(h3.textContent)) {
+                var section = document.createElement('div');
+                section.className = 'deep-dive-section';
+                h3.parentNode.insertBefore(section, h3);
+                section.appendChild(h3);
+            }
+        });
+    })();
     </script>
 
     <!-- Cloudflare Web Analytics -->
