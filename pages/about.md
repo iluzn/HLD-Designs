@@ -78,7 +78,6 @@ Full runnable solutions with:
 A software engineer who went through the interview grind at Indian and international tech companies, got frustrated with the state of free system design content, and decided to build the resource that should have existed.
 
 Built with Jekyll, hosted on GitHub Pages, diagrammed with Mermaid, and shipped with obsessive attention to the details that interviewers actually care about.
-
 ---
 
 ## Contributing
@@ -86,11 +85,9 @@ Built with Jekyll, hosted on GitHub Pages, diagrammed with Mermaid, and shipped 
 Found a mistake? Have a better approach for a deep dive? Want to suggest a new design?
 
 - Drop a comment on any page
-- Or open an issue on [GitHub](https://github.com/iluzn/HLD-Designs)
 
 ---
 
 ## Connect
 
 - Website: [systemcraft.in](https://systemcraft.in)
-- GitHub: [github.com/iluzn/HLD-Designs](https://github.com/iluzn/HLD-Designs)
