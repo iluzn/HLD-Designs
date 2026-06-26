@@ -685,7 +685,7 @@
                 '<div id="self-test-questions" style="display:flex;flex-direction:column;gap:0.5rem;"></div>' +
                 '<div style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border);">' +
                 '<p style="color:var(--text-dim);font-size:0.75rem;margin-bottom:0.5rem;">How confident do you feel about this design?</p>' +
-                '<div style="display:flex;gap:0.5rem;" id="confidence-btns"></div>' +
+                '<div style="display:flex;flex-wrap:wrap;gap:0.5rem;" id="confidence-btns"></div>' +
                 '</div></div>';
             commentsSection.parentNode.insertBefore(selfTest, commentsSection);
 
@@ -730,7 +730,7 @@
             ];
             levels.forEach(function(l) {
                 var btn = document.createElement('button');
-                btn.style.cssText = 'background:var(--glass);border:1px solid var(--border);border-radius:8px;padding:0.4rem 0.7rem;cursor:pointer;font-size:0.75rem;color:var(--text-muted);transition:all 0.2s;display:flex;align-items:center;gap:0.3rem;';
+                btn.style.cssText = 'background:var(--glass);border:1px solid var(--border);border-radius:8px;padding:0.4rem 0.7rem;cursor:pointer;font-size:0.75rem;color:var(--text-muted);transition:all 0.2s;display:flex;align-items:center;gap:0.3rem;flex:1 1 auto;justify-content:center;text-align:center;min-width:0;white-space:nowrap;';
                 btn.innerHTML = l.emoji + ' <span>' + l.label + '</span>';
                 btn.addEventListener('click', function() {
                     confContainer.querySelectorAll('button').forEach(function(b) { b.style.borderColor = 'var(--border)'; b.style.background = 'var(--glass)'; });
