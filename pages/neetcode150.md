@@ -9,6 +9,11 @@ description: "150 coding problems with LeetCode links, pattern tags, and one-lin
 
 The expanded interview prep list — 150 problems covering every pattern in depth. If you have 6-8 weeks, this is the definitive set. Each row links directly to LeetCode.
 
+> 📋 **Which list should I use?**
+> - **1 week of prep?** → [Quick-Fire 50](/cheatsheet)
+> - **4 weeks of prep?** → [The Blind 75](/the-75) (subset of this list)
+> - **8 weeks of prep?** → You're here. NeetCode 150.
+
 > 💡 **Format:** Problem (clickable LeetCode link), one-line approach, complexity. If you already did The 75, the extra problems here fill the gaps.
 
 ---

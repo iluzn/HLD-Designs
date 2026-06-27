@@ -61,3 +61,11 @@ Flipkart's interview process for SDE-2+ includes 2 DSA rounds, 1 machine coding 
 2. **Think at e-commerce scale.** Discuss flash sales, inventory locking, and fan-out patterns. Flipkart loves candidates who understand read-heavy vs write-heavy tradeoffs.
 3. **Discuss caching strategies.** CDN caching, Redis invalidation, and cache stampede protection are frequently probed in system design rounds.
 4. **Prepare for follow-up depth.** Flipkart interviewers often ask "what breaks at 10x scale?" — have answers ready for hot partitions and celebrity problems.
+
+---
+
+## Other Company Prep
+
+- [Amazon Interview Prep →](/companies/amazon)
+- [PhonePe Interview Prep →](/companies/phonpe)
+- [Back to Interview Guide →](/system-design-interview-guide)

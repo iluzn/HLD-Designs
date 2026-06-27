@@ -9,6 +9,11 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 75 problems that cover every pattern asked in tech interviews. Solve these and you've seen every trick interviewers use. Each row links directly to the problem on LeetCode.
 
+> 📋 **Which list should I use?**
+> - **1 week of prep?** → [Quick-Fire 50](/cheatsheet) (subset of this list)
+> - **4 weeks of prep?** → You're here. The Blind 75.
+> - **8 weeks of prep?** → [NeetCode 150](/the-150) (includes all 75 + 75 more)
+
 > 💡 **How to use:** Go top-to-bottom by section. If you can explain the approach in 10 seconds, move on. If not, click the link and solve it.
 
 ---

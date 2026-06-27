@@ -63,3 +63,11 @@ Amazon's loop for SDE-2 and above includes 1-2 system design rounds alongside co
 2. **Discuss operational readiness.** Monitoring, alerting, runbooks, blast radius, and graceful degradation are expected in every design answer.
 3. **Quantify your design.** Back-of-envelope math (QPS, storage, bandwidth) shows you can reason about scale. Amazon operates at massive scale — show you understand the numbers.
 4. **Address failure modes explicitly.** What happens when a service goes down? How do retries work? What's the dead-letter strategy? Amazon interviewers probe resilience deeply.
+
+---
+
+## Other Company Prep
+
+- [Flipkart Interview Prep →](/companies/flipkart)
+- [PhonePe Interview Prep →](/companies/phonpe)
+- [Back to Interview Guide →](/system-design-interview-guide)

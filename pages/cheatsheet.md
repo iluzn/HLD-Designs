@@ -9,6 +9,11 @@ description: "Quick-reference cheatsheet of the 50 most frequently asked coding 
 
 The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Google, Meta, PhonePe, Flipkart, Uber). Bookmark this page and review before every interview.
 
+> 📋 **Which list should I use?**
+> - **1 week of prep?** → You're here. Quick-Fire 50.
+> - **4 weeks of prep?** → [The Blind 75](/the-75) (includes all 50 + 25 more)
+> - **8 weeks of prep?** → [NeetCode 150](/the-150) (most comprehensive)
+
 > 💡 **How to use:** Scan the "Approach" column. If you can't explain it in 10 seconds, that's the one to practice.
 
 ---

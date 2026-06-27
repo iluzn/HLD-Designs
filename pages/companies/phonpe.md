@@ -63,3 +63,11 @@ PhonePe interviews typically consist of 2-3 DSA rounds, 1 machine coding (LLD) r
 2. **Expect fintech-specific deep dives.** Idempotency, double-entry ledgers, reconciliation, and saga patterns come up frequently in HLD rounds.
 3. **Show concurrency awareness.** PhonePe deals with high-throughput payment systems — discuss thread safety, distributed locks, and exactly-once semantics.
 4. **Keep your demo running.** In machine coding, a working `main()` with sample output matters more than perfect code coverage.
+
+---
+
+## Other Company Prep
+
+- [Amazon Interview Prep →](/companies/amazon)
+- [Flipkart Interview Prep →](/companies/flipkart)
+- [Back to Interview Guide →](/system-design-interview-guide)
