@@ -139,9 +139,7 @@ Let's build this incrementally, one requirement at a time.
 
 The first thing we need: when a player scores, update the leaderboard instantly. The naive SQL approach fails at scale (see above). We need a data structure designed for sorted data with fast updates.
 
-**The solution: Redis Sorted Set (ZSET).**
-
-> 💡 *A Redis Sorted Set stores (score, member) pairs and keeps them sorted automatically. Internally it uses a skip list — like a linked list with "express lanes" — giving O(log N) for insert, update, and rank lookup. For 10M players: log₂(10M) ≈ 23 comparisons. Microseconds.*
+**The solution: Redis Sorted Set (ZSET).** 💡 *A Redis Sorted Set stores (score, member) pairs and keeps them sorted automatically. Internally it uses a skip list — like a linked list with "express lanes" — giving O(log N) for insert, update, and rank lookup. For 10M players: log₂(10M) ≈ 23 comparisons. Microseconds.*
 
 **New components:**
 

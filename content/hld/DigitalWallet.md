@@ -158,9 +158,7 @@ Why Kafka as the event bus:
 - **Low latency** — P95 transfer under 500ms, balance check under 100ms.
 - **High availability** — 99.99% on the transfer path. Users block on this.
 - **Auditability** — every balance change is traceable to the ledger entries that produced it. Required for regulators and internal finance.
-- **Idempotency** — any operation is safe to retry without side effects.
-
-> 💡 *Idempotency = running the same operation multiple times produces the same result. Essential for payment retries — charging a card twice would be catastrophic.*
+- **Idempotency** — any operation is safe to retry without side effects. 💡 *Idempotency = running the same operation multiple times produces the same result. Essential for payment retries — charging a card twice would be catastrophic.*
 
 ### Below the line
 - Globally multi-region active-active (single-region-primary with regional read replicas is fine to start)
@@ -243,16 +241,10 @@ Each layer backs up the one above it. Industry principle: **rail truth always wi
 
 1. **API Gateway** — authenticates users, applies rate limits, and routes to the right service.
 2. **Wallet Service** — orchestrates load/withdraw operations. Creates the transaction row BEFORE calling any external rail — the durable record that we attempted this operation.
-3. **Payment Gateway Adapter** — translates our internal "charge this bank" request into the specific API format each rail expects (UPI, card networks, bank ACH).
-
-> 💡 *Think of it as a universal translator between our system and dozens of different bank APIs.*
+3. **Payment Gateway Adapter** — translates our internal "charge this bank" request into the specific API format each rail expects (UPI, card networks, bank ACH). 💡 *Think of it as a universal translator between our system and dozens of different bank APIs.*
 4. **Webhook Handler** — receives signed callbacks from banks when a charge succeeds or fails. This is how we learn the outcome of async operations.
-5. **Reconciler** — a background job that polls rails every 30s for any PENDING transaction older than 2 minutes. The safety net for lost webhooks.
-
-> 💡 *If the bank's webhook fails to reach us (network blip, our endpoint was down), the reconciler catches it on the next sweep.*
-6. **Ledger Service** — the accounting brain. Posts journal entries (balanced debit + credit) to the ledger. Never creates money from nothing.
-
-> 💡 *Double-entry ledger means every money movement has two sides that sum to zero. Debit one account, credit another. If the math doesn't balance, the transaction is rejected.*
+5. **Reconciler** — a background job that polls rails every 30s for any PENDING transaction older than 2 minutes. The safety net for lost webhooks. 💡 *If the bank's webhook fails to reach us (network blip, our endpoint was down), the reconciler catches it on the next sweep.*
+6. **Ledger Service** — the accounting brain. Posts journal entries (balanced debit + credit) to the ledger. Never creates money from nothing. 💡 *Double-entry ledger means every money movement has two sides that sum to zero. Debit one account, credit another. If the math doesn't balance, the transaction is rejected.*
 7. **Event Bus (Kafka)** — carries transaction events to downstream services (notifications, analytics, fraud) without coupling the hot payment path to any of them.
 8. **Postgres (ledger primary)** — the sacred source of truth. Stores journal entries and ledger lines. ACID transactions ensure money is never created or destroyed.
 
