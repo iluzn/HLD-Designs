@@ -327,6 +327,241 @@ Quick math to validate design decisions.
 
 ---
 
+## Database Indexing
+
+Without an index, finding a user by email means scanning every row. With 10M users, that's 10M rows checked. With an index, it's milliseconds.
+
+**Types of indexes:**
+
+| Index Type | How | Best For |
+|---|---|---|
+| **B-tree** (default) | Sorted tree structure | Exact lookups + range queries (dates, IDs) |
+| **Hash** | Direct hash → position | Exact match only, faster than B-tree for equality |
+| **Full-text** | Inverted index of words | Text search ("find all posts mentioning 'Redis'") |
+| **Geospatial** (R-tree, GiST) | Spatial partitioning | "Restaurants within 5km" |
+| **Composite** | Multiple columns sorted together | Queries filtering on city AND date |
+
+**When to create an index:**
+- Fields you query frequently (user_id, email, created_at)
+- Fields in WHERE, ORDER BY, or JOIN conditions
+- Foreign keys
+
+**When NOT to index:**
+- Columns with very low cardinality (boolean flags)
+- Tables with heavy writes and few reads (indexes slow down inserts)
+
+**External search indexes (Elasticsearch, Typesense):** When your queries go beyond what your primary DB supports (full-text search, fuzzy matching, faceted filters), sync data via CDC (Change Data Capture) to a dedicated search engine. The search index lags slightly but enables queries your main DB can't handle efficiently.
+
+---
+
+## Real-Time Communication (WebSocket vs SSE vs Polling)
+
+When your system needs to push data to clients (chat messages, live tracking, notifications), you have three options:
+
+| Method | Direction | When to use | Example |
+|---|---|---|---|
+| **Polling** | Client → Server (repeated) | Simple, low-frequency updates | Email inbox check every 30s |
+| **Long Polling** | Client holds connection, server responds when ready | Moderate real-time, simple infra | Facebook's original chat |
+| **SSE (Server-Sent Events)** | Server → Client (one-way) | Server pushes, client only receives | Live scores, stock tickers |
+| **WebSocket** | Bidirectional | Both sides send freely | Chat, collaborative editing, live games |
+
+**Decision rule:**
+- Need only server → client? → **SSE** (simpler, works with HTTP infra)
+- Need client → server too? → **WebSocket**
+- Can tolerate 5-30s delay? → **Long polling** (simplest)
+
+**WebSocket challenges at scale:**
+- Stateful connections — can't just load-balance randomly
+- If a server dies, thousands of connections drop (need reconnect logic)
+- 1M concurrent connections = 100K per server × 10 servers (memory-bound)
+
+---
+
+## Data Modeling: Normalization vs Denormalization
+
+**Normalization:** Split data across tables to avoid duplication. One source of truth per entity.
+
+```
+users: { id, name, email }
+orders: { id, user_id, product_id, amount }  ← references user by ID
+products: { id, name, price }
+```
+
+- ✅ Easy updates (change name once, updated everywhere)
+- ❌ Requires joins for complete data (slower reads)
+
+**Denormalization:** Duplicate data to avoid joins. Optimize for read speed.
+
+```
+orders: { id, user_id, user_name, product_name, amount }  ← copies user_name into order
+```
+
+- ✅ Fast reads (no joins needed)
+- ❌ Hard updates (user changes name → update everywhere it's copied)
+
+**When to denormalize:**
+- Read-heavy systems (100:1 read-write ratio)
+- Data rarely changes (product catalog, historical events)
+- Need sub-10ms reads (feeds, dashboards)
+
+**Safe default:** Start normalized. Denormalize specific hot paths when you identify read bottlenecks.
+
+---
+
+## Event Sourcing & CQRS
+
+Used in: [Stock Broker](/hld/StockBroker), [Digital Wallet](/hld/DigitalWallet)
+
+**Event Sourcing:** Instead of storing current state, store every event that happened. Current state = replay all events.
+
+```
+Event 1: OrderPlaced { orderId: 123, amount: 500 }
+Event 2: PaymentReceived { orderId: 123, amount: 500 }
+Event 3: OrderShipped { orderId: 123, trackingId: "ABC" }
+
+Current state of order 123 = SHIPPED (derived from replaying events)
+```
+
+**Why:** Complete audit trail, time-travel debugging, easy to add new read models retroactively.
+
+**CQRS (Command Query Responsibility Segregation):** Separate the write path from the read path.
+
+- **Write side:** Accepts commands, validates, stores events
+- **Read side:** Materialized views optimized for queries, updated asynchronously from events
+
+**When to use:**
+- Financial systems (every transaction must be auditable)
+- Systems where read and write patterns are dramatically different
+- When you need multiple read models from the same data
+
+**When NOT to use:** Simple CRUD apps. The complexity tax is high.
+
+---
+
+## Saga Pattern
+
+Used in: [Digital Wallet](/hld/DigitalWallet), [BookMyShow](/hld/BookMyShow)
+
+A saga coordinates a multi-step distributed transaction where each step has a **compensating action** (undo).
+
+**Example — booking a trip:**
+
+```
+Step 1: Reserve hotel → Compensate: Cancel hotel
+Step 2: Book flight → Compensate: Cancel flight
+Step 3: Charge card → Compensate: Refund card
+```
+
+If Step 3 fails, run compensations in reverse: cancel flight, cancel hotel.
+
+**Two approaches:**
+
+| Orchestration | Choreography |
+|---|---|
+| Central orchestrator coordinates all steps | Each service listens to events and reacts |
+| Easier to reason about, single point of control | No single point of failure, but harder to trace |
+| Better for complex flows (5+ steps) | Better for simple flows (2-3 steps) |
+
+**Key principle:** Each step must be idempotent (safe to retry) and have a defined compensation.
+
+---
+
+## Geospatial Indexing
+
+Used in: [Uber](/hld/Uber), [Zomato](/hld/Zomato)
+
+When you need "find things near this location" — restaurants within 3km, drivers within 5 minutes, friends nearby.
+
+| Approach | How | Used By |
+|---|---|---|
+| **Geohash** | Encode lat/lng into a string. Nearby points share prefix. | Elasticsearch, general |
+| **Redis Geo (GEOADD/GEORADIUS)** | In-memory sorted set with geohash encoding | Uber, Grab, delivery apps |
+| **PostGIS** | Postgres extension with R-tree spatial index | Low-write-volume geo queries |
+| **H3 (Hexagonal grid)** | Uniform-area hexagons, hierarchical resolution | Uber surge pricing, analytics |
+| **S2 Geometry** | Hilbert curve cells, used by Google | Google Maps, multi-level precision |
+
+**Decision rule:**
+- Need 500K+ writes/sec (live driver pings)? → **Redis Geo** (in-memory, fast)
+- Need complex queries (text + geo + filters)? → **Elasticsearch** with geo_point
+- Low volume, existing Postgres? → **PostGIS**
+- Need uniform spatial analysis (surge zones)? → **H3**
+
+---
+
+## Bloom Filters
+
+Used in: [Key-Value Store](/hld/KeyValueStore)
+
+A space-efficient probabilistic structure that tells you: "definitely NOT here" or "MAYBE here."
+
+**Why it matters:** Before reading a 100MB file on disk to check if a key exists, ask the bloom filter first (1μs). If it says "not here," skip the disk read entirely. Saves enormous I/O.
+
+**Properties:**
+- False positives possible (says "maybe" but key isn't there)
+- False negatives impossible (if it says "not here," it's definitely not there)
+- Cannot delete entries (use counting bloom filters for that)
+
+**Used in:** LSM-tree databases (LevelDB, RocksDB, Cassandra), CDN cache lookups, spell checkers, duplicate detection.
+
+---
+
+## Write-Ahead Log (WAL)
+
+Used in: [Key-Value Store](/hld/KeyValueStore), any database
+
+Before applying a change to an in-memory data structure, first write it to a sequential log on disk.
+
+**Why:** If the process crashes before the change is flushed to the main data file, the WAL can be replayed on restart to recover the lost data. Zero data loss.
+
+**The pattern:**
+1. Write operation arrives
+2. Append to WAL (sequential disk write — fast)
+3. Apply to in-memory structure (memtable, buffer pool)
+4. Eventually flush in-memory changes to disk
+5. Truncate WAL up to the flushed point
+
+Every database uses this: Postgres, MySQL, Redis (AOF), Kafka (the log IS the database).
+
+---
+
+## Fan-Out Patterns
+
+Used in: [Twitter Feed](/hld/TwitterFeed), [Instagram](/hld/Instagram), [Notification System](/hld/NotificationSystem)
+
+**Fan-out = one event → many recipients.**
+
+| Pattern | When | How |
+|---|---|---|
+| **Fan-out on Write (push)** | Recipient count is small-medium (< 10K) | On event, push to all recipients' caches immediately |
+| **Fan-out on Read (pull)** | Recipient count is huge (celebrities, 50M followers) | Do nothing on event; assemble at read time |
+| **Hybrid** | Mixed audience (most users small, some huge) | Push for normal users, pull for celebrities |
+
+**The decision threshold:** If pushing takes > 5 seconds (too many recipients), switch to pull for that sender.
+
+---
+
+## Numbers Every Engineer Should Know
+
+Quick reference for capacity planning:
+
+| System | Throughput | Notes |
+|---|---|---|
+| Single Postgres | 10-50K TPS | Depends on query complexity |
+| Single Redis | 100-200K ops/sec | In-memory, single-threaded |
+| Single Kafka broker | 200K-1M msgs/sec | Depends on message size |
+| Single Elasticsearch node | 10-30K writes/sec | Depends on mapping complexity |
+| HTTP request (same DC) | 1-5ms roundtrip | Network + processing |
+| Cross-continent roundtrip | 100-200ms | Speed of light limit |
+| SSD random read | 100μs | 10K IOPS typical |
+| RAM access | 100ns | 1000x faster than SSD |
+
+**Storage rules:**
+- 1M users × 1KB profile = 1GB
+- 1B rows × 100 bytes = 100GB
+- 10M images × 500KB = 5TB
+
+---
+
 ## How to Approach an HLD Interview
 
 1. **Clarify requirements** (2-3 min): functional + non-functional. Ask what's in scope.
