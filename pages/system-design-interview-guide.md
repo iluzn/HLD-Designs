@@ -88,6 +88,7 @@ You're NOT expected to design a production system. You're expected to demonstrat
 2. [Pastebin](/hld/Pastebin) — Object storage, metadata, TTL
 3. [Rate Limiter](/hld/RateLimiter) — Redis patterns, token bucket, sliding window
 4. [Key-Value Store](/hld/KeyValueStore) — Partitioning, replication, consistency
+5. [Unique ID Generator](/hld/UniqueIDGenerator) — Snowflake, UUID, range allocation
 
 ### Intermediate
 
