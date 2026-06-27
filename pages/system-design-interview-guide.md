@@ -17,6 +17,20 @@ Whether you're a mid-level engineer preparing for your first system design round
 
 ---
 
+## Your Learning Path
+
+This guide is organized into 3 parts. Follow them in order:
+
+| Step | Page | What You'll Learn |
+|------|------|-------------------|
+| 1 | **You're here** | What to study, in what order, how long it takes |
+| 2 | [System Design Fundamentals →](/concepts) | The building blocks: CAP, caching, sharding, queues, DBs |
+| 3 | [The 45-Min Interview Framework →](/approach) | Exact structure, timing, and what interviewers score on |
+
+After these three, start solving: [Practice Problems →](/hld)
+
+---
+
 ## How System Design Interviews Actually Work
 
 A typical system design interview is 45-60 minutes. The interviewer gives you an open-ended problem ("Design Uber" or "Design a notification system") and evaluates:
@@ -28,35 +42,7 @@ A typical system design interview is 45-60 minutes. The interviewer gives you an
 
 You're NOT expected to design a production system. You're expected to demonstrate structured thinking and trade-off awareness.
 
----
-
-## The 5-Step Framework for Any Design Problem
-
-### Step 1: Clarify Requirements (3-5 minutes)
-
-Ask about:
-- **Scale** — How many users? How many requests per second?
-- **Core features** — What are the top 3 things the system must do?
-- **Constraints** — Consistency vs availability? Latency requirements?
-
-### Step 2: Define the API (3-5 minutes)
-
-Write out 2-3 core API endpoints. This forces you to think about what the system actually does.
-
-### Step 3: High-Level Design (10-15 minutes)
-
-Draw 5-8 components and show how data flows between them for each core requirement.
-
-### Step 4: Deep Dive (15-20 minutes)
-
-Pick 2-3 technically challenging areas and discuss:
-- Why the naive approach fails
-- What pattern/technology solves it
-- Trade-offs of your choice
-
-### Step 5: Wrap Up (3-5 minutes)
-
-Summarize key decisions, mention what you'd add with more time (monitoring, multi-region, etc.).
+> **New here?** Start with the [fundamentals](/concepts) if terms like "CAP theorem" or "consistent hashing" don't ring a bell. Then read the [interview framework](/approach) to understand the 45-minute structure.
 
 ---
 
@@ -64,18 +50,18 @@ Summarize key decisions, mention what you'd add with more time (monitoring, mult
 
 ### Must-Know (Week 1-2)
 
-| Topic | Why It Matters | Practice Problem |
-|-------|---------------|-----------------|
-| Load balancing | Every system needs it | [URL Shortener](/hld/URLShortner) |
-| Caching (Redis) | 80% of designs use a cache | [Rate Limiter](/hld/RateLimiter) |
-| Database choice (SQL vs NoSQL) | Most common trade-off question | [Key-Value Store](/hld/KeyValueStore) |
-| Message queues (Kafka) | Async processing, decoupling | [Notification System](/hld/NotificationSystem) |
-| API design (REST) | You'll design APIs in every interview | [Pastebin](/hld/Pastebin) |
+| Topic | Why It Matters | Learn It | Practice It |
+|-------|---------------|----------|-------------|
+| Load balancing | Every system needs it | [Fundamentals](/concepts) | [URL Shortener](/hld/URLShortner) |
+| Caching (Redis) | 80% of designs use a cache | [Fundamentals](/concepts) | [Rate Limiter](/hld/RateLimiter) |
+| Database choice (SQL vs NoSQL) | Most common trade-off question | [Fundamentals](/concepts) | [Key-Value Store](/hld/KeyValueStore) |
+| Message queues (Kafka) | Async processing, decoupling | [Fundamentals](/concepts) | [Notification System](/hld/NotificationSystem) |
+| API design (REST) | You'll design APIs in every interview | [Fundamentals](/concepts) | [Pastebin](/hld/Pastebin) |
 
 ### Important (Week 3-4)
 
-| Topic | Why It Matters | Practice Problem |
-|-------|---------------|-----------------|
+| Topic | Why It Matters | Practice It |
+|-------|---------------|-------------|
 | Consistent hashing | Distributed data placement | [Key-Value Store](/hld/KeyValueStore) |
 | WebSockets / real-time | Chat, tracking, live updates | [Chat System](/hld/ChatSystem) |
 | CDN and object storage | Media-heavy systems | [Netflix / YouTube](/hld/Netflix) |
@@ -84,8 +70,8 @@ Summarize key decisions, mention what you'd add with more time (monitoring, mult
 
 ### Advanced (Week 5+)
 
-| Topic | Why It Matters | Practice Problem |
-|-------|---------------|-----------------|
+| Topic | Why It Matters | Practice It |
+|-------|---------------|-------------|
 | Event sourcing / CQRS | Financial systems, audit trails | [Stock Broker](/hld/StockBroker) |
 | Saga pattern | Distributed transactions | [Digital Wallet](/hld/DigitalWallet) |
 | Conflict resolution (CRDT/OT) | Collaborative editing | [Google Docs](/hld/GoogleDocs) |
@@ -125,6 +111,16 @@ Summarize key decisions, mention what you'd add with more time (monitoring, mult
 
 ---
 
+## How Long Does Preparation Take?
+
+| Your Level | Time Needed | Focus |
+|-----------|-------------|-------|
+| Junior (0-2 YOE) | 6-8 weeks | [Fundamentals](/concepts) + 8 beginner/intermediate problems |
+| Mid (2-5 YOE) | 4-6 weeks | All topics + 12-15 problems + [framework](/approach) mastery |
+| Senior (5+ YOE) | 2-4 weeks | Advanced topics + deep dive practice |
+
+---
+
 ## Common Mistakes to Avoid
 
 1. **Jumping to solutions** — Always spend 3-5 minutes on requirements first
@@ -132,16 +128,7 @@ Summarize key decisions, mention what you'd add with more time (monitoring, mult
 3. **Ignoring scale** — "Just use a database" isn't a design answer at 100K QPS
 4. **Not discussing trade-offs** — Every choice has downsides. Name them.
 5. **Monologuing** — The interview is a conversation. Pause and check in with the interviewer.
-
----
-
-## How Long Does Preparation Take?
-
-| Your Level | Time Needed | Focus |
-|-----------|-------------|-------|
-| Junior (0-2 YOE) | 6-8 weeks | Fundamentals + 8 beginner/intermediate problems |
-| Mid (2-5 YOE) | 4-6 weeks | All topics + 12-15 problems |
-| Senior (5+ YOE) | 2-4 weeks | Advanced topics + deep dive practice |
+6. **Solving random problems** — Study by pattern, not by difficulty. See [the framework](/approach).
 
 ---
 
@@ -153,7 +140,7 @@ Summarize key decisions, mention what you'd add with more time (monitoring, mult
 
 **Do I need to memorize exact numbers?**
 
-No. But know orders of magnitude: "a single Postgres handles ~10K QPS," "Redis does 100K ops/sec," "Kafka handles millions of events/sec." These inform your scaling decisions.
+No. But know orders of magnitude: "a single Postgres handles ~10K QPS," "Redis does 100K ops/sec," "Kafka handles millions of events/sec." See [back-of-envelope estimation](/concepts#back-of-envelope-estimation).
 
 **Should I draw diagrams or use text?**
 
@@ -161,7 +148,7 @@ Always draw. Interviewers are visual. Even a simple box-and-arrow diagram commun
 
 **What if the interviewer asks about a system I haven't prepared?**
 
-The patterns transfer. If you've done 12 designs, you've seen caching, queues, databases, and real-time delivery. Apply those patterns to the new problem.
+The patterns transfer. If you've done 12 designs, you've seen caching, queues, databases, and real-time delivery. Apply those patterns to the new problem. The [cheat sheet in the approach page](/approach) helps here.
 
 **Is system design asked at all levels?**
 
@@ -171,21 +158,40 @@ The patterns transfer. If you've done 12 designs, you've seen caching, queues, d
 
 ---
 
+## The Complete Prep Roadmap
+
+```
+Week 1-2: Learn fundamentals (/concepts)
+              ↓
+Week 2-3: Master the framework (/approach)
+              ↓
+Week 3-6: Solve problems by difficulty (beginner → advanced)
+              ↓
+Week 6+:  Mock interviews + revisit weak areas
+```
+
+**Daily routine:**
+- 30 min: Read one concept from [fundamentals](/concepts)
+- 60 min: Solve one HLD problem (timer: 45 min attempt, 15 min review)
+- 15 min: Review the [approach framework](/approach) patterns table
+
+---
+
 ## Next Steps
 
-1. Start with [the concepts page](/concepts) to build vocabulary
-2. Pick a problem from the beginner list above
-3. Time yourself: 45 minutes, draw on paper or whiteboard
-4. Compare your design with our solution — focus on what you missed
-5. Do 2-3 problems per week for 4-6 weeks
-
-Good luck with your prep. You've got this. 🚀
+| Where you are | What to do next |
+|---------------|-----------------|
+| Don't know the basics | [Read System Design Fundamentals →](/concepts) |
+| Know the concepts but freeze in interviews | [Read The 45-Min Framework →](/approach) |
+| Ready to practice | [Start with URL Shortener →](/hld/URLShortner) |
+| Want a quick reference | [Cheatsheet →](/cheatsheet) |
 
 ---
 
 ## Related Resources
 
-- [System Design Cheatsheet](/cheatsheet) — Quick-reference patterns
-- [HLD Fundamentals & Concepts](/concepts) — Core building blocks
-- [DSA Fundamentals — 12 Patterns](/dsa-fundamentals) — For coding rounds
-- [Company-Specific Prep: Amazon](/companies/amazon) — Amazon's design interview format
+- [System Design Fundamentals](/concepts) — CAP, caching, sharding, queues, DBs
+- [The 45-Min Interview Framework](/approach) — Exact structure and scoring criteria
+- [Quick-Fire 50 Cheatsheet](/cheatsheet) — DSA patterns at a glance
+- [Company-Specific: Amazon](/companies/amazon) — Amazon's design interview format
+- [LLD Fundamentals](/lld-fundamentals) — For machine coding rounds

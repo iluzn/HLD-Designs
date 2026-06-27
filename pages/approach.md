@@ -7,6 +7,8 @@ permalink: /approach
 
 # How to Approach System Design Interviews
 
+> 📖 **Part of the [System Design Interview Guide](/system-design-interview-guide).** Read the [Fundamentals](/concepts) first if CAP, caching, or sharding aren't second nature yet.
+
 This is the framework. Memorize the structure, not the answers. Every system design interview follows the same arc — here's how to navigate it in 45 minutes.
 
 ## The 45-Minute Structure
@@ -112,3 +114,14 @@ Pick 2-3 areas driven by your non-functional requirements. Use the **Bad → Goo
 *Bookmark this page. Read it 30 minutes before every system design interview.*
 
 *Ready to practice? Pick a design: [HLD Problems](/hld)*
+
+---
+
+## Part of the System Design Interview Guide
+
+| Step | Page |
+|------|------|
+| 1. Prep Roadmap | [Interview Guide](/system-design-interview-guide) |
+| 2. Fundamentals | [Concepts — CAP, Caching, Queues →](/concepts) |
+| 3. Interview Framework | **You're here** |
+| 4. Practice | [HLD Problems →](/hld) |
