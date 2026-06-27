@@ -54,6 +54,8 @@ Client → Load Balancer → Server 1
 - **L4 (Transport):** Routes based on IP/port. Fast, no content inspection. (e.g., AWS NLB)
 - **L7 (Application):** Routes based on URL, headers, cookies. Smarter, slightly slower. (e.g., AWS ALB, Nginx)
 
+> ⚠️ **Common mistake:** Proposing a load balancer without explaining WHAT it's balancing. Always specify: "L7 load balancer routing to 5 stateless API servers." Also, don't forget — if you're using WebSockets, you need sticky sessions or L4 balancing because the connection is stateful.
+
 ---
 
 ## Caching
@@ -89,6 +91,8 @@ Client → CDN → API Gateway Cache → Application Cache → Database
 - Versioning: key includes version number. New version = cache miss.
 
 **Tools:** Redis, Memcached, CDN (CloudFront, Cloudflare), local in-process (Caffeine, Guava)
+
+> ⚠️ **Common mistake:** Caching everything. Only cache data that's read frequently AND doesn't change often. If you're caching data that changes every request, you're adding latency and complexity for no benefit. Also watch for **cache stampede** — when a popular key expires and 1000 requests simultaneously hit the DB to rebuild it. Solutions: locking (only one request rebuilds), early refresh (rebuild before TTL expires), or jittered TTLs.
 
 ---
 
@@ -135,6 +139,8 @@ User ID 2M-3M   → Shard 3
 - Resharding (adding shards) is painful
 - Transactions across shards are very hard
 
+> ⚠️ **Common mistake:** Proposing sharding too early. A single well-tuned Postgres with read replicas handles 50K+ TPS and multiple TB. Don't shard until the math proves you need it. Also, always state your shard key and the tradeoff: "Shard by user_id — fast for user-scoped queries, expensive for global aggregations."
+
 ---
 
 ## CAP Theorem
@@ -150,6 +156,8 @@ In a distributed system, you can only guarantee 2 of 3:
 - **AP:** Available + Partition-tolerant. During partition, you might read stale data. (e.g., Cassandra, DynamoDB)
 
 Most systems are AP with tunable consistency — you choose per-operation whether you need strong or eventual consistency.
+
+> ⚠️ **Interview tip:** Don't pick CP or AP for your entire system. Different parts need different guarantees. "Product catalog is AP (eventual consistency fine), but inventory count is CP (can't oversell)." That shows mature thinking.
 
 ---
 
@@ -196,6 +204,8 @@ Producer → Queue → Consumer
 | Throughput | Millions/sec | Thousands/sec |
 | Consumer model | Pull (consumer controls pace) | Pull (long-polling) |
 | Use case | Event streaming, log aggregation | Task queues, decoupling |
+
+> ⚠️ **Common mistake:** Using Kafka when SQS would suffice. If you just need "process this job later" with no ordering requirement and < 10K msgs/sec, SQS is simpler and cheaper. Kafka shines when you need ordering, replay, or millions of events/sec. Also — saying "put it in a queue" without specifying what the consumer does is hand-waving. Always say: "Consumer X reads from the queue and does Y."
 
 ---
 
@@ -352,6 +362,8 @@ Without an index, finding a user by email means scanning every row. With 10M use
 
 **External search indexes (Elasticsearch, Typesense):** When your queries go beyond what your primary DB supports (full-text search, fuzzy matching, faceted filters), sync data via CDC (Change Data Capture) to a dedicated search engine. The search index lags slightly but enables queries your main DB can't handle efficiently.
 
+> ⚠️ **Interview tip:** If the problem has text search ("search for restaurants by name"), you NEED a search index. Don't say "just use LIKE '%biryani%' in SQL" — that's a full table scan. Say "we'll use Elasticsearch synced from the primary DB via CDC, accepting 1-2 second staleness on the search index."
+
 ---
 
 ## Real-Time Communication (WebSocket vs SSE vs Polling)
@@ -374,6 +386,8 @@ When your system needs to push data to clients (chat messages, live tracking, no
 - Stateful connections — can't just load-balance randomly
 - If a server dies, thousands of connections drop (need reconnect logic)
 - 1M concurrent connections = 100K per server × 10 servers (memory-bound)
+
+> ⚠️ **Common mistake:** Proposing WebSockets when SSE or even long-polling would work. WebSockets add complexity (stateful connections, sticky routing, reconnect handling). Only use them when the CLIENT needs to push data to the server frequently (chat, collaborative editing). For server-only pushes (live scores, tracking), SSE is simpler and works with standard HTTP infrastructure.
 
 ---
 
@@ -435,6 +449,8 @@ Current state of order 123 = SHIPPED (derived from replaying events)
 - When you need multiple read models from the same data
 
 **When NOT to use:** Simple CRUD apps. The complexity tax is high.
+
+> ⚠️ **Interview tip:** Only propose event sourcing for financial or audit-heavy systems. For a URL shortener or chat app, it's overkill. Say: "We use event sourcing here because every transaction needs a complete audit trail and we need multiple read models (portfolio view, tax report, P&L dashboard) from the same data."
 
 ---
 
