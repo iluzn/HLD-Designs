@@ -1,7 +1,7 @@
 ---
 layout: default
-title: "PhonePe Interview Prep — System Design & Machine Coding"
-description: "Curated HLD and LLD problems asked at PhonePe. Digital Wallet, Delayed Triggers, Splitwise, Parking Lot, and more."
+title: "PhonePe Interview Prep — System Design, DSA & Machine Coding"
+description: "Curated HLD, DSA, and LLD problems asked at PhonePe. Digital Wallet, Delayed Triggers, Two Sum, Merge Intervals, Splitwise, Parking Lot."
 permalink: /companies/phonpe
 ---
 
@@ -54,6 +54,23 @@ PhonePe interviews typically consist of 2-3 DSA rounds, 1 machine coding (LLD) r
 | 1 | Parking Lot | 🟢 Beginner | [Read →](/lld/ParkingLot) |
 | 2 | Splitwise | 🟡 Intermediate | [Read →](/lld/Splitwise) |
 | 3 | Music Player | 🟡 Intermediate | [Read →](/lld/MusicPlayer) |
+
+---
+
+## DSA Problems Frequently Asked at PhonePe
+
+| # | Problem | Pattern | Link |
+|---|---------|---------|------|
+| 1 | Two Sum | HashMap | [LeetCode →](https://leetcode.com/problems/two-sum/) |
+| 2 | Valid Parentheses | Stack | [LeetCode →](https://leetcode.com/problems/valid-parentheses/) |
+| 3 | Merge Intervals | Sorting + Greedy | [LeetCode →](https://leetcode.com/problems/merge-intervals/) |
+| 4 | Longest Palindromic Substring | DP / Expand from Center | [LeetCode →](https://leetcode.com/problems/longest-palindromic-substring/) |
+| 5 | Binary Tree Level Order Traversal | BFS | [LeetCode →](https://leetcode.com/problems/binary-tree-level-order-traversal/) |
+| 6 | Min Stack | Stack Design | [LeetCode →](https://leetcode.com/problems/min-stack/) |
+| 7 | Group Anagrams | HashMap + Sorting | [LeetCode →](https://leetcode.com/problems/group-anagrams/) |
+| 8 | Find Minimum in Rotated Sorted Array | Binary Search | [LeetCode →](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) |
+| 9 | Maximum Subarray | Kadane's Algorithm | [LeetCode →](https://leetcode.com/problems/maximum-subarray/) |
+| 10 | Linked List Cycle | Fast & Slow Pointers | [LeetCode →](https://leetcode.com/problems/linked-list-cycle/) |
 
 ---
 

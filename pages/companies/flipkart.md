@@ -1,7 +1,7 @@
 ---
 layout: default
-title: "Flipkart Interview Prep — System Design & Machine Coding"
-description: "Curated HLD and LLD problems asked at Flipkart. URL Shortener, Twitter Feed, Parking Lot, Splitwise."
+title: "Flipkart Interview Prep — System Design, DSA & Machine Coding"
+description: "Curated HLD, DSA, and LLD problems asked at Flipkart. Twitter Feed, Merge K Sorted Lists, Coin Change, Parking Lot, Splitwise."
 permalink: /companies/flipkart
 ---
 
@@ -52,6 +52,23 @@ Flipkart's interview process for SDE-2+ includes 2 DSA rounds, 1 machine coding 
 |---|---------|-----------|------|
 | 1 | Parking Lot | 🟢 Beginner | [Read →](/lld/ParkingLot) |
 | 2 | Splitwise | 🟡 Intermediate | [Read →](/lld/Splitwise) |
+
+---
+
+## DSA Problems Frequently Asked at Flipkart
+
+| # | Problem | Pattern | Link |
+|---|---------|---------|------|
+| 1 | Merge K Sorted Lists | Heap / Divide & Conquer | [LeetCode →](https://leetcode.com/problems/merge-k-sorted-lists/) |
+| 2 | Longest Substring Without Repeating | Sliding Window | [LeetCode →](https://leetcode.com/problems/longest-substring-without-repeating-characters/) |
+| 3 | Coin Change | Dynamic Programming | [LeetCode →](https://leetcode.com/problems/coin-change/) |
+| 4 | Kth Largest Element | Quick Select / Heap | [LeetCode →](https://leetcode.com/problems/kth-largest-element-in-an-array/) |
+| 5 | Rotting Oranges | BFS on Grid | [LeetCode →](https://leetcode.com/problems/rotting-oranges/) |
+| 6 | Clone Graph | BFS/DFS + HashMap | [LeetCode →](https://leetcode.com/problems/clone-graph/) |
+| 7 | Word Break | DP + Trie | [LeetCode →](https://leetcode.com/problems/word-break/) |
+| 8 | Next Greater Element | Monotonic Stack | [LeetCode →](https://leetcode.com/problems/next-greater-element-i/) |
+| 9 | Flatten Nested List Iterator | Stack / Recursion | [LeetCode →](https://leetcode.com/problems/flatten-nested-list-iterator/) |
+| 10 | Edit Distance | 2D DP | [LeetCode →](https://leetcode.com/problems/edit-distance/) |
 
 ---
 
