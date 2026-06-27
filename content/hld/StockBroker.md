@@ -646,3 +646,7 @@ Address matching engine internals — price-time priority with a TreeMap per sid
 
 ---
 ## Related Designs
+
+- [Digital Wallet (PhonePe)](/hld/DigitalWallet) — payment orchestration, saga pattern, idempotency
+- [Uber / Lyft](/hld/Uber) — real-time matching with distributed locks
+- [BookMyShow](/hld/BookMyShow) — seat reservation concurrency, exactly-once processing

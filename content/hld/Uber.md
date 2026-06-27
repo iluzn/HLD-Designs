@@ -766,3 +766,8 @@ Discuss multi-region dispatch, surge pricing zone calculations using H3 hexagons
 
 ---
 ## Related Designs
+
+- [Zomato / Uber Eats](/hld/Zomato) — similar real-time dispatch and location tracking
+- [Notification System](/hld/NotificationSystem) — multi-channel push delivery for ride updates
+- [Job Scheduler](/hld/JobScheduler) — distributed task scheduling for timeout handling
+- [Stock Broker](/hld/StockBroker) — similar distributed locking and exactly-once patterns
