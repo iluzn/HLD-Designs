@@ -236,16 +236,16 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
 <section class="hero">
     <div class="hero-badge-line">For engineers interviewing at Amazon, Google, Meta, Uber, Stripe & startups</div>
     <h1>System Design Prep That <em>Actually Works</em></h1>
-    <p>Production-grade HLD, machine coding, and DSA — with architecture diagrams, deep dives, and the patterns interviewers test. Trusted by 2,000+ engineers.</p>
-    <a class="hero-cta" href="/hld">Start with the Most-Asked Design →</a>
-    <div class="hero-sub">Free &middot; No signup &middot; New designs weekly &middot; <a href="/system-design-interview-guide" style="color:var(--accent);text-decoration:none;">📖 Interview Prep Guide</a></div>
+    <p>Production-grade HLD, machine coding, and DSA — with architecture diagrams, deep dives, and the trade-offs interviewers actually test.</p>
+    <a class="hero-cta" href="/system-design-interview-guide">Start Your Prep Roadmap →</a>
+    <div class="hero-sub">Free &middot; No signup &middot; New designs weekly</div>
 
     <!-- Preview card — shows what you get -->
-    <a href="/hld/Zomato" class="hero-preview">
+    <a href="/hld/Uber" class="hero-preview">
         <div class="preview-card">
-            <span class="preview-badge">Most Popular</span>
-            <strong>🍔 Design Zomato / Uber Eats — Food Delivery</strong>
-            <span class="preview-topics">Elasticsearch · Redis Geo · Live Tracking · Dispatch</span>
+            <span class="preview-badge">New</span>
+            <strong>🚗 Design Uber / Lyft — Ride Sharing Platform</strong>
+            <span class="preview-topics">Redis Geo · WebSocket · Distributed Locking · Surge Pricing · H3</span>
         </div>
     </a>
 </section>
@@ -256,6 +256,26 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
     <div class="stat"><strong>5</strong><span>LLD Problems</span></div>
     <div class="stat"><strong>225+</strong><span>DSA Problems</span></div>
     <div class="stat"><strong>3</strong><span>Languages</span></div>
+</div>
+
+<!-- WHY THIS SITE — value proposition -->
+<div class="section">
+    <div class="section-title">Why engineers prefer SystemCraft</div>
+    <div class="section-sub">Not just another "Design X" list. Here's what's different.</div>
+    <div class="popular">
+        <div class="pop-card" style="cursor:default;">
+            <h4>🎯 Bad → Good → Great Format</h4>
+            <p>Every deep dive shows WHY the naive approach fails before the fix. You learn trade-offs, not just answers.</p>
+        </div>
+        <div class="pop-card" style="cursor:default;">
+            <h4>📐 Actual Architecture Diagrams</h4>
+            <p>Mermaid flowcharts and sequence diagrams you can use directly in interviews. Not just walls of text.</p>
+        </div>
+        <div class="pop-card" style="cursor:default;">
+            <h4>🏢 Interview-Ready Depth</h4>
+            <p>Each design covers exactly what a 45-min interview expects: requirements, API, incremental architecture, and 4-6 deep dives.</p>
+        </div>
+    </div>
 </div>
 
 <!-- PICK YOUR PATH — guided entry points -->
@@ -296,30 +316,30 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
             <p>Search, dispatch, live tracking, Redis Geo, Elasticsearch, WebSockets. Full Staff+ HLD.</p>
             <div class="meta"><span class="tag">HLD</span><span class="tag tag-difficulty-hard">Advanced</span></div>
         </a>
+        <a class="pop-card" href="/hld/NotificationSystem">
+            <h4>🔔 Notification System</h4>
+            <p>Multi-channel push/email/SMS, Kafka, template service, engagement tracking, 11 deep dives.</p>
+            <div class="meta"><span class="tag">HLD</span><span class="tag tag-difficulty-medium">Intermediate</span></div>
+        </a>
         <a class="pop-card" href="/hld/StockBroker">
             <h4>📈 Stock Broker (Robinhood / Zerodha)</h4>
             <p>Order matching engine, CQRS event sourcing, exactly-once delivery, Kafka, real-time notifications.</p>
             <div class="meta"><span class="tag">HLD</span><span class="tag tag-difficulty-hard">Advanced</span></div>
         </a>
-        <a class="pop-card" href="/hld/NotificationSystem">
-            <h4>🔔 Notification System</h4>
-            <p>Multi-channel push/email/SMS, Kafka, template service, engagement tracking, 11 deep dives.</p>
-            <div class="meta"><span class="tag">HLD</span><span class="tag tag-difficulty-medium">Intermediate</span></div>
+        <a class="pop-card" href="/system-design-interview-guide">
+            <h4>🗺️ System Design Interview Guide</h4>
+            <p>Complete roadmap: what to study, in what order, how long it takes. Start here if you're new.</p>
+            <div class="meta"><span class="tag">Guide</span><span class="tag tag-difficulty-easy">Start Here</span></div>
         </a>
         <a class="pop-card" href="/cheatsheet">
             <h4>📋 Quick-Fire 50 Cheatsheet</h4>
             <p>50 problems, pattern + one-line approach + complexity. The page people bookmark before every interview.</p>
             <div class="meta"><span class="tag">DSA</span><span class="tag tag-difficulty-easy">Start Here</span></div>
         </a>
-        <a class="pop-card" href="/dsa-fundamentals">
-            <h4>🧠 DSA Fundamentals — 12 Patterns</h4>
-            <p>The 12 core patterns with triggers, pseudocode, and multi-language implementations. Read before solving.</p>
-            <div class="meta"><span class="tag">DSA</span><span class="tag tag-difficulty-easy">Start Here</span></div>
-        </a>
-        <a class="pop-card" href="/lld-fundamentals">
-            <h4>📐 LLD Fundamentals — SOLID & Patterns</h4>
-            <p>SOLID principles, 8 design patterns, concurrency, state machines, and the 90-minute approach.</p>
-            <div class="meta"><span class="tag">LLD</span><span class="tag tag-difficulty-easy">Start Here</span></div>
+        <a class="pop-card" href="/hld/DigitalWallet">
+            <h4>💳 Digital Wallet (PhonePe / Venmo)</h4>
+            <p>Double-entry ledger, saga pattern, idempotency, distributed transactions. Fintech favorite.</p>
+            <div class="meta"><span class="tag">HLD</span><span class="tag tag-difficulty-hard">Advanced</span></div>
         </a>
     </div>
 </div>
@@ -328,20 +348,20 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
 <div class="section">
     <div class="section-title">🆕 Recently Added</div>
     <div class="popular">
-        <a class="pop-card" href="/hld/StockBroker">
-            <h4>📈 Stock Broker (Robinhood / Zerodha)</h4>
-            <p>Order matching engine, CQRS event sourcing, exactly-once delivery, Kafka pipelines.</p>
+        <a class="pop-card" href="/hld/Uber">
+            <h4>🚗 Design Uber / Lyft (Ride Sharing)</h4>
+            <p>Real-time matching, Redis Geo sharding, surge pricing with H3 hexagons, WebSocket tracking.</p>
+            <div class="meta"><span class="tag">HLD</span><span class="tag tag-difficulty-hard">Advanced</span></div>
+        </a>
+        <a class="pop-card" href="/hld/BookMyShow">
+            <h4>🎬 Design BookMyShow / Ticketmaster</h4>
+            <p>Seat locking, concurrent booking, distributed transactions, payment orchestration.</p>
             <div class="meta"><span class="tag">HLD</span><span class="tag tag-difficulty-hard">Advanced</span></div>
         </a>
         <a class="pop-card" href="/lld/MusicPlayer">
             <h4>🎵 Music Player (LLD)</h4>
             <p>Shuffle without repeats, play/pause, history tracking. Fisher-Yates + Strategy + Observer.</p>
             <div class="meta"><span class="tag">LLD</span><span class="tag tag-difficulty-medium">Machine Coding</span></div>
-        </a>
-        <a class="pop-card" href="/hld/JobScheduler">
-            <h4>⏰ Distributed Job Scheduler</h4>
-            <p>Redis ZSET hot window, leader election, retries, and 8 deep dives.</p>
-            <div class="meta"><span class="tag">HLD</span><span class="tag tag-difficulty-hard">Advanced</span></div>
         </a>
     </div>
 </div>
