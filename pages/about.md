@@ -91,3 +91,4 @@ Found a mistake? Have a better approach for a deep dive? Want to suggest a new d
 ## Connect
 
 - Website: [systemcraft.in](https://systemcraft.in)
+- Email: [systemcraft.in@gmail.com](mailto:systemcraft.in@gmail.com)
