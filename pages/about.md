@@ -68,7 +68,7 @@ Full runnable solutions with:
 - **18** system design problems (Beginner → Advanced)
 - **5** machine coding problems with full code
 - **225+** DSA problems with multi-language solutions
-- **2,000+** engineers using this monthly
+- **10,000+** engineers using this monthly
 - **0** paywalls
 
 ---
