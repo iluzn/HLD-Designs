@@ -7,119 +7,210 @@ description: "System design for a gaming leaderboard - Redis sorted sets, rank q
 
 # Designing a Real-Time Leaderboard
 
-⚡ **Difficulty:** Beginner
-📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Caching
-⏱️ **Reading time:** 10 min
+⚡ **Difficulty:** Beginner 🏷️ **Topics:** Redis Sorted Sets, Sharding, Real-Time Updates 🏢 **Asked at:** Dream11, Riot Games, Amazon, Google
 
 ---
 
-## TL;DR
+## 1. Understanding the Problem
 
-A leaderboard shows ranked players by score. Redis Sorted Sets give you O(log N) score updates and O(log N) rank queries — perfect for real-time rankings of millions of players.
+You're building a game or competition with millions of players. Players earn scores, and you need to show a ranked leaderboard in real-time. Anyone can check their rank, see the top players, or see who's around them — all in under 50ms.
+
+**Real examples:** Dream11 fantasy cricket (live scoring), Riot Games ranked mode (100M+ players), Duolingo weekly leaderboards, Strava segments.
+
+---
+
+## 1.5. Naive First Cut
 
 ```mermaid
 flowchart LR
-    GAME["Game Server<br/>player scores"]:::client
-    API["Leaderboard API"]:::service
-    REDIS[("Redis Sorted Set<br/>score to player")]:::data
-    USER["Player<br/>views rank"]:::client
+    GAME["Game Server"]:::client
+    DB[("Postgres<br/>players table")]:::data
+    USER["Player"]:::client
 
-    GAME --> API
-    API --> REDIS
-    USER --> API
+    GAME --> DB
+    USER --> DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
-    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-**In 3 sentences:** Player completes a level → game server sends the new score. Redis Sorted Set stores `(score, playerId)` and automatically maintains rank order. To get "top 100" or "my rank," Redis answers in microseconds.
-
----
-
-## The Problem
-
-You're building a game or competition with millions of players. You need:
-1. Update a player's score
-2. Get the top N players
-3. Get a specific player's rank
-4. Get players around a specific rank (e.g., rank 99–101)
-
-All in real-time (< 50ms).
-
----
-
-## Prior Art We're Drawing From
-
-- **Redis Sorted Sets (Internal Design)** — Skip-list backed sorted set giving O(log N) for all rank operations. The de-facto standard for real-time leaderboards. Used by Dream11, Riot Games, and most gaming platforms. ([Redis documentation](https://redis.io/docs/data-types/sorted-sets/))
-- **Riot Games Leaderboard** — Handles 100M+ ranked players across multiple regions with composite scoring (MMR + LP). Uses Redis with regional sharding and periodic compaction. ([Riot Engineering](https://technology.riotgames.com/))
-- **Discord Activity Status** — Real-time presence and activity leaderboards for millions of concurrent users using Redis pub/sub + sorted sets. ([Discord Engineering blog](https://discord.com/blog/how-discord-stores-trillions-of-messages))
-
-## Scale Estimation (Back-of-Envelope)
-
-- **Users:** 10M players, 1M concurrent during live events
-- **Write QPS:** 50K score updates/sec during live events (game ticks, match completions)
-- **Read QPS:** 100K rank queries/sec (leaderboard page loads, "my rank" checks)
-- **Storage:** ~100GB score data/year (playerId + score + metadata per game mode)
-- **Bandwidth:** ~5 Gbps at peak for leaderboard API responses during live tournaments
-
----
-
-## Why Not Just Use a Database?
+Store scores in a SQL table. Query rankings with `ORDER BY score DESC`.
 
 ```sql
 -- Get top 10
 SELECT * FROM players ORDER BY score DESC LIMIT 10;
 
 -- Get my rank
-SELECT COUNT(*) + 1 FROM players WHERE score > (SELECT score FROM players WHERE id = ?);
+SELECT COUNT(*) + 1 FROM players WHERE score > (SELECT score FROM players WHERE id = 42);
 ```
 
-**Problems:**
-- ❌ `ORDER BY score DESC` on 10M rows = full table sort every query
-- ❌ "My rank" requires counting ALL players with higher score = O(N)
-- ❌ Under 10K QPS these queries would melt the database
-- ❌ Adding an index helps reads but every score update moves the row in the index
+**Why this breaks:**
+
+- `ORDER BY score DESC` on 10M rows = full table sort every query
+- "My rank" requires counting ALL players with higher scores = O(N) per query
+- At 100K rank queries/sec during a live event, the database melts
+- Every score update reshuffles the index — write-heavy workloads degrade reads
+- No way to serve "ranks around me" efficiently without scanning
+
+We need a data structure that keeps players sorted automatically and answers rank queries in O(log N), not O(N).
 
 ---
 
-## The Solution: Redis Sorted Set
+## 1.7. Prior Art We're Drawing From
 
-> 💡 **Redis Sorted Set (ZSET)** stores members with a score. Members are unique; scores can repeat. Redis keeps them sorted internally using a skip list — O(log N) for insert, delete, and rank lookup.
-
-### Key Operations
-
-```
-ZADD leaderboard 1500 "player_42"     → add/update score
-ZREVRANK leaderboard "player_42"      → get rank (0-indexed, highest first)
-ZREVRANGE leaderboard 0 9 WITHSCORES  → top 10
-ZREVRANGE leaderboard 98 102 WITHSCORES → ranks 99-103 (around me)
-ZCARD leaderboard                     → total players
-ZSCORE leaderboard "player_42"        → get score
-```
-
-### All operations are O(log N)!
-
-For 10 million players: log₂(10M) ≈ 23 comparisons. Microseconds.
+- **Redis Sorted Sets** — Skip-list backed sorted set giving O(log N) for all rank operations. The de-facto standard for real-time leaderboards. Used by Dream11, Riot Games, and most gaming platforms. ([Redis documentation](https://redis.io/docs/data-types/sorted-sets/))
+- **Riot Games Leaderboard** — Handles 100M+ ranked players across multiple regions with composite scoring (MMR + LP). Uses Redis with regional sharding. ([Riot Engineering](https://technology.riotgames.com/))
+- **Discord Activity Status** — Real-time presence and activity leaderboards for millions of concurrent users using Redis pub/sub + sorted sets. ([Discord Engineering](https://discord.com/blog/how-discord-stores-trillions-of-messages))
 
 ---
 
-## Architecture
+## 2. Functional Requirements
 
-**New components we need:**
+### Core (Top 3)
 
-1. **Game Servers** — the backend that runs your game logic and knows when a player's score changes.
-2. **Leaderboard Service** — an API layer that translates "update score" and "get rank" requests into Redis commands.
-3. **Redis Sorted Set** — the star of the show. A data structure that keeps players ordered by score automatically, giving O(log N) rank lookups. 💡 *Think of it as a self-sorting list — you add or update a score, and Redis instantly knows where that player ranks among millions.*
-4. **Postgres** — the durable source of truth for score history and audit trail. If Redis goes down, we rebuild from here.
+1. **Update a player's score** — when a player completes an action (wins a match, answers a question), their score changes
+2. **Get top N players** — show the leaderboard: top 10, top 100, etc.
+3. **Get a player's rank** — "what position am I?" among all players
+
+### Below the Line
+
+- Get players around a specific rank (e.g., rank 99–101)
+- Multiple leaderboards (daily, weekly, all-time)
+- Real-time push updates (WebSocket) when ranks change
+- Anti-cheat validation
+
+---
+
+## 3. Non-Functional Requirements
+
+| NFR | Target |
+|---|---|
+| **Latency** | < 50ms for rank queries and score updates |
+| **Throughput** | 50K score updates/sec + 100K rank reads/sec during live events |
+| **Availability** | 99.99% — leaderboard is the main engagement feature |
+| **Scale** | 10M+ players per leaderboard |
+
+---
+
+## Scale Estimation
+
+- **Users:** 10M players, 1M concurrent during live events
+- **Write QPS:** 50K score updates/sec during live events
+- **Read QPS:** 100K rank queries/sec (leaderboard page loads)
+- **Storage:** ~6GB in Redis for 10M entries (key + score + overhead)
+
+---
+
+## 4. Core Entities
+
+- **Player** — user with a unique ID and a current score
+- **Score** — numeric value representing the player's performance
+- **Leaderboard** — a named sorted collection (e.g., `leaderboard:weekly:2026-W26`)
+- **Rank** — player's position (1 = highest score)
+
+---
+
+## 5. API / System Interface
+
+```text
+POST /v1/scores
+  Body: { playerId, score, gameId }
+  Response: 200 { newRank: 1547 }
+
+GET /v1/leaderboard?top=100
+  Response: [{ playerId, score, rank }, ...]
+
+GET /v1/leaderboard/rank?playerId=player_42
+  Response: { rank: 1547, score: 1500 }
+
+GET /v1/leaderboard/around?playerId=player_42&range=5
+  Response: [5 above, player_42, 5 below] with ranks
+```
+
+> **Security note:** Score updates should only come from trusted game servers (server-to-server auth), never directly from client apps. Clients can only READ ranks.
+
+---
+
+## 6. High-Level Design
+
+Let's build this incrementally, one requirement at a time.
+
+### FR1: Update a Player's Score
+
+The first thing we need: when a player scores, update the leaderboard instantly. The naive SQL approach fails at scale (see above). We need a data structure designed for sorted data with fast updates.
+
+**The solution: Redis Sorted Set (ZSET).** 💡 *A Redis Sorted Set stores (score, member) pairs and keeps them sorted automatically. Internally it uses a skip list — like a linked list with "express lanes" — giving O(log N) for insert, update, and rank lookup. For 10M players: log₂(10M) ≈ 23 comparisons. Microseconds.*
+
+**New components:**
+
+1. **Game Server** — the backend running your game logic. Knows when a player's score changes. Authoritative source of truth for scores.
+2. **Leaderboard Service** — API layer that translates business requests into Redis commands.
+3. **Redis Sorted Set** — the star. `ZADD` to add/update scores, maintains sorted order automatically.
 
 ```mermaid
 flowchart LR
-    GAME["Game Servers"]:::client
+    GAME["Game Server"]:::client
     API["Leaderboard Service"]:::service
-    REDIS[("Redis Sorted Set<br/>ZADD ZREVRANK ZREVRANGE")]:::data
-    DB[("Postgres<br/>historical scores")]:::data
-    USER["Players viewing rankings"]:::client
+    REDIS[("Redis Sorted Set<br/>ZADD")]:::data
+
+    GAME --> API
+    API --> REDIS
+
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+```
+
+**Step-by-step flow:**
+
+1. Player wins a match → Game Server calculates new score (1500)
+2. Game Server calls Leaderboard Service: `POST /scores { playerId: "player_42", score: 1500 }`
+3. Leaderboard Service executes: `ZADD leaderboard 1500 "player_42"`
+4. Redis updates the skip list — player is now in sorted position. Done in ~0.1ms.
+5. Service returns the player's new rank (optional: `ZREVRANK leaderboard "player_42"`)
+
+**Why Redis and not a database?** At 50K writes/sec during live events, a database index rebuild would lag behind. Redis keeps everything in memory with O(log N) operations — microsecond response regardless of dataset size.
+
+---
+
+### FR2: Get Top N Players
+
+Now players want to see the leaderboard. "Show me the top 100." With our Redis Sorted Set already maintaining sorted order, this is trivial.
+
+**No new components needed** — Redis already has this built in.
+
+**Step-by-step flow:**
+
+1. Player opens leaderboard page → `GET /leaderboard?top=100`
+2. Leaderboard Service executes: `ZREVRANGE leaderboard 0 99 WITHSCORES`
+3. Redis returns 100 players sorted by score (highest first) — O(log N + 100)
+4. Service returns the ranked list to the client
+
+```mermaid
+sequenceDiagram
+    participant U as Player
+    participant API as Leaderboard Service
+    participant R as Redis
+
+    U->>API: GET /leaderboard?top=100
+    API->>R: ZREVRANGE leaderboard 0 99 WITHSCORES
+    R-->>API: 100 players with scores
+    API-->>U: Ranked list with positions
+```
+
+**But what about durability?** Redis is in-memory — if it restarts, the leaderboard is gone. We need a persistent backup.
+
+**New component:**
+
+4. **Postgres** — durable source of truth. Every score update is also written to Postgres. If Redis goes down, we rebuild the Sorted Set from the database.
+
+```mermaid
+flowchart LR
+    GAME["Game Server"]:::client
+    API["Leaderboard Service"]:::service
+    REDIS[("Redis Sorted Set<br/>live rankings")]:::data
+    DB[("Postgres<br/>score history")]:::data
+    USER["Player"]:::client
 
     GAME --> API
     API --> REDIS
@@ -131,202 +222,182 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-**Why two stores instead of just one database?** Redis gives us microsecond rank lookups (essential for real-time leaderboards at 10K QPS), but it's volatile — a restart could lose data. Postgres gives us durability and SQL flexibility (for "show me all scores from last Tuesday"), but it can't answer "what's player X's rank among 10M players?" without an expensive full-table sort. Together they cover both needs: speed for live rankings, permanence for history.
-
-**Why two stores?**
-- **Redis:** live leaderboard. Fast reads and writes. Volatile (can be rebuilt from DB).
-- **Postgres:** source of truth. Stores score history, audit trail, handles persistence.
+**Why two stores?** Redis gives microsecond rank lookups (essential for 100K QPS). Postgres gives durability and SQL flexibility (for "show me all scores from last Tuesday"). Together: speed for live rankings, permanence for history.
 
 ---
 
-## API Design
+### FR3: Get a Player's Rank
 
+The most frequent query: "What's MY rank?" With 10M players, this must be instant.
+
+**Still no new components** — Redis Sorted Set handles this natively.
+
+```text
+ZREVRANK leaderboard "player_42"  → returns 1546 (0-indexed)
 ```
-POST /v1/scores
-Body: { playerId, score }
-→ updates the leaderboard
 
-GET /v1/leaderboard?top=100
-→ top 100 players with scores and ranks
+O(log N). For 10M players: ~23 operations internally. Microseconds.
 
-GET /v1/leaderboard/rank?playerId=player_42
-→ { rank: 1547, score: 1500 }
+**Step-by-step flow:**
 
-GET /v1/leaderboard/around?playerId=player_42&range=5
-→ 5 players above and below player_42
+1. Player taps "My Rank" → `GET /leaderboard/rank?playerId=player_42`
+2. Service executes: `ZREVRANK leaderboard "player_42"` → returns 1546
+3. Service also gets score: `ZSCORE leaderboard "player_42"` → returns 1500
+4. Returns `{ rank: 1547, score: 1500 }` (converting 0-indexed to 1-indexed)
+
+**"Players around me"** is equally simple:
+```text
+ZREVRANGE leaderboard 1541 1551 WITHSCORES  → 11 players around rank 1547
 ```
+
+This completes all three core functional requirements with just Redis + Postgres. Now let's address scale.
 
 ---
 
-## Flow: Score Update
+## 6.5. Core Flows
+
+### Flow: Score Update (Full)
 
 ```mermaid
 sequenceDiagram
-    autonumber
     participant G as Game Server
-    participant API as Leaderboard API
+    participant API as Leaderboard Service
     participant R as Redis
     participant DB as Postgres
 
-    G->>API: POST score playerId=42 score=1500
+    G->>API: POST /scores playerId=42 score=1500
     API->>R: ZADD leaderboard 1500 player_42
     R-->>API: OK
-    API->>DB: INSERT INTO scores (player_id score ts)
-    API-->>G: 200 new rank=1547
+    API->>R: ZREVRANK leaderboard player_42
+    R-->>API: 1546
+    API->>DB: INSERT INTO scores (player_id, score, ts)
+    DB-->>API: OK
+    API-->>G: 200 newRank=1547
 ```
 
-## Flow: Get Top 10
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant U as Player
-    participant API as Leaderboard API
-    participant R as Redis
-
-    U->>API: GET leaderboard top=10
-    API->>R: ZREVRANGE leaderboard 0 9 WITHSCORES
-    R-->>API: 10 players with scores
-    API-->>U: ranked list
-```
+**Non-obvious failure:** What if the Redis write succeeds but Postgres insert fails? The live leaderboard shows the new score, but if Redis restarts later, this score is lost during rebuild. Solution: log failed DB writes to a dead-letter queue and retry. Or make the DB write synchronous (acceptable at 50K WPS for a single INSERT).
 
 ---
 
-## Deep Dives
+## 7. Deep Dives
 
-### Deep Dive 1: Regional Sharding
+### Deep Dive 1: Regional Sharding — What Happens During a Global Live Event
 
-When your game operates across multiple geographies (US, EU, Asia), you shard by region to keep writes local and latency low.
+**Problem:** Your game operates worldwide. Players in Asia, Europe, and US all compete. If Redis lives in `us-east-1`, Asian players get 200ms latency on every interaction. That's unacceptable for "real-time."
 
-**Bad — Single global Redis:**
-One Redis in `us-east-1` serves all players worldwide. EU and Asia players get 150-300ms latency on every score update. Under 50K WPS during live events, this single node becomes a bottleneck.
+**Bad:** Single global Redis in one region. All players hit it remotely. High latency for 2/3 of the world.
 
-**Good — Regional Redis per geography:**
-Each region runs its own Sorted Set. Players write to their nearest shard — sub-5ms latency.
+**Good:** Regional Redis instances. Each region has its own leaderboard. Writes are local (<5ms). Players see their regional ranking instantly.
 
-```
-Shard 1 (US):     leaderboard:us       → ZADD, ZREVRANGE
-Shard 2 (EU):     leaderboard:eu       → ZADD, ZREVRANGE
-Shard 3 (Asia):   leaderboard:asia     → ZADD, ZREVRANGE
-```
-
-Routing is simple: user metadata (region from signup or IP geo-lookup) determines which shard to hit. Regional leaderboard queries only touch one shard — O(log N) as usual.
-
-**Great — Regional shards + global aggregation (see Deep Dive 2 below):**
-Regional writes stay fast. A background aggregator builds the global view from regional data with 100-500ms lag. This is what Riot Games and Dream11 do in production.
+**Great:** Regional Redis for writes + async global aggregation for unified rankings. A Kafka-based pipeline merges regional scores into a global leaderboard with 100-500ms lag. For a leaderboard, this is invisible to users.
 
 ```mermaid
 flowchart LR
     G1["Game Server US"]:::client
     G2["Game Server EU"]:::client
-    G3["Game Server Asia"]:::client
-    API["Leaderboard Service"]:::service
     R1[("Redis US")]:::data
     R2[("Redis EU")]:::data
-    R3[("Redis Asia")]:::data
+    K["Kafka<br/>score events"]:::async
+    AGG["Global Aggregator"]:::service
+    RG[("Redis Global")]:::data
 
-    G1 --> API
-    G2 --> API
-    G3 --> API
-    API --> R1
-    API --> R2
-    API --> R3
+    G1 --> R1
+    G2 --> R2
+    R1 --> K
+    R2 --> K
+    K --> AGG
+    AGG --> RG
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
 ```
+
+**Consistency tradeoff:** The global leaderboard lags regional by 100-500ms (Kafka consumer lag). For a leaderboard, this is perfectly acceptable — no one notices their global rank updating 300ms late.
 
 ---
 
-### Deep Dive 2: Global Leaderboard for Live Events
+### Deep Dive 2: Tie-Breaking — When Two Players Have the Same Score
 
-The hard problem: during a global tournament, millions of players across all regions want to see a **single unified leaderboard** in real-time. You can't just `ZREVRANGE` across multiple shards — Redis Sorted Sets don't merge natively.
+**Problem:** Redis Sorted Sets break ties lexicographically by member name. If Player A and Player B both have score 1500, their rank order is alphabetical. But you probably want "whoever scored first ranks higher."
 
-**Bad — Query all shards on every read:**
-Fan-out to N shards, get top-K from each, merge-sort in the app layer. At 100K read QPS this creates N × 100K internal requests. Latency spikes, tail latency blows up, and you're doing redundant work for every client asking for the same top 10.
+**Bad:** Accept lexicographic tie-breaking. Players named "Aaron" always rank above "Zeus" on ties. Not fair.
 
-**Good — Dual-write to a dedicated global shard:**
-Every score update writes to BOTH the regional shard AND a global shard:
+**Good:** Encode timestamp into the score itself:
 
 ```
-Score Update → ZADD leaderboard:us 1500 player_42
-            → ZADD leaderboard:global 1500 player_42
+effective_score = actual_score × 10_000_000_000 + (MAX_TIMESTAMP - timestamp)
 ```
 
-Global top-K query hits one shard — O(log N). Works up to ~50K WPS. Simple and strongly consistent.
+Higher effective score wins. For the same actual score, earlier timestamp produces a higher effective score. Redis stores scores as float64 — this works for scores up to ~100M with millisecond precision.
 
-**Tradeoff:** 2× write amplification. If global shard goes down, you lose the unified view until rebuilt.
+**Great:** For complex tie-breaking (score → then win-rate → then games played), use a composite score with weighted fields packed into a single number. Alternatively, maintain a secondary sorted set for the tiebreaker dimension and resolve in the application layer.
 
-**Great — Tiered architecture with async aggregation:**
+---
 
-For massive live events (1M+ concurrent, 100K+ WPS), the dual-write approach saturates the global shard. Instead, use an event-driven pipeline:
+### Deep Dive 3: Weekly Resets and Historical Leaderboards
+
+**Problem:** Many games have weekly/seasonal leaderboards that reset. How do you atomically start a fresh leaderboard without downtime?
+
+**Bad:** `DEL leaderboard` → create new one. Between delete and first writes, players see empty leaderboard.
+
+**Good:** Use time-bucketed keys: `leaderboard:weekly:2026-W26`. When the week changes, new writes go to the new key. Old key stays readable until archived.
+
+**Great:** Redis `RENAME` for atomic swap:
+
+```
+RENAME leaderboard:current leaderboard:archive:2026-W25
+```
+
+This is atomic — zero gap. The current leaderboard is now the archive, and a new empty `leaderboard:current` can be created. Persist the archive to Postgres, then delete from Redis.
+
+---
+
+### Deep Dive 4: Read Amplification During Live Events
+
+**Problem:** During a tournament final, 1M players all load the leaderboard simultaneously. They're all asking for the same "top 100." That's 1M identical `ZREVRANGE` calls hitting Redis.
+
+**Bad:** Let all 1M requests hit Redis directly. Even though each ZREVRANGE is O(log N + 100), at 1M QPS the network bandwidth saturates the Redis node.
+
+**Good:** Application-level cache. Cache the "top 100" result with a 1-second TTL. 999,999 of those 1M requests are served from cache. Only 1 actually hits Redis.
+
+**Great:** Dedicated "Top-K Cache" service with 1s TTL + WebSocket push for live updates. The top 100 is computed once per second and pushed to all connected clients. Zero polling, zero Redis load from viewers.
+
+---
+
+## 7.5. Design Self-Audit
+
+| Question | Answer |
+|---|---|
+| Hot key problem? | The leaderboard IS a single key. But Redis ZSET handles 100K+ ops/sec per key. For extreme load, cache top-N results. |
+| Redis goes down? | Rebuild from Postgres. Takes minutes for 10M entries. During rebuild, serve stale data from a read replica or return "temporarily unavailable." |
+| Memory budget? | 10M entries × ~600 bytes = ~6GB in Redis. Comfortable for any cloud Redis instance. |
+| Anti-cheat? | Only game servers (authenticated) can submit scores. Never trust client-submitted scores. |
+
+---
+
+## 8. Final Architecture
 
 ```mermaid
 flowchart LR
-    G["Game Servers"]:::client
+    GAME["Game Servers"]:::client
     API["Leaderboard Service"]:::service
-    R1[("Redis Regional<br/>fast writes")]:::data
-    K["Kafka or Kinesis<br/>score events"]:::async
-    AGG["Global Aggregator<br/>consumes all regions"]:::service
-    RG[("Redis Global<br/>unified leaderboard")]:::data
-    CACHE["Top-K Cache<br/>1s TTL"]:::data
-    USER["Players viewing<br/>global rankings"]:::client
+    REDIS[("Redis Sorted Set<br/>live rankings")]:::data
+    DB[("Postgres<br/>score history")]:::data
+    CACHE["Top-K Cache<br/>1s TTL"]:::service
+    USER["Players"]:::client
 
-    G --> API
-    API --> R1
-    API --> K
-    K --> AGG
-    AGG --> RG
+    GAME --> API
+    API --> REDIS
+    API --> DB
     USER --> CACHE
-    RG --> CACHE
+    CACHE --> REDIS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
-    classDef async fill:#2d1f4e,stroke:#a78bfa,color:#e2e8f0
 ```
-
-**How it works:**
-1. Player scores → regional Redis (immediate, <5ms)
-2. Score events published to Kafka (fire-and-forget from write path)
-3. Global Aggregator consumes from all regional partitions
-4. Aggregator maintains a single global Sorted Set via ZADD
-5. A Top-K cache (1s TTL) sits in front for read amplification — millions of viewers all asking for the same top 10 are served from cache
-6. "My global rank" queries hit the global Redis directly (cache-aside with short TTL)
-
-**Consistency:** The global leaderboard lags regional writes by 100-500ms (Kafka consumer lag). For a leaderboard, this is perfectly acceptable — no one notices their rank updating 300ms late.
-
-**Failure handling:** If the aggregator crashes, it restarts from the last committed Kafka offset. The global Sorted Set might be slightly stale until it catches up, but regional leaderboards remain unaffected.
-
-| Scenario | Approach | Write Latency | Read Latency | Consistency |
-|---|---|---|---|---|
-| Regional only | One ZSET per region | <5ms | <5ms | Strong |
-| Global, moderate scale | Dual-write to global shard | <10ms | <10ms | Strong |
-| Global live event, massive | Tiered with Kafka + aggregator | <5ms (regional) | <10ms (cached) | Eventual (100-500ms) |
-
----
-
-### Deep Dive 3: Tie-Breaking
-
-Redis breaks ties **lexicographically by member name**. If you want "earlier score wins," encode timestamp into the score:
-
-```
-effective_score = actual_score * 10000000000 + (MAX_TIMESTAMP - timestamp)
-```
-
-Higher score wins. For same score, earlier timestamp has a higher effective score. This uses Redis's native float64 precision — works up to scores of ~100M with millisecond precision.
-
----
-
-### Deep Dive 4: Weekly/Monthly Resets
-
-```
-RENAME leaderboard leaderboard:archive:2026-W25
-DEL leaderboard:archive:2026-W25  (after persisting to DB)
-```
-
-Or use key per time period: `leaderboard:weekly:2026-W25`, `leaderboard:monthly:2026-06`. The `RENAME` is atomic — zero downtime between old and new leaderboard.
 
 ---
 
@@ -334,53 +405,41 @@ Or use key per time period: `leaderboard:weekly:2026-W25`, `leaderboard:monthly:
 
 | Term | What it is |
 |---|---|
-| **Redis Sorted Set (ZSET)** | Data structure that stores (score, member) pairs in sorted order. O(log N) operations. The backbone of real-time leaderboards everywhere. |
-| **Skip List** | The internal data structure Redis uses for sorted sets. Like a linked list with "express lanes" for fast traversal. |
-| **ZADD** | Redis command: add a member with a score (or update if member exists). |
-| **ZREVRANK** | Redis command: get the rank of a member (0 = highest score). |
-| **ZREVRANGE** | Redis command: get members by rank range (e.g., top 10 = range 0–9). |
-
----
-
-## Interview Cheat Sheet
-
-| Question | Answer |
-|---|---|
-| "How to get top N?" | `ZREVRANGE key 0 N-1` — O(log N + N) |
-| "How to get my rank?" | `ZREVRANK key playerId` — O(log N) |
-| "Why not SQL?" | `ORDER BY score DESC` is O(N log N); rank count is O(N). Redis is O(log N) for both. |
-| "How to handle 100M players?" | Single Redis ZSET handles it (~6GB). Shard if needed. |
-| "How to handle ties?" | Encode timestamp into score for tie-breaking |
-| "What about persistence?" | Redis for live reads. Postgres for source of truth and history. |
+| **Redis Sorted Set (ZSET)** | O(log N) operations for insert, rank lookup, and range queries. The backbone of real-time leaderboards. |
+| **Skip List** | Internal data structure Redis uses for sorted sets. Linked list with express lanes for fast traversal. |
+| **ZADD** | Add or update a member's score. O(log N). |
+| **ZREVRANK** | Get rank of a member (0 = highest score). O(log N). |
+| **ZREVRANGE** | Get members by rank range (top 10 = range 0-9). O(log N + K). |
 
 ---
 
 ## What's Expected at Each Level
 
-> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
-
 ### Mid-level
 
-Propose Redis Sorted Set for storing scores. Understand ZADD for updates and ZREVRANK for rank queries. Explain why SQL `ORDER BY` doesn't scale for real-time rank lookups — it's O(N log N) per query versus O(log N) in Redis.
+Propose Redis Sorted Set for real-time ranking. Understand ZADD for updates and ZREVRANK for rank queries. Explain why SQL `ORDER BY` doesn't scale — it's O(N log N) per query vs O(log N) in Redis. Know that Redis is in-memory and needs a persistent backup (Postgres).
 
 ### Senior
 
-Discuss regional sharding strategies — shard by geography so writes are local and latency stays sub-5ms. Explain tie-breaking with timestamp encoding in the score. Propose dual-write to a global shard for unified rankings, acknowledge the 2× write amplification tradeoff. Explain the separation of Redis (hot path) and Postgres (durability), and how Redis can be rebuilt from DB if it goes down.
+Discuss regional sharding — local Redis per geography for low-latency writes. Explain tie-breaking with timestamp encoding. Propose dual-store (Redis for speed, Postgres for durability). Discuss the "1M viewers asking for top 100" problem and how application-level caching with short TTL solves it.
 
 ### Staff+
 
-Design the tiered architecture for global live events: regional Redis for fast writes, Kafka for event streaming, a global aggregator consumer that builds the unified leaderboard asynchronously. Discuss the consistency tradeoff (100-500ms lag on global view vs. strong on regional). Address Top-K caching for read amplification during tournaments (millions asking for same top 10). Discuss WebSocket push for live rank updates (only push changes for visible positions). Cover anti-cheat server-authoritative scoring, weekly resets via atomic `RENAME`, and memory budgeting (~6GB per 100M entries).
+Design the tiered architecture for global live events: regional Redis + Kafka + global aggregator. Discuss WebSocket push for live rank updates (only push diffs for visible positions). Address read amplification with a dedicated Top-K cache. Cover anti-cheat (server-authoritative scoring), weekly resets via atomic `RENAME`, and memory budgeting (~6GB per 100M entries).
 
 ---
+
 ## 🎯 Key Takeaways
 
-- **Redis Sorted Set (ZSET)** gives O(log N) rank queries and updates
-- **ZREVRANGE** for top-N, **ZREVRANK** for "what's my rank" — both sub-millisecond
-- **Separate hot store (Redis) from cold store (DB)** for different access patterns
-- **WebSocket** for real-time rank updates without polling
+- **Redis Sorted Set** gives O(log N) rank queries and updates — microseconds for millions of players
+- **ZREVRANGE** for top-N, **ZREVRANK** for "my rank" — both sub-millisecond
+- **Separate hot store (Redis) from cold store (Postgres)** for speed + durability
+- **Cache the top-K** during live events to handle millions of identical reads
 
 ---
+
 ## Related Designs
-- [Rate Limiter](/hld/RateLimiter) — Redis patterns
-- [URL Shortener](/hld/URLShortner) — caching and CDN
-- [Twitter Feed](/hld/TwitterFeed) — real-time updates to users
+
+- [Rate Limiter](/hld/RateLimiter) — Redis patterns, counters, sliding windows
+- [URL Shortener](/hld/URLShortner) — caching and CDN patterns
+- [Twitter Feed](/hld/TwitterFeed) — real-time updates pushed to users
