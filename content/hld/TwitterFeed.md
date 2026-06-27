@@ -191,38 +191,76 @@ This is what Twitter, Instagram, and LinkedIn actually use.
 
 ## High-Level Architecture
 
-**New components we need:**
+Let's build this incrementally, adding components as each requirement demands them.
 
-1. **API Gateway** — authenticates users, applies rate limits, and routes requests to the right service.
-2. **Tweet Service** — handles tweet creation: stores the tweet, uploads media, and publishes an event for fan-out. 💡 *This service doesn't deliver tweets to followers — it just writes the tweet and announces "hey, a new tweet exists."*
-3. **Fan-out Service** — the heavy lifter. Receives "new tweet" events and pushes tweet IDs into every follower's timeline cache. 💡 *Fan-out = taking one event (a tweet) and delivering it to many recipients (followers). Like a newspaper printing press — one article, delivered to thousands of mailboxes.*
-4. **Feed Service** — handles "show me my feed" requests. Reads the user's pre-built timeline from cache, hydrates tweet IDs into full tweet objects, and applies ranking.
-5. **Kafka** — the event bus between Tweet Service and Fan-out. Decouples tweet creation from delivery so the poster doesn't wait while millions of timelines update.
-6. **Tweet Store (Cassandra)** — permanent storage for all tweets. Optimized for high write throughput and partition-per-tweet access patterns.
-7. **Timeline Cache (Redis sorted set per user)** — each user's pre-built feed stored as a sorted set of tweet IDs (scored by timestamp). Reading the feed is just `ZREVRANGE` — instant. 💡 *A Redis sorted set keeps elements ordered by score. Here, each tweet ID has its timestamp as the score, so "get latest 50 tweets" is a single O(log N + 50) command.*
-8. **Social Graph** — stores who-follows-whom. Queried during fan-out ("give me all 5000 followers of this user") and at read time ("which celebrities does this user follow?").
+### FR1: User Posts a Tweet
+
+The first interaction: a user types a tweet and hits Post. We need to store it durably and announce to the system that a new tweet exists.
+
+**New components:**
+
+1. **API Gateway** — authenticates, rate-limits, routes. Entry point for all client requests.
+2. **Tweet Service** — handles tweet creation: validates content, stores the tweet, uploads media references. 💡 *This service doesn't deliver tweets to followers — it just writes the tweet and announces "hey, a new tweet exists."*
+3. **Tweet Store (Cassandra)** — permanent storage for all tweets. Optimized for high write throughput.
+4. **Kafka** — event bus. Tweet Service publishes `TweetCreated` events for downstream consumers. Decouples posting from delivery.
 
 ```mermaid
 flowchart LR
-    POSTER["Poster"]:::client
-    READER["Reader"]:::client
+    POSTER["User"]:::client
     GW["API Gateway"]:::edge
     TS["Tweet Service"]:::service
-    FANOUT["Fan-out Service"]:::service
-    FEED["Feed Service"]:::service
-    K["Kafka"]:::async
     TDB[("Tweet Store<br/>Cassandra")]:::data
-    CACHE[("Timeline Cache<br/>Redis sorted set per user")]:::data
-    FOLLOW[("Social Graph<br/>who follows whom")]:::data
+    K["Kafka"]:::async
 
     POSTER --> GW
     GW --> TS
     TS --> TDB
     TS --> K
-    K --> FANOUT
-    FANOUT --> CACHE
-    FANOUT --> FOLLOW
 
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
+```
+
+**Step-by-step:**
+
+1. User taps Post → request hits API Gateway
+2. Gateway authenticates (JWT) and forwards to Tweet Service
+3. Tweet Service stores the tweet in Cassandra (permanent record)
+4. Tweet Service publishes `TweetCreated` event to Kafka (includes tweetId, authorId, timestamp)
+5. Responds to user: "Tweet posted!" in ~50ms
+
+**Why Kafka?** The poster shouldn't wait while we update millions of follower timelines. Kafka decouples creation from delivery — the user gets instant confirmation, and fan-out happens asynchronously.
+
+---
+
+### FR2: User Opens Their Feed — Pre-Built Timelines
+
+Now users want to see their feed. The naive approach (query all followees' tweets on every request) is too slow at scale. Instead, we pre-build each user's timeline so reading it is just a cache lookup.
+
+**New components:**
+
+5. **Fan-out Service** — consumes `TweetCreated` events from Kafka and pushes tweet IDs into every follower's pre-built timeline.
+6. **Social Graph** — stores who-follows-whom. Queried during fan-out: "give me all 5000 followers of this user."
+7. **Timeline Cache (Redis sorted set)** — each user's feed stored as a sorted set of tweet IDs scored by timestamp. Reading the feed = `ZREVRANGE` — instant. 💡 *A Redis sorted set keeps elements ordered by score. "Get latest 50 tweets" is a single O(log N + 50) command.*
+8. **Feed Service** — handles "show me my feed" requests. Reads from cache, hydrates tweet IDs into full objects, applies ranking.
+
+```mermaid
+flowchart LR
+    K["Kafka"]:::async
+    FANOUT["Fan-out Service"]:::service
+    GRAPH[("Social Graph<br/>followers")]:::data
+    CACHE[("Timeline Cache<br/>Redis per user")]:::data
+    READER["User"]:::client
+    GW["API Gateway"]:::edge
+    FEED["Feed Service"]:::service
+    TDB[("Tweet Store")]:::data
+
+    K --> FANOUT
+    FANOUT --> GRAPH
+    FANOUT --> CACHE
     READER --> GW
     GW --> FEED
     FEED --> CACHE
@@ -231,27 +269,62 @@ flowchart LR
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
-    classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef async fill:#AB47BC,stroke:#4A148C,color:#fff
 ```
 
-**How posting a tweet flows through the system:**
+**Step-by-step for fan-out (write path):**
 
-1. User types "Hello world!" and taps Post → request hits the API Gateway
-2. Gateway authenticates and forwards to Tweet Service
-3. Tweet Service stores the tweet in Cassandra (permanent record), then publishes a `TweetCreated` event to Kafka
-4. Fan-out Service consumes the event, looks up the poster's followers from the Social Graph, and pushes the tweet ID into each follower's Redis timeline (using `ZADD timeline:{followerId} <timestamp> <tweetId>`)
-5. Each timeline is trimmed to ~800 entries — older tweets fall off the cache and live only in Cassandra
+1. Fan-out Service consumes `TweetCreated` from Kafka
+2. Queries Social Graph: "who follows this author?" → gets follower list
+3. For each follower: `ZADD timeline:{followerId} <timestamp> <tweetId>`
+4. Trims each timeline to 800 entries (older tweets fall off cache)
 
-**How reading the feed works:**
+**Step-by-step for feed read:**
 
-1. User opens the app → "show me my feed" → request hits Feed Service
-2. Feed Service reads the user's pre-built timeline from Redis (`ZREVRANGE timeline:{userId} 0 49`) — returns 50 tweet IDs in ~1ms
-3. Feed Service fetches full tweet objects from Cassandra (batch multi-get)
-4. For celebrities the user follows (not in the pre-built cache), Feed Service fetches their recent tweets directly and merges them in
-5. Ranking Service applies relevance scoring (engagement signals, freshness, social closeness) and returns the final ordered feed
+1. User opens app → `GET /feed`
+2. Feed Service reads from Redis: `ZREVRANGE timeline:{userId} 0 49` → 50 tweet IDs in ~1ms
+3. Hydrates IDs → fetches full tweet objects from Cassandra (batch multi-get)
+4. Returns ranked feed to user
 
-**Why Kafka between Tweet Service and Fan-out?** The poster shouldn't wait while we update 10K timelines. Kafka decouples the two — Tweet Service responds to the user in ~50ms ("tweet posted!"), and fan-out happens asynchronously over the next few seconds. If Fan-out workers crash, Kafka retries delivery automatically.
+**But wait — what about celebrities?** If a user has 50M followers, fan-out means 50M Redis writes per tweet. That takes minutes and blocks the queue. We need a different approach for them.
+
+---
+
+### FR3: Handle Celebrities — The Hybrid Approach
+
+The celebrity problem is the core design challenge. Fan-out on write breaks for mega-accounts. We need a hybrid.
+
+**The rule:** Regular users (< 10K followers) → fan-out on write. Celebrities (> 10K followers) → fan-out on read.
+
+**No new infrastructure components** — just different behavior at the Fan-out Service and Feed Service:
+
+- **Fan-out Service:** Checks follower count before pushing. If > 10K, skip this author's tweet (don't push to followers).
+- **Feed Service:** Maintains a list of "celebrity followees" per user. On feed load, fetches recent tweets from those 5-20 celebrity accounts directly from the Tweet Store and merges them with the pre-built cache.
+
+```mermaid
+flowchart TD
+    TWEET["New tweet"]:::client
+    CHECK["Follower count?"]:::service
+    PUSH["Fan-out on WRITE<br/>push to Redis timelines"]:::service
+    PULL["Skip push<br/>fetched at read time"]:::service
+
+    TWEET --> CHECK
+    CHECK -->|"< 10K followers"| PUSH
+    CHECK -->|"> 10K followers"| PULL
+
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+```
+
+**At read time, the Feed Service does:**
+1. Get pre-built timeline from Redis (regular users' tweets)
+2. Get list of celebrity followees for this user
+3. Fetch recent tweets from each celebrity (5-20 accounts × latest 5 tweets = 100 tweets max)
+4. Merge both sets, rank by relevance score
+5. Return top 50
+
+**Why 10K as the threshold?** It's a trade-off. Pushing to 10K followers takes ~100ms (acceptable). Pushing to 50M takes minutes (unacceptable). The threshold can be tuned based on your SLA.
 
 ---
 
