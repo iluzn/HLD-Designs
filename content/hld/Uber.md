@@ -179,7 +179,9 @@ The first thing that happens when a rider opens the app is they enter a destinat
 2. **Ride Service** — Manages the ride lifecycle (state machine). Creates the ride, assigns drivers, tracks state transitions.
 3. **Matching Service** — The brain of the system. Finds nearby available drivers, ranks them, and assigns the best one.
 4. **Location Service** — Stores and queries real-time driver GPS coordinates. This is the hot path — 500K writes/sec of location pings.
-5. **Redis Geo** — The in-memory geospatial index. 💡 *Redis Geo stores coordinates using geohash encoding in a sorted set. GEORADIUS returns all members within a given radius of a point in O(N+log M) time — fast enough for real-time matching.*
+5. **Redis Geo** — The in-memory geospatial index.
+
+> 💡 *Redis Geo stores coordinates using geohash encoding in a sorted set. GEORADIUS returns all members within a given radius of a point in O(N+log M) time — fast enough for real-time matching.*
 
 ```mermaid
 flowchart LR
@@ -236,7 +238,9 @@ Drivers send their GPS position every 3-5 seconds. This is the highest-throughpu
 **New components we need:**
 
 1. **Location Ingestion Service** — A stateless fleet of workers that receive driver pings and write to Redis Geo. Designed for pure throughput.
-2. **Kafka** — Buffers location events for downstream consumers (ride tracking, analytics, ETA recalculation). 💡 *Using Kafka here decouples the write path (driver → Redis) from the read/fan-out path (Redis → rider). The driver app doesn't wait for the rider to receive the update.*
+2. **Kafka** — Buffers location events for downstream consumers (ride tracking, analytics, ETA recalculation).
+
+> 💡 *Using Kafka here decouples the write path (driver → Redis) from the read/fan-out path (Redis → rider). The driver app doesn't wait for the rider to receive the update.*
 3. **WebSocket Gateway** — Maintains persistent connections with riders who are on active rides. Pushes real-time driver positions.
 
 ```mermaid
@@ -267,7 +271,9 @@ flowchart LR
 3. Service writes to Redis Geo: `GEOADD drivers:available {lng} {lat} {driverId}` — this updates the driver's position in the spatial index
 4. Simultaneously, publishes the location event to Kafka topic `driver.locations`, partitioned by rideId (if on active ride) or by geohash region (if available)
 5. For active rides: a Kafka consumer at the WebSocket Gateway picks up the event and pushes it to the rider's WebSocket connection
-6. Redis entries have a TTL. 💡 *TTL (Time-To-Live) = automatic expiration. If a driver crashes or loses connectivity for >15 seconds, their entry expires and they disappear from matching queries. No stale ghost drivers.*
+6. Redis entries have a TTL.
+
+> 💡 *TTL (Time-To-Live) = automatic expiration. If a driver crashes or loses connectivity for >15 seconds, their entry expires and they disappear from matching queries. No stale ghost drivers.*
 
 **Why Redis Geo over a regular database?**
 
@@ -426,7 +432,9 @@ Each transition emits a Kafka event consumed by: Billing (fare calculation), Not
 
 **Good:** Redis Geo with a single instance per city. `GEOADD` for writes, `GEORADIUS` for queries. Fast, but a single Redis instance maxes at ~100K ops/sec and holds ~10M entries in 2-3GB RAM.
 
-**Great:** Sharded Redis Geo, partitioned by geohash prefix. 💡 *Geohash encodes a 2D coordinate into a 1D string where nearby points share a common prefix. A geohash like "tdr1w" covers a ~5km² cell. We shard by the first 3-4 characters, so each shard owns a geographic region.*
+**Great:** Sharded Redis Geo, partitioned by geohash prefix.
+
+> 💡 *Geohash encodes a 2D coordinate into a 1D string where nearby points share a common prefix. A geohash like "tdr1w" covers a ~5km² cell. We shard by the first 3-4 characters, so each shard owns a geographic region.*
 
 ```mermaid
 flowchart LR
@@ -470,7 +478,9 @@ flowchart LR
 
 **Good:** Database-level optimistic locking with a version column. `UPDATE drivers SET ride_id = ? WHERE id = ? AND ride_id IS NULL`. Only one UPDATE succeeds (returns rowcount=1). The other gets rowcount=0 and retries with next driver. Works but adds a DB round-trip in the hot path.
 
-**Great:** Redis distributed lock with fence tokens. 💡 *A distributed lock is a mechanism where only one process can "hold" a key at a time. A fence token is a monotonically increasing number that prevents stale locks from causing harm — if a process holds token 5 but the lock has moved to token 6, its writes are rejected.*
+**Great:** Redis distributed lock with fence tokens.
+
+> 💡 *A distributed lock is a mechanism where only one process can "hold" a key at a time. A fence token is a monotonically increasing number that prevents stale locks from causing harm — if a process holds token 5 but the lock has moved to token 6, its writes are rejected.*
 
 ```mermaid
 flowchart LR
@@ -520,7 +530,9 @@ Redlock (Redis distributed lock across N nodes) adds latency and complexity. For
 
 **Mechanism:**
 
-1. City is divided into H3 hexagons (resolution 7 = ~5km² cells). 💡 *H3 is Uber's open-source hexagonal grid system. Unlike square geohash cells, hexagons have uniform adjacency (every neighbor is equidistant) — better for spatial analysis.*
+1. City is divided into H3 hexagons (resolution 7 = ~5km² cells).
+
+> 💡 *H3 is Uber's open-source hexagonal grid system. Unlike square geohash cells, hexagons have uniform adjacency (every neighbor is equidistant) — better for spatial analysis.*
 2. Every 30 seconds, a **Surge Calculator** job runs per zone:
    - `demand_score` = ride requests in last 2 minutes / available drivers in zone
    - If demand_score > 1.5 → surge multiplier = 1.0 + (demand_score - 1.0) × 0.5 (capped at 3.0x)
@@ -547,7 +559,9 @@ Redlock (Redis distributed lock across N nodes) adds latency and complexity. For
 
 **Good:** One WebSocket per rider, server pushes location. But: how does the location event (arriving at Location Ingestion Service) get routed to the correct WebSocket Gateway instance holding that rider's connection?
 
-**Great:** Kafka-partitioned fan-out + Redis Pub/Sub for last-mile delivery. 💡 *Fan-out = delivering one event to multiple subscribers. Here the "fan" is narrow (one rider per ride), but the routing is the challenge — which server holds the connection?*
+**Great:** Kafka-partitioned fan-out + Redis Pub/Sub for last-mile delivery.
+
+> 💡 *Fan-out = delivering one event to multiple subscribers. Here the "fan" is narrow (one rider per ride), but the routing is the challenge — which server holds the connection?*
 
 ```mermaid
 flowchart LR

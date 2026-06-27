@@ -183,6 +183,8 @@ flowchart TD
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
 ```
 
+>
+
 > 💡 **The hybrid approach:** Regular users (< 10K followers) → fan-out on write. Celebrities (> 10K followers) → fan-out on read. At timeline load, merge the pre-built cache with a small number of celebrity tweet fetches.
 
 This is what Twitter, Instagram, and LinkedIn actually use.
@@ -200,7 +202,9 @@ The first interaction: a user types a tweet and hits Post. We need to store it d
 **New components:**
 
 1. **API Gateway** — authenticates, rate-limits, routes. Entry point for all client requests.
-2. **Tweet Service** — handles tweet creation: validates content, stores the tweet, uploads media references. 💡 *This service doesn't deliver tweets to followers — it just writes the tweet and announces "hey, a new tweet exists."*
+2. **Tweet Service** — handles tweet creation: validates content, stores the tweet, uploads media references.
+
+> 💡 *This service doesn't deliver tweets to followers — it just writes the tweet and announces "hey, a new tweet exists."*
 3. **Tweet Store (Cassandra)** — permanent storage for all tweets. Optimized for high write throughput.
 4. **Kafka** — event bus. Tweet Service publishes `TweetCreated` events for downstream consumers. Decouples posting from delivery.
 
@@ -244,7 +248,9 @@ Now users want to see their feed. The naive approach (query all followees' tweet
 
 5. **Fan-out Service** — consumes `TweetCreated` events from Kafka and pushes tweet IDs into every follower's pre-built timeline.
 6. **Social Graph** — stores who-follows-whom. Queried during fan-out: "give me all 5000 followers of this user."
-7. **Timeline Cache (Redis sorted set)** — each user's feed stored as a sorted set of tweet IDs scored by timestamp. Reading the feed = `ZREVRANGE` — instant. 💡 *A Redis sorted set keeps elements ordered by score. "Get latest 50 tweets" is a single O(log N + 50) command.*
+7. **Timeline Cache (Redis sorted set)** — each user's feed stored as a sorted set of tweet IDs scored by timestamp. Reading the feed = `ZREVRANGE` — instant.
+
+> 💡 *A Redis sorted set keeps elements ordered by score. "Get latest 50 tweets" is a single O(log N + 50) command.*
 8. **Feed Service** — handles "show me my feed" requests. Reads from cache, hydrates tweet IDs into full objects, applies ranking.
 
 ```mermaid

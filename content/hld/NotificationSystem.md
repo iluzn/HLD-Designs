@@ -306,10 +306,14 @@ Start with the minimum viable pipeline: accept, enqueue, fan out per channel, di
 **New components we need:**
 
 1. **Notification API** — the single entry point for all product services. Receives "send a notification to user X" requests, validates them, and enqueues for processing.
-2. **Message Broker (Kafka)** — decouples notification intake from delivery. 💡 *Kafka here acts as a buffer — if push notifications are slow today, the queue absorbs the backlog instead of slowing down the checkout flow that triggered the notification.*
+2. **Message Broker (Kafka)** — decouples notification intake from delivery.
+
+> 💡 *Kafka here acts as a buffer — if push notifications are slow today, the queue absorbs the backlog instead of slowing down the checkout flow that triggered the notification.*
 3. **Router** — reads each notification event, decides which channels to use (push? email? SMS?), and fans out one message per channel to channel-specific topics.
 4. **Channel Workers (Push, Email, SMS)** — each specialized worker renders the template and calls the external provider. Isolated so a Twilio outage doesn't affect push delivery.
-5. **External Providers (APNs, SES, Twilio)** — the actual delivery services. We don't send emails ourselves — we hand them to SES/Mailgun, which handles the SMTP complexity. 💡 *FCM (Firebase Cloud Messaging) and APNs (Apple Push Notification Service) are the only way to send push notifications to Android and iOS devices respectively. Your server can't push directly to phones — it must go through these gateways.*
+5. **External Providers (APNs, SES, Twilio)** — the actual delivery services. We don't send emails ourselves — we hand them to SES/Mailgun, which handles the SMTP complexity.
+
+> 💡 *FCM (Firebase Cloud Messaging) and APNs (Apple Push Notification Service) are the only way to send push notifications to Android and iOS devices respectively. Your server can't push directly to phones — it must go through these gateways.*
 
 ```mermaid
 flowchart LR
@@ -370,7 +374,9 @@ Preferences live in a dedicated service. Both the Notification API (at intake) a
 
 **New components we need (in addition to the ones above):**
 
-1. **Preference Service** — owns all user notification settings: which channels are on/off, which categories they've opted out of, quiet hours, locale, and frequency caps. 💡 *This is the "do not disturb" brain — it prevents us from waking someone at 3am with a marketing push.*
+1. **Preference Service** — owns all user notification settings: which channels are on/off, which categories they've opted out of, quiet hours, locale, and frequency caps.
+
+> 💡 *This is the "do not disturb" brain — it prevents us from waking someone at 3am with a marketing push.*
 2. **Preference Cache (Redis)** — since every single notification triggers a preference lookup (50K/sec!), we cache preferences in Redis for microsecond reads instead of hammering Postgres.
 3. **Preference DB (Postgres)** — the durable source of truth for preferences. Updated when users change settings.
 
@@ -419,7 +425,9 @@ Channel workers own the retry logic. The key mechanism is the **outbox pattern**
 
 **New components we need (in addition to the ones above):**
 
-1. **Retry Queue (delayed Kafka topic)** — when a provider returns a transient error (timeout, 5xx, rate-limit 429), the failed message goes here with exponential backoff timing. 💡 *Exponential backoff means: wait 2s, then 10s, then 60s, then 5min before each retry. This prevents hammering a struggling provider.*
+1. **Retry Queue (delayed Kafka topic)** — when a provider returns a transient error (timeout, 5xx, rate-limit 429), the failed message goes here with exponential backoff timing.
+
+> 💡 *Exponential backoff means: wait 2s, then 10s, then 60s, then 5min before each retry. This prevents hammering a struggling provider.*
 2. **Dead Letter Queue (DLQ)** — where permanently-failed messages go after exhausting all retries. These get reviewed by a human or an automated reconciler.
 3. **Delivery Attempts table (Postgres)** — records every single attempt to deliver a notification, including the provider's response. Essential for debugging "why didn't user X get their OTP?"
 

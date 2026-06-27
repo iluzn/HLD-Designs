@@ -172,7 +172,9 @@ When a studio delivers a new movie to Netflix, it arrives as a massive master fi
 **New components:**
 
 1. **Ingest Service** — Receives upload notification, validates master file, creates encoding job. Think of it as the "front desk" for new content.
-2. **Encoding Orchestrator (Temporal)** — Manages the multi-step encoding workflow. 💡 *Temporal is a workflow engine that breaks complex jobs into steps, handles retries, and checkpoints progress. If a step fails after 2 hours of encoding, it retries just that step, not the whole job.*
+2. **Encoding Orchestrator (Temporal)** — Manages the multi-step encoding workflow.
+
+> 💡 *Temporal is a workflow engine that breaks complex jobs into steps, handles retries, and checkpoints progress. If a step fails after 2 hours of encoding, it retries just that step, not the whole job.*
 3. **Encoding Workers** — GPU-powered machines that do the actual transcoding. Each worker handles one resolution/bitrate variant.
 4. **Object Storage (S3)** — Stores master files and all encoded segments. Organized as `titles/{titleId}/assets/{resolution}_{bitrate}/{segment_000.ts}`
 5. **Content Catalog DB** — Stores metadata about what's available: which encodings exist, which regions can play it, licensing windows.
@@ -229,7 +231,9 @@ flowchart LR
 
 When a user hits "Play," we need to start delivering video segments immediately and adapt quality to their bandwidth in real-time. If they're on WiFi, stream 4K. If they switch to cellular, drop to 720p without buffering.
 
-The key protocol: **HLS (HTTP Live Streaming)** or **DASH (Dynamic Adaptive Streaming over HTTP)**. 💡 *Both work the same way: the video is split into small segments (2-4 seconds each). A manifest file lists all available quality levels. The player fetches segments one at a time, choosing quality level based on current bandwidth.*
+The key protocol: **HLS (HTTP Live Streaming)** or **DASH (Dynamic Adaptive Streaming over HTTP)**.
+
+> 💡 *Both work the same way: the video is split into small segments (2-4 seconds each). A manifest file lists all available quality levels. The player fetches segments one at a time, choosing quality level based on current bandwidth.*
 
 **New components:**
 

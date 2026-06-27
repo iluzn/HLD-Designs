@@ -141,7 +141,9 @@ The first thing a user does: paste text, click submit, get a short URL. We need 
 **New components:**
 
 1. **Paste Service** — the API layer. Validates input (size < 10MB), generates unique IDs, coordinates writes.
-2. **ID Generator** — produces unique, short, non-guessable IDs. 💡 *We use Base62 encoding (a-z, A-Z, 0-9) with 7 characters = 62⁷ = 3.5 trillion possible IDs. Even at 1000 pastes/sec, that's 100+ years before exhaustion.*
+2. **ID Generator** — produces unique, short, non-guessable IDs.
+
+> 💡 *We use Base62 encoding (a-z, A-Z, 0-9) with 7 characters = 62⁷ = 3.5 trillion possible IDs. Even at 1000 pastes/sec, that's 100+ years before exhaustion.*
 3. **Object Storage (S3/GCS)** — stores the actual paste content. Key = paste ID, value = text blob. Cheap ($0.023/GB/month), durable (99.999999999%), scales infinitely.
 4. **Metadata DB (Postgres)** — stores small metadata per paste: ID, timestamps, expiry, language. Small rows (~200 bytes), fast lookups by primary key.
 
