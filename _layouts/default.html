@@ -2,8 +2,9 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <script>(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
-    <style>html[data-theme="dark"]{background:#111118;}html[data-theme="light"]{background:#fafbff;}</style>
+    <meta name="color-scheme" content="dark light">
+    <script>(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);if(t==='light')document.querySelector('meta[name=color-scheme]').content='light dark';})();</script>
+    <style>html{background:#111118;color:#e8edf3;}html[data-theme="light"]{background:#fafbff;color:#0f172a;}</style>
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YJL7ECBWD0"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YJL7ECBWD0');</script>
