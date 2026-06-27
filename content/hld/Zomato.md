@@ -178,10 +178,10 @@ When the customer confirms a cart, we need to create an order, charge them, and 
 
 **New components we need (in addition to the ones above):**
 
-1. **Order Service** — the order lifecycle manager. Creates orders, validates carts, computes totals, and manages the order state machine from CREATED → DELIVERED. 💡 *This service is the single source of truth for "what's happening with my order?" — every state change goes through it.*
+1. **Order Service** — the order lifecycle manager. Creates orders, validates carts, computes totals, and manages the order state machine from CREATED → DELIVERED.<br>💡 *This service is the single source of truth for "what's happening with my order?" — every state change goes through it.*
 2. **Payment Service** — handles charging the customer. Wraps the payment gateway and manages the authorization + capture flow.
 3. **Orders DB (Postgres)** — stores order state with strong consistency. We use Postgres because money is involved — ACID transactions prevent double-charges and lost orders.
-4. **Payment Gateway (Razorpay, Stripe, UPI)** — the external service that actually moves money. We don't process cards ourselves — that would require PCI compliance. 💡 *The gateway is a "trusted intermediary" between us and banks.*
+4. **Payment Gateway (Razorpay, Stripe, UPI)** — the external service that actually moves money. We don't process cards ourselves — that would require PCI compliance.<br>💡 *The gateway is a "trusted intermediary" between us and banks.*
 
 ```mermaid
 flowchart LR
@@ -222,7 +222,7 @@ Now we introduce a Rider Client, a Location Service that receives live GPS pings
 **New components we need (in addition to the ones above):**
 
 1. **Location Service** — ingests live GPS pings from rider phones (every 3-5 seconds) and stores them. The "where is everyone right now?" service.
-2. **Location Store (Redis Geo)** — holds live rider positions in memory, sharded by city. 💡 *Redis Geo uses geohashing under the hood — it can answer "find all riders within 3km of this restaurant" in microseconds across 200K riders.*
+2. **Location Store (Redis Geo)** — holds live rider positions in memory, sharded by city.<br>💡 *Redis Geo uses geohashing under the hood — it can answer "find all riders within 3km of this restaurant" in microseconds across 200K riders.*
 3. **Ride Matching Service** — finds the best available rider for a confirmed order. Queries nearby riders, scores them, and sends an offer.
 4. **Notification Service** — pushes the ride offer to the rider's phone via FCM/APNs. Also notifies the customer about order updates.
 5. **FCM / APNs** — Firebase Cloud Messaging and Apple Push Notification service. External services that deliver push notifications to rider phones, even when the app is backgrounded.

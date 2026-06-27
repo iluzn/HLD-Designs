@@ -135,7 +135,7 @@ flowchart LR
 
 All pods check the SAME counter in Redis. Doesn't matter which pod handles the request — the global count is always accurate.
 
-> 💡 **What is Redis?** An in-memory database that responds in under 1 millisecond. Perfect for counters because it's fast enough to check on every single request without slowing down your API.
+><br>💡 **What is Redis?** An in-memory database that responds in under 1 millisecond. Perfect for counters because it's fast enough to check on every single request without slowing down your API.
 
 ---
 
@@ -366,7 +366,7 @@ else:
     REJECT
 ```
 
-> 💡 **Lazy refill:** Instead of a background timer adding tokens, we calculate how many tokens SHOULD have been added since the last request. Same result, zero background processes.
+><br>💡 **Lazy refill:** Instead of a background timer adding tokens, we calculate how many tokens SHOULD have been added since the last request. Same result, zero background processes.
 
 | Pros | Cons |
 |---|---|
@@ -468,7 +468,7 @@ flowchart TD
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-> 💡 **Interview tip:** Start with Token Bucket as your default answer. If the interviewer asks "what if we can't tolerate any burst?" → switch to Sliding Window Counter. If they ask "what if we need to protect a fragile downstream?" → Leaky Bucket.
+><br>💡 **Interview tip:** Start with Token Bucket as your default answer. If the interviewer asks "what if we can't tolerate any burst?" → switch to Sliding Window Counter. If they ask "what if we need to protect a fragile downstream?" → Leaky Bucket.
 
 ---
 
@@ -500,7 +500,7 @@ flowchart LR
 
 **Why three layers instead of one?** Each layer catches a different class of threat at a different cost. Edge blocks volumetric DDoS attacks before they hit your infrastructure (cheapest, highest volume). Gateway enforces business rules like "free vs paid tier" (requires knowing who the user is). Service-level limits handle domain logic only your code understands ("max 5 password resets per hour"). Skipping layers means you're either blocking too much (service-level can't handle DDoS volume) or too little (edge doesn't know your business rules).
 
-> 💡 **Why multiple layers?** Edge blocks volumetric attacks cheaply (before they hit your servers). Gateway enforces business rules. Service handles logic that only your code understands.
+><br>💡 **Why multiple layers?** Edge blocks volumetric attacks cheaply (before they hit your servers). Gateway enforces business rules. Service handles logic that only your code understands.
 
 ---
 
@@ -722,7 +722,7 @@ flowchart LR
 | **Token Bucket** | Algorithm: bucket of tokens, refills at steady rate. Each request costs a token. Empty bucket = rejected. |
 | **HTTP 429** | Standard HTTP status code meaning "Too Many Requests." Client should back off and retry later. |
 
-> 💡 Redis Lua scripts execute atomically on the server — critical for distributed rate limiting where multiple pods check the same counter.
+><br>💡 Redis Lua scripts execute atomically on the server — critical for distributed rate limiting where multiple pods check the same counter.
 
 ---
 

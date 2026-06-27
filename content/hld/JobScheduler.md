@@ -106,7 +106,7 @@ Quick reference so nothing in this doc is a black box:
 - **etcd** / **ZooKeeper** / **Consul** — distributed coordination services. They store a tiny amount of data very reliably and let N nodes race for a "lease" (temporary exclusive lock). We use them for **leader election** — picking one dispatcher among N to own a shard.
 - **Kubernetes Lease** — K8s's built-in version of the same leader-election idea.
 - **Raft / Paxos** — consensus protocols that make coordination services (etcd, ZooKeeper) tolerate node failures without split-brain. You don't implement them; you use a service that does.
-- **DLQ (Dead Letter Queue)** — a parking spot for messages that failed N retries. Ops reviews them manually. 💡 *DLQ (Dead Letter Queue) = a holding queue for messages that failed processing after max retries. Operators can inspect and reprocess them later.*
+- **DLQ (Dead Letter Queue)** — a parking spot for messages that failed N retries. Ops reviews them manually.<br>💡 *DLQ (Dead Letter Queue) = a holding queue for messages that failed processing after max retries. Operators can inspect and reprocess them later.*
 
 **External / reference names in Prior Art**
 - **Airbnb Dynein** — Airbnb's internal delayed-job system.
@@ -243,8 +243,8 @@ Three passes, one per core functional requirement.
 **New components we need:**
 
 1. **Scheduler API** — the HTTP interface users call to create, query, or cancel jobs. Validates inputs and stores job definitions.
-2. **Postgres (jobs + schedules)** — the durable source of truth. Stores job definitions, cron expressions, and computed `next_fire_time`. 💡 *We use Postgres because job creation needs ACID transactions — if we write the job and its schedule, both must succeed or neither does.*
-3. **Redis Sorted Set (upcoming index)** — holds jobs due within the next hour, scored by `next_fire_time`. 💡 *A sorted set (ZSET) lets us ask "give me everything due before NOW" in O(log N) — the dispatcher polls this instead of scanning millions of rows in Postgres every second.*
+2. **Postgres (jobs + schedules)** — the durable source of truth. Stores job definitions, cron expressions, and computed `next_fire_time`.<br>💡 *We use Postgres because job creation needs ACID transactions — if we write the job and its schedule, both must succeed or neither does.*
+3. **Redis Sorted Set (upcoming index)** — holds jobs due within the next hour, scored by `next_fire_time`.<br>💡 *A sorted set (ZSET) lets us ask "give me everything due before NOW" in O(log N) — the dispatcher polls this instead of scanning millions of rows in Postgres every second.*
 
 ```mermaid
 flowchart LR
@@ -291,11 +291,11 @@ This is where most of the complexity lives.
 
 **New components we need (in addition to the ones above):**
 
-1. **Dispatcher Pool (leader-elected shards)** — the heartbeat of the system. Each dispatcher continuously polls its slice of the Redis ZSET for due jobs. 💡 *Leader election ensures only ONE dispatcher owns each shard — without it, two dispatchers would both fire the same job, causing duplicate execution.*
+1. **Dispatcher Pool (leader-elected shards)** — the heartbeat of the system. Each dispatcher continuously polls its slice of the Redis ZSET for due jobs.<br>💡 *Leader election ensures only ONE dispatcher owns each shard — without it, two dispatchers would both fire the same job, causing duplicate execution.*
 2. **Kafka (per-pool topics)** — decouples dispatch timing from worker availability. When the dispatcher finds a due job, it publishes to Kafka rather than directly calling a worker.
 3. **Workers** — the processes that actually execute your job code. Each worker pool handles a specific class of jobs (e.g., `email-sender`, `batch-etl`).
 4. **Executions table (Postgres)** — one row per attempt to run a job. Append-only history so you can answer "did my job run? when? how long did it take?"
-5. **Worker Heartbeats (Redis)** — workers write a heartbeat every 10s. If a worker crashes, its heartbeat expires and a sweeper reschedules the stuck job. 💡 *This is the "dead man's switch" — if we don't hear from a worker, we assume it's dead and retry the job.*
+5. **Worker Heartbeats (Redis)** — workers write a heartbeat every 10s. If a worker crashes, its heartbeat expires and a sweeper reschedules the stuck job.<br>💡 *This is the "dead man's switch" — if we don't hear from a worker, we assume it's dead and retry the job.*
 6. **Retry Queue** — a delayed Kafka topic where failed jobs wait with exponential backoff before being retried.
 
 ```mermaid
@@ -344,7 +344,7 @@ flowchart LR
 
 **New components we need (in addition to the ones above):**
 
-1. **Cancel Set (Redis)** — a short-lived set of `executionId`s that have been cancelled. Workers check this before starting and periodically during execution. 💡 *We can't "un-send" a Kafka message, so instead we let the worker check a cancel flag before it starts working.*
+1. **Cancel Set (Redis)** — a short-lived set of `executionId`s that have been cancelled. Workers check this before starting and periodically during execution.<br>💡 *We can't "un-send" a Kafka message, so instead we let the worker check a cancel flag before it starts working.*
 
 ```mermaid
 flowchart LR

@@ -171,9 +171,9 @@ Security: WebSocket authenticated via JWT on handshake. `clientMsgId` is for cli
 
 **New components we need:**
 
-1. **WebSocket Servers** — maintain persistent two-way connections with every online user. 💡 *WebSocket = a persistent connection that stays open so the server can push messages instantly without the client asking. Unlike HTTP (ask → answer → done), WebSocket keeps the line open.*
+1. **WebSocket Servers** — maintain persistent two-way connections with every online user.<br>💡 *WebSocket = a persistent connection that stays open so the server can push messages instantly without the client asking. Unlike HTTP (ask → answer → done), WebSocket keeps the line open.*
 2. **Chat Service** — the brain. Receives messages, persists them, and figures out where the recipient is connected.
-3. **Message Store (Cassandra)** — permanent storage for all messages. Partitioned by conversation so "load chat history" is a single partition read. 💡 *Cassandra is a distributed wide-column database designed for heavy writes. Partitioning by conversation_id means loading a chat history is a single-partition read — O(1) regardless of total messages in the system.*
+3. **Message Store (Cassandra)** — permanent storage for all messages. Partitioned by conversation so "load chat history" is a single partition read.<br>💡 *Cassandra is a distributed wide-column database designed for heavy writes. Partitioning by conversation_id means loading a chat history is a single-partition read — O(1) regardless of total messages in the system.*
 4. **Connection Registry (Redis)** — a fast lookup table mapping `userId → which WebSocket server they're on`. When a message arrives for Bob, we check Redis to find which server is holding Bob's connection.
 
 ```mermaid
@@ -215,7 +215,7 @@ flowchart LR
 **New components we need (in addition to the ones above):**
 
 1. **Offline Queue (Redis sorted set)** — when the receiver isn't connected, we park message IDs here. Scored by sequence number so when they reconnect, we drain messages in perfect order.
-2. **Push Service** — sends push notifications to wake up the user's phone. 💡 *Think of it as the "tap on the shoulder" that tells the user to open the app.*
+2. **Push Service** — sends push notifications to wake up the user's phone.<br>💡 *Think of it as the "tap on the shoulder" that tells the user to open the app.*
 3. **FCM / APNs** — Firebase Cloud Messaging (Android) and Apple Push Notification service (iOS). External services that deliver notifications to locked phones.
 
 ```mermaid
@@ -254,7 +254,7 @@ flowchart LR
 
 **New components we need (in addition to the ones above):**
 
-1. **Kafka** — an event bus for group message fan-out. 💡 *We use Kafka here because group messages need to be delivered to N members reliably. If a fan-out worker crashes mid-delivery, Kafka retries automatically — no message gets lost.*
+1. **Kafka** — an event bus for group message fan-out.<br>💡 *We use Kafka here because group messages need to be delivered to N members reliably. If a fan-out worker crashes mid-delivery, Kafka retries automatically — no message gets lost.*
 2. **Fan-out Workers** — consume group message events and deliver to each member individually (online → push via WebSocket, offline → queue + push notification).
 
 ```mermaid

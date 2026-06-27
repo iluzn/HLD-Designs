@@ -179,7 +179,7 @@ The first interaction: user opens the app, picks a city, selects a movie, choose
 1. **API Gateway** — Entry point for all client requests. Handles auth, rate limiting, and routing.
 2. **Catalog Service** — Serves movie listings, show schedules, and cinema information. Read-heavy, cacheable.
 3. **Seat Service** — Returns the seat map for a specific show. Combines static layout (seat positions) with dynamic state (available/held/booked).
-4. **Redis Cache** — Caches show listings and aggregated availability. 💡 *We cache at the "show availability" level (e.g., "Show X has 45/200 seats available") for browsing, but hit the seat lock store directly for the actual seat map. Browsing doesn't need perfect consistency — a 5-second stale count is fine.*
+4. **Redis Cache** — Caches show listings and aggregated availability.<br>💡 *We cache at the "show availability" level (e.g., "Show X has 45/200 seats available") for browsing, but hit the seat lock store directly for the actual seat map. Browsing doesn't need perfect consistency — a 5-second stale count is fine.*
 
 ```mermaid
 flowchart LR
@@ -236,7 +236,7 @@ When a user selects seats and clicks "Proceed to Payment," we need to temporaril
 **New components we need:**
 
 1. **Booking Service** — Orchestrates the booking lifecycle. Creates bookings, coordinates seat holds, triggers payment.
-2. **Lock Manager** — Acquires distributed locks on seats with TTL. The critical path for preventing double-booking. 💡 *A distributed lock with TTL means: "this seat belongs to User A for the next 10 minutes. If User A doesn't complete the booking, the lock auto-expires and the seat becomes available again."*
+2. **Lock Manager** — Acquires distributed locks on seats with TTL. The critical path for preventing double-booking.<br>💡 *A distributed lock with TTL means: "this seat belongs to User A for the next 10 minutes. If User A doesn't complete the booking, the lock auto-expires and the seat becomes available again."*
 3. **Hold Expiry Reconciler** — Background job that cleans up bookings whose holds expired without payment. Handles edge cases where Redis TTL fires but the booking record in Postgres isn't updated.
 
 ```mermaid
@@ -460,7 +460,7 @@ Each transition emits a Kafka event consumed by: Notification Service (user upda
 
 **Good:** Postgres row-level lock. `SELECT ... FOR UPDATE` on the seat row, then update status. Works for moderate concurrency, but under 1000 concurrent transactions, you get lock contention, connection pool starvation, and 5+ second response times. Postgres serializes all competing transactions — they queue up behind each other.
 
-**Great:** Redis `SET NX EX` (atomic conditional set with TTL). 💡 *SET NX = "Set only if Not eXists" — an atomic compare-and-swap in one round trip. Combined with EX (expire), it gives us a lock that auto-releases.*
+**Great:** Redis `SET NX EX` (atomic conditional set with TTL).<br>💡 *SET NX = "Set only if Not eXists" — an atomic compare-and-swap in one round trip. Combined with EX (expire), it gives us a lock that auto-releases.*
 
 ```mermaid
 flowchart LR

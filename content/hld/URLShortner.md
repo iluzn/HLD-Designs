@@ -192,9 +192,9 @@ The create path is low-QPS (~1K/sec peak) but needs a unique, collision-free sho
 
 **New components we need:**
 
-1. **API Gateway** — the front door. Authenticates API keys, applies per-user rate limits, and routes requests to the right service. 💡 *Think of it as a security guard + receptionist for your backend.*
+1. **API Gateway** — the front door. Authenticates API keys, applies per-user rate limits, and routes requests to the right service.<br>💡 *Think of it as a security guard + receptionist for your backend.*
 2. **Write Service** — handles link creation. Validates the URL, generates the short code, and stores the mapping.
-3. **Snowflake ID Generator** — produces unique numeric IDs without any coordination between servers. 💡 *Snowflake = a distributed ID generator that embeds a timestamp + machine ID + sequence number into a single 64-bit integer. No two machines ever produce the same ID, even without talking to each other.*
+3. **Snowflake ID Generator** — produces unique numeric IDs without any coordination between servers.<br>💡 *Snowflake = a distributed ID generator that embeds a timestamp + machine ID + sequence number into a single 64-bit integer. No two machines ever produce the same ID, even without talking to each other.*
 4. **Global KV Store** — where the `short_code → long_url` mapping lives permanently. Needs to survive failures and serve reads worldwide.
 
 ```mermaid
@@ -243,10 +243,10 @@ This is the hot path — billions of reads per day. Latency and cost both matter
 
 **New components we need (in addition to the ones above):**
 
-1. **CDN Edge** — servers deployed worldwide (Cloudflare, CloudFront, Fastly) that cache popular redirects close to users. A viral link gets served from the edge in under 10ms without ever touching our origin servers. 💡 *CDN (Content Delivery Network) caches content at edge servers worldwide. Users get served from the nearest edge, cutting latency from 200ms to <20ms.*
+1. **CDN Edge** — servers deployed worldwide (Cloudflare, CloudFront, Fastly) that cache popular redirects close to users. A viral link gets served from the edge in under 10ms without ever touching our origin servers.<br>💡 *CDN (Content Delivery Network) caches content at edge servers worldwide. Users get served from the nearest edge, cutting latency from 200ms to <20ms.*
 2. **Redirect Service** — the origin server that handles CDN misses. Looks up the short code and returns a `302 Found` with the long URL.
 3. **Redis Cache** — a regional in-memory cache sitting between the Redirect Service and the database. Holds recently-accessed links for sub-millisecond lookups.
-4. **Event Bus** — captures every click as an event for analytics, without slowing down the redirect. 💡 *Fire-and-forget pattern: the redirect returns immediately, and the click event flows through the bus in the background.*
+4. **Event Bus** — captures every click as an event for analytics, without slowing down the redirect.<br>💡 *Fire-and-forget pattern: the redirect returns immediately, and the click event flows through the bus in the background.*
 
 ```mermaid
 flowchart LR
@@ -287,7 +287,7 @@ Clicks go to Kafka from the hot path. A stream processor aggregates them into pe
 
 **New components we need (in addition to the ones above):**
 
-1. **Stream Processor (Flink or Kafka Streams)** — reads raw click events and aggregates them into per-link counters by time bucket, country, and referrer. 💡 *Instead of counting clicks one-by-one on each query, the stream processor pre-computes rollups so dashboard queries are instant.*
+1. **Stream Processor (Flink or Kafka Streams)** — reads raw click events and aggregates them into per-link counters by time bucket, country, and referrer.<br>💡 *Instead of counting clicks one-by-one on each query, the stream processor pre-computes rollups so dashboard queries are instant.*
 2. **Serving Store (ClickHouse, Pinot, or Timestream)** — a columnar database optimized for fast aggregation queries like "how many clicks did this link get in the last 30 days, broken down by country?"
 3. **Object Storage (S3 / GCS)** — where raw click events are archived as Parquet files for long-term retention and ad-hoc analysis.
 4. **Stats API** — serves pre-aggregated analytics to dashboards. Never scans raw events at query time.

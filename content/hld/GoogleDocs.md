@@ -179,7 +179,7 @@ The core challenge: when User A inserts "hello" at position 5 and User B simulta
 
 1. **API Gateway** — Entry point for HTTP requests (document CRUD). Handles auth and routing.
 2. **WebSocket Gateway** — Maintains persistent connections with all active editors. One connection per user per document.
-3. **Collaboration Service** — The brain. Receives operations from clients, transforms them against concurrent ops using OT, assigns version numbers, and broadcasts to all participants. 💡 *Operational Transformation (OT) = an algorithm that adjusts the position/content of an operation based on other operations that happened concurrently. If User B deletes char at pos 3, User A's insert at pos 5 becomes an insert at pos 4.*
+3. **Collaboration Service** — The brain. Receives operations from clients, transforms them against concurrent ops using OT, assigns version numbers, and broadcasts to all participants.<br>💡 *Operational Transformation (OT) = an algorithm that adjusts the position/content of an operation based on other operations that happened concurrently. If User B deletes char at pos 3, User A's insert at pos 5 becomes an insert at pos 4.*
 4. **Operation Log (Cassandra)** — Append-only log of every operation, partitioned by documentId. Used for replaying history and conflict resolution.
 5. **Redis Pub/Sub** — Routes transformed operations to the correct WebSocket Gateway instance holding each collaborator's connection.
 
