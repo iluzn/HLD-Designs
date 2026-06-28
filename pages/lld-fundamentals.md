@@ -211,6 +211,217 @@ class TwilioAdapter implements NotificationChannel {
 
 ---
 
+## Inheritance vs Composition
+
+**Rule: Prefer composition over inheritance. Almost always.**
+
+**Inheritance** = "is-a" relationship. Use when there's a genuine type hierarchy (Shape → Circle, Square).
+
+**Composition** = "has-a" relationship. Use when an object uses another object's behavior.
+
+```java
+// BAD: Inheritance for code reuse
+class EmailNotifier extends Logger {  // EmailNotifier IS-A Logger? No.
+    void notify(String msg) {
+        log(msg);  // inheriting log() just for reuse
+        sendEmail(msg);
+    }
+}
+
+// GOOD: Composition
+class EmailNotifier {
+    private final Logger logger;  // HAS-A logger
+    EmailNotifier(Logger logger) { this.logger = logger; }
+    void notify(String msg) {
+        logger.log(msg);
+        sendEmail(msg);
+    }
+}
+```
+
+**When inheritance is OK:**
+- True type hierarchy (Vehicle → Car, Bike)
+- Template Method pattern (abstract base with hooks)
+- Framework requires it (Android Activity, Spring Controller)
+
+**When composition wins:**
+- Code reuse (don't inherit just to get a method)
+- Multiple behaviors needed (Java has no multiple inheritance)
+- Runtime flexibility (swap strategies at runtime)
+
+> Interview tip: If you use inheritance and can't justify "X IS-A Y" in plain English, switch to composition. Interviewers specifically probe this.
+
+---
+
+## Builder Pattern
+
+**What:** Construct complex objects step-by-step. Avoids constructors with 10+ parameters.
+
+**When:** Entity creation with many optional fields (User, Order, Config, Query).
+
+```java
+class User {
+    private final String name;
+    private final String email;
+    private final String phone;      // optional
+    private final String address;    // optional
+    private final UserType type;     // optional
+
+    private User(Builder b) {
+        this.name = b.name;
+        this.email = b.email;
+        this.phone = b.phone;
+        this.address = b.address;
+        this.type = b.type;
+    }
+
+    static class Builder {
+        private final String name;   // required
+        private final String email;  // required
+        private String phone;
+        private String address;
+        private UserType type = UserType.REGULAR;
+
+        Builder(String name, String email) {
+            this.name = name;
+            this.email = email;
+        }
+        Builder phone(String p) { this.phone = p; return this; }
+        Builder address(String a) { this.address = a; return this; }
+        Builder type(UserType t) { this.type = t; return this; }
+        User build() { return new User(this); }
+    }
+}
+
+// Usage:
+User user = new User.Builder("Alice", "alice@mail.com")
+    .phone("+91-9876543210")
+    .type(UserType.PREMIUM)
+    .build();
+```
+
+**Why not just a constructor?** When you have 8 parameters, half optional, a constructor becomes unreadable: `new User("Alice", "alice@mail.com", null, null, null, UserType.PREMIUM, null, null)`. Builder makes it self-documenting.
+
+---
+
+## Singleton - When It's OK vs Anti-Pattern
+
+**What:** Exactly one instance of a class, globally accessible.
+
+**When it's OK:**
+- Configuration holder (read-only after init)
+- Connection pool manager
+- Logger (stateless utility)
+
+**When it's an anti-pattern:**
+- Anything with mutable state shared across threads (use DI instead)
+- Testing becomes hard (can't mock a singleton easily)
+- Hidden coupling (classes depend on a global instead of declared dependencies)
+
+```java
+// Thread-safe singleton (enum-based - simplest)
+enum AppConfig {
+    INSTANCE;
+    private final Properties props = loadFromFile();
+    public String get(String key) { return props.getProperty(key); }
+}
+
+// Usage:
+String dbUrl = AppConfig.INSTANCE.get("db.url");
+```
+
+> Interview tip: If asked "should we use Singleton here?" - say "I'd prefer dependency injection. Singleton makes testing harder and hides dependencies. But for truly global read-only config, it's fine."
+
+---
+
+## Exception Handling - Custom Hierarchy
+
+Don't throw generic `RuntimeException`. Create a small exception hierarchy:
+
+```java
+// Base exception for your domain
+class AppException extends RuntimeException {
+    private final ErrorCode code;
+    AppException(ErrorCode code, String msg) {
+        super(msg);
+        this.code = code;
+    }
+}
+
+// Specific exceptions
+class EntityNotFoundException extends AppException {
+    EntityNotFoundException(String entity, String id) {
+        super(ErrorCode.NOT_FOUND, entity + " not found: " + id);
+    }
+}
+
+class InvalidStateException extends AppException {
+    InvalidStateException(String msg) {
+        super(ErrorCode.INVALID_STATE, msg);
+    }
+}
+
+class CapacityFullException extends AppException {
+    CapacityFullException(String resource) {
+        super(ErrorCode.CAPACITY_FULL, resource + " is at capacity");
+    }
+}
+```
+
+**Why:** The demo class can catch specific exceptions and print meaningful output. The discussion round, the interviewer asks "what happens if the lot is full?" - your code already handles it clearly.
+
+**Rule:** Catch at the boundary (service layer), not inside business logic. Let exceptions bubble up.
+
+---
+
+## When NOT to Use a Pattern (Over-Engineering)
+
+Using patterns where they don't fit is worse than not using them at all. Interviewers penalize unnecessary complexity.
+
+| Pattern | Don't use when... |
+|---------|------------------|
+| Strategy | Only ONE variant exists and you're told no more will be added |
+| Observer | Only one listener and it's hardcoded (just call it directly) |
+| Factory | Only one type exists (just `new` it) |
+| Decorator | Two layers max and they won't grow (just add the logic inline) |
+| State | Only 2-3 states with trivial transitions (an enum + switch is fine) |
+| Singleton | Anything with mutable state (use DI) |
+
+**The test:** If removing the pattern and using a simpler approach (direct call, if/else, plain constructor) makes the code shorter AND equally readable - don't use the pattern.
+
+> Interview wisdom: "I considered Strategy here but since there's only one pricing type and the problem doesn't mention extensibility, I'll keep it simple and extract later if needed." - This shows MORE design maturity than forcing a pattern.
+
+---
+
+## UML Basics - What Interviewers Expect
+
+You don't need formal UML. But in the discussion round, you might be asked to draw relationships:
+
+```
+Solid arrow (→) = "depends on" / "uses"
+Hollow arrow (△) = "extends" / "implements"
+Diamond (◇) = "has-a" (composition)
+Dashed arrow (-->) = "creates" / "factory"
+```
+
+**Example for Parking Lot:**
+
+```
+ParkingLot ◇── List<Floor>
+Floor ◇── List<Slot>
+Slot → Vehicle (parked vehicle reference)
+ParkingLot → PricingStrategy (interface)
+   △── HourlyPricing
+   △── FlatPricing
+ParkingLot → AssignmentStrategy (interface)
+   △── NearestSlotAssignment
+   △── RandomAssignment
+```
+
+**In practice:** Just draw boxes with arrows showing "who owns whom" and "who talks to whom." That's sufficient for machine coding rounds.
+
+---
+
 ## Class Design - The 5-Minute Sketch
 
 Before coding, spend 5 minutes sketching this on paper:
