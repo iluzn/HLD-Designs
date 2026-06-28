@@ -111,103 +111,535 @@ Now you can inject `RazorpayGateway`, `StripeGateway`, or a `MockGateway` for te
 
 In ~90% of machine-coding problems, one or more of these will fit. Don't shoehorn - use what the problem naturally calls for.
 
-### Strategy (most important)
+### 1. Strategy (most important)
 
-**What:** Interchangeable algorithms behind one interface.
-**When:** Pricing, eviction, scoring, assignment, routing, split calculation.
-**Shape:**
+**Problem:** You have multiple ways to do the same thing (pricing, sorting, splitting expenses), and the logic varies. Without Strategy, you get a growing `if/else` chain that violates Open/Closed.
+
+**Solution:** Define an interface for the varying behavior. Each variant is a separate class implementing that interface. The service holds a reference to the interface and delegates.
+
 ```java
-interface ScoringStrategy { int score(Submission s); }
-class TimeBasedScoring implements ScoringStrategy { ... }
-class DifficultyScoring implements ScoringStrategy { ... }
-```
-**Used in:** Almost every machine-coding problem has a place for Strategy.
-
-### State
-
-**What:** Object changes behavior based on internal state. Each state is its own class.
-**When:** Orders (PLACED → CONFIRMED → SHIPPED), ATM sessions, vending machines, game phases.
-**Shape:**
-```java
-interface OrderState {
-    void next(Order ctx);
-    void cancel(Order ctx);
+// The interface (the "strategy")
+interface PricingStrategy {
+    long calculateFee(Vehicle vehicle, int hoursParked);
 }
-class PlacedState implements OrderState { ... }
-class ShippedState implements OrderState { ... }
-```
 
-### Observer
+// Variant 1
+class HourlyPricing implements PricingStrategy {
+    private final Map<VehicleType, Long> rates;
 
-**What:** Subject notifies registered listeners on state change.
-**When:** Leaderboards, item availability, notifications, scorecards.
-**Shape:**
-```java
-interface Listener { void onEvent(Event e); }
-class Leaderboard implements Listener { ... }
-subject.subscribe(leaderboard);
-```
+    HourlyPricing(Map<VehicleType, Long> rates) { this.rates = rates; }
 
-### Decorator
+    public long calculateFee(Vehicle vehicle, int hoursParked) {
+        return rates.get(vehicle.getType()) * hoursParked;
+    }
+}
 
-**What:** Wrap an object to add behavior without changing its class.
-**When:** Stacked pricing layers, logging wrappers, caching around a service.
-**Shape:**
-```java
-interface Coffee { int cost(); }
-class Espresso implements Coffee { int cost() { return 100; } }
-class MilkDecorator implements Coffee {
-    Coffee base;
-    int cost() { return base.cost() + 20; }
+// Variant 2
+class FlatPricing implements PricingStrategy {
+    private final long flatRate;
+
+    FlatPricing(long flatRate) { this.flatRate = flatRate; }
+
+    public long calculateFee(Vehicle vehicle, int hoursParked) {
+        return flatRate;  // same regardless of time
+    }
+}
+
+// Variant 3 (added later without modifying existing code)
+class WeekendSurgePricing implements PricingStrategy {
+    private final PricingStrategy base;
+    private final double multiplier;
+
+    public long calculateFee(Vehicle vehicle, int hoursParked) {
+        long baseFee = base.calculateFee(vehicle, hoursParked);
+        return isWeekend() ? (long)(baseFee * multiplier) : baseFee;
+    }
 }
 ```
 
-### Composite
-
-**What:** Treat single objects and groups uniformly via one interface.
-**When:** Menu trees (category → subcategory → item), file systems, project/task/subtask.
-**Shape:**
+**How it's used:**
 ```java
-interface MenuNode { int getPrice(); }
-class Item implements MenuNode { ... }
-class Category implements MenuNode {
-    List<MenuNode> children;
-    int getPrice() { return children.stream().mapToInt(MenuNode::getPrice).sum(); }
+class ParkingLot {
+    private PricingStrategy pricing;  // injected via constructor
+
+    ParkingLot(PricingStrategy pricing) { this.pricing = pricing; }
+
+    long checkout(Ticket ticket) {
+        int hours = calculateHours(ticket);
+        return pricing.calculateFee(ticket.getVehicle(), hours);
+    }
 }
 ```
 
-### Factory
+**When to reach for it:** Whenever the problem says "support multiple types of X" - pricing, scoring, assignment, eviction, split calculation, routing, matching.
 
-**What:** Centralize object creation. Caller gets an interface, not a concrete type.
-**When:** Creating tasks/commands by type, payment gateway adapters by provider.
-**Shape:**
+**Used in:** [Parking Lot](/lld/ParkingLot), [Splitwise](/lld/Splitwise), [Music Player](/lld/MusicPlayer), [Multilevel Cache](/lld/MultilevelCache)
+
+---
+
+### 2. State
+
+**Problem:** An object behaves differently depending on what state it's in. A vending machine accepts coins when idle, dispenses when paid, and rejects input when out of stock. Without State pattern, you get `if (state == IDLE) ... else if (state == PAID) ...` everywhere.
+
+**Solution:** Each state is its own class implementing a common interface. The context object delegates all behavior to its current state. State transitions = swapping the state object.
+
 ```java
-static PaymentGateway create(String provider) {
-    return switch (provider) {
-        case "razorpay" -> new RazorpayAdapter();
-        case "stripe"   -> new StripeAdapter();
-        default -> throw new IllegalArgumentException(provider);
-    };
+// The state interface
+interface VendingState {
+    void insertCoin(VendingMachine ctx, int amount);
+    void selectItem(VendingMachine ctx, String item);
+    void dispense(VendingMachine ctx);
+}
+
+// State 1: waiting for coin
+class IdleState implements VendingState {
+    public void insertCoin(VendingMachine ctx, int amount) {
+        ctx.setBalance(amount);
+        ctx.setState(new HasMoneyState());
+        System.out.println("Accepted " + amount + " cents");
+    }
+    public void selectItem(VendingMachine ctx, String item) {
+        System.out.println("Insert coin first");
+    }
+    public void dispense(VendingMachine ctx) {
+        System.out.println("Insert coin first");
+    }
+}
+
+// State 2: has money, waiting for selection
+class HasMoneyState implements VendingState {
+    public void insertCoin(VendingMachine ctx, int amount) {
+        ctx.setBalance(ctx.getBalance() + amount);
+    }
+    public void selectItem(VendingMachine ctx, String item) {
+        if (ctx.getBalance() >= ctx.getPrice(item)) {
+            ctx.setSelectedItem(item);
+            ctx.setState(new DispensingState());
+            ctx.dispense();
+        } else {
+            System.out.println("Not enough money");
+        }
+    }
+    public void dispense(VendingMachine ctx) {
+        System.out.println("Select an item first");
+    }
+}
+
+// State 3: dispensing
+class DispensingState implements VendingState {
+    public void insertCoin(VendingMachine ctx, int amount) {
+        System.out.println("Please wait, dispensing");
+    }
+    public void selectItem(VendingMachine ctx, String item) {
+        System.out.println("Please wait, dispensing");
+    }
+    public void dispense(VendingMachine ctx) {
+        System.out.println("Dispensing " + ctx.getSelectedItem());
+        ctx.setBalance(ctx.getBalance() - ctx.getPrice(ctx.getSelectedItem()));
+        ctx.setState(new IdleState());
+    }
+}
+
+// The context
+class VendingMachine {
+    private VendingState state = new IdleState();
+    private int balance;
+    private String selectedItem;
+
+    void setState(VendingState s) { this.state = s; }
+    void insertCoin(int amount) { state.insertCoin(this, amount); }
+    void selectItem(String item) { state.selectItem(this, item); }
+    void dispense() { state.dispense(this); }
 }
 ```
 
-### Adapter
+**When to reach for it:** Entity has 3+ states with different behaviors per state. Order lifecycle, game turns, connection states, approval workflows.
 
-**What:** Bridge between incompatible interfaces.
-**When:** Wrapping external APIs (payment gateways, notification channels) behind a common internal interface.
-**Shape:**
+**Used in:** [Snake & Ladder](/lld/SnakeLadder) (game phases)
+
+---
+
+### 3. Observer
+
+**Problem:** When something changes, multiple other objects need to know. Without Observer, you hardcode notifications: `leaderboard.update(); logger.log(); analytics.track();` - adding a new listener means modifying the publisher.
+
+**Solution:** The subject maintains a list of listeners. On state change, it notifies all registered listeners. Adding/removing listeners requires zero changes to the publisher.
+
 ```java
-interface NotificationChannel { void send(String to, String body); }
-class TwilioAdapter implements NotificationChannel {
-    void send(String to, String body) { twilioClient.messages().create(...); }
+// The listener interface
+interface GameEventListener {
+    void onScoreUpdate(String playerId, int newScore);
+    void onGameEnd(String winnerId);
+}
+
+// Listener 1
+class Leaderboard implements GameEventListener {
+    private final TreeMap<Integer, List<String>> rankings = new TreeMap<>(Comparator.reverseOrder());
+
+    public void onScoreUpdate(String playerId, int newScore) {
+        // Update rankings
+        rankings.computeIfAbsent(newScore, k -> new ArrayList<>()).add(playerId);
+        System.out.println("Leaderboard updated: " + playerId + " → " + newScore);
+    }
+    public void onGameEnd(String winnerId) {
+        System.out.println("Final standings computed");
+    }
+}
+
+// Listener 2
+class NotificationService implements GameEventListener {
+    public void onScoreUpdate(String playerId, int newScore) {
+        // Send push notification
+        System.out.println("Notified " + playerId + " of new score");
+    }
+    public void onGameEnd(String winnerId) {
+        System.out.println("Sent congratulations to " + winnerId);
+    }
+}
+
+// The subject (publisher)
+class GameEngine {
+    private final List<GameEventListener> listeners = new ArrayList<>();
+
+    void subscribe(GameEventListener l) { listeners.add(l); }
+    void unsubscribe(GameEventListener l) { listeners.remove(l); }
+
+    void updateScore(String playerId, int score) {
+        // ... game logic ...
+        listeners.forEach(l -> l.onScoreUpdate(playerId, score));
+    }
+
+    void endGame(String winnerId) {
+        // ... finalize ...
+        listeners.forEach(l -> l.onGameEnd(winnerId));
+    }
 }
 ```
 
-### Facade
+**Usage:**
+```java
+GameEngine engine = new GameEngine();
+engine.subscribe(new Leaderboard());
+engine.subscribe(new NotificationService());
+// Adding analytics later? Just: engine.subscribe(new AnalyticsTracker());
+// No changes to GameEngine.
+```
 
-**What:** One simple entry point over a complex subsystem.
-**When:** Your `XxxService` class that orchestrates multiple internal classes. The Demo/main calls only the facade.
-**Shape:** `Broker.publish(...)` hides `Topic`, `ConsumerGroup`, `InFlightTracker`, etc.
+**When to reach for it:** "When X happens, notify Y and Z." Leaderboards, availability alerts, event logging, notifications.
+
+**Used in:** [Music Player](/lld/MusicPlayer), [Snake & Ladder](/lld/SnakeLadder), [Splitwise](/lld/Splitwise)
+
+---
+
+### 4. Decorator
+
+**Problem:** You want to add behavior to an object dynamically, in layers. Subclassing for every combination explodes: `EspressoWithMilk`, `EspressoWithMilkAndSugar`, `EspressoWithSugarAndWhip`... 2^N combinations.
+
+**Solution:** Wrap the original object in a decorator that implements the same interface. Decorators can be stacked.
+
+```java
+// Base interface
+interface DataSource {
+    void writeData(String data);
+    String readData();
+}
+
+// Core implementation
+class FileDataSource implements DataSource {
+    private final String filename;
+    FileDataSource(String filename) { this.filename = filename; }
+    public void writeData(String data) { /* write to file */ }
+    public String readData() { /* read from file */ return "raw data"; }
+}
+
+// Decorator 1: adds encryption
+class EncryptionDecorator implements DataSource {
+    private final DataSource wrapped;
+    EncryptionDecorator(DataSource source) { this.wrapped = source; }
+
+    public void writeData(String data) {
+        String encrypted = encrypt(data);
+        wrapped.writeData(encrypted);
+    }
+    public String readData() {
+        return decrypt(wrapped.readData());
+    }
+}
+
+// Decorator 2: adds compression
+class CompressionDecorator implements DataSource {
+    private final DataSource wrapped;
+    CompressionDecorator(DataSource source) { this.wrapped = source; }
+
+    public void writeData(String data) {
+        String compressed = compress(data);
+        wrapped.writeData(compressed);
+    }
+    public String readData() {
+        return decompress(wrapped.readData());
+    }
+}
+```
+
+**Usage - stack decorators:**
+```java
+// Plain file
+DataSource source = new FileDataSource("data.txt");
+
+// File with compression
+source = new CompressionDecorator(source);
+
+// File with compression AND encryption
+source = new EncryptionDecorator(source);
+
+// Now writeData() → encrypt → compress → write to file
+source.writeData("sensitive data");
+```
+
+**When to reach for it:** Layered enhancements - caching + logging + metrics around a service, tiered pricing, IO wrappers.
+
+---
+
+### 5. Composite
+
+**Problem:** You have a tree structure where individual items and groups should be treated the same way. A folder contains files and other folders. A menu has items and sub-menus. You want `getPrice()` to work on both a single item and an entire category.
+
+**Solution:** One interface. Leaf nodes implement it directly. Composite nodes hold children and delegate.
+
+```java
+// Common interface
+interface FileSystemNode {
+    String getName();
+    long getSize();
+    void display(String indent);
+}
+
+// Leaf: a file
+class File implements FileSystemNode {
+    private final String name;
+    private final long size;
+
+    File(String name, long size) { this.name = name; this.size = size; }
+    public String getName() { return name; }
+    public long getSize() { return size; }
+    public void display(String indent) {
+        System.out.println(indent + name + " (" + size + " bytes)");
+    }
+}
+
+// Composite: a directory
+class Directory implements FileSystemNode {
+    private final String name;
+    private final List<FileSystemNode> children = new ArrayList<>();
+
+    Directory(String name) { this.name = name; }
+    void add(FileSystemNode node) { children.add(node); }
+
+    public String getName() { return name; }
+    public long getSize() {
+        return children.stream().mapToLong(FileSystemNode::getSize).sum();
+    }
+    public void display(String indent) {
+        System.out.println(indent + name + "/");
+        children.forEach(c -> c.display(indent + "  "));
+    }
+}
+```
+
+**Usage:**
+```java
+Directory root = new Directory("src");
+root.add(new File("Main.java", 2048));
+Directory models = new Directory("models");
+models.add(new File("User.java", 1024));
+models.add(new File("Order.java", 1536));
+root.add(models);
+
+root.display("");     // prints entire tree
+root.getSize();       // 4608 (sums all files recursively)
+```
+
+**When to reach for it:** Tree/hierarchy structures - menus, org charts, task/subtask, category/product.
+
+---
+
+### 6. Factory
+
+**Problem:** The calling code shouldn't know which concrete class to instantiate. If you scatter `new RazorpayGateway()` everywhere, switching to Stripe means editing 50 files.
+
+**Solution:** A factory method that returns the interface type. The decision of which concrete class to create is centralized in one place.
+
+```java
+// Interface
+interface NotificationChannel {
+    void send(String to, String message);
+}
+
+// Implementations
+class EmailChannel implements NotificationChannel {
+    public void send(String to, String message) {
+        System.out.println("Email to " + to + ": " + message);
+    }
+}
+class SMSChannel implements NotificationChannel {
+    public void send(String to, String message) {
+        System.out.println("SMS to " + to + ": " + message);
+    }
+}
+class PushChannel implements NotificationChannel {
+    public void send(String to, String message) {
+        System.out.println("Push to " + to + ": " + message);
+    }
+}
+
+// Factory
+class NotificationFactory {
+    static NotificationChannel create(ChannelType type) {
+        return switch (type) {
+            case EMAIL -> new EmailChannel();
+            case SMS   -> new SMSChannel();
+            case PUSH  -> new PushChannel();
+        };
+    }
+}
+
+// Usage (caller doesn't know concrete class):
+NotificationChannel channel = NotificationFactory.create(user.getPreferredChannel());
+channel.send(user.getContact(), "Your order shipped!");
+```
+
+**When to reach for it:** Object creation based on a type/config/input. Payment gateways, notification channels, vehicle creation, task handlers.
+
+---
+
+### 7. Adapter
+
+**Problem:** You have an existing class/API with one interface, but your code expects a different interface. You can't modify the external code (third-party library, legacy system).
+
+**Solution:** A wrapper class that translates between the two interfaces.
+
+```java
+// External library (can't modify)
+class StripeSDK {
+    ChargeResult charge(String cardToken, int amountCents, String currency) {
+        // Stripe-specific logic
+        return new ChargeResult(true, "ch_abc123");
+    }
+}
+
+// Your internal interface
+interface PaymentGateway {
+    PaymentResult processPayment(PaymentRequest request);
+}
+
+// Adapter: bridges Stripe's interface to yours
+class StripeAdapter implements PaymentGateway {
+    private final StripeSDK stripe = new StripeSDK();
+
+    public PaymentResult processPayment(PaymentRequest request) {
+        ChargeResult result = stripe.charge(
+            request.getCardToken(),
+            (int)(request.getAmount() * 100),  // convert to cents
+            request.getCurrency()
+        );
+        return new PaymentResult(
+            result.isSuccess(),
+            result.getChargeId(),
+            request.getAmount()
+        );
+    }
+}
+
+// Tomorrow you add Razorpay? Just create RazorpayAdapter.
+// PaymentService doesn't change.
+class RazorpayAdapter implements PaymentGateway {
+    public PaymentResult processPayment(PaymentRequest request) {
+        // translate to Razorpay API format
+    }
+}
+```
+
+**When to reach for it:** Wrapping external APIs (payment, SMS, email providers) behind a common internal interface. Also useful for legacy code integration.
+
+---
+
+### 8. Facade
+
+**Problem:** Your subsystem has many internal classes (Topic, ConsumerGroup, InFlightTracker, OffsetManager). Callers shouldn't know about or interact with all of them directly.
+
+**Solution:** One class that exposes simple high-level methods and orchestrates the internal objects.
+
+```java
+// Complex internals (many classes, many interactions)
+class TopicManager { /* manages topics and partitions */ }
+class ConsumerGroupManager { /* manages consumer groups */ }
+class MessageStore { /* stores messages */ }
+class OffsetTracker { /* tracks consumer positions */ }
+class RetryManager { /* handles failed messages */ }
+
+// Facade: one simple API for external callers
+class MessageBroker {
+    private final TopicManager topics;
+    private final ConsumerGroupManager groups;
+    private final MessageStore store;
+    private final OffsetTracker offsets;
+    private final RetryManager retries;
+
+    MessageBroker() {
+        this.topics = new TopicManager();
+        this.groups = new ConsumerGroupManager();
+        this.store = new MessageStore();
+        this.offsets = new OffsetTracker();
+        this.retries = new RetryManager();
+    }
+
+    // Simple methods hiding all the complexity
+    void createTopic(String name, int partitions) {
+        topics.create(name, partitions);
+        offsets.initializeForTopic(name);
+    }
+
+    void publish(String topic, String message) {
+        int partition = topics.assignPartition(topic, message);
+        store.append(topic, partition, message);
+        groups.notifyConsumers(topic, partition);
+    }
+
+    String consume(String topic, String groupId) {
+        int offset = offsets.getNext(topic, groupId);
+        String msg = store.read(topic, offset);
+        offsets.commit(topic, groupId, offset + 1);
+        return msg;
+    }
+}
+```
+
+**Usage (caller sees only the facade):**
+```java
+MessageBroker broker = new MessageBroker();
+broker.createTopic("orders", 3);
+broker.publish("orders", "order-123 placed");
+String msg = broker.consume("orders", "billing-group");
+```
+
+**When to reach for it:** Your Demo/Main class should interact with ONE facade, not 5+ internal classes. The facade IS your service layer.
+
+**Used in:** Every machine coding problem has a facade - `ParkingLotService`, `MusicPlayerService`, `SplitWiseService`. It's the entry point.
+
+---
+
+### Quick Reference: Which Pattern for What?
+
+| If the problem says... | Reach for |
+|------------------------|-----------|
+| "Support multiple types of X" (pricing, scoring, routing) | **Strategy** |
+| "Entity goes through states" (order, ticket, game) | **State** |
+| "Notify others when something changes" | **Observer** |
+| "Layer behaviors on top of each other" | **Decorator** |
+| "Tree structure - items and groups treated same" | **Composite** |
+| "Create objects by type/config" | **Factory** |
+| "Wrap external API behind our interface" | **Adapter** |
+| "One entry point for a complex subsystem" | **Facade** |
 
 ---
 
