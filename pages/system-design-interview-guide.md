@@ -98,6 +98,7 @@ You're NOT expected to design a production system. You're expected to demonstrat
 8. [Instagram](/hld/Instagram) - Photo upload, CDN, news feed
 9. [Leaderboard](/hld/Leaderboard) - Redis sorted sets, real-time ranking
 10. [Netflix / YouTube](/hld/Netflix) - Video encoding, adaptive streaming, recommendations
+11. [News Aggregator (Google News)](/hld/NewsAggregator) - Crawling, story clustering, personalized feed
 
 ### Advanced
 

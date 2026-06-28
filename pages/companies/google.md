@@ -46,6 +46,7 @@ Google's SWE loop for L4+ includes 1 system design round alongside 2-3 coding ro
 | 4 | Rate Limiter | Beginner | [Read →](/hld/RateLimiter) |
 | 5 | URL Shortener | Beginner | [Read →](/hld/URLShortner) |
 | 6 | Notification System | Intermediate | [Read →](/hld/NotificationSystem) |
+| 7 | News Aggregator (Google News) | Intermediate | [Read →](/hld/NewsAggregator) |
 
 ---
 
