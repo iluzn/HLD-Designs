@@ -527,7 +527,7 @@ permalink: /hld
         <div class="problems-grid">
             <div class="problem-card coming-soon">
                 <div class="card-top">
-                    <span class="diff-badge yellow">Intermediate</span>
+                    <span class="status-badge soon">Coming Soon</span>
                 </div>
                 <h3>Search Autocomplete (Google / Amazon)</h3>
                 <p class="card-desc">Trie-based prefix search, ranked suggestions, typeahead under 100ms, personalization.</p>
@@ -539,7 +539,7 @@ permalink: /hld
             </div>
             <div class="problem-card coming-soon">
                 <div class="card-top">
-                    <span class="diff-badge red">Advanced</span>
+                    <span class="status-badge soon">Coming Soon</span>
                 </div>
                 <h3>Dropbox / Google Drive (File Sync)</h3>
                 <p class="card-desc">File chunking, upload resume, cross-device sync, conflict resolution, deduplication.</p>
@@ -551,7 +551,7 @@ permalink: /hld
             </div>
             <div class="problem-card coming-soon">
                 <div class="card-top">
-                    <span class="diff-badge red">Advanced</span>
+                    <span class="status-badge soon">Coming Soon</span>
                 </div>
                 <h3>Metrics Monitoring (Datadog / CloudWatch)</h3>
                 <p class="card-desc">Time-series DB, push vs pull collection, aggregation pipeline, alerting rules, dashboards.</p>
@@ -563,7 +563,7 @@ permalink: /hld
             </div>
             <div class="problem-card coming-soon">
                 <div class="card-top">
-                    <span class="diff-badge yellow">Intermediate</span>
+                    <span class="status-badge soon">Coming Soon</span>
                 </div>
                 <h3>Nearby Places (Yelp / Google Maps)</h3>
                 <p class="card-desc">Geo-spatial search, quadtree vs geohash, ranking by distance + rating, real-time availability.</p>
@@ -575,7 +575,7 @@ permalink: /hld
             </div>
             <div class="problem-card coming-soon">
                 <div class="card-top">
-                    <span class="diff-badge yellow">Intermediate</span>
+                    <span class="status-badge soon">Coming Soon</span>
                 </div>
                 <h3>Web Crawler (Google Bot)</h3>
                 <p class="card-desc">URL frontier, politeness policies, distributed crawling, deduplication, priority scheduling.</p>
@@ -587,7 +587,7 @@ permalink: /hld
             </div>
             <div class="problem-card coming-soon">
                 <div class="card-top">
-                    <span class="diff-badge yellow">Intermediate</span>
+                    <span class="status-badge soon">Coming Soon</span>
                 </div>
                 <h3>E-Commerce (Amazon Product Page)</h3>
                 <p class="card-desc">Product catalog, inventory management, cart service, checkout flow, flash sale handling.</p>
@@ -599,7 +599,7 @@ permalink: /hld
             </div>
             <div class="problem-card coming-soon">
                 <div class="card-top">
-                    <span class="diff-badge yellow">Intermediate</span>
+                    <span class="status-badge soon">Coming Soon</span>
                 </div>
                 <h3>Spotify / Music Streaming</h3>
                 <p class="card-desc">Audio streaming, adaptive bitrate, playlist service, offline sync, recommendations.</p>
@@ -611,7 +611,7 @@ permalink: /hld
             </div>
             <div class="problem-card coming-soon">
                 <div class="card-top">
-                    <span class="diff-badge yellow">Intermediate</span>
+                    <span class="status-badge soon">Coming Soon</span>
                 </div>
                 <h3>Top-K / Trending Topics (Twitter Trends)</h3>
                 <p class="card-desc">Count-min sketch, heavy hitters, sliding window counts, velocity detection, regional trends.</p>
@@ -623,7 +623,7 @@ permalink: /hld
             </div>
             <div class="problem-card coming-soon">
                 <div class="card-top">
-                    <span class="diff-badge red">Advanced</span>
+                    <span class="status-badge soon">Coming Soon</span>
                 </div>
                 <h3>Distributed Message Queue (Kafka)</h3>
                 <p class="card-desc">Log-based storage, partitioning, consumer groups, exactly-once delivery, replication.</p>
@@ -635,7 +635,7 @@ permalink: /hld
             </div>
             <div class="problem-card coming-soon">
                 <div class="card-top">
-                    <span class="diff-badge red">Advanced</span>
+                    <span class="status-badge soon">Coming Soon</span>
                 </div>
                 <h3>Ad Click Aggregator (Meta / Google Ads)</h3>
                 <p class="card-desc">Real-time click counting, fraud detection, auction system, lambda architecture, reconciliation.</p>
@@ -809,13 +809,9 @@ nav a.active { color: var(--accent); background: rgba(129,140,248,0.1); font-wei
 .problem-card:hover { border-color: rgba(129,140,248,0.5); transform: translateY(-4px) rotateX(2deg) rotateY(-1deg); box-shadow: 0 20px 60px rgba(129,140,248,0.12), 0 0 30px rgba(129,140,248,0.05); }
 .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; }
 .card-icon { font-size: 1.5rem; }
-.diff-badge { font-size: 0.68rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
-.diff-badge.green { background: rgba(52,211,153,0.1); color: #10b981; border: 1px solid rgba(52,211,153,0.2); }
-.diff-badge.yellow { background: rgba(251,191,36,0.1); color: #d97706; border: 1px solid rgba(251,191,36,0.2); }
-.diff-badge.red { background: rgba(248,113,113,0.1); color: #ef4444; border: 1px solid rgba(248,113,113,0.2); }
-[data-theme="light"] .diff-badge.green { background: rgba(16,185,129,0.08); color: #059669; border-color: rgba(16,185,129,0.2); }
-[data-theme="light"] .diff-badge.yellow { background: rgba(217,119,6,0.08); color: #b45309; border-color: rgba(217,119,6,0.2); }
-[data-theme="light"] .diff-badge.red { background: rgba(220,38,38,0.08); color: #dc2626; border-color: rgba(220,38,38,0.2); }
+.status-badge { font-size: 0.68rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+.status-badge.soon { background: rgba(251,191,36,0.1); color: #d97706; border: 1px solid rgba(251,191,36,0.2); }
+.problem-card.coming-soon { opacity: 0.6; cursor: default; }
 .problem-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.4rem; }
 .card-desc { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.8rem; flex-grow: 1; line-height: 1.5; }
 .card-time { display: block; margin-top: 0.5rem; font-size: 0.7rem; color: var(--text-dim); }
