@@ -43,7 +43,7 @@ flowchart LR
 
 **In 3 sentences:** Customer searches for restaurants (Elasticsearch with geo + relevance scoring), places an order (Postgres with idempotency), and the system finds a nearby rider (Redis Geo for proximity, Temporal for the multi-step dispatch workflow). The rider's live location streams to the customer via WebSocket. Each component is independently scalable.
 
-💡 *WebSocket is a persistent two-way connection. Unlike HTTP (ask → answer → done), WebSocket stays open so the server can push updates instantly.*
+💡 *WebSocket is a persistent two-way connection. Unlike HTTP (ask → answer → done), WebSocket stays open so the server can push updates instantly. [Learn more →](/concepts#real-time-communication-websocket-vs-sse-vs-polling)*
 
 ---
 
@@ -221,7 +221,7 @@ Now we introduce a Rider Client, a Location Service that receives live GPS pings
 **New components we need (in addition to the ones above):**
 
 1. **Location Service** — ingests live GPS pings from rider phones (every 3-5 seconds) and stores them. The "where is everyone right now?" service.
-2. **Location Store (Redis Geo)** — holds live rider positions in memory, sharded by city.<br>💡 *Redis Geo uses geohashing under the hood — it can answer "find all riders within 3km of this restaurant" in microseconds across 200K riders.*
+2. **Location Store (Redis Geo)** — holds live rider positions in memory, sharded by city.<br>💡 *Redis Geo uses geohashing under the hood — it can answer "find all riders within 3km of this restaurant" in microseconds across 200K riders. [Learn more →](/concepts#geospatial-indexing)*
 3. **Ride Matching Service** — finds the best available rider for a confirmed order. Queries nearby riders, scores them, and sends an offer.
 4. **Notification Service** — pushes the ride offer to the rider's phone via FCM/APNs. Also notifies the customer about order updates.
 5. **FCM / APNs** — Firebase Cloud Messaging and Apple Push Notification service. External services that deliver push notifications to rider phones, even when the app is backgrounded.
@@ -292,7 +292,7 @@ Sharding by `city_id` keeps each Redis shard small (say 10K riders) and evenly d
 
 Freshness over durability is the right tradeoff here — if Redis loses a few seconds of pings, the rider just shows up again on the next ping. We still tee every ping to Kafka for a durable history stream consumed by analytics and fraud detection, not by the matching hot path.
 
-💡 *Kafka is a distributed event log. Producers append events, consumers read at their own pace. Perfect for decoupling services that produce data from those that consume it.*
+💡 *Kafka is a distributed event log. Producers append events, consumers read at their own pace. Perfect for decoupling services that produce data from those that consume it. [Learn more →](/concepts#message-queues)*
 
 Client-side optimization matters too. Instead of dumb 5s intervals, the rider app can adapt:
 - Stationary rider → 30s interval.

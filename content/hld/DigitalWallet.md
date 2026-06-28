@@ -157,7 +157,7 @@ Why Kafka as the event bus:
 - **Low latency** — P95 transfer under 500ms, balance check under 100ms.
 - **High availability** — 99.99% on the transfer path. Users block on this.
 - **Auditability** — every balance change is traceable to the ledger entries that produced it. Required for regulators and internal finance.
-- **Idempotency** — any operation is safe to retry without side effects.<br>💡 *Idempotency = running the same operation multiple times produces the same result. Essential for payment retries — charging a card twice would be catastrophic.*
+- **Idempotency** — any operation is safe to retry without side effects.<br>💡 *Idempotency = running the same operation multiple times produces the same result. Essential for payment retries — charging a card twice would be catastrophic. [Learn more →](/concepts#idempotency)*
 
 ### Below the line
 - Globally multi-region active-active (single-region-primary with regional read replicas is fine to start)
@@ -359,7 +359,7 @@ flowchart LR
 
 **Why one DB transaction instead of a saga?** Both users' wallets are in the same Postgres database. A single transaction gives us atomicity for free — no distributed coordination, no compensating rollbacks, no inconsistency window. This is the beauty of keeping the ledger in one place.
 
-💡 *Saga pattern = a sequence of local transactions where each step has a compensating action (undo). If step 3 fails, run compensations for steps 2 and 1 to rollback.*
+💡 *Saga pattern = a sequence of local transactions where each step has a compensating action (undo). If step 3 fails, run compensations for steps 2 and 1 to rollback. [Learn more →](/concepts#saga-pattern)*
 
 ### 3) Balance and transaction history
 

@@ -169,7 +169,7 @@ The first thing a user does is place a buy or sell order. Let's build the simple
 
 1. **API Gateway** — Entry point for all requests. Handles auth (JWT), rate limiting, and idempotency checks. Idempotency means: if a user's network drops and they retry, we don't accidentally place the order twice.
 2. **Order Management Service (OMS)** — The brain. Validates orders (enough balance? valid symbol? market open?), persists them, and publishes events.
-3. **Kafka** — Our event bus.<br>💡 *Kafka is a distributed log where events are appended and consumed by multiple services independently. Think of it as a super-reliable conveyor belt for messages.*
+3. **Kafka** — Our event bus.<br>💡 *Kafka is a distributed log where events are appended and consumed by multiple services independently. Think of it as a super-reliable conveyor belt for messages. [Learn more →](/concepts#message-queues)*
 4. **Matching Engine** — Consumes order events and matches buyers with sellers using price-time priority (highest bidder meets lowest seller first).
 5. **Order DB (Postgres)** — Stores all orders and their current state. Source of truth.
 
@@ -226,11 +226,11 @@ All orders for RELIANCE must be matched in strict price-time order. Kafka guaran
 
 Once orders are filled, users need to see their transaction history and portfolio. But here's the tension: the write path (order placement) needs to be fast and consistent. The read path (portfolio, history) is 100x more frequent and can tolerate 1-2 seconds of staleness.
 
-This is where we use **CQRS**.<br>💡 *CQRS (Command Query Responsibility Segregation) = separate the system that writes data from the system that reads data. Writes go to the primary DB. Reads go to a separate optimized store (cache + read replica). This lets us scale reads without slowing down writes.*
+This is where we use **CQRS**.<br>💡 *CQRS (Command Query Responsibility Segregation) = separate the system that writes data from the system that reads data. Writes go to the primary DB. Reads go to a separate optimized store (cache + read replica). This lets us scale reads without slowing down writes. [Learn more →](/concepts#event-sourcing--cqrs)*
 
 **New components:**
 
-1. **Event Projector** — A Kafka consumer that listens to `trade.executed` events and updates a read-optimized database.<br>💡 *Think of it as a translator: it takes raw events and builds the "current state" views that users see.*
+1. **Event Projector** — A Kafka consumer that listens to `trade.executed` events and updates a read-optimized database.<br>💡 *Think of it as a translator: it takes raw events and builds the "current state" views that users see. [Learn more →](/concepts#message-queues)*
 2. **Query Service** — Serves all read requests (portfolio, order history). Hits cache first, falls back to read replica.
 3. **Redis Cache** — Stores hot data (user's current portfolio, recent orders) for sub-10ms reads.
 4. **Postgres Read Replica** — A copy of the DB optimized for reads. Doesn't slow down the write path.

@@ -290,7 +290,7 @@ This is where most of the complexity lives.
 
 **New components we need (in addition to the ones above):**
 
-1. **Dispatcher Pool (leader-elected shards)** — the heartbeat of the system. Each dispatcher continuously polls its slice of the Redis ZSET for due jobs.<br>💡 *Leader election ensures only ONE dispatcher owns each shard — without it, two dispatchers would both fire the same job, causing duplicate execution.*
+1. **Dispatcher Pool (leader-elected shards)** — the heartbeat of the system. Each dispatcher continuously polls its slice of the Redis ZSET for due jobs.<br>💡 *Leader election ensures only ONE dispatcher owns each shard — without it, two dispatchers would both fire the same job, causing duplicate execution. [Learn more →](/concepts#leader-election)*
 2. **Kafka (per-pool topics)** — decouples dispatch timing from worker availability. When the dispatcher finds a due job, it publishes to Kafka rather than directly calling a worker.
 3. **Workers** — the processes that actually execute your job code. Each worker pool handles a specific class of jobs (e.g., `email-sender`, `batch-etl`).
 4. **Executions table (Postgres)** — one row per attempt to run a job. Append-only history so you can answer "did my job run? when? how long did it take?"
@@ -343,7 +343,7 @@ flowchart LR
 
 **New components we need (in addition to the ones above):**
 
-1. **Cancel Set (Redis)** — a short-lived set of `executionId`s that have been cancelled. Workers check this before starting and periodically during execution.<br>💡 *We can't "un-send" a Kafka message, so instead we let the worker check a cancel flag before it starts working.*
+1. **Cancel Set (Redis)** — a short-lived set of `executionId`s that have been cancelled. Workers check this before starting and periodically during execution.<br>💡 *We can't "un-send" a Kafka message, so instead we let the worker check a cancel flag before it starts working. [Learn more →](/concepts#message-queues)*
 
 ```mermaid
 flowchart LR

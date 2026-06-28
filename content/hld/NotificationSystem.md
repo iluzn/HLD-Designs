@@ -305,7 +305,7 @@ Start with the minimum viable pipeline: accept, enqueue, fan out per channel, di
 **New components we need:**
 
 1. **Notification API** — the single entry point for all product services. Receives "send a notification to user X" requests, validates them, and enqueues for processing.
-2. **Message Broker (Kafka)** — decouples notification intake from delivery.<br>💡 *Kafka here acts as a buffer — if push notifications are slow today, the queue absorbs the backlog instead of slowing down the checkout flow that triggered the notification.*
+2. **Message Broker (Kafka)** — decouples notification intake from delivery.<br>💡 *Kafka here acts as a buffer — if push notifications are slow today, the queue absorbs the backlog instead of slowing down the checkout flow that triggered the notification. [Learn more →](/concepts#message-queues)*
 3. **Router** — reads each notification event, decides which channels to use (push? email? SMS?), and fans out one message per channel to channel-specific topics.
 4. **Channel Workers (Push, Email, SMS)** — each specialized worker renders the template and calls the external provider. Isolated so a Twilio outage doesn't affect push delivery.
 5. **External Providers (APNs, SES, Twilio)** — the actual delivery services. We don't send emails ourselves — we hand them to SES/Mailgun, which handles the SMTP complexity.<br>💡 *FCM (Firebase Cloud Messaging) and APNs (Apple Push Notification Service) are the only way to send push notifications to Android and iOS devices respectively. Your server can't push directly to phones — it must go through these gateways.*
@@ -418,7 +418,7 @@ Channel workers own the retry logic. The key mechanism is the **outbox pattern**
 
 **New components we need (in addition to the ones above):**
 
-1. **Retry Queue (delayed Kafka topic)** — when a provider returns a transient error (timeout, 5xx, rate-limit 429), the failed message goes here with exponential backoff timing.<br>💡 *Exponential backoff means: wait 2s, then 10s, then 60s, then 5min before each retry. This prevents hammering a struggling provider.*
+1. **Retry Queue (delayed Kafka topic)** — when a provider returns a transient error (timeout, 5xx, rate-limit 429), the failed message goes here with exponential backoff timing.<br>💡 *Exponential backoff means: wait 2s, then 10s, then 60s, then 5min before each retry. This prevents hammering a struggling provider. [Learn more →](/concepts#message-queues)*
 2. **Dead Letter Queue (DLQ)** — where permanently-failed messages go after exhausting all retries. These get reviewed by a human or an automated reconciler.
 3. **Delivery Attempts table (Postgres)** — records every single attempt to deliver a notification, including the provider's response. Essential for debugging "why didn't user X get their OTP?"
 

@@ -199,7 +199,7 @@ We'll layer in components as the three FRs demand them.
 **New components we need:**
 
 1. **Trigger API** — the HTTP service callers hit to register or cancel triggers. Validates requests and handles idempotency.
-2. **Redis Idempotency Cache** — stores `(callerId, idempotencyKey) → triggerId` so retried requests don't create duplicate triggers.<br>💡 *Idempotency means: if the caller's network drops and they retry, we return the same triggerId instead of creating a second trigger. Safe retries.*
+2. **Redis Idempotency Cache** — stores `(callerId, idempotencyKey) → triggerId` so retried requests don't create duplicate triggers.<br>💡 *Idempotency means: if the caller's network drops and they retry, we return the same triggerId instead of creating a second trigger. Safe retries. [Learn more →](/concepts#idempotency)*
 3. **Cassandra (partitioned by fire-time bucket)** — durable storage for all triggers. Partitioned by the 1-minute window containing `fireAt`, so the sweeper can efficiently ask "give me all triggers due in minute M" with one partition read.
 
 ```mermaid
@@ -235,8 +235,8 @@ We split by delay length, borrowing from Dynein:
 
 **New components we need (in addition to the ones above):**
 
-1. **Sweeper (leader-elected, per shard)** — scans Cassandra for triggers due in the next 15 minutes and loads them into the timing wheel.<br>💡 *Leader election ensures only one sweeper owns each shard — without it, duplicate fires would happen.*
-2. **Timing Wheel (in-process)** — a ring-buffer data structure that fires callbacks at precise times with O(1) insert and expiry.<br>💡 *Think of it as an alarm clock with thousands of slots — you set the alarm (insert), and when the hand reaches your slot, it goes off (expires). Kafka's internals use this exact structure.*
+1. **Sweeper (leader-elected, per shard)** — scans Cassandra for triggers due in the next 15 minutes and loads them into the timing wheel.<br>💡 *Leader election ensures only one sweeper owns each shard — without it, duplicate fires would happen. [Learn more →](/concepts#leader-election)*
+2. **Timing Wheel (in-process)** — a ring-buffer data structure that fires callbacks at precise times with O(1) insert and expiry.<br>💡 *Think of it as an alarm clock with thousands of slots — you set the alarm (insert), and when the hand reaches your slot, it goes off (expires). Kafka's internals use this exact structure. [Learn more →](/concepts#message-queues)*
 3. **SQS (delay queue)** — the execution lane. Once a trigger is within seconds of firing, the timing wheel pushes it to SQS. Dispatchers consume from SQS.
 4. **Dispatcher Pool** — workers that pull from SQS, read the trigger from Cassandra, and POST the callback to the caller's URL. Stateless; scales horizontally.
 
