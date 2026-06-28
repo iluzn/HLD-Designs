@@ -629,17 +629,11 @@
             // Insert wrapper before the bad trigger, then hide originals
             group.bad.trigger.parentNode.insertBefore(wrapper, group.bad.trigger);
 
-            // Hide original elements
-            group.bad.trigger.style.display = 'none';
-            group.bad.content.forEach(function(el) { el.style.display = 'none'; });
-            if (group.good) {
-                group.good.trigger.style.display = 'none';
-                group.good.content.forEach(function(el) { el.style.display = 'none'; });
-            }
-            if (group.great) {
-                group.great.trigger.style.display = 'none';
-                group.great.content.forEach(function(el) { el.style.display = 'none'; });
-            }
+            // Hide ALL original elements between bad trigger and end of group
+            var allToHide = [group.bad.trigger].concat(group.bad.content);
+            if (group.good) allToHide = allToHide.concat([group.good.trigger], group.good.content);
+            if (group.great) allToHide = allToHide.concat([group.great.trigger], group.great.content);
+            allToHide.forEach(function(el) { if (el) el.style.display = 'none'; });
         });
 
         // Highlight deep dive headings (h3 containing "Deep Dive")
