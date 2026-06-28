@@ -51,6 +51,17 @@ flowchart LR
 
 🍔 **What is Zomato?** Zomato (known as Uber Eats or DoorDash in the US) is an on-demand food delivery platform that connects customers with nearby restaurants. Customers browse menus, place orders, pay, and watch their food travel from the restaurant to their door via a delivery partner.
 
+---
+
+## Prior Art We're Drawing From
+
+- **DoorDash Dispatch** - Builds assignment algorithms that balance delivery time, driver earnings, and restaurant readiness. Uses ML models for ETA prediction and dynamic batching. ([DoorDash Engineering](https://doordash.engineering/))
+- **Uber Eats Marketplace** - Three-sided marketplace (eaters, restaurants, couriers) with real-time dispatch using geospatial indexing. Open-sourced Cadence for workflow orchestration. ([Uber Engineering](https://www.uber.com/blog/engineering/))
+- **Swiggy Search** - Elasticsearch-based restaurant discovery with personalized ranking, geolocation filtering, and real-time availability. Handles 50K+ QPS during peak hours. ([Swiggy Engineering](https://bytes.swiggy.com/))
+- **Grab GrabNearby** - Redis Geo for sub-10ms rider proximity queries across Southeast Asia. Location TTL ensures stale drivers auto-expire. ([Grab Engineering](https://engineering.grab.com/))
+
+---
+
 ## Functional Requirements
 
 ### Core Requirements

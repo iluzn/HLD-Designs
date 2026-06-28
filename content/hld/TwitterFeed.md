@@ -67,6 +67,16 @@ flowchart LR
 
 ---
 
+## Core Entities
+
+- **User** - account with profile, follower/following lists, and preferences
+- **Tweet** - text content (280 chars), media attachments, author, timestamp, engagement counts
+- **Timeline** - a per-user sorted list of tweet IDs representing their feed
+- **Follow Relationship** - directional edge in the social graph (A follows B)
+- **Fan-out Job** - an async task that pushes a new tweet into followers' timelines
+
+---
+
 ## Naive First Cut
 
 ```mermaid

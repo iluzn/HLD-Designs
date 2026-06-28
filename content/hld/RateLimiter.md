@@ -7,8 +7,8 @@ description: "System design for a distributed rate limiter - token bucket, slidi
 
 # Designing a Rate Limiter
 
-⚡ **Difficulty:** Beginner–Intermediate
-📋 **Prerequisites:** None (this is a great first system design problem)
+⚡ **Difficulty:** Beginner-Intermediate
+📋 **Prerequisites:** [Fundamentals](/concepts) - especially [Caching](/concepts#caching) and [Message Queues](/concepts#message-queues)
 
 ---
 
@@ -73,6 +73,32 @@ flowchart LR
 - **Read QPS:** Same as write - each check is a read-modify-write on the counter
 - **Storage:** ~10GB counter storage in Redis (key per client per window, short TTL)
 - **Bandwidth:** Sub-ms latency per check - rate limiter must not become the bottleneck
+
+---
+
+## Functional Requirements
+
+### Core
+
+1. **Limit requests per client** - enforce a max number of requests per time window (e.g., 100 requests/minute per user)
+2. **Return clear feedback** - rejected requests get HTTP 429 with headers showing limit, remaining quota, and reset time
+3. **Support multiple granularities** - limit by user ID, API key, IP address, or endpoint
+
+### Below the Line
+
+- Adaptive limits (auto-adjust based on system load)
+- Per-endpoint weighting (expensive operations cost more tokens)
+- Allowlists/blocklists
+- Rate limit dashboard for API consumers
+
+---
+
+## Core Entities
+
+- **Rule** - defines a limit: identifier type (user/IP/key), max requests, time window, algorithm
+- **Counter** - tracks current usage for a specific client + window combination
+- **Window** - the time boundary (fixed 1-min, sliding, or token bucket refill rate)
+- **Decision** - the result of a rate check: ALLOW or REJECT, with remaining quota
 
 ---
 
