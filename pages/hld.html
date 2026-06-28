@@ -98,8 +98,46 @@ permalink: /hld
     </a>
 </div>
 
-<!-- Filter tabs -->
+<!-- Featured designs (cards) -->
 <div class="section">
+    <h2 class="section-title" style="margin-bottom:1rem;">Most Popular</h2>
+    <div class="featured-grid">
+        <a class="featured-card" href="/hld/Uber">
+            <span class="diff-badge red">Advanced</span>
+            <h3>Ride Sharing (Uber / Lyft)</h3>
+            <p>Real-time matching, Redis Geo, surge pricing, WebSocket tracking</p>
+        </a>
+        <a class="featured-card" href="/hld/Zomato">
+            <span class="diff-badge red">Advanced</span>
+            <h3>Food Delivery (Zomato / Uber Eats)</h3>
+            <p>Elasticsearch, dispatch, live tracking, Redis Geo</p>
+        </a>
+        <a class="featured-card" href="/hld/NotificationSystem">
+            <span class="diff-badge yellow">Intermediate</span>
+            <h3>Notification System</h3>
+            <p>Multi-channel push/email/SMS, Kafka, template engine</p>
+        </a>
+        <a class="featured-card" href="/hld/DigitalWallet">
+            <span class="diff-badge red">Advanced</span>
+            <h3>Digital Wallet (PhonePe / Venmo)</h3>
+            <p>Double-entry ledger, saga pattern, idempotency</p>
+        </a>
+        <a class="featured-card" href="/hld/ChatSystem">
+            <span class="diff-badge yellow">Intermediate</span>
+            <h3>Chat System (WhatsApp)</h3>
+            <p>WebSocket, offline delivery, Cassandra, group fan-out</p>
+        </a>
+        <a class="featured-card" href="/hld/URLShortner">
+            <span class="diff-badge green">Beginner</span>
+            <h3>URL Shortener (Bitly)</h3>
+            <p>Base62 IDs, CDN caching, click analytics pipeline</p>
+        </a>
+    </div>
+</div>
+
+<!-- Full catalog (list view) -->
+<div class="section">
+    <h2 class="section-title" style="margin-bottom:0.5rem;">All Designs</h2>
     <div class="filter-bar">
         <button class="filter-btn active" data-filter="all">All</button>
         <button class="filter-btn" data-filter="beginner">Beginner</button>
@@ -671,7 +709,16 @@ nav a.active { color: var(--accent); background: rgba(129,140,248,0.1); font-wei
 .filter-btn:hover { border-color: var(--accent); color: var(--text); }
 .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-/* List view (default for full catalog) */
+/* Featured grid (cards for top 6) */
+.featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.featured-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; text-decoration: none; color: var(--text); transition: border-color 0.3s, transform 0.2s; display: flex; flex-direction: column; gap: 0.5rem; }
+.featured-card:hover { border-color: rgba(129,140,248,0.5); transform: translateY(-3px); }
+.featured-card h3 { font-size: 1rem; font-weight: 700; margin: 0; }
+.featured-card p { font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.5; }
+.featured-card .diff-badge { align-self: flex-start; }
+.section-title { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+
+/* List view (compact catalog) */
 .problems-grid { display: flex; flex-direction: column; gap: 0.4rem; }
 .problem-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1.2rem; text-decoration: none; color: var(--text); transition: border-color 0.2s, transform 0.2s; display: flex; align-items: center; gap: 1rem; }
 .problem-card:hover { border-color: rgba(129,140,248,0.4); transform: translateX(4px); }
@@ -682,7 +729,6 @@ nav a.active { color: var(--accent); background: rgba(129,140,248,0.1); font-wei
 .card-desc { display: none; }
 .card-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
 .card-companies { display: none; }
-.filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
 /* Difficulty groups */
 .difficulty-group { margin-bottom: 2.5rem; }
