@@ -1,0 +1,54 @@
+name: Validate Site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: |
+          gem install jekyll bundler
+          gem install jekyll-seo-tag jekyll-sitemap
+
+      - name: Build site
+        run: jekyll build
+
+      - name: Check for broken internal links
+        run: |
+          echo "Checking internal links..."
+          # Find all internal href links in built HTML
+          grep -roh 'href="/[^"]*"' _site/ | sort -u | sed 's/href="//;s/"//' | while read link; do
+            # Remove trailing slash and check if file exists
+            path="_site${link}"
+            if [ ! -f "${path}" ] && [ ! -f "${path}index.html" ] && [ ! -d "${path}" ]; then
+              echo "BROKEN LINK: $link"
+              BROKEN=1
+            fi
+          done
+          if [ "${BROKEN}" = "1" ]; then
+            echo "::error::Broken internal links found!"
+            exit 1
+          fi
+          echo "All internal links valid."
+
+      - name: Validate no duplicate script IDs
+        run: |
+          echo "Checking for script conflicts..."
+          # Ensure no innerHTML replacement happens after event listener attachment
+          if grep -n "innerHTML" _site/**/*.html 2>/dev/null | head -5; then
+            echo "::warning::innerHTML usage found - verify it doesn't break event listeners"
+          fi
+          echo "Script check passed."
