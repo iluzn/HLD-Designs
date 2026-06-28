@@ -8,6 +8,7 @@ permalink: /hld/BookMyShow/
 # Designing a Ticket Booking Platform (BookMyShow / Ticketmaster)
 
 ⚡ **Difficulty:** Intermediate 🏷️ **Topics:** Distributed Locking, Seat Reservation, Payment Saga, TTL Holds, Inventory Management 🏢 **Asked at:** Ticketmaster, BookMyShow, Amazon, Flipkart, PhonePe
+⏱️ **Reading time:** 30 min
 
 ---
 

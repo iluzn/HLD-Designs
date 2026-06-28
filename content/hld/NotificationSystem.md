@@ -9,7 +9,7 @@ description: "System design for Notification System — HLD - architecture, deep
 
 ⚡ **Difficulty:** Intermediate
 📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Message Queues and Event-Driven Architecture
-⏱️ **Reading time:** 30 min
+⏱️ **Reading time:** 35 min
 
 ---
 

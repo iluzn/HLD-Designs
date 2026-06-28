@@ -8,6 +8,7 @@ permalink: /hld/Netflix/
 # Designing Netflix / YouTube — Video Streaming Platform
 
 ⚡ **Difficulty:** Advanced 🏷️ **Topics:** Video Encoding Pipeline, CDN, Adaptive Bitrate Streaming, Recommendation Engine, Content Catalog 🏢 **Asked at:** Netflix, YouTube, Disney+, Amazon Prime Video, Hotstar
+⏱️ **Reading time:** 27 min
 
 ---
 

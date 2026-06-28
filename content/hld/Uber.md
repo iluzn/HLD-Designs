@@ -8,6 +8,7 @@ permalink: /hld/Uber/
 # Designing a Ride Sharing Platform (Uber / Lyft)
 
 ⚡ **Difficulty:** Advanced 🏷️ **Topics:** Real-Time Matching, Location Tracking, WebSocket, Surge Pricing, Geohash 🏢 **Asked at:** Uber, Lyft, Ola, Grab, Google, Amazon
+⏱️ **Reading time:** 27 min
 
 ---
 

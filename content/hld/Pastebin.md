@@ -8,6 +8,7 @@ description: "System design for a text-sharing service like Pastebin - unique ID
 # Designing Pastebin
 
 ⚡ **Difficulty:** Beginner 🏷️ **Topics:** Object Storage, ID Generation, CDN, TTL 🏢 **Asked at:** Google, Amazon, Meta
+⏱️ **Reading time:** 14 min
 
 ---
 

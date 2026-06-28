@@ -9,7 +9,7 @@ description: "System design for Designing a Payment Wallet Like PhonePe, Venmo, 
 
 ⚡ **Difficulty:** Advanced
 📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Databases, Consistency, and Message Queues
-⏱️ **Reading time:** 30 min
+⏱️ **Reading time:** 35 min
 
 ---
 

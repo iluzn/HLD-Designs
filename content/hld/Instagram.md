@@ -8,6 +8,7 @@ permalink: /hld/Instagram/
 # Designing Instagram / Pinterest — Photo Sharing Platform
 
 ⚡ **Difficulty:** Intermediate 🏷️ **Topics:** CDN, Object Storage, Fan-out, Media Processing, Feed Ranking 🏢 **Asked at:** Meta, Pinterest, Snap, Google, Amazon
+⏱️ **Reading time:** 23 min
 
 ---
 

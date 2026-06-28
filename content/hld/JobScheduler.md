@@ -9,7 +9,7 @@ description: "System design for Distributed Job Scheduler — HLD - architecture
 
 ⚡ **Difficulty:** Intermediate–Advanced
 📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Message Queues, Leader Election, and Databases
-⏱️ **Reading time:** 25 min
+⏱️ **Reading time:** 30 min
 
 ---
 

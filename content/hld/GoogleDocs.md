@@ -8,6 +8,7 @@ permalink: /hld/GoogleDocs/
 # Designing a Collaborative Editing Platform (Google Docs / Notion)
 
 ⚡ **Difficulty:** Advanced 🏷️ **Topics:** Real-Time Collaboration, OT/CRDT, WebSocket, Conflict Resolution, Presence Awareness 🏢 **Asked at:** Google, Notion, Figma, Microsoft, Amazon
+⏱️ **Reading time:** 28 min
 
 ---
 
