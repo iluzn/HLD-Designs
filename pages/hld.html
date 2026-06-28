@@ -727,7 +727,7 @@ nav a.active { color: var(--accent); background: rgba(129,140,248,0.1); font-wei
 .card-top { display: flex; align-items: center; gap: 0.5rem; min-width: 100px; }
 .problem-card h3 { font-size: 0.92rem; font-weight: 600; margin: 0; flex: 1; min-width: 200px; }
 .card-desc { display: none; }
-.card-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+.problems-grid .card-tags { display: none; }
 .card-companies { display: none; }
 
 /* Difficulty groups */
@@ -755,7 +755,7 @@ nav a.active { color: var(--accent); background: rgba(129,140,248,0.1); font-wei
 .card-time { display: block; margin-top: 0.5rem; font-size: 0.7rem; color: var(--text-dim); }
 .card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
 .tag { background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--accent-light); padding: 2px 8px; border-radius: 5px; font-size: 0.68rem; font-weight: 500; }
-.card-companies { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.card-companies { display: none; }
 .company { font-size: 0.68rem; color: var(--text-dim); background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; }
 [data-theme="light"] .company { background: rgba(0,0,0,0.02); }
 
@@ -837,6 +837,9 @@ footer a:hover { text-decoration: underline; }
     .problem-card h3 { font-size: 0.85rem; min-width: unset; }
     .card-top { min-width: unset; }
     .problems-grid .card-tags { display: none; }
+    .problems-grid .card-companies { display: none; }
+    .problem-card { padding: 0.5rem 0.8rem; }
+    .problem-card h3 { font-size: 0.82rem; }
     .hamburger { display: block; }
     .nav-links { display: none; position: absolute; top: calc(100% + 0.5rem); right: 0; background: var(--header-bg); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); border: 1px solid var(--border); border-radius: 12px; padding: 0.4rem; flex-direction: column; align-items: stretch; min-width: 160px; box-shadow: 0 16px 48px rgba(0,0,0,0.4); }
     .nav-links.open { display: flex; }
