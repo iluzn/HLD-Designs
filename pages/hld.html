@@ -953,7 +953,7 @@ footer a:hover { text-decoration: underline; }
     // Progress tracking
     var pageKey = 'hld-progress';
     var saved = JSON.parse(localStorage.getItem(pageKey) || '{}');
-    var cards = document.querySelectorAll('.problem-card');
+    var cards = document.querySelectorAll('.problem-card:not(.coming-soon)');
     var total = cards.length;
 
     function updateProgress() {
