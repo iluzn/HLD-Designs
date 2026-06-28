@@ -1,14 +1,14 @@
 ---
 layout: default
-title: "Design Netflix / YouTube — Video Streaming System Design Interview"
+title: "Design Netflix / YouTube - Video Streaming System Design Interview"
 description: "System design for Netflix / YouTube with video encoding, CDN delivery, recommendation engine, and adaptive bitrate streaming. Complete HLD."
 permalink: /hld/Netflix/
 ---
 
-# Designing Netflix / YouTube — Video Streaming Platform
+# Designing Netflix / YouTube - Video Streaming Platform
 
 ⚡ **Difficulty:** Advanced 🏷️ **Topics:** Video Encoding Pipeline, CDN, Adaptive Bitrate Streaming, Recommendation Engine, Content Catalog 🏢 **Asked at:** Netflix, YouTube, Disney+, Amazon Prime Video, Hotstar
-📋 **Prerequisites:** [Fundamentals](/concepts) — especially [CDN](/concepts#cdn-content-delivery-network) and [Message Queues](/concepts#message-queues)
+📋 **Prerequisites:** [Fundamentals](/concepts) - especially [CDN](/concepts#cdn-content-delivery-network) and [Message Queues](/concepts#message-queues)
 
 ---
 
@@ -37,11 +37,11 @@ flowchart LR
 ```
 
 **How this breaks:**
-- Single file server can't serve 200M concurrent streams — bandwidth alone would be 200 Tbps
-- No encoding pipeline — raw 4K master files are too large (50GB per hour of content) to stream directly
-- No adaptive quality — users on 3G get buffer wheels, users on fiber get potato quality
+- Single file server can't serve 200M concurrent streams - bandwidth alone would be 200 Tbps
+- No encoding pipeline - raw 4K master files are too large (50GB per hour of content) to stream directly
+- No adaptive quality - users on 3G get buffer wheels, users on fiber get potato quality
 - Centralized serving means 500ms+ latency for users far from origin (India streaming from US-West)
-- No personalization — everyone sees the same homepage, engagement drops
+- No personalization - everyone sees the same homepage, engagement drops
 - Single DB can't handle 200M concurrent session lookups + play position tracking
 
 The rest of the doc evolves this into a globally distributed streaming platform with intelligent encoding, edge delivery, and personalized recommendations.
@@ -50,11 +50,11 @@ The rest of the doc evolves this into a globally distributed streaming platform 
 
 ## 1.7. Prior Art We're Drawing From
 
-- **Netflix Open Connect** — Netflix's own CDN: custom hardware appliances (OCAs) deployed inside ISP networks. Serves 95%+ of traffic from within the ISP, eliminating internet transit costs. Pre-positions content overnight based on popularity predictions. ([Netflix Open Connect overview](https://openconnect.netflix.com/))
-- **YouTube Vitess (Video Metadata at Scale)** — Sharded MySQL via Vitess for video metadata, serving billions of queries/day. Demonstrates that video catalogs need a horizontally scalable metadata tier. ([Vitess.io](https://vitess.io/))
-- **Netflix Zuul (API Gateway)** — Edge gateway handling auth, routing, canary deployments, and load shedding for 200M+ users. Shows why a smart edge layer is critical for streaming. ([Netflix Zuul blog](https://netflixtechblog.com/open-sourcing-zuul-2-82ea476cb2b3))
-- **Netflix Cosmos (Encoding Pipeline)** — Microservice-based media processing platform replacing the monolithic encoder. Uses per-title encoding to optimize bitrate per scene complexity. ([Netflix Tech Blog — Cosmos](https://netflixtechblog.com/the-netflix-cosmos-platform-35c14d9351ad))
-- **Netflix Recommendations (Two-Stage Ranking)** — Candidate generation via collaborative filtering, then re-ranking via deep learning. Row-based homepage layout driven by ML. ([Netflix Tech Blog — Recommendations](https://netflixtechblog.com/netflix-recommendations-beyond-the-5-stars-part-1-55838468f429))
+- **Netflix Open Connect** - Netflix's own CDN: custom hardware appliances (OCAs) deployed inside ISP networks. Serves 95%+ of traffic from within the ISP, eliminating internet transit costs. Pre-positions content overnight based on popularity predictions. ([Netflix Open Connect overview](https://openconnect.netflix.com/))
+- **YouTube Vitess (Video Metadata at Scale)** - Sharded MySQL via Vitess for video metadata, serving billions of queries/day. Demonstrates that video catalogs need a horizontally scalable metadata tier. ([Vitess.io](https://vitess.io/))
+- **Netflix Zuul (API Gateway)** - Edge gateway handling auth, routing, canary deployments, and load shedding for 200M+ users. Shows why a smart edge layer is critical for streaming. ([Netflix Zuul blog](https://netflixtechblog.com/open-sourcing-zuul-2-82ea476cb2b3))
+- **Netflix Cosmos (Encoding Pipeline)** - Microservice-based media processing platform replacing the monolithic encoder. Uses per-title encoding to optimize bitrate per scene complexity. ([Netflix Tech Blog - Cosmos](https://netflixtechblog.com/the-netflix-cosmos-platform-35c14d9351ad))
+- **Netflix Recommendations (Two-Stage Ranking)** - Candidate generation via collaborative filtering, then re-ranking via deep learning. Row-based homepage layout driven by ML. ([Netflix Tech Blog - Recommendations](https://netflixtechblog.com/netflix-recommendations-beyond-the-5-stars-part-1-55838468f429))
 
 ---
 
@@ -62,9 +62,9 @@ The rest of the doc evolves this into a globally distributed streaming platform 
 
 ### Core (Top 3)
 
-1. **Upload and encode video content** — content team uploads master files; system encodes into multiple resolutions, bitrates, and codecs
-2. **Stream video with adaptive bitrate** — users watch content with quality that adjusts to their bandwidth in real-time
-3. **Personalized recommendations** — homepage shows titles ranked by predicted relevance for each user
+1. **Upload and encode video content** - content team uploads master files; system encodes into multiple resolutions, bitrates, and codecs
+2. **Stream video with adaptive bitrate** - users watch content with quality that adjusts to their bandwidth in real-time
+3. **Personalized recommendations** - homepage shows titles ranked by predicted relevance for each user
 
 ### Below the Line
 
@@ -85,7 +85,7 @@ The rest of the doc evolves this into a globally distributed streaming platform 
 | **Start Playback** | Time to first frame < 2 seconds globally |
 | **Buffer-free** | 99% of streams play without rebuffering |
 | **Scale** | 200M+ concurrent streams during peak (Sunday evening) |
-| **Availability** | 99.99% — downtime during prime time is front-page news |
+| **Availability** | 99.99% - downtime during prime time is front-page news |
 
 ### Below the Line
 
@@ -118,21 +118,21 @@ The rest of the doc evolves this into a globally distributed streaming platform 
 | Session Store | Playback state, DRM tokens | Ephemeral session data | High-QPS read/write | Redis | Memcached |
 
 **Why a custom CDN (Open Connect), not CloudFront?**
-At Netflix's scale (15% of global internet traffic during peak), paying per-GB to a CDN provider is prohibitively expensive. Custom hardware appliances (Open Connect Appliances — OCAs) placed inside ISP networks cost $0.001/GB vs $0.02+/GB for commercial CDNs. Saves $1B+/year.
+At Netflix's scale (15% of global internet traffic during peak), paying per-GB to a CDN provider is prohibitively expensive. Custom hardware appliances (Open Connect Appliances - OCAs) placed inside ISP networks cost $0.001/GB vs $0.02+/GB for commercial CDNs. Saves $1B+/year.
 
 **Why Temporal for encoding, not a simple queue?**
-Video encoding is a multi-step workflow: split → encode each resolution → validate → package into HLS/DASH → DRM encrypt → publish. Steps have dependencies, retries, and can take hours. Temporal handles long-running workflows with checkpointing, retry policies, and visibility — far better than chaining SQS queues.
+Video encoding is a multi-step workflow: split → encode each resolution → validate → package into HLS/DASH → DRM encrypt → publish. Steps have dependencies, retries, and can take hours. Temporal handles long-running workflows with checkpointing, retry policies, and visibility - far better than chaining SQS queues.
 
 ---
 
 ## 4. Core Entities
 
-- **Title** — movie or series metadata: name, genre, cast, rating, licensing regions
-- **Video Asset** — physical encoding: resolution, bitrate, codec, segment manifest
-- **Encoding Job** — workflow state for converting a master into playable assets
-- **User Profile** — preferences, watch history, ratings, maturity settings
-- **Playback Session** — active stream: title, position, quality level, device info
-- **Recommendation** — pre-computed ranked list of titles for a user
+- **Title** - movie or series metadata: name, genre, cast, rating, licensing regions
+- **Video Asset** - physical encoding: resolution, bitrate, codec, segment manifest
+- **Encoding Job** - workflow state for converting a master into playable assets
+- **User Profile** - preferences, watch history, ratings, maturity settings
+- **Playback Session** - active stream: title, position, quality level, device info
+- **Recommendation** - pre-computed ranked list of titles for a user
 
 ---
 
@@ -172,11 +172,11 @@ When a studio delivers a new movie to Netflix, it arrives as a massive master fi
 
 **New components:**
 
-1. **Ingest Service** — Receives upload notification, validates master file, creates encoding job. Think of it as the "front desk" for new content.
-2. **Encoding Orchestrator (Temporal)** — Manages the multi-step encoding workflow.<br>💡 *Temporal is a workflow engine that breaks complex jobs into steps, handles retries, and checkpoints progress. If a step fails after 2 hours of encoding, it retries just that step, not the whole job.*
-3. **Encoding Workers** — GPU-powered machines that do the actual transcoding. Each worker handles one resolution/bitrate variant.
-4. **Object Storage (S3)** — Stores master files and all encoded segments. Organized as `titles/{titleId}/assets/{resolution}_{bitrate}/{segment_000.ts}`
-5. **Content Catalog DB** — Stores metadata about what's available: which encodings exist, which regions can play it, licensing windows.
+1. **Ingest Service** - Receives upload notification, validates master file, creates encoding job. Think of it as the "front desk" for new content.
+2. **Encoding Orchestrator (Temporal)** - Manages the multi-step encoding workflow.<br>💡 *Temporal is a workflow engine that breaks complex jobs into steps, handles retries, and checkpoints progress. If a step fails after 2 hours of encoding, it retries just that step, not the whole job.*
+3. **Encoding Workers** - GPU-powered machines that do the actual transcoding. Each worker handles one resolution/bitrate variant.
+4. **Object Storage (S3)** - Stores master files and all encoded segments. Organized as `titles/{titleId}/assets/{resolution}_{bitrate}/{segment_000.ts}`
+5. **Content Catalog DB** - Stores metadata about what's available: which encodings exist, which regions can play it, licensing windows.
 
 ```mermaid
 flowchart LR
@@ -234,10 +234,10 @@ The key protocol: **HLS (HTTP Live Streaming)** or **DASH (Dynamic Adaptive Stre
 
 **New components:**
 
-1. **Playback Service** — Handles play requests. Resolves DRM license, generates manifest URL, records session start.
-2. **CDN Edge (Open Connect)** — Serves video segments from ISP-local caches. The user's player fetches segments directly from the nearest OCA.
-3. **ABR Client (in-player)** — The adaptive bitrate algorithm running on the user's device. It decides which quality to request next based on buffer level and throughput estimates.
-4. **Session Store (Redis)** — Tracks active playback sessions: position, quality, buffer health. Used for resume and analytics.
+1. **Playback Service** - Handles play requests. Resolves DRM license, generates manifest URL, records session start.
+2. **CDN Edge (Open Connect)** - Serves video segments from ISP-local caches. The user's player fetches segments directly from the nearest OCA.
+3. **ABR Client (in-player)** - The adaptive bitrate algorithm running on the user's device. It decides which quality to request next based on buffer level and throughput estimates.
+4. **Session Store (Redis)** - Tracks active playback sessions: position, quality, buffer health. Used for resume and analytics.
 
 ```mermaid
 flowchart LR
@@ -270,7 +270,7 @@ flowchart LR
 2. Playback Service checks: Is this title available in user's region? Does user have an active subscription? What was their last watch position (resume)?
 3. Service requests a DRM license from the License Server (Widevine for Android/Chrome, FairPlay for Apple, PlayReady for Windows)
 4. Service returns: manifest URL (pointing to CDN), DRM license, resume position
-5. Player downloads the manifest from CDN — it lists all quality levels (e.g., 240p@300kbps, 480p@1.5Mbps, 1080p@5Mbps, 4K@15Mbps)
+5. Player downloads the manifest from CDN - it lists all quality levels (e.g., 240p@300kbps, 480p@1.5Mbps, 1080p@5Mbps, 4K@15Mbps)
 6. ABR algorithm starts conservative: first segment at medium quality (480p). Measures download speed.
 7. If segment downloaded faster than real-time → next segment at higher quality. If slower → drop quality.
 8. Player fetches segments sequentially from CDN edge. CDN cache hit → instant. Cache miss → pull from S3 origin, cache locally.
@@ -280,15 +280,15 @@ flowchart LR
 
 ### FR3: Personalized Recommendations
 
-When users open Netflix, they see a homepage with rows of titles ("Because you watched X," "Trending Now," "Top 10 in India"). Each user's homepage is different. Recommendation quality directly drives engagement and retention — Netflix estimates their rec system is worth $1B/year in reduced churn.
+When users open Netflix, they see a homepage with rows of titles ("Because you watched X," "Trending Now," "Top 10 in India"). Each user's homepage is different. Recommendation quality directly drives engagement and retention - Netflix estimates their rec system is worth $1B/year in reduced churn.
 
 **New components:**
 
-1. **Recommendation Service** — Serves pre-computed recommendations for a user profile. Returns ranked rows of titles.
-2. **ML Recommendation Pipeline (offline)** — Batch job that runs every few hours: takes all user viewing history, computes collaborative filtering + content-based signals, generates ranked lists per user.
-3. **Event Collector (Kafka)** — Ingests real-time user events (play, pause, skip, rate, browse). Feeds both the offline pipeline and real-time signals.
-4. **Recommendation Cache (Redis)** — Stores pre-computed homepage for each active user. Homepage load = one Redis GET.
-5. **Content Catalog + Search (Elasticsearch)** — Powers the search bar and genre browsing with full-text + faceted search.
+1. **Recommendation Service** - Serves pre-computed recommendations for a user profile. Returns ranked rows of titles.
+2. **ML Recommendation Pipeline (offline)** - Batch job that runs every few hours: takes all user viewing history, computes collaborative filtering + content-based signals, generates ranked lists per user.
+3. **Event Collector (Kafka)** - Ingests real-time user events (play, pause, skip, rate, browse). Feeds both the offline pipeline and real-time signals.
+4. **Recommendation Cache (Redis)** - Stores pre-computed homepage for each active user. Homepage load = one Redis GET.
+5. **Content Catalog + Search (Elasticsearch)** - Powers the search bar and genre browsing with full-text + faceted search.
 
 ```mermaid
 flowchart LR
@@ -403,7 +403,7 @@ sequenceDiagram
     Temporal->>CDN: Trigger pre-positioning for predicted-popular regions
 ```
 
-**Non-obvious failure path:** If an encoding worker crashes mid-transcode (GPU OOM, spot instance reclaimed), Temporal automatically retries the failed task on a different worker. The worker resumes from the last completed segment (checkpointed in Temporal state). Partial segments in S3 are overwritten. The overall workflow only fails if a single task exceeds 5 retries — then it's flagged for manual review.
+**Non-obvious failure path:** If an encoding worker crashes mid-transcode (GPU OOM, spot instance reclaimed), Temporal automatically retries the failed task on a different worker. The worker resumes from the last completed segment (checkpointed in Temporal state). Partial segments in S3 are overwritten. The overall workflow only fails if a single task exceeds 5 retries - then it's flagged for manual review.
 
 ### Playback Session State Machine
 
@@ -427,16 +427,16 @@ stateDiagram-v2
 
 ## 7. Deep Dives
 
-### Deep Dive 1: Video Encoding Pipeline — Per-Title Encoding
+### Deep Dive 1: Video Encoding Pipeline - Per-Title Encoding
 
-**Bad:** Fixed bitrate ladder — encode every title at the same bitrates (e.g., 1080p always at 5Mbps). Animated movies (simple scenes) waste bits; action movies (complex scenes) look blocky.
+**Bad:** Fixed bitrate ladder - encode every title at the same bitrates (e.g., 1080p always at 5Mbps). Animated movies (simple scenes) waste bits; action movies (complex scenes) look blocky.
 
-**Good:** Per-resolution encoding — analyze content complexity and assign optimal bitrate per resolution. "My Little Pony" at 1080p needs only 2Mbps; "Mad Max" needs 8Mbps. But: analyzing the entire movie adds encoding time.
+**Good:** Per-resolution encoding - analyze content complexity and assign optimal bitrate per resolution. "My Little Pony" at 1080p needs only 2Mbps; "Mad Max" needs 8Mbps. But: analyzing the entire movie adds encoding time.
 
 **Great:** Per-shot encoding (borrowing from Netflix Cosmos):
 
 1. **Scene detection:** Split video into shots (scene changes detected via frame difference). Each shot gets its own optimal encoding parameters.
-2. **Convex hull optimization:** For each shot, encode at multiple bitrate/quality points. Plot quality (VMAF score) vs bitrate. Find the convex hull — the set of points that gives maximum quality per bit.
+2. **Convex hull optimization:** For each shot, encode at multiple bitrate/quality points. Plot quality (VMAF score) vs bitrate. Find the convex hull - the set of points that gives maximum quality per bit.
 3. **Bitrate allocation:** Given a target average bitrate for the stream, allocate more bits to complex shots and fewer to simple shots. Result: consistent visual quality throughout.
 4. **Codec selection:** Encode each title in H.264 (compatibility), H.265 (50% more efficient, most devices), and AV1 (30% more efficient than H.265, newer devices). Client picks best codec their device supports.
 
@@ -463,9 +463,9 @@ flowchart LR
 
 ---
 
-### Deep Dive 2: CDN Architecture — Open Connect
+### Deep Dive 2: CDN Architecture - Open Connect
 
-**Bad:** Use a commercial CDN (CloudFront, Akamai) — at Netflix scale (15% of global internet traffic), per-GB pricing is ruinous ($0.02/GB × exabytes/month = billions/year).
+**Bad:** Use a commercial CDN (CloudFront, Akamai) - at Netflix scale (15% of global internet traffic), per-GB pricing is ruinous ($0.02/GB × exabytes/month = billions/year).
 
 **Good:** Build your own CDN with PoPs in major metros. Better cost, but ISP peering still adds latency and transit costs.
 
@@ -484,14 +484,14 @@ flowchart LR
 
 ### Deep Dive 3: Adaptive Bitrate Streaming (ABR Algorithms)
 
-**Bad:** Fixed quality — user selects "HD" and it stays there. When bandwidth drops, video buffers for 30 seconds while next segment downloads.
+**Bad:** Fixed quality - user selects "HD" and it stays there. When bandwidth drops, video buffers for 30 seconds while next segment downloads.
 
-**Good:** Simple throughput-based ABR — measure download speed of last segment, choose next quality that fits within that bandwidth. But: highly reactive, causes frequent quality oscillation (480p → 1080p → 480p every few seconds). Jarring user experience.
+**Good:** Simple throughput-based ABR - measure download speed of last segment, choose next quality that fits within that bandwidth. But: highly reactive, causes frequent quality oscillation (480p → 1080p → 480p every few seconds). Jarring user experience.
 
 **Great:** Buffer-based ABR with throughput smoothing (borrowing from Netflix's practical ABR research):
 
 1. **Buffer-Based (BBA):** Decision is driven by buffer level, not just throughput. If buffer is full (30s ahead), be aggressive (higher quality). If buffer is low (< 5s), be conservative (lower quality). Smooth transitions.
-2. **Throughput estimation:** Use harmonic mean of last 5 segment downloads (not arithmetic mean — resists outliers from temporary spikes).
+2. **Throughput estimation:** Use harmonic mean of last 5 segment downloads (not arithmetic mean - resists outliers from temporary spikes).
 3. **Startup optimization:** During initial buffering, start at lowest quality for the first 2 segments (fast start, reduces time-to-first-frame). Then ramp up aggressively once buffer grows.
 4. **Quality lock:** Once at a stable quality for 30+ seconds, don't drop unless buffer is critically low. Prevents flicker.
 
@@ -517,18 +517,18 @@ The client knows its actual buffer state and network conditions in real-time. Se
 
 ### Deep Dive 4: Recommendation Engine
 
-**Bad:** Show everyone the same "Top 10" list — no personalization, engagement drops, churn increases.
+**Bad:** Show everyone the same "Top 10" list - no personalization, engagement drops, churn increases.
 
-**Good:** Collaborative filtering only — "users who watched X also watched Y." Works well for popular content but fails for niche titles and new users (cold start problem).
+**Good:** Collaborative filtering only - "users who watched X also watched Y." Works well for popular content but fails for niche titles and new users (cold start problem).
 
 **Great:** Two-stage pipeline with hybrid signals:
 
-**Stage 1 — Candidate Generation (offline, runs every 4 hours on Spark):**
+**Stage 1 - Candidate Generation (offline, runs every 4 hours on Spark):**
 - **Collaborative filtering:** Matrix factorization on user-item interaction matrix. Each user and title gets a 128-dimension embedding. Similarity in embedding space = likely interest.
 - **Content-based:** Encode title features (genre, director, cast, keywords, avg shot length) into embeddings. Match against user preference vector.
 - **Output:** 1000 candidate titles per user (from 15K catalog).
 
-**Stage 2 — Ranking (near-real-time, per request):**
+**Stage 2 - Ranking (near-real-time, per request):**
 - **Features:** Candidate title embedding + user context (time of day, device, recent watches, account age).
 - **Model:** Lightweight neural net (2-layer MLP) predicting P(watch > 70% of title).
 - **Inference:** < 10ms for 1000 candidates on CPU. Results sorted by score.
@@ -565,16 +565,16 @@ flowchart LR
 
 ### Deep Dive 5: Content Pre-positioning and Cache Warming
 
-**Problem:** When a new blockbuster drops (Stranger Things Season 5), millions of users hit play within minutes. If the content isn't pre-cached on edge nodes, all requests slam the origin — massive latency spike.
+**Problem:** When a new blockbuster drops (Stranger Things Season 5), millions of users hit play within minutes. If the content isn't pre-cached on edge nodes, all requests slam the origin - massive latency spike.
 
-**Bad:** Reactive caching — first user in each region triggers origin fetch. For a 2-hour movie at 4K, that's a 20GB pull per OCA on first play. Multiply by 10,000 OCAs = 200TB origin egress in one hour.
+**Bad:** Reactive caching - first user in each region triggers origin fetch. For a 2-hour movie at 4K, that's a 20GB pull per OCA on first play. Multiply by 10,000 OCAs = 200TB origin egress in one hour.
 
-**Good:** Push content to all OCAs 24 hours before release. But: OCA storage is limited (100TB). Pushing everything everywhere is wasteful — content that's popular in India may get 0 plays in Brazil.
+**Good:** Push content to all OCAs 24 hours before release. But: OCA storage is limited (100TB). Pushing everything everywhere is wasteful - content that's popular in India may get 0 plays in Brazil.
 
 **Great:** Predictive pre-positioning with regional popularity models:
 
 1. **Popularity prediction:** ML model trained on: historical premiere viewership, pre-release engagement (trailers watched, "remind me" clicks), genre popularity per region, time of year, marketing spend.
-2. **Regional allocation:** Model predicts views-per-region for the first 48 hours. Content pushed to OCAs proportionally — more copies in high-demand regions, fewer in low-demand.
+2. **Regional allocation:** Model predicts views-per-region for the first 48 hours. Content pushed to OCAs proportionally - more copies in high-demand regions, fewer in low-demand.
 3. **Fill during off-peak:** Transfers happen 2AM-6AM local time when ISP bandwidth is idle. OCAs pull from regional hubs (not origin directly).
 4. **Dynamic rebalancing:** After release, actual viewership data feeds back. If Brazil has unexpected demand, nearby OCAs serve while additional copies propagate.
 5. **Tiered encoding push:** Push only the most popular bitrates first (1080p H.265, 720p H.264). Niche formats (4K AV1) stay at regional hubs until demanded.
@@ -587,7 +587,7 @@ flowchart LR
 
 **Problem:** Users are watching on unreliable networks (cellular, congested WiFi, train tunnels). Any interruption > 2 seconds and they close the app.
 
-**Bad:** Single CDN endpoint — if it goes down, playback stops entirely.
+**Bad:** Single CDN endpoint - if it goes down, playback stops entirely.
 
 **Good:** Retry on same CDN with exponential backoff. But: if the problem is the CDN node itself (hardware failure, network partition), retries never succeed.
 
@@ -595,7 +595,7 @@ flowchart LR
 
 1. **Segment-level retry:** If a segment fetch fails or times out (3s), immediately retry from a different CDN PoP (player knows 3+ candidate OCAs from steering).
 2. **Quality downshift on repeated failure:** If 2 consecutive segments fail at current quality, drop to lowest bitrate (which has smaller segments, more likely to succeed on degraded network).
-3. **Buffer-based tolerance:** ABR algorithm maintains a 30-second buffer when healthy. This "runway" absorbs network glitches — user doesn't notice a 5-second outage if buffer covers it.
+3. **Buffer-based tolerance:** ABR algorithm maintains a 30-second buffer when healthy. This "runway" absorbs network glitches - user doesn't notice a 5-second outage if buffer covers it.
 4. **Session resume:** If player crashes or device sleeps, resume from exact position (stored in Session Store every 10s). User re-opens app → continues from where they left off, no buffering.
 5. **CDN steering updates:** Every 30 seconds, player pings the steering service for updated CDN PoP rankings. If their current OCA is degraded, next segment fetches from a better one.
 
@@ -612,7 +612,7 @@ flowchart LR
 | Single points of failure? | CDN is massively distributed (10K+ OCAs). Catalog DB is sharded (Vitess). Temporal orchestrator has its own HA (multiple workers, durable state). Playback Service is stateless behind LB. |
 | Dead-letter / reconciliation? | Encoding: failed tasks retry 5x in Temporal, then flag for review. Playback: heartbeat timeout after 5 minutes marks session as abandoned (for analytics). |
 | Data freshness across caches? | Rec cache refreshed every 4 hours + real-time re-ranker. CDN content is immutable (new encoding = new URL). Session store is real-time (Redis). |
-| Cost at scale? | CDN (Open Connect): dominant cost, mitigated by ISP partnerships. Encoding: GPU compute is expensive but one-time per title. Storage: tiered S3 (originals archived to Glacier after encoding). Rec pipeline: Spark cluster — scales with user base. |
+| Cost at scale? | CDN (Open Connect): dominant cost, mitigated by ISP partnerships. Encoding: GPU compute is expensive but one-time per title. Storage: tiered S3 (originals archived to Glacier after encoding). Rec pipeline: Spark cluster - scales with user base. |
 
 ---
 
@@ -717,31 +717,31 @@ flowchart LR
 
 ## What's Expected at Each Level
 
-> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+> This section helps you calibrate your depth. You don't need to cover everything - just know what's expected for your level.
 
 ### Mid-level
 
-Outline the upload → encode → store → stream flow. Understand why a CDN is needed for latency and bandwidth at scale. Describe HLS/DASH at a high level — the idea of splitting video into segments and serving a manifest. With prompting, discuss adaptive bitrate and why users can't just download a single fixed-quality file.
+Outline the upload → encode → store → stream flow. Understand why a CDN is needed for latency and bandwidth at scale. Describe HLS/DASH at a high level - the idea of splitting video into segments and serving a manifest. With prompting, discuss adaptive bitrate and why users can't just download a single fixed-quality file.
 
 ### Senior
 
-Propose per-title encoding optimization (different bitrate ladders for animated vs action content). Explain the CDN cache hierarchy (edge → regional → origin) and why three tiers matter. Discuss the recommendation pipeline (offline batch candidate generation + online re-ranking). Articulate the ABR algorithm trade-offs — buffer-based vs throughput-based — and why client-side ABR beats server-side.
+Propose per-title encoding optimization (different bitrate ladders for animated vs action content). Explain the CDN cache hierarchy (edge → regional → origin) and why three tiers matter. Discuss the recommendation pipeline (offline batch candidate generation + online re-ranking). Articulate the ABR algorithm trade-offs - buffer-based vs throughput-based - and why client-side ABR beats server-side.
 
 ### Staff+
 
-Address custom CDN economics (Open Connect vs commercial CDN at Netflix scale — $0.001/GB vs $0.02/GB). Discuss predictive pre-positioning of content based on popularity models and how overnight off-peak bandwidth is leveraged. Explain DRM license serving architecture and the cold-start recommendation problem. Articulate what happens when a new blockbuster drops and millions hit play simultaneously — cache warming, origin shielding, and steering.
+Address custom CDN economics (Open Connect vs commercial CDN at Netflix scale - $0.001/GB vs $0.02/GB). Discuss predictive pre-positioning of content based on popularity models and how overnight off-peak bandwidth is leveraged. Explain DRM license serving architecture and the cold-start recommendation problem. Articulate what happens when a new blockbuster drops and millions hit play simultaneously - cache warming, origin shielding, and steering.
 
 
 ---
 ## 🎯 Key Takeaways
 
-- **Per-shot encoding** optimizes bitrate per scene complexity — saves 20-30% bandwidth
+- **Per-shot encoding** optimizes bitrate per scene complexity - saves 20-30% bandwidth
 - **Open Connect CDN** inside ISPs serves 95% of traffic locally
 - **Adaptive Bitrate (ABR)** driven by buffer level, not just throughput
 - **Two-stage recommendation**: collaborative filtering (offline) → neural ranker (online)
 
 ---
 ## Related Designs
-- [URL Shortener](/hld/URLShortner) — CDN caching patterns and redirect optimization
-- [Chat System](/hld/ChatSystem) — real-time delivery and session management
-- [Notification System](/hld/NotificationSystem) — push notification infrastructure
+- [URL Shortener](/hld/URLShortner) - CDN caching patterns and redirect optimization
+- [Chat System](/hld/ChatSystem) - real-time delivery and session management
+- [Notification System](/hld/NotificationSystem) - push notification infrastructure

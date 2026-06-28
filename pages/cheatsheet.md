@@ -1,11 +1,11 @@
 ---
 permalink: /cheatsheet/
 layout: default
-title: "Quick-Fire 50 — Coding Interview Cheatsheet"
+title: "Quick-Fire 50 - Coding Interview Cheatsheet"
 description: "Quick-reference cheatsheet of the 50 most frequently asked coding interview problems. Pattern, approach, and complexity in one glance."
 ---
 
-# Quick-Fire 50 — Interview Cheatsheet
+# Quick-Fire 50 - Interview Cheatsheet
 
 The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Google, Meta, PhonePe, Flipkart, Uber). Bookmark this page and review before every interview.
 
@@ -24,7 +24,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 |---|---|---|---|---|
 | 1 | [Two Sum](https://leetcode.com/problems/two-sum/) | HashMap: store complement, lookup on each element | O(n) | O(n) |
 | 2 | [Best Time to Buy/Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) | Track min price so far, compute profit at each step | O(n) | O(1) |
-| 3 | [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) | HashSet — add and check | O(n) | O(n) |
+| 3 | [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) | HashSet - add and check | O(n) | O(n) |
 | 4 | [Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/) | Left-pass prefix product + right-pass suffix product | O(n) | O(1)* |
 | 5 | [Maximum Subarray (Kadane)](https://leetcode.com/problems/maximum-subarray/) | Track `currentMax = max(num, currentMax + num)` | O(n) | O(1) |
 | 6 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | Sort each word → use as HashMap key | O(n·k log k) | O(n·k) |
@@ -62,8 +62,8 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 
 | # | Problem | Approach | Time | Space |
 |---|---|---|---|---|
-| 21 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Binary search — check which half is sorted | O(log n) | O(1) |
-| 22 | [Find Minimum in Rotated Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Binary search — shrink toward the unsorted half | O(log n) | O(1) |
+| 21 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Binary search - check which half is sorted | O(log n) | O(1) |
+| 22 | [Find Minimum in Rotated Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Binary search - shrink toward the unsorted half | O(log n) | O(1) |
 | 23 | [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/) | Binary search on answer (speed), check feasibility | O(n log m) | O(1) |
 | 24 | [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) | Binary search on partition of smaller array | O(log min(m,n)) | O(1) |
 
@@ -144,8 +144,8 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 | Structure | Access | Search | Insert | Delete |
 |---|---|---|---|---|
 | Array | O(1) | O(n) | O(n) | O(n) |
-| HashMap | — | O(1) avg | O(1) avg | O(1) avg |
-| BST (balanced) | — | O(log n) | O(log n) | O(log n) |
+| HashMap | - | O(1) avg | O(1) avg | O(1) avg |
+| BST (balanced) | - | O(log n) | O(log n) | O(log n) |
 | Heap | O(1) peek | O(n) | O(log n) | O(log n) |
 | Stack/Queue | O(1) top | O(n) | O(1) | O(1) |
 
@@ -160,7 +160,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 
 ## The 10 "Must-Solve-First" Problems
 
-If you only have 3 days, solve these — they cover the most patterns with the least problems:
+If you only have 3 days, solve these - they cover the most patterns with the least problems:
 
 1. [Two Sum](https://leetcode.com/problems/two-sum/) (HashMap)
 2. [Best Time to Buy/Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) (Greedy/Kadane)

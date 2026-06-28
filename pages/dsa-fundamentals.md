@@ -1,13 +1,13 @@
 ---
 permalink: /dsa-fundamentals/
 layout: default
-title: "DSA Fundamentals — 12 Patterns for Coding Interviews"
+title: "DSA Fundamentals - 12 Patterns for Coding Interviews"
 description: "The core DSA patterns, how to recognize them, complexity analysis, and a framework for solving any coding interview problem."
 ---
 
 # DSA Fundamentals
 
-The concepts and patterns you need before solving problems. This isn't a data-structures textbook — it's a practical guide to recognizing patterns, choosing the right approach, and communicating clearly during an interview.
+The concepts and patterns you need before solving problems. This isn't a data-structures textbook - it's a practical guide to recognizing patterns, choosing the right approach, and communicating clearly during an interview.
 
 ---
 
@@ -38,7 +38,7 @@ Every coding interview answer follows this structure. Practice it until it's mus
 | O(log n) | Logarithmic | Binary search, balanced BST | ~20 ops |
 | O(n) | Linear | Array scan, hash table build | 10^6 ops, fast |
 | O(n log n) | Linearithmic | Merge sort, sort-then-search | ~20M ops, fine |
-| O(n²) | Quadratic | Nested loops, brute-force pairs | 10^12 ops — TLE |
+| O(n²) | Quadratic | Nested loops, brute-force pairs | 10^12 ops - TLE |
 | O(2^n) | Exponential | All subsets, recursive fib | Forget it beyond n=25 |
 
 ### Constraint → Complexity mapping
@@ -47,12 +47,12 @@ This is how you decide your approach before writing code:
 
 | Input size (n) | Max acceptable complexity |
 |---|---|
-| n ≤ 10 | O(n!) — brute force ok |
-| n ≤ 20 | O(2^n) — bitmask DP |
-| n ≤ 500 | O(n³) — triple nested loops |
-| n ≤ 5000 | O(n²) — double nested loops |
-| n ≤ 10^5 | O(n log n) — sort + binary search |
-| n ≤ 10^6 | O(n) — linear pass, hash maps |
+| n ≤ 10 | O(n!) - brute force ok |
+| n ≤ 20 | O(2^n) - bitmask DP |
+| n ≤ 500 | O(n³) - triple nested loops |
+| n ≤ 5000 | O(n²) - double nested loops |
+| n ≤ 10^5 | O(n log n) - sort + binary search |
+| n ≤ 10^6 | O(n) - linear pass, hash maps |
 | n ≤ 10^8 | O(n) barely, prefer O(log n) or O(1) |
 
 ---
@@ -561,11 +561,11 @@ public:
 
 ---
 
-## Complexity Analysis — How to Explain It
+## Complexity Analysis - How to Explain It
 
 In interviews, always state time AND space complexity. Use this template:
 
-> "Time is O(n log n) — we sort once (n log n) then do a single linear pass (n). The sort dominates. Space is O(n) for the output list; if we can sort in-place, space is O(1) excluding output."
+> "Time is O(n log n) - we sort once (n log n) then do a single linear pass (n). The sort dominates. Space is O(n) for the output list; if we can sort in-place, space is O(1) excluding output."
 
 Common mistakes:
 - Forgetting to count recursive call stack as space.
@@ -619,7 +619,7 @@ Integer.bitCount(x);</code></pre>
 | Mistake | Fix |
 |---|---|
 | Jumping to code without thinking | Always state brute force + optimization BEFORE coding |
-| Not clarifying constraints | Ask: "what's the range of n?" — it determines your approach |
+| Not clarifying constraints | Ask: "what's the range of n?" - it determines your approach |
 | Off-by-one errors in binary search | Use `lo < hi` with `hi = mid` (not mid-1) for left-boundary templates |
 | Forgetting edge cases | Empty input, single element, all same, max int overflow |
 | Not testing with examples | Dry-run your code on the given example before saying "done" |

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Uber Interview Prep — System Design, DSA & Machine Coding"
+title: "Uber Interview Prep - System Design, DSA & Machine Coding"
 description: "Curated system design and DSA problems asked at Uber. Ride Sharing, Job Scheduler, Rate Limiter, Merge Intervals, Sliding Window Maximum."
 permalink: /companies/uber
 ---
@@ -32,7 +32,7 @@ permalink: /companies/uber
 
 # Uber Interview Prep
 
-Uber's interview loop for SDE-2+ emphasizes distributed systems heavily. The system design round expects depth on real-time systems, geo-indexing, and event-driven architectures. Uber open-sourced many of their internal tools (Cadence/Temporal, Ringpop, H3) — knowing these shows domain awareness.
+Uber's interview loop for SDE-2+ emphasizes distributed systems heavily. The system design round expects depth on real-time systems, geo-indexing, and event-driven architectures. Uber open-sourced many of their internal tools (Cadence/Temporal, Ringpop, H3) - knowing these shows domain awareness.
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 permalink: /concepts/
 layout: default
-title: "System Design Fundamentals — CAP, Caching, Sharding, Queues"
+title: "System Design Fundamentals - CAP, Caching, Sharding, Queues"
 description: "Core system design concepts: CAP theorem, load balancing, caching, sharding, message queues, and more. Everything you need before diving into HLD problems."
 ---
 
@@ -54,7 +54,7 @@ Client → Load Balancer → Server 1
 - **L4 (Transport):** Routes based on IP/port. Fast, no content inspection. (e.g., AWS NLB)
 - **L7 (Application):** Routes based on URL, headers, cookies. Smarter, slightly slower. (e.g., AWS ALB, Nginx)
 
-> ⚠️ **Common mistake:** Proposing a load balancer without explaining WHAT it's balancing. Always specify: "L7 load balancer routing to 5 stateless API servers." Also, don't forget — if you're using WebSockets, you need sticky sessions or L4 balancing because the connection is stateful.
+> ⚠️ **Common mistake:** Proposing a load balancer without explaining WHAT it's balancing. Always specify: "L7 load balancer routing to 5 stateless API servers." Also, don't forget - if you're using WebSockets, you need sticky sessions or L4 balancing because the connection is stateful.
 
 ---
 
@@ -81,9 +81,9 @@ Client → CDN → API Gateway Cache → Application Cache → Database
 | Read-Through | Cache itself fetches from DB on miss | Simpler app code |
 
 **Cache eviction policies:**
-- **LRU** (Least Recently Used) — evict what hasn't been touched longest. Most common.
-- **LFU** (Least Frequently Used) — evict what's been used least overall.
-- **TTL** (Time To Live) — expire after N seconds regardless of access.
+- **LRU** (Least Recently Used) - evict what hasn't been touched longest. Most common.
+- **LFU** (Least Frequently Used) - evict what's been used least overall.
+- **TTL** (Time To Live) - expire after N seconds regardless of access.
 
 **Cache invalidation** (the hard problem):
 - TTL-based: simple but stale window exists
@@ -92,7 +92,7 @@ Client → CDN → API Gateway Cache → Application Cache → Database
 
 **Tools:** Redis, Memcached, CDN (CloudFront, Cloudflare), local in-process (Caffeine, Guava)
 
-> ⚠️ **Common mistake:** Caching everything. Only cache data that's read frequently AND doesn't change often. If you're caching data that changes every request, you're adding latency and complexity for no benefit. Also watch for **cache stampede** — when a popular key expires and 1000 requests simultaneously hit the DB to rebuild it. Solutions: locking (only one request rebuilds), early refresh (rebuild before TTL expires), or jittered TTLs.
+> ⚠️ **Common mistake:** Caching everything. Only cache data that's read frequently AND doesn't change often. If you're caching data that changes every request, you're adding latency and complexity for no benefit. Also watch for **cache stampede** - when a popular key expires and 1000 requests simultaneously hit the DB to rebuild it. Solutions: locking (only one request rebuilds), early refresh (rebuild before TTL expires), or jittered TTLs.
 
 ---
 
@@ -139,7 +139,7 @@ User ID 2M-3M   → Shard 3
 - Resharding (adding shards) is painful
 - Transactions across shards are very hard
 
-> ⚠️ **Common mistake:** Proposing sharding too early. A single well-tuned Postgres with read replicas handles 50K+ TPS and multiple TB. Don't shard until the math proves you need it. Also, always state your shard key and the tradeoff: "Shard by user_id — fast for user-scoped queries, expensive for global aggregations."
+> ⚠️ **Common mistake:** Proposing sharding too early. A single well-tuned Postgres with read replicas handles 50K+ TPS and multiple TB. Don't shard until the math proves you need it. Also, always state your shard key and the tradeoff: "Shard by user_id - fast for user-scoped queries, expensive for global aggregations."
 
 ---
 
@@ -155,7 +155,7 @@ In a distributed system, you can only guarantee 2 of 3:
 - **CP:** Consistent + Partition-tolerant. During partition, some requests fail. (e.g., ZooKeeper, HBase)
 - **AP:** Available + Partition-tolerant. During partition, you might read stale data. (e.g., Cassandra, DynamoDB)
 
-Most systems are AP with tunable consistency — you choose per-operation whether you need strong or eventual consistency.
+Most systems are AP with tunable consistency - you choose per-operation whether you need strong or eventual consistency.
 
 > ⚠️ **Interview tip:** Don't pick CP or AP for your entire system. Different parts need different guarantees. "Product catalog is AP (eventual consistency fine), but inventory count is CP (can't oversell)." That shows mature thinking.
 
@@ -205,7 +205,7 @@ Producer → Queue → Consumer
 | Consumer model | Pull (consumer controls pace) | Pull (long-polling) |
 | Use case | Event streaming, log aggregation | Task queues, decoupling |
 
-> ⚠️ **Common mistake:** Using Kafka when SQS would suffice. If you just need "process this job later" with no ordering requirement and < 10K msgs/sec, SQS is simpler and cheaper. Kafka shines when you need ordering, replay, or millions of events/sec. Also — saying "put it in a queue" without specifying what the consumer does is hand-waving. Always say: "Consumer X reads from the queue and does Y."
+> ⚠️ **Common mistake:** Using Kafka when SQS would suffice. If you just need "process this job later" with no ordering requirement and < 10K msgs/sec, SQS is simpler and cheaper. Kafka shines when you need ordering, replay, or millions of events/sec. Also - saying "put it in a queue" without specifying what the consumer does is hand-waving. Always say: "Consumer X reads from the queue and does Y."
 
 ---
 
@@ -256,7 +256,7 @@ User in India → CDN edge in Mumbai (cache hit) → fast!
 
 ## Consistent Hashing
 
-Problem: you have N cache servers. `hash(key) % N` works until you add/remove a server — then ALL keys remap.
+Problem: you have N cache servers. `hash(key) % N` works until you add/remove a server - then ALL keys remap.
 
 **Consistent hashing:** Only K/N keys remap when a server is added/removed.
 
@@ -362,7 +362,7 @@ Without an index, finding a user by email means scanning every row. With 10M use
 
 **External search indexes (Elasticsearch, Typesense):** When your queries go beyond what your primary DB supports (full-text search, fuzzy matching, faceted filters), sync data via CDC (Change Data Capture) to a dedicated search engine. The search index lags slightly but enables queries your main DB can't handle efficiently.
 
-> ⚠️ **Interview tip:** If the problem has text search ("search for restaurants by name"), you NEED a search index. Don't say "just use LIKE '%biryani%' in SQL" — that's a full table scan. Say "we'll use Elasticsearch synced from the primary DB via CDC, accepting 1-2 second staleness on the search index."
+> ⚠️ **Interview tip:** If the problem has text search ("search for restaurants by name"), you NEED a search index. Don't say "just use LIKE '%biryani%' in SQL" - that's a full table scan. Say "we'll use Elasticsearch synced from the primary DB via CDC, accepting 1-2 second staleness on the search index."
 
 ---
 
@@ -383,7 +383,7 @@ When your system needs to push data to clients (chat messages, live tracking, no
 - Can tolerate 5-30s delay? → **Long polling** (simplest)
 
 **WebSocket challenges at scale:**
-- Stateful connections — can't just load-balance randomly
+- Stateful connections - can't just load-balance randomly
 - If a server dies, thousands of connections drop (need reconnect logic)
 - 1M concurrent connections = 100K per server × 10 servers (memory-bound)
 
@@ -460,7 +460,7 @@ Used in: [Digital Wallet](/hld/DigitalWallet), [BookMyShow](/hld/BookMyShow)
 
 A saga coordinates a multi-step distributed transaction where each step has a **compensating action** (undo).
 
-**Example — booking a trip:**
+**Example - booking a trip:**
 
 ```
 Step 1: Reserve hotel → Compensate: Cancel hotel
@@ -486,7 +486,7 @@ If Step 3 fails, run compensations in reverse: cancel flight, cancel hotel.
 
 Used in: [Uber](/hld/Uber), [Zomato](/hld/Zomato)
 
-When you need "find things near this location" — restaurants within 3km, drivers within 5 minutes, friends nearby.
+When you need "find things near this location" - restaurants within 3km, drivers within 5 minutes, friends nearby.
 
 | Approach | How | Used By |
 |---|---|---|
@@ -531,7 +531,7 @@ Before applying a change to an in-memory data structure, first write it to a seq
 
 **The pattern:**
 1. Write operation arrives
-2. Append to WAL (sequential disk write — fast)
+2. Append to WAL (sequential disk write - fast)
 3. Apply to in-memory structure (memtable, buffer pool)
 4. Eventually flush in-memory changes to disk
 5. Truncate WAL up to the flushed point
@@ -583,7 +583,7 @@ Hash(K1) Hash(K2)  Hash(K3)  Hash(K4)
 2. Compare left and right children. Left matches, right doesn't? → only check the right subtree.
 3. Recurse until you find the exact leaves that differ.
 
-**Why it matters:** After a node failure and recovery, you need to sync it with a healthy replica. Without Merkle trees, you'd transfer ALL keys to check which are stale. With Merkle trees, you only transfer the specific keys that actually diverged — saving enormous bandwidth.
+**Why it matters:** After a node failure and recovery, you need to sync it with a healthy replica. Without Merkle trees, you'd transfer ALL keys to check which are stale. With Merkle trees, you only transfer the specific keys that actually diverged - saving enormous bandwidth.
 
 **Used by:** Cassandra (anti-entropy repair), DynamoDB, Git (internal object storage), IPFS, Ethereum.
 
@@ -605,7 +605,7 @@ Each node maintains a vector (array) of counters, one per node:
 Node A writes: [A:1, B:0, C:0]
 Node B writes: [A:0, B:1, C:0]
 
-These are CONCURRENT — neither happened before the other.
+These are CONCURRENT - neither happened before the other.
 
 Node A reads B's write and writes again: [A:2, B:1, C:0]
 This HAPPENED AFTER B's write (A:2 > A:1 AND B:1 >= B:1).
@@ -620,7 +620,7 @@ This HAPPENED AFTER B's write (A:2 > A:1 AND B:1 >= B:1).
 - **Return both to client:** Let the application merge (DynamoDB's "sibling resolution").
 - **CRDT auto-merge:** Use a data structure designed to merge without conflict (counters, sets).
 
-> ⚠️ **Interview tip:** Most systems use LWW for simplicity. Mention vector clocks to show depth, but say "for our use case, LWW with a version counter is sufficient — vector clocks add complexity we don't need unless we have multi-master writes."
+> ⚠️ **Interview tip:** Most systems use LWW for simplicity. Mention vector clocks to show depth, but say "for our use case, LWW with a version counter is sufficient - vector clocks add complexity we don't need unless we have multi-master writes."
 
 ---
 
@@ -630,7 +630,7 @@ Used in: [Uber](/hld/Uber), [BookMyShow](/hld/BookMyShow), [Job Scheduler](/hld/
 
 A fencing token prevents **stale processes** from corrupting data after their lock has expired.
 
-**The problem:** Process A acquires a distributed lock (TTL = 30s). Process A pauses (GC, network delay) for 35 seconds. Lock expires. Process B acquires the same lock. Now Process A wakes up, thinks it still holds the lock, and writes — corrupting Process B's work.
+**The problem:** Process A acquires a distributed lock (TTL = 30s). Process A pauses (GC, network delay) for 35 seconds. Lock expires. Process B acquires the same lock. Now Process A wakes up, thinks it still holds the lock, and writes - corrupting Process B's work.
 
 **The solution:** Every lock acquisition returns a monotonically increasing **fencing token** (a number). Any downstream write must include the token. The resource rejects writes with a token older than the latest one it's seen.
 
@@ -686,10 +686,10 @@ Temporal (formerly Cadence, open-sourced by Uber) is a framework for running **l
 
 **How Temporal solves it:**
 
-You write workflow code as a normal function. Temporal records every step. If the process crashes, it replays from the last checkpoint — your workflow continues exactly where it left off.
+You write workflow code as a normal function. Temporal records every step. If the process crashes, it replays from the last checkpoint - your workflow continues exactly where it left off.
 
 ```
-// Pseudocode — this survives crashes
+// Pseudocode - this survives crashes
 function dispatchOrder(orderId) {
   riders = findNearbyRiders(orderId)
   for rider in riders:
@@ -712,7 +712,7 @@ function dispatchOrder(orderId) {
 - Stateless operations
 - High-throughput hot paths (Temporal adds latency per step)
 
-> ⚠️ **Interview tip:** Mention Temporal when the interviewer asks "what if the server crashes mid-workflow?" It shows you know production tools. But don't over-engineer — for simple retry logic, a dead-letter queue is enough.
+> ⚠️ **Interview tip:** Mention Temporal when the interviewer asks "what if the server crashes mid-workflow?" It shows you know production tools. But don't over-engineer - for simple retry logic, a dead-letter queue is enough.
 
 ---
 

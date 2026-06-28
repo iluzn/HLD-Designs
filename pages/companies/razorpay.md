@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Razorpay Interview Prep — System Design, DSA & Machine Coding"
+title: "Razorpay Interview Prep - System Design, DSA & Machine Coding"
 description: "Curated system design, DSA, and LLD problems asked at Razorpay. Digital Wallet, Rate Limiter, Notification System, Parking Lot, Splitwise."
 permalink: /companies/razorpay
 ---
@@ -79,7 +79,7 @@ Razorpay's loop for SDE-2+ includes DSA, machine coding (90 min), system design,
 
 1. **Fintech correctness is non-negotiable.** In system design, always address idempotency, double-entry ledgers, and reconciliation. "What happens if the payment gateway times out?" is guaranteed.
 2. **Machine coding round is heavy.** Razorpay's LLD round expects Strategy pattern, clean interfaces, and extensibility. Practice Splitwise or Parking Lot end-to-end in 90 minutes.
-3. **Know distributed transactions.** Saga pattern, two-phase commit (and why it's impractical), compensating transactions — these are core to Razorpay's domain.
+3. **Know distributed transactions.** Saga pattern, two-phase commit (and why it's impractical), compensating transactions - these are core to Razorpay's domain.
 4. **DSA is standard medium.** Focus on implementation quality: handle nulls, validate inputs, name variables well. Razorpay values code readability as much as correctness.
 
 ---

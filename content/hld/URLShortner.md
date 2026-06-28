@@ -1,14 +1,14 @@
 ---
 permalink: /hld/URLShortner/
 layout: default
-title: "Design a URL Shortener — System Design Interview"
+title: "Design a URL Shortener - System Design Interview"
 description: "System design for Designing a URL Shortener Like Bitly or TinyURL - architecture, deep dives, and trade-offs"
 ---
 
 # Designing a URL Shortener Like Bitly or TinyURL
 
 ⚡ **Difficulty:** Beginner
-�� **Prerequisites:** [Fundamentals](/concepts) — especially [Caching](/concepts#caching) and [CDN](/concepts#cdn-content-delivery-network)
+�� **Prerequisites:** [Fundamentals](/concepts) - especially [Caching](/concepts#caching) and [CDN](/concepts#cdn-content-delivery-network)
 
 ---
 
@@ -76,15 +76,15 @@ The rest of this doc evolves this into a system that serves billions of redirect
 
 ## Prior Art We're Drawing From
 
-- **Bitly** — the canonical URL shortener. Public writeups describe a heavy read-cache tier, base62 encoding over numeric IDs, and a dedicated analytics pipeline separate from the redirect hot path. ([Educative overview](https://www.educative.io/blog/bitly-system-design))
-- **Twitter Snowflake** — 64-bit distributed ID generator producing time-ordered unique IDs without coordination per request. Widely adopted as an alternative to DB auto-increment for short-code generation. ([paper / repo](https://github.com/twitter-archive/snowflake))
-- **Base62 encoding** — the standard way to turn a numeric ID into a short alphanumeric code. 7 characters of base62 give 3.5 trillion unique codes, enough for decades of links.
-- **Counter-based ranges (Zookeeper / DB)** — pre-allocate ranges of IDs to each service instance to avoid per-request coordination. Instagram's photo ID generation is a famous variant.
-- **CDN-cached 301 redirects** — t.co and goo.gl both served redirects from edge POPs. Bitly uses its own edge infrastructure with aggressive caching.
+- **Bitly** - the canonical URL shortener. Public writeups describe a heavy read-cache tier, base62 encoding over numeric IDs, and a dedicated analytics pipeline separate from the redirect hot path. ([Educative overview](https://www.educative.io/blog/bitly-system-design))
+- **Twitter Snowflake** - 64-bit distributed ID generator producing time-ordered unique IDs without coordination per request. Widely adopted as an alternative to DB auto-increment for short-code generation. ([paper / repo](https://github.com/twitter-archive/snowflake))
+- **Base62 encoding** - the standard way to turn a numeric ID into a short alphanumeric code. 7 characters of base62 give 3.5 trillion unique codes, enough for decades of links.
+- **Counter-based ranges (Zookeeper / DB)** - pre-allocate ranges of IDs to each service instance to avoid per-request coordination. Instagram's photo ID generation is a famous variant.
+- **CDN-cached 301 redirects** - t.co and goo.gl both served redirects from edge POPs. Bitly uses its own edge infrastructure with aggressive caching.
 
 ## Technology Choices
 
-Each component in this design is generic — here are real options for each. Pick per your stack and ops capacity.
+Each component in this design is generic - here are real options for each. Pick per your stack and ops capacity.
 
 | Component | Options (pick one) |
 |---|---|
@@ -97,7 +97,7 @@ Each component in this design is generic — here are real options for each. Pic
 | ID generation | Snowflake (self-hosted), Sonyflake, MongoDB ObjectID, UUIDv7, DB counter with range allocation |
 | Event backbone | Kafka (MSK / Confluent / self-hosted), Kinesis, Google Pub/Sub, Pulsar, RabbitMQ Streams |
 | Stream processing | Flink (managed or self-hosted), Kafka Streams, Spark Structured Streaming, Materialize, ksqlDB |
-| Raw event lake | S3, GCS, Azure Blob, MinIO — with Parquet/Iceberg table format |
+| Raw event lake | S3, GCS, Azure Blob, MinIO - with Parquet/Iceberg table format |
 | Ad-hoc analytics | Athena, BigQuery, Snowflake, Trino / Presto, DuckDB |
 | Serving analytics store | ClickHouse, Pinot, Druid, Timestream, OpenSearch, Redshift, TimescaleDB |
 | DNS / traffic routing | Route 53, Cloudflare DNS, NS1, Google Cloud DNS with latency-based routing |
@@ -126,11 +126,11 @@ Rule of thumb: **managed > self-hosted** when the workload isn't a differentiato
 ## Non-Functional Requirements
 
 ### Core Requirements
-- **Read-heavy workload** — 100:1 reads to writes. Every design decision is driven by the redirect hot path.
-- **Low redirect latency** — P99 under 100ms globally. This is user-facing; slow redirects feel broken.
-- **High availability** — 99.99% on the redirect path. A dead redirect breaks someone else's tweet.
-- **Uniqueness** — no two long URLs can accidentally share a short code.
-- **Scale** — 100M new links/day, 10B redirects/day, 5-year retention → ~200B rows at peak.
+- **Read-heavy workload** - 100:1 reads to writes. Every design decision is driven by the redirect hot path.
+- **Low redirect latency** - P99 under 100ms globally. This is user-facing; slow redirects feel broken.
+- **High availability** - 99.99% on the redirect path. A dead redirect breaks someone else's tweet.
+- **Uniqueness** - no two long URLs can accidentally share a short code.
+- **Scale** - 100M new links/day, 10B redirects/day, 5-year retention → ~200B rows at peak.
 
 ### Below the line
 - Strong consistency on analytics counts (eventual is fine)
@@ -149,10 +149,10 @@ Rule of thumb: **managed > self-hosted** when the workload isn't a differentiato
 
 ## Core Entities
 
-- **Long URL** — the original destination URL the user submitted.
-- **Short Code** — the unique alphanumeric suffix (`aB3xY9`) that identifies a mapping.
-- **Link** — the stored mapping of `short_code → long_url` with metadata (creator, created_at, expires_at).
-- **Click Event** — a record of a single redirect, with timestamp, IP-derived country, referrer, user agent.
+- **Long URL** - the original destination URL the user submitted.
+- **Short Code** - the unique alphanumeric suffix (`aB3xY9`) that identifies a mapping.
+- **Link** - the stored mapping of `short_code → long_url` with metadata (creator, created_at, expires_at).
+- **Click Event** - a record of a single redirect, with timestamp, IP-derived country, referrer, user agent.
 
 ---
 
@@ -170,7 +170,7 @@ GET  /v1/links/:shortCode/stats                → ClickStats
      Aggregated clicks by time bucket, country, referrer
 
 DELETE /v1/links/:shortCode                    → 204
-     Soft delete — short code becomes 410 Gone
+     Soft delete - short code becomes 410 Gone
 ```
 
 Security notes:
@@ -191,10 +191,10 @@ The create path is low-QPS (~1K/sec peak) but needs a unique, collision-free sho
 
 **New components we need:**
 
-1. **API Gateway** — the front door. Authenticates API keys, applies per-user rate limits, and routes requests to the right service.<br>💡 *Think of it as a security guard + receptionist for your backend.*
-2. **Write Service** — handles link creation. Validates the URL, generates the short code, and stores the mapping.
-3. **Snowflake ID Generator** — produces unique numeric IDs without any coordination between servers.<br>💡 *Snowflake = a distributed ID generator that embeds a timestamp + machine ID + sequence number into a single 64-bit integer. No two machines ever produce the same ID, even without talking to each other.*
-4. **Global KV Store** — where the `short_code → long_url` mapping lives permanently. Needs to survive failures and serve reads worldwide.
+1. **API Gateway** - the front door. Authenticates API keys, applies per-user rate limits, and routes requests to the right service.<br>💡 *Think of it as a security guard + receptionist for your backend.*
+2. **Write Service** - handles link creation. Validates the URL, generates the short code, and stores the mapping.
+3. **Snowflake ID Generator** - produces unique numeric IDs without any coordination between servers.<br>💡 *Snowflake = a distributed ID generator that embeds a timestamp + machine ID + sequence number into a single 64-bit integer. No two machines ever produce the same ID, even without talking to each other.*
+4. **Global KV Store** - where the `short_code → long_url` mapping lives permanently. Needs to survive failures and serve reads worldwide.
 
 ```mermaid
 flowchart LR
@@ -232,20 +232,20 @@ flowchart LR
 2. Gateway checks: Is this API key valid? Has this user exceeded their rate limit?
 3. Gateway forwards to Write Service, which asks the Snowflake ID Generator for a fresh numeric ID, then base62-encodes it into a 7-character short code (e.g., `aB3xY9`)
 4. Write Service stores `{short_code, long_url, user_id, created_at, expires_at}` in the Global KV Store
-5. Returns the short URL to the user — done in under 100ms
+5. Returns the short URL to the user - done in under 100ms
 
-**Why Snowflake instead of random strings?** Random strings require a "check if it already exists" round-trip on every creation. At 100M+ links, collisions become frequent and expensive. Snowflake IDs are unique by construction — no checking needed, ever.
+**Why Snowflake instead of random strings?** Random strings require a "check if it already exists" round-trip on every creation. At 100M+ links, collisions become frequent and expensive. Snowflake IDs are unique by construction - no checking needed, ever.
 
 ### 2) Anyone hits the short URL and gets redirected
 
-This is the hot path — billions of reads per day. Latency and cost both matter.
+This is the hot path - billions of reads per day. Latency and cost both matter.
 
 **New components we need (in addition to the ones above):**
 
-1. **CDN Edge** — servers deployed worldwide (Cloudflare, CloudFront, Fastly) that cache popular redirects close to users. A viral link gets served from the edge in under 10ms without ever touching our origin servers.<br>💡 *CDN (Content Delivery Network) caches content at edge servers worldwide. Users get served from the nearest edge, cutting latency from 200ms to <20ms. [Learn more →](/concepts#cdn-content-delivery-network)*
-2. **Redirect Service** — the origin server that handles CDN misses. Looks up the short code and returns a `302 Found` with the long URL.
-3. **Redis Cache** — a regional in-memory cache sitting between the Redirect Service and the database. Holds recently-accessed links for sub-millisecond lookups.
-4. **Event Bus** — captures every click as an event for analytics, without slowing down the redirect.<br>💡 *Fire-and-forget pattern: the redirect returns immediately, and the click event flows through the bus in the background.*
+1. **CDN Edge** - servers deployed worldwide (Cloudflare, CloudFront, Fastly) that cache popular redirects close to users. A viral link gets served from the edge in under 10ms without ever touching our origin servers.<br>💡 *CDN (Content Delivery Network) caches content at edge servers worldwide. Users get served from the nearest edge, cutting latency from 200ms to <20ms. [Learn more →](/concepts#cdn-content-delivery-network)*
+2. **Redirect Service** - the origin server that handles CDN misses. Looks up the short code and returns a `302 Found` with the long URL.
+3. **Redis Cache** - a regional in-memory cache sitting between the Redirect Service and the database. Holds recently-accessed links for sub-millisecond lookups.
+4. **Event Bus** - captures every click as an event for analytics, without slowing down the redirect.<br>💡 *Fire-and-forget pattern: the redirect returns immediately, and the click event flows through the bus in the background.*
 
 ```mermaid
 flowchart LR
@@ -272,13 +272,13 @@ flowchart LR
 **Step-by-step flow:**
 
 1. User clicks `sho.rt/aB3xY9` → browser sends a GET request
-2. CDN edge checks its local cache — for popular links (that viral tweet everyone's clicking), the redirect is served right there, under 10ms, without ever reaching our servers
+2. CDN edge checks its local cache - for popular links (that viral tweet everyone's clicking), the redirect is served right there, under 10ms, without ever reaching our servers
 3. On CDN miss → request reaches our Redirect Service, which checks the regional Redis cache
 4. On Redis miss → reads from the Global KV Store and backfills both Redis and CDN caches for next time
-5. Fires a click event to the Event Bus (fire-and-forget — the redirect doesn't wait for analytics)
+5. Fires a click event to the Event Bus (fire-and-forget - the redirect doesn't wait for analytics)
 6. Returns `302 Found` with the long URL in the `Location` header → browser redirects
 
-**Why `302` and not `301`?** A `301` (permanent redirect) tells the browser to cache it forever. Next time the user clicks that link, the browser goes directly to the destination — we never see the click. That means no analytics. `302` (temporary redirect) forces the browser through us every time, so we count every click.
+**Why `302` and not `301`?** A `301` (permanent redirect) tells the browser to cache it forever. Next time the user clicks that link, the browser goes directly to the destination - we never see the click. That means no analytics. `302` (temporary redirect) forces the browser through us every time, so we count every click.
 
 ### 3) Analytics and stats
 
@@ -286,10 +286,10 @@ Clicks go to Kafka from the hot path. A stream processor aggregates them into pe
 
 **New components we need (in addition to the ones above):**
 
-1. **Stream Processor (Flink or Kafka Streams)** — reads raw click events and aggregates them into per-link counters by time bucket, country, and referrer.<br>💡 *Instead of counting clicks one-by-one on each query, the stream processor pre-computes rollups so dashboard queries are instant. [Learn more →](/concepts#message-queues)*
-2. **Serving Store (ClickHouse, Pinot, or Timestream)** — a columnar database optimized for fast aggregation queries like "how many clicks did this link get in the last 30 days, broken down by country?"
-3. **Object Storage (S3 / GCS)** — where raw click events are archived as Parquet files for long-term retention and ad-hoc analysis.
-4. **Stats API** — serves pre-aggregated analytics to dashboards. Never scans raw events at query time.
+1. **Stream Processor (Flink or Kafka Streams)** - reads raw click events and aggregates them into per-link counters by time bucket, country, and referrer.<br>💡 *Instead of counting clicks one-by-one on each query, the stream processor pre-computes rollups so dashboard queries are instant. [Learn more →](/concepts#message-queues)*
+2. **Serving Store (ClickHouse, Pinot, or Timestream)** - a columnar database optimized for fast aggregation queries like "how many clicks did this link get in the last 30 days, broken down by country?"
+3. **Object Storage (S3 / GCS)** - where raw click events are archived as Parquet files for long-term retention and ad-hoc analysis.
+4. **Stats API** - serves pre-aggregated analytics to dashboards. Never scans raw events at query time.
 
 ```mermaid
 flowchart LR
@@ -321,59 +321,59 @@ Flow:
 1. Redirect Service fires every click to the event bus (Kafka / Kinesis / Pub/Sub). The redirect itself doesn't wait.
 2. A stream processor (Flink / Kafka Streams / Spark Streaming) windows events by `short_code + time_bucket + country + referrer`, writing aggregates to a serving store (ClickHouse / Pinot / Druid / Timestream).
 3. Raw events tee to object storage (S3 / GCS) as hourly Parquet, queryable via Athena / BigQuery / Trino.
-4. Stats API reads pre-aggregated rollups — cheap queries, no scanning billions of rows at request time.
+4. Stats API reads pre-aggregated rollups - cheap queries, no scanning billions of rows at request time.
 
 ---
 
 ## Potential Deep Dives
 
-### Deep Dive 1 — How do we generate short codes at 1K/sec without collisions?
+### Deep Dive 1 - How do we generate short codes at 1K/sec without collisions?
 
 **Problem.** We need every short code to be globally unique. With 100M links/day, we're generating ~1,200/sec sustained. Naive approaches either collide, don't scale, or require coordination on every request.
 
-**Bad — MD5 or SHA256 hash of the long URL, take first 7 chars.**
-- Same URL always hashes to the same code, which **seems** like a nice dedupe property — but now two users submitting the same URL share a code and share click stats, which is almost never what they want.
+**Bad - MD5 or SHA256 hash of the long URL, take first 7 chars.**
+- Same URL always hashes to the same code, which **seems** like a nice dedupe property - but now two users submitting the same URL share a code and share click stats, which is almost never what they want.
 - Hash collisions force you to rehash with a salt and retry, which means an unknown number of DB round-trips per write.
 - Truncating 128 bits to 42 bits (7 base62 chars) multiplies collision probability exponentially.
 
 Use hashing only if "same URL → same short code" is an explicit product requirement.
 
-**Good — DB auto-increment ID, base62-encoded.**
+**Good - DB auto-increment ID, base62-encoded.**
 - `INSERT INTO links (long_url, ...) RETURNING id`, then base62-encode the ID.
 - 7 chars of base62 = 62^7 ≈ 3.5 trillion codes. Plenty.
-- Zero collision risk — the DB guarantees uniqueness.
+- Zero collision risk - the DB guarantees uniqueness.
 - Problem: a single-primary DB becomes the ID bottleneck at scale. Every insert waits on the sequence.
-- Sequential IDs are **predictable** — someone can enumerate `aAAAAA0`, `aAAAAA1`, ... and scrape every link. For a URL shortener that's a privacy leak (short links are often effectively "private" because they're unguessable).
+- Sequential IDs are **predictable** - someone can enumerate `aAAAAA0`, `aAAAAA1`, ... and scrape every link. For a URL shortener that's a privacy leak (short links are often effectively "private" because they're unguessable).
 
-**Great — distributed ID generation with Snowflake + base62 + optional bit-shuffling.**
+**Great - distributed ID generation with Snowflake + base62 + optional bit-shuffling.**
 
 Options, each with a use case:
 
-1. **Twitter Snowflake** — 64-bit ID = `[41 bits timestamp][10 bits machine ID][12 bits sequence]`. Each service pod generates its own IDs, no coordination, time-ordered, collision-free across ~1K machines. Base62-encode the lower 42 bits for a 7-char code. Used in production by Twitter, Instagram, Discord.
-2. **Zookeeper range allocator** — a service instance requests a range of 1M IDs at once from Zookeeper, burns through them locally, and requests the next range. Handles DB unavailability, no per-request coordination.
-3. **Database with pre-allocated ranges** — same as (2) but using a single `counter` table row with `SELECT ... FOR UPDATE SKIP LOCKED`. Simpler infra, slightly slower.
+1. **Twitter Snowflake** - 64-bit ID = `[41 bits timestamp][10 bits machine ID][12 bits sequence]`. Each service pod generates its own IDs, no coordination, time-ordered, collision-free across ~1K machines. Base62-encode the lower 42 bits for a 7-char code. Used in production by Twitter, Instagram, Discord.
+2. **Zookeeper range allocator** - a service instance requests a range of 1M IDs at once from Zookeeper, burns through them locally, and requests the next range. Handles DB unavailability, no per-request coordination.
+3. **Database with pre-allocated ranges** - same as (2) but using a single `counter` table row with `SELECT ... FOR UPDATE SKIP LOCKED`. Simpler infra, slightly slower.
 
-To defeat enumeration scraping, we can **bit-shuffle** the numeric ID before base62-encoding using a fixed, reversible permutation (Feistel network or multiply-by-large-prime mod 2^42). Codes become unpredictable without adding any lookup cost — we still decode back to the real ID by reversing the permutation.
+To defeat enumeration scraping, we can **bit-shuffle** the numeric ID before base62-encoding using a fixed, reversible permutation (Feistel network or multiply-by-large-prime mod 2^42). Codes become unpredictable without adding any lookup cost - we still decode back to the real ID by reversing the permutation.
 
 For custom aliases (if we support them), we use a separate write path: first try `INSERT ... ON CONFLICT DO NOTHING` on the alias; reserve reserved words (`admin`, `api`, `login`) in a denylist.
 
-### Deep Dive 2 — How do we serve 10B redirects per day at <100ms P99 globally?
+### Deep Dive 2 - How do we serve 10B redirects per day at <100ms P99 globally?
 
 **Problem.** 10B redirects/day = ~120K/sec average, 500K/sec peak. A round-trip to a primary DB in us-east-1 from Singapore is already 200ms, before you touch the data. We need data close to the user.
 
-**Bad — single origin DB, one region, hope for the best.**
+**Bad - single origin DB, one region, hope for the best.**
 Falls over on raw QPS and gives lousy latency to anyone outside the origin region.
 
-**Good — Redis read-through cache, multi-replica DB.**
+**Good - Redis read-through cache, multi-replica DB.**
 In-memory cache holds the top N popular links; origin DB handles misses. Read replicas spread the load. Better, but still a round-trip to the origin region for cache misses, and Redis in one region doesn't help international users on cold links.
 
-**Great — tiered caching with CDN at the edge, Redis per region, and a globally replicated KV store as source of truth.**
+**Great - tiered caching with CDN at the edge, Redis per region, and a globally replicated KV store as source of truth.**
 
 1. **CDN edge with edge compute.** Options: Cloudflare (Workers), CloudFront (Lambda@Edge or CloudFront Functions), Fastly (Compute@Edge), Akamai. For popular links, the edge serves the `302` directly without calling origin. Sub-10ms for cache hits worldwide. Short codes cached with a short TTL (5 min). A WAF (Cloudflare WAF / AWS WAF / Fastly Next-Gen) sits in front for bot filtering and rate limits.
 
-2. **Regional Redis cluster per region.** Options: ElastiCache Redis, self-hosted Redis on Kubernetes, Upstash, Valkey. On CDN miss, the Redirect Service in that region checks Redis. Hot dataset is the top few percent of active links — typically 20-50 GB per region, easily fits in memory. Cluster mode enabled for horizontal scale.
+2. **Regional Redis cluster per region.** Options: ElastiCache Redis, self-hosted Redis on Kubernetes, Upstash, Valkey. On CDN miss, the Redirect Service in that region checks Redis. Hot dataset is the top few percent of active links - typically 20-50 GB per region, easily fits in memory. Cluster mode enabled for horizontal scale.
 
-3. **Globally replicated KV as source of truth.** Options: DynamoDB Global Tables, Cassandra multi-DC, ScyllaDB, Spanner, CockroachDB. Multi-region, active-active or single-writer-with-replicas, asynchronous replication. A new link takes ~1-2 seconds to become readable in every region — acceptable for this use case.
+3. **Globally replicated KV as source of truth.** Options: DynamoDB Global Tables, Cassandra multi-DC, ScyllaDB, Spanner, CockroachDB. Multi-region, active-active or single-writer-with-replicas, asynchronous replication. A new link takes ~1-2 seconds to become readable in every region - acceptable for this use case.
 
 4. **Bloom filter in each Redirect Service pod** to fast-reject obviously-invalid codes (404 without even hitting Redis or the KV).
 
@@ -402,65 +402,65 @@ flowchart LR
 
 **Cache invalidation.** Two mechanisms:
 - TTL-based: CDN 5 min, Redis 24 h. Worst case a deleted link keeps redirecting for 5 min.
-- Active purge on delete: call the CDN's invalidation API (CloudFront `CreateInvalidation`, Cloudflare purge, Fastly purge) and publish a `link-deleted` event on the bus that regional consumers use to `DEL` from Redis. Best-effort — the TTL is the hard backstop.
+- Active purge on delete: call the CDN's invalidation API (CloudFront `CreateInvalidation`, Cloudflare purge, Fastly purge) and publish a `link-deleted` event on the bus that regional consumers use to `DEL` from Redis. Best-effort - the TTL is the hard backstop.
 
-### Deep Dive 3 — How do we handle a single link going viral without melting Redis?
+### Deep Dive 3 - How do we handle a single link going viral without melting Redis?
 
 **Problem.** "Celebrity problem." Elon tweets a short link. 100K people click it in the first second. Every redirect goes to the same Redis key on the same shard. A single Redis node tops out around 100-200K ops/sec; we've saturated one shard while the rest of the cluster sits idle.
 
-**Bad — scale up by adding more Redis nodes.**
+**Bad - scale up by adding more Redis nodes.**
 Doesn't help. Consistent hashing still lands all requests on the same node for this key.
 
-**Good — local in-process LRU cache in each redirect service pod.**
-Each pod caches the hottest codes in its own memory, absorbing most of the load before it ever hits Redis. Works well — RAM is cheap, a few hundred MB per pod holds the hot tail. Downside: stale invalidation is harder (have to push or poll invalidations).
+**Good - local in-process LRU cache in each redirect service pod.**
+Each pod caches the hottest codes in its own memory, absorbing most of the load before it ever hits Redis. Works well - RAM is cheap, a few hundred MB per pod holds the hot tail. Downside: stale invalidation is harder (have to push or poll invalidations).
 
-**Great — CDN does most of the work + local pod cache for what gets through + request coalescing on genuine misses.**
+**Great - CDN does most of the work + local pod cache for what gets through + request coalescing on genuine misses.**
 
 For any truly viral link, the CDN edge should absorb 99%+ of traffic before it reaches origin. Tune the edge cache:
 - Set aggressive `Cache-Control: public, max-age=300` on hot redirects.
-- Use the CDN's **request collapsing** feature — N concurrent edge misses for the same key go as one upstream request.
+- Use the CDN's **request collapsing** feature - N concurrent edge misses for the same key go as one upstream request.
 
 At origin, add a per-pod LRU cache (10K entries) with 60s TTL. Anything that slips through goes to Redis.
 
 For the rare path of a brand-new viral link (cold across all tiers), use **request coalescing in-process**: the first miss acquires a local mutex keyed by `short_code`; subsequent misses for the same code wait up to 50ms instead of all racing to Redis simultaneously. Single-flight pattern. Prevents cache stampede.
 
-### Deep Dive 4 — How do we handle analytics without slowing down the redirect path?
+### Deep Dive 4 - How do we handle analytics without slowing down the redirect path?
 
 **Problem.** We want per-link click counts, country breakdowns, referrer stats, time-series graphs. If we synchronously write to an analytics DB on every redirect, we just added 20ms to the hot path and a second point of failure. Multiply by 120K/sec sustained.
 
-**Bad — synchronously increment a counter in Redis or Postgres on each redirect.**
+**Bad - synchronously increment a counter in Redis or Postgres on each redirect.**
 Adds latency. Redis `INCR` on one key creates the same hot-partition problem as redirect. A counter row in Postgres is even worse. Also loses events on Redis restart.
 
-**Good — fire-and-forget Kafka produce, aggregate in a stream processor.**
+**Good - fire-and-forget Kafka produce, aggregate in a stream processor.**
 Redirect Service produces to Kafka async (100µs latency), a Flink job windows events and writes aggregates to a columnar DB. Decoupled from the redirect path; durable.
 
-**Great — event bus + stream processor for rollups + object storage for raw events + columnar serving store.**
+**Great - event bus + stream processor for rollups + object storage for raw events + columnar serving store.**
 
 - Every click becomes a Protobuf message on the event bus (Kafka / Kinesis / Pub/Sub) topic `link-clicks`, keyed by `short_code` for partition-level ordering.
 - A stream processor (Flink / Kafka Streams / Spark Structured Streaming) maintains tumbling-window aggregates: 1-min, 1-hour, 1-day buckets per `(short_code, country, referrer)` tuple. Writes to a columnar serving store (ClickHouse / Pinot / Druid / Timestream) for fast per-link queries.
-- Same stream is tee'd via a sink connector to object storage (S3 / GCS) as hourly Parquet files — for ad-hoc queries via Athena / BigQuery / Trino, ML training, and long-term retention.
+- Same stream is tee'd via a sink connector to object storage (S3 / GCS) as hourly Parquet files - for ad-hoc queries via Athena / BigQuery / Trino, ML training, and long-term retention.
 - Stats API reads only pre-aggregated rollups. `GET /links/:code/stats?range=30d` runs in milliseconds.
 
 Fully-serverless shortcut if team wants less ops: swap Kafka+Flink for Kinesis Data Streams + Kinesis Data Firehose + Kinesis Data Analytics, or Pub/Sub + Dataflow on GCP.
 
 Eventual consistency tradeoff is explicit: dashboard numbers lag the true count by ~1-2 minutes. For link analytics this is never a problem; nobody sits watching their click count refresh every second expecting real-time precision.
 
-### Deep Dive 5 — How do we scale the writes to the links store?
+### Deep Dive 5 - How do we scale the writes to the links store?
 
 **Problem.** 100M new links per day = ~1,200 writes/sec average. Over 5 years: 200B rows. A single Postgres instance groans somewhere around a few billion rows even with good indexing.
 
-**Bad — one big Postgres table, add read replicas when it gets slow.**
+**Bad - one big Postgres table, add read replicas when it gets slow.**
 Replicas don't help writes. Indexes balloon. Backup and restore take 12+ hours.
 
-**Good — shard Postgres by `short_code` hash.**
-N shards, each smaller and faster. Application routes by hash. Works but operationally heavy — you now own a sharding layer, cross-shard queries, and painful resharding.
+**Good - shard Postgres by `short_code` hash.**
+N shards, each smaller and faster. Application routes by hash. Works but operationally heavy - you now own a sharding layer, cross-shard queries, and painful resharding.
 
-**Great — pick a store built for this: DynamoDB, Cassandra, or TiDB.**
+**Great - pick a store built for this: DynamoDB, Cassandra, or TiDB.**
 
 The access pattern is a perfect fit for a KV store:
-- **Writes:** `PUT short_code → {long_url, user_id, created_at, expires_at}` — no joins, no transactions beyond a single row.
-- **Reads:** `GET short_code` — point lookup by primary key.
-- **Deletes:** `UPDATE status = 'deleted'` — also point-key.
+- **Writes:** `PUT short_code → {long_url, user_id, created_at, expires_at}` - no joins, no transactions beyond a single row.
+- **Reads:** `GET short_code` - point lookup by primary key.
+- **Deletes:** `UPDATE status = 'deleted'` - also point-key.
 
 No relational queries on the redirect path. DynamoDB (fully managed, auto-scales, Global Tables for multi-region), Cassandra (self-managed, cheaper at massive scale), or TiDB (SQL-compatible if you want it) all fit.
 
@@ -476,7 +476,7 @@ User-side queries like "all links created by user X" are a different, secondary 
 
 ## Core Flows
 
-### Flow 1 — Create a short link
+### Flow 1 - Create a short link
 
 ```mermaid
 sequenceDiagram
@@ -503,12 +503,12 @@ sequenceDiagram
 2. Gateway authenticates, rate-limits, and forwards.
 3. Write Service validates URL format, blocks obvious junk and phishing denylist.
 4. Asks ID Generator for a fresh Snowflake ID; base62-encodes with bit-shuffling so the code isn't enumerable.
-5. Writes to the KV store. Collisions are impossible — Snowflake IDs are unique by construction.
+5. Writes to the KV store. Collisions are impossible - Snowflake IDs are unique by construction.
 6. Returns the short URL.
 
-Failure worth calling out: if the KV store write fails, we retry with the same ID (the ID has already been generated, there's no benefit to burning a new one). If it keeps failing, the ID is silently wasted — Snowflake has 42 bits of address space so waste is irrelevant.
+Failure worth calling out: if the KV store write fails, we retry with the same ID (the ID has already been generated, there's no benefit to burning a new one). If it keeps failing, the ID is silently wasted - Snowflake has 42 bits of address space so waste is irrelevant.
 
-### Flow 2 — Redirect a short link
+### Flow 2 - Redirect a short link
 
 ```mermaid
 sequenceDiagram
@@ -552,7 +552,7 @@ sequenceDiagram
 
 Failure handling: if all caches miss AND the KV is slow, we time out the read at 50ms and return `503 Try Again`. We never serve a wrong URL; stale-if-error is risky because the link's destination may have been changed.
 
-### Flow 3 — Analytics ingestion
+### Flow 3 - Analytics ingestion
 
 ```mermaid
 sequenceDiagram
@@ -576,10 +576,10 @@ sequenceDiagram
     API-->>D: chart data
 ```
 
-1. Every redirect produces a click event — `{short_code, ts, ip_country, referrer, user_agent}`.
+1. Every redirect produces a click event - `{short_code, ts, ip_country, referrer, user_agent}`.
 2. Kafka Connect sinks raw events to S3 for long-term retention and ad-hoc analytics.
 3. Flink maintains per-link rollups in ClickHouse across 1-min, 1-hour, and 1-day windows.
-4. Dashboards query ClickHouse via the Stats API — fast even for a link with a billion clicks because we're reading aggregates, not raw events.
+4. Dashboards query ClickHouse via the Stats API - fast even for a link with a billion clicks because we're reading aggregates, not raw events.
 
 ### Link state machine
 
@@ -645,7 +645,7 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-That's the design. Five deep dives each picking the right primitive: Snowflake for collision-free distributed ID generation, a CDN-Redis-KV tiered cache for global low-latency reads, local caches with request coalescing to absorb viral spikes, Kafka-to-Flink-to-ClickHouse for analytics that never touches the hot path, and a globally-replicated KV store to eliminate regional bottlenecks. Read-heavy, latency-sensitive, and deceptively simple — the fun is in making it feel trivial at any scale.
+That's the design. Five deep dives each picking the right primitive: Snowflake for collision-free distributed ID generation, a CDN-Redis-KV tiered cache for global low-latency reads, local caches with request coalescing to absorb viral spikes, Kafka-to-Flink-to-ClickHouse for analytics that never touches the hot path, and a globally-replicated KV store to eliminate regional bottlenecks. Read-heavy, latency-sensitive, and deceptively simple - the fun is in making it feel trivial at any scale.
 
 
 ---
@@ -654,11 +654,11 @@ That's the design. Five deep dives each picking the right primitive: Snowflake f
 
 | Term | What it is |
 |---|---|
-| **Base62 Encoding** | Converts numeric IDs into compact alphanumeric strings using [0-9a-zA-Z] — 7 characters yield 3.5 trillion unique short codes. |
-| **Snowflake ID** | Distributed 64-bit ID generator embedding timestamp + machine ID + sequence — unique by construction with no coordination per request. |
+| **Base62 Encoding** | Converts numeric IDs into compact alphanumeric strings using [0-9a-zA-Z] - 7 characters yield 3.5 trillion unique short codes. |
+| **Snowflake ID** | Distributed 64-bit ID generator embedding timestamp + machine ID + sequence - unique by construction with no coordination per request. |
 | **Redis Cache** | Regional in-memory cache holding recently-accessed link mappings for sub-millisecond redirect lookups on CDN misses. |
-| **CDN** | Content Delivery Network serving redirect responses from edge PoPs worldwide — hot links resolved in under 10ms without hitting origin. |
-| **301 / 302 Redirect** | HTTP status codes: 301 (permanent, browser caches forever — no analytics) vs 302 (temporary, always routes through us — enables click counting). |
+| **CDN** | Content Delivery Network serving redirect responses from edge PoPs worldwide - hot links resolved in under 10ms without hitting origin. |
+| **301 / 302 Redirect** | HTTP status codes: 301 (permanent, browser caches forever - no analytics) vs 302 (temporary, always routes through us - enables click counting). |
 | **Bloom Filter** | Probabilistic data structure in each service pod that fast-rejects invalid short codes (guaranteed 404) without hitting Redis or the DB. |
 | **Kafka** | Event bus carrying click events from the redirect hot path to the analytics pipeline without adding latency to redirects. |
 
@@ -666,7 +666,7 @@ That's the design. Five deep dives each picking the right primitive: Snowflake f
 
 ## What's Expected at Each Level
 
-> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+> This section helps you calibrate your depth. You don't need to cover everything - just know what's expected for your level.
 
 ### Mid-level
 
@@ -678,7 +678,7 @@ Propose a counter-based or hash-based ID generation strategy (Snowflake or simil
 
 ### Staff+
 
-Address multi-region deployment with counter range allocation per region (no cross-region coordination on writes). Discuss the analytics pipeline — click tracking without adding latency to the redirect hot path (fire-and-forget to Kafka, process async). Cover URL expiration cleanup (background TTL sweeper vs lazy deletion), and the security implications of predictable sequential codes (enumeration attacks, phishing detection).
+Address multi-region deployment with counter range allocation per region (no cross-region coordination on writes). Discuss the analytics pipeline - click tracking without adding latency to the redirect hot path (fire-and-forget to Kafka, process async). Cover URL expiration cleanup (background TTL sweeper vs lazy deletion), and the security implications of predictable sequential codes (enumeration attacks, phishing detection).
 
 ---
 ## 🎯 Key Takeaways
@@ -690,6 +690,6 @@ Address multi-region deployment with counter range allocation per region (no cro
 
 ---
 ## Related Designs
-- [Rate Limiter](/hld/RateLimiter) — protecting high-QPS endpoints
-- [Leaderboard](/hld/Leaderboard) — Redis-based caching patterns
-- [Stock Broker](/hld/StockBroker) — idempotency keys for write operations
+- [Rate Limiter](/hld/RateLimiter) - protecting high-QPS endpoints
+- [Leaderboard](/hld/Leaderboard) - Redis-based caching patterns
+- [Stock Broker](/hld/StockBroker) - idempotency keys for write operations

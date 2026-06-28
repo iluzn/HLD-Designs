@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Flipkart Interview Prep — System Design, DSA & Machine Coding"
+title: "Flipkart Interview Prep - System Design, DSA & Machine Coding"
 description: "Curated HLD, DSA, and LLD problems asked at Flipkart. Twitter Feed, Merge K Sorted Lists, Coin Change, Parking Lot, Splitwise."
 permalink: /companies/flipkart
 ---
@@ -32,7 +32,7 @@ permalink: /companies/flipkart
 
 # Flipkart Interview Prep
 
-Flipkart's interview process for SDE-2+ includes 2 DSA rounds, 1 machine coding round (90 minutes), and 1-2 system design rounds. The machine coding round expects clean OOP with design patterns and a running demo. System design rounds focus on e-commerce scale — feeds, notifications, and URL shortening at millions of QPS.
+Flipkart's interview process for SDE-2+ includes 2 DSA rounds, 1 machine coding round (90 minutes), and 1-2 system design rounds. The machine coding round expects clean OOP with design patterns and a running demo. System design rounds focus on e-commerce scale - feeds, notifications, and URL shortening at millions of QPS.
 
 ---
 
@@ -77,7 +77,7 @@ Flipkart's interview process for SDE-2+ includes 2 DSA rounds, 1 machine coding 
 1. **Nail the machine coding round first.** Flipkart rejects many candidates at this stage. Focus on Strategy pattern, clean separation of concerns, and a working demo.
 2. **Think at e-commerce scale.** Discuss flash sales, inventory locking, and fan-out patterns. Flipkart loves candidates who understand read-heavy vs write-heavy tradeoffs.
 3. **Discuss caching strategies.** CDN caching, Redis invalidation, and cache stampede protection are frequently probed in system design rounds.
-4. **Prepare for follow-up depth.** Flipkart interviewers often ask "what breaks at 10x scale?" — have answers ready for hot partitions and celebrity problems.
+4. **Prepare for follow-up depth.** Flipkart interviewers often ask "what breaks at 10x scale?" - have answers ready for hot partitions and celebrity problems.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Company-Specific Interview Prep — SystemCraft"
+title: "Company-Specific Interview Prep - SystemCraft"
 description: "Curated system design, DSA, and LLD problems by company. Amazon, Google, Microsoft, Uber, Flipkart, Swiggy, PhonePe, Razorpay."
 permalink: /companies/
 ---
@@ -24,4 +24,4 @@ Curated problems and tips for each company. Pick your target and know exactly wh
 
 ---
 
-*Don't see your company? The patterns are transferable — pick the closest match and study those designs.*
+*Don't see your company? The patterns are transferable - pick the closest match and study those designs.*

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Design Uber / Lyft — Ride Sharing System Design Interview"
+title: "Design Uber / Lyft - Ride Sharing System Design Interview"
 description: "System design for Uber / Lyft with real-time driver matching, location tracking, ride lifecycle, surge pricing, and ETA calculation. Complete HLD with diagrams."
 permalink: /hld/Uber/
 ---
@@ -8,7 +8,7 @@ permalink: /hld/Uber/
 # Designing a Ride Sharing Platform (Uber / Lyft)
 
 ⚡ **Difficulty:** Advanced 🏷️ **Topics:** Real-Time Matching, Location Tracking, WebSocket, Surge Pricing, Geohash 🏢 **Asked at:** Uber, Lyft, Ola, Grab, Google, Amazon
-📋 **Prerequisites:** [Fundamentals](/concepts) — especially [Geospatial Indexing](/concepts#geospatial-indexing), [Real-Time Communication](/concepts#real-time-communication-websocket-vs-sse-vs-polling), and [Message Queues](/concepts#message-queues)
+📋 **Prerequisites:** [Fundamentals](/concepts) - especially [Geospatial Indexing](/concepts#geospatial-indexing), [Real-Time Communication](/concepts#real-time-communication-websocket-vs-sse-vs-polling), and [Message Queues](/concepts#message-queues)
 
 ---
 
@@ -38,11 +38,11 @@ flowchart LR
 
 **How this breaks:**
 
-- Querying "nearest driver" in Postgres with lat/lng is a full table scan — won't work with 2M active drivers
+- Querying "nearest driver" in Postgres with lat/lng is a full table scan - won't work with 2M active drivers
 - Single API server can't handle 500K+ location pings per second from all active drivers
-- No way to push ride offers to drivers — polling is too slow for a 10-second matching window
+- No way to push ride offers to drivers - polling is too slow for a 10-second matching window
 - If two riders request simultaneously and the same driver is "nearest," both get assigned → double-booking
-- No real-time tracking — rider has no idea where the driver is after matching
+- No real-time tracking - rider has no idea where the driver is after matching
 - Single DB is a write bottleneck for millions of location updates per second
 
 The rest of the doc evolves this into a production-grade real-time matching and tracking system.
@@ -51,11 +51,11 @@ The rest of the doc evolves this into a production-grade real-time matching and 
 
 ## 1.7. Prior Art We're Drawing From
 
-- **Uber Ringpop** — Consistent hash ring for partitioning driver locations by geohash region. Each node owns a geographic shard, enabling local proximity queries without global coordination. ([Uber Engineering Blog](https://www.uber.com/blog/ringpop-open-source-nodejs-library/))
-- **Uber H3** — Hierarchical hexagonal grid system for geospatial indexing. Replaces traditional geohash with uniform-area hexagons that avoid edge distortion. Used for surge pricing zones and supply-demand balancing. ([Uber H3](https://www.uber.com/blog/h3/))
-- **Lyft Marketplace Dispatch** — Scoring-based matching that considers not just distance but ETA, driver heading, and predicted rider wait time. Two-phase: filter nearby candidates, then rank by composite score. ([Lyft Engineering](https://eng.lyft.com/matchmaking-in-lyft-line-9c2635fe62c4))
-- **Grab GrabNearby** — Redis Geo + geohash for sub-10ms proximity queries on 2M+ active drivers in Southeast Asia. Location TTL ensures stale drivers auto-expire. ([Grab Engineering](https://engineering.grab.com/))
-- **Google S2 Geometry** — Hilbert curve-based spatial indexing used internally at Google Maps and adopted by multiple ride-sharing platforms for region-based sharding and proximity search.
+- **Uber Ringpop** - Consistent hash ring for partitioning driver locations by geohash region. Each node owns a geographic shard, enabling local proximity queries without global coordination. ([Uber Engineering Blog](https://www.uber.com/blog/ringpop-open-source-nodejs-library/))
+- **Uber H3** - Hierarchical hexagonal grid system for geospatial indexing. Replaces traditional geohash with uniform-area hexagons that avoid edge distortion. Used for surge pricing zones and supply-demand balancing. ([Uber H3](https://www.uber.com/blog/h3/))
+- **Lyft Marketplace Dispatch** - Scoring-based matching that considers not just distance but ETA, driver heading, and predicted rider wait time. Two-phase: filter nearby candidates, then rank by composite score. ([Lyft Engineering](https://eng.lyft.com/matchmaking-in-lyft-line-9c2635fe62c4))
+- **Grab GrabNearby** - Redis Geo + geohash for sub-10ms proximity queries on 2M+ active drivers in Southeast Asia. Location TTL ensures stale drivers auto-expire. ([Grab Engineering](https://engineering.grab.com/))
+- **Google S2 Geometry** - Hilbert curve-based spatial indexing used internally at Google Maps and adopted by multiple ride-sharing platforms for region-based sharding and proximity search.
 
 ---
 
@@ -63,9 +63,9 @@ The rest of the doc evolves this into a production-grade real-time matching and 
 
 ### Core (Top 3)
 
-1. **Riders request a ride** — enter pickup and destination, get matched with the nearest available driver within 30 seconds
-2. **Real-time location tracking** — drivers send GPS updates every 3-5 seconds; riders see live driver position during ride
-3. **Drivers accept/decline rides** — receive ride offers with pickup details, navigate to rider, start/complete trip
+1. **Riders request a ride** - enter pickup and destination, get matched with the nearest available driver within 30 seconds
+2. **Real-time location tracking** - drivers send GPS updates every 3-5 seconds; riders see live driver position during ride
+3. **Drivers accept/decline rides** - receive ride offers with pickup details, navigate to rider, start/complete trip
 
 ### Below the Line
 
@@ -86,8 +86,8 @@ The rest of the doc evolves this into a production-grade real-time matching and 
 |---|---|
 | **Matching latency** | Rider matched with driver in < 30 seconds |
 | **Location ingestion** | Handle 2M+ drivers sending pings every 3-5 seconds (500K-700K writes/sec) |
-| **Availability** | 99.99% during peak hours — a down matching service means no rides |
-| **Consistency** | Strong consistency on driver assignment — no double-booking (one driver = one active ride) |
+| **Availability** | 99.99% during peak hours - a down matching service means no rides |
+| **Consistency** | Strong consistency on driver assignment - no double-booking (one driver = one active ride) |
 
 ### Below the Line
 
@@ -118,7 +118,7 @@ The rest of the doc evolves this into a production-grade real-time matching and 
 | Object Store | Receipts, invoices | PDFs | Batch generation, rare reads | S3 | GCS, MinIO |
 
 **Why Redis Geo, not Postgres with PostGIS?**
-We're handling 500K+ location updates per second. Redis Geo uses an in-memory sorted set with geohash encoding — O(log N) inserts and O(N+log M) radius queries where M is total items and N is results. PostGIS would require disk I/O on every update and query. Redis gives us sub-millisecond proximity search, which is essential for the 30-second matching SLA.
+We're handling 500K+ location updates per second. Redis Geo uses an in-memory sorted set with geohash encoding - O(log N) inserts and O(N+log M) radius queries where M is total items and N is results. PostGIS would require disk I/O on every update and query. Redis gives us sub-millisecond proximity search, which is essential for the 30-second matching SLA.
 
 **Why Kafka for ride events?**
 A single ride generates 8-10 state transitions (requested → matched → driver_enroute → arrived → started → completed). Multiple services consume these: billing, notifications, analytics, ETA. Kafka's consumer groups let each service process independently without blocking others.
@@ -127,12 +127,12 @@ A single ride generates 8-10 state transitions (requested → matched → driver
 
 ## 4. Core Entities
 
-- **Rider** — account, payment methods, saved addresses, current location
-- **Driver** — account, vehicle info, availability status (online/offline/on-trip), current location
-- **Ride** — pickup, destination, status, assigned driver, fare, timestamps (state machine)
-- **Location** — driverId, lat/lng, heading, speed, timestamp (ephemeral — lives in Redis)
-- **Fare** — base fare, distance component, time component, surge multiplier, total
-- **Zone** — geographic region for surge pricing (H3 hexagon or geohash prefix)
+- **Rider** - account, payment methods, saved addresses, current location
+- **Driver** - account, vehicle info, availability status (online/offline/on-trip), current location
+- **Ride** - pickup, destination, status, assigned driver, fare, timestamps (state machine)
+- **Location** - driverId, lat/lng, heading, speed, timestamp (ephemeral - lives in Redis)
+- **Fare** - base fare, distance component, time component, surge multiplier, total
+- **Zone** - geographic region for surge pricing (H3 hexagon or geohash prefix)
 
 ---
 
@@ -172,15 +172,15 @@ WebSocket /ws/v1/rides/{rideId}/track
 
 ### FR1: Riders Request a Ride and Get Matched
 
-The first thing that happens when a rider opens the app is they enter a destination and tap "Request Ride." The system needs to find the nearest available driver within seconds and assign them to this ride — without double-booking.
+The first thing that happens when a rider opens the app is they enter a destination and tap "Request Ride." The system needs to find the nearest available driver within seconds and assign them to this ride - without double-booking.
 
 **New components we need:**
 
-1. **API Gateway** — Entry point for all client requests. Handles JWT auth, rate limiting, and request routing.
-2. **Ride Service** — Manages the ride lifecycle (state machine). Creates the ride, assigns drivers, tracks state transitions.
-3. **Matching Service** — The brain of the system. Finds nearby available drivers, ranks them, and assigns the best one.
-4. **Location Service** — Stores and queries real-time driver GPS coordinates. This is the hot path — 500K writes/sec of location pings.
-5. **Redis Geo** — The in-memory geospatial index.<br>💡 *Redis Geo stores coordinates using geohash encoding in a sorted set. GEORADIUS returns all members within a given radius of a point in O(N+log M) time — fast enough for real-time matching. [Learn more →](/concepts#geospatial-indexing)*
+1. **API Gateway** - Entry point for all client requests. Handles JWT auth, rate limiting, and request routing.
+2. **Ride Service** - Manages the ride lifecycle (state machine). Creates the ride, assigns drivers, tracks state transitions.
+3. **Matching Service** - The brain of the system. Finds nearby available drivers, ranks them, and assigns the best one.
+4. **Location Service** - Stores and queries real-time driver GPS coordinates. This is the hot path - 500K writes/sec of location pings.
+5. **Redis Geo** - The in-memory geospatial index.<br>💡 *Redis Geo stores coordinates using geohash encoding in a sorted set. GEORADIUS returns all members within a given radius of a point in O(N+log M) time - fast enough for real-time matching. [Learn more →](/concepts#geospatial-indexing)*
 
 ```mermaid
 flowchart LR
@@ -221,8 +221,8 @@ flowchart LR
 3. Ride Service creates a ride record in Postgres with status `MATCHING` and calls Matching Service
 4. Matching Service asks Location Service: "Give me all available drivers within 3km of this pickup point"
 5. Location Service runs `GEORADIUS` on Redis Geo → returns 15 drivers sorted by distance
-6. Matching Service filters for availability (checks driver status in Redis cache — are they already on a trip?) and ranks top 5 by ETA
-7. Matching Service picks the best driver and attempts to **lock** them (distributed lock — Deep Dive 2)
+6. Matching Service filters for availability (checks driver status in Redis cache - are they already on a trip?) and ranks top 5 by ETA
+7. Matching Service picks the best driver and attempts to **lock** them (distributed lock - Deep Dive 2)
 
 **Why not just pick the closest driver?**
 
@@ -232,13 +232,13 @@ Distance alone isn't enough. A driver 500m away stuck in traffic might have a 12
 
 ### FR2: Real-Time Location Tracking
 
-Drivers send their GPS position every 3-5 seconds. This is the highest-throughput write path in the system — 2M active drivers × one ping every 4 seconds = ~500K writes/sec. We need to store these locations so the matching service can query them AND stream them to riders during active rides.
+Drivers send their GPS position every 3-5 seconds. This is the highest-throughput write path in the system - 2M active drivers × one ping every 4 seconds = ~500K writes/sec. We need to store these locations so the matching service can query them AND stream them to riders during active rides.
 
 **New components we need:**
 
-1. **Location Ingestion Service** — A stateless fleet of workers that receive driver pings and write to Redis Geo. Designed for pure throughput.
-2. **Kafka** — Buffers location events for downstream consumers (ride tracking, analytics, ETA recalculation).<br>💡 *Using Kafka here decouples the write path (driver → Redis) from the read/fan-out path (Redis → rider). The driver app doesn't wait for the rider to receive the update. [Learn more →](/concepts#message-queues)*
-3. **WebSocket Gateway** — Maintains persistent connections with riders who are on active rides. Pushes real-time driver positions.
+1. **Location Ingestion Service** - A stateless fleet of workers that receive driver pings and write to Redis Geo. Designed for pure throughput.
+2. **Kafka** - Buffers location events for downstream consumers (ride tracking, analytics, ETA recalculation).<br>💡 *Using Kafka here decouples the write path (driver → Redis) from the read/fan-out path (Redis → rider). The driver app doesn't wait for the rider to receive the update. [Learn more →](/concepts#message-queues)*
+3. **WebSocket Gateway** - Maintains persistent connections with riders who are on active rides. Pushes real-time driver positions.
 
 ```mermaid
 flowchart LR
@@ -264,15 +264,15 @@ flowchart LR
 **Step-by-step flow:**
 
 1. Driver app sends GPS ping every 3-5 seconds: `PUT /drivers/location` with lat, lng, heading, speed
-2. Location Ingestion Service receives the ping (stateless — any instance handles any driver)
-3. Service writes to Redis Geo: `GEOADD drivers:available {lng} {lat} {driverId}` — this updates the driver's position in the spatial index
+2. Location Ingestion Service receives the ping (stateless - any instance handles any driver)
+3. Service writes to Redis Geo: `GEOADD drivers:available {lng} {lat} {driverId}` - this updates the driver's position in the spatial index
 4. Simultaneously, publishes the location event to Kafka topic `driver.locations`, partitioned by rideId (if on active ride) or by geohash region (if available)
 5. For active rides: a Kafka consumer at the WebSocket Gateway picks up the event and pushes it to the rider's WebSocket connection
 6. Redis entries have a TTL.<br>💡 *TTL (Time-To-Live) = automatic expiration. If a driver crashes or loses connectivity for >15 seconds, their entry expires and they disappear from matching queries. No stale ghost drivers.*
 
 **Why Redis Geo over a regular database?**
 
-At 500K writes/sec, no disk-based database survives. Redis is in-memory — a single shard handles ~100K operations/sec. With 6-8 shards (partitioned by geographic region), we comfortably handle the full load. Each `GEOADD` is O(log N) and `GEORADIUS` is O(N+log M) where N = results returned.
+At 500K writes/sec, no disk-based database survives. Redis is in-memory - a single shard handles ~100K operations/sec. With 6-8 shards (partitioned by geographic region), we comfortably handle the full load. Each `GEOADD` is O(log N) and `GEORADIUS` is O(N+log M) where N = results returned.
 
 ---
 
@@ -282,9 +282,9 @@ Once matched, the driver gets a push notification with ride details. They have 1
 
 **New components we need:**
 
-1. **Notification Service** — Pushes ride offers to drivers and status updates to riders. Uses FCM/APNs for offline users, WebSocket for online.
-2. **Pricing Service** — Calculates fares based on distance, time, and surge multiplier. Called at ride request (estimate) and ride completion (final fare).
-3. **ETA Service** — Computes estimated time of arrival using mapping APIs (Google Maps, Mapbox, OSRM). Called during matching and continuously during the ride.
+1. **Notification Service** - Pushes ride offers to drivers and status updates to riders. Uses FCM/APNs for offline users, WebSocket for online.
+2. **Pricing Service** - Calculates fares based on distance, time, and surge multiplier. Called at ride request (estimate) and ride completion (final fare).
+3. **ETA Service** - Computes estimated time of arrival using mapping APIs (Google Maps, Mapbox, OSRM). Called during matching and continuously during the ride.
 
 ```mermaid
 flowchart LR
@@ -451,15 +451,15 @@ flowchart LR
 **Mechanism (borrowing from Grab's GrabNearby):**
 
 1. Driver sends location → Ingestion Service computes geohash prefix (4 chars = ~20km² cell)
-2. Geo Router maps prefix to the owning Redis shard (consistent hashing — like Uber's Ringpop)
-3. `GEOADD city:available {lng} {lat} {driverId}` — O(log N) insert
+2. Geo Router maps prefix to the owning Redis shard (consistent hashing - like Uber's Ringpop)
+3. `GEOADD city:available {lng} {lat} {driverId}` - O(log N) insert
 4. Each entry has a TTL of 15 seconds. If no fresh ping arrives, the driver auto-expires (handles crashes, offline)
 5. When Matching Service needs nearby drivers: computes geohash of pickup, queries the owning shard + adjacent shards (to handle cell boundary cases)
-6. `GEORADIUS city:available {lng} {lat} 3000 m COUNT 20 ASC` — returns 20 nearest within 3km
+6. `GEORADIUS city:available {lng} {lat} 3000 m COUNT 20 ASC` - returns 20 nearest within 3km
 
-**Scaling math:** With 2M drivers across 8 shards, each shard holds ~250K entries (~500MB RAM). Each shard handles ~80K ops/sec. Total capacity: 640K ops/sec — comfortably above our 500K requirement.
+**Scaling math:** With 2M drivers across 8 shards, each shard holds ~250K entries (~500MB RAM). Each shard handles ~80K ops/sec. Total capacity: 640K ops/sec - comfortably above our 500K requirement.
 
-**Edge case — cell boundaries:** A rider at the edge of geohash cell "tdr1" might have the nearest driver in cell "tdr2." Solution: always query the target shard + 8 neighboring cells. This means up to 3 shard queries per match request, but they run in parallel (sub-10ms total).
+**Edge case - cell boundaries:** A rider at the edge of geohash cell "tdr1" might have the nearest driver in cell "tdr2." Solution: always query the target shard + 8 neighboring cells. This means up to 3 shard queries per match request, but they run in parallel (sub-10ms total).
 
 ---
 
@@ -471,7 +471,7 @@ flowchart LR
 
 **Good:** Database-level optimistic locking with a version column. `UPDATE drivers SET ride_id = ? WHERE id = ? AND ride_id IS NULL`. Only one UPDATE succeeds (returns rowcount=1). The other gets rowcount=0 and retries with next driver. Works but adds a DB round-trip in the hot path.
 
-**Great:** Redis distributed lock with fence tokens.<br>💡 *A distributed lock is a mechanism where only one process can "hold" a key at a time. A fence token is a monotonically increasing number that prevents stale locks from causing harm — if a process holds token 5 but the lock has moved to token 6, its writes are rejected.*
+**Great:** Redis distributed lock with fence tokens.<br>💡 *A distributed lock is a mechanism where only one process can "hold" a key at a time. A fence token is a monotonically increasing number that prevents stale locks from causing harm - if a process holds token 5 but the lock has moved to token 6, its writes are rejected.*
 
 ```mermaid
 flowchart LR
@@ -521,7 +521,7 @@ Redlock (Redis distributed lock across N nodes) adds latency and complexity. For
 
 **Mechanism:**
 
-1. City is divided into H3 hexagons (resolution 7 = ~5km² cells).<br>💡 *H3 is Uber's open-source hexagonal grid system. Unlike square geohash cells, hexagons have uniform adjacency (every neighbor is equidistant) — better for spatial analysis. [Learn more →](/concepts#geospatial-indexing)*
+1. City is divided into H3 hexagons (resolution 7 = ~5km² cells).<br>💡 *H3 is Uber's open-source hexagonal grid system. Unlike square geohash cells, hexagons have uniform adjacency (every neighbor is equidistant) - better for spatial analysis. [Learn more →](/concepts#geospatial-indexing)*
 2. Every 30 seconds, a **Surge Calculator** job runs per zone:
    - `demand_score` = ride requests in last 2 minutes / available drivers in zone
    - If demand_score > 1.5 → surge multiplier = 1.0 + (demand_score - 1.0) × 0.5 (capped at 3.0x)
@@ -536,7 +536,7 @@ Redlock (Redis distributed lock across N nodes) adds latency and complexity. For
 - As drivers complete trips in the zone, they're immediately offered queued rides (priority over new requests)
 - If wait exceeds 5 minutes, expand search radius to 8km with surge pricing as incentive for farther drivers
 
-**Backstop:** Circuit breaker on the matching service. If matching failure rate exceeds 80% for > 60 seconds in a zone, temporarily halt new ride requests in that zone and show "No drivers available — try again in a few minutes" rather than queuing indefinitely.
+**Backstop:** Circuit breaker on the matching service. If matching failure rate exceeds 80% for > 60 seconds in a zone, temporarily halt new ride requests in that zone and show "No drivers available - try again in a few minutes" rather than queuing indefinitely.
 
 ---
 
@@ -548,7 +548,7 @@ Redlock (Redis distributed lock across N nodes) adds latency and complexity. For
 
 **Good:** One WebSocket per rider, server pushes location. But: how does the location event (arriving at Location Ingestion Service) get routed to the correct WebSocket Gateway instance holding that rider's connection?
 
-**Great:** Kafka-partitioned fan-out + Redis Pub/Sub for last-mile delivery.<br>💡 *Fan-out = delivering one event to multiple subscribers. Here the "fan" is narrow (one rider per ride), but the routing is the challenge — which server holds the connection? [Learn more →](/concepts#message-queues)*
+**Great:** Kafka-partitioned fan-out + Redis Pub/Sub for last-mile delivery.<br>💡 *Fan-out = delivering one event to multiple subscribers. Here the "fan" is narrow (one rider per ride), but the routing is the challenge - which server holds the connection? [Learn more →](/concepts#message-queues)*
 
 ```mermaid
 flowchart LR
@@ -622,11 +622,11 @@ flowchart LR
 
 - Every driver ping includes speed. Aggregate average speed per road segment per 5-minute window.
 - If drivers on MG Road are averaging 8 km/h (instead of the usual 30 km/h), multiply ETA for routes through MG Road by 3.75x.
-- This gives us live traffic data for free — from our own driver fleet.
+- This gives us live traffic data for free - from our own driver fleet.
 
 **Cost comparison:**
 - Naive (Google Maps for everything): ~$1500/day for a city with 100K rides/day
-- Hybrid approach: ~$150/day (API calls only for 10% of rides) — 90% cost reduction
+- Hybrid approach: ~$150/day (API calls only for 10% of rides) - 90% cost reduction
 
 ---
 
@@ -634,11 +634,11 @@ flowchart LR
 
 | Question | Answer |
 |---|---|
-| Dedicated search index? | Not needed — riders don't text-search for drivers. Geo-proximity is handled by Redis Geo |
-| Stale reads after writes? | Driver availability is eventually consistent (3-5s lag from location ping frequency). Acceptable — matching retry handles it |
+| Dedicated search index? | Not needed - riders don't text-search for drivers. Geo-proximity is handled by Redis Geo |
+| Stale reads after writes? | Driver availability is eventually consistent (3-5s lag from location ping frequency). Acceptable - matching retry handles it |
 | Single points of failure? | Redis Geo shards have replicas with automatic failover. Matching Service is stateless, horizontally scaled. Ride DB uses Postgres primary + synchronous standby |
 | Dead-letter / reconciliation? | Rides stuck in MATCHING > 60s are re-processed by reconciler. Failed notifications go to DLQ with 3 retries |
-| Data freshness across caches? | Location in Redis has 15s TTL — stale drivers auto-expire. Ride status propagates via Kafka events (200-500ms lag) |
+| Data freshness across caches? | Location in Redis has 15s TTL - stale drivers auto-expire. Ride status propagates via Kafka events (200-500ms lag) |
 | Cost at scale? | Redis Geo (8 shards × r6g.large) ≈ $2000/month. Kafka (6 brokers) ≈ $3000/month. WebSocket Gateways (10 instances) ≈ $2000/month. Google Maps API (reduced 90%) ≈ $4500/month. Total hot-path infra: ~$12K/month for a city with 2M drivers |
 
 ---
@@ -729,7 +729,7 @@ flowchart LR
 
 | Term | What it is |
 |---|---|
-| **Redis Geo** | In-memory geospatial index using sorted sets with geohash encoding — handles 500K+ location writes/sec with sub-ms proximity queries. |
+| **Redis Geo** | In-memory geospatial index using sorted sets with geohash encoding - handles 500K+ location writes/sec with sub-ms proximity queries. |
 | **Geohash** | Encoding scheme that maps 2D coordinates into a 1D string where nearby points share a common prefix, enabling geographic sharding. |
 | **H3 Hexagonal Grid** | Uber's hierarchical hex grid system providing uniform-area cells for surge pricing zones and supply-demand balancing without edge distortion. |
 | **WebSocket** | Persistent bidirectional connection streaming real-time driver location updates to riders during active rides. |
@@ -742,7 +742,7 @@ flowchart LR
 
 ## What's Expected at Each Level
 
-> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+> This section helps you calibrate your depth. You don't need to cover everything - just know what's expected for your level.
 
 ### Mid-level
 
@@ -754,7 +754,7 @@ Drive the conversation around consistent hashing for geo-sharding, distributed l
 
 ### Staff+
 
-Discuss multi-region dispatch, surge pricing zone calculations using H3 hexagons, counter-based range allocation for IDs across regions, and graceful degradation during peak demand. Proactively address what happens when the matching service crashes mid-offer — explain fencing tokens, lock TTL recovery, and the reconciler pattern. Show cost awareness of Redis Geo at 2M drivers and articulate why Redlock is overkill here.
+Discuss multi-region dispatch, surge pricing zone calculations using H3 hexagons, counter-based range allocation for IDs across regions, and graceful degradation during peak demand. Proactively address what happens when the matching service crashes mid-offer - explain fencing tokens, lock TTL recovery, and the reconciler pattern. Show cost awareness of Redis Geo at 2M drivers and articulate why Redlock is overkill here.
 
 
 ---
@@ -768,7 +768,7 @@ Discuss multi-region dispatch, surge pricing zone calculations using H3 hexagons
 ---
 ## Related Designs
 
-- [Zomato / Uber Eats](/hld/Zomato) — similar real-time dispatch and location tracking
-- [Notification System](/hld/NotificationSystem) — multi-channel push delivery for ride updates
-- [Job Scheduler](/hld/JobScheduler) — distributed task scheduling for timeout handling
-- [Stock Broker](/hld/StockBroker) — similar distributed locking and exactly-once patterns
+- [Zomato / Uber Eats](/hld/Zomato) - similar real-time dispatch and location tracking
+- [Notification System](/hld/NotificationSystem) - multi-channel push delivery for ride updates
+- [Job Scheduler](/hld/JobScheduler) - distributed task scheduling for timeout handling
+- [Stock Broker](/hld/StockBroker) - similar distributed locking and exactly-once patterns

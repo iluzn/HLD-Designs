@@ -1,11 +1,11 @@
 ---
 layout: default
-title: "Design Snake & Ladder — Machine Coding Interview"
+title: "Design Snake & Ladder - Machine Coding Interview"
 description: "Low-level design for Snake & Ladder with configurable board, multiple players, dice strategies, and game loop. State pattern with full runnable code."
 permalink: /lld/SnakeLadder/
 ---
 
-# Designing Snake & Ladder — Turn-Based Board Game
+# Designing Snake & Ladder - Turn-Based Board Game
 
 ⚡ **Difficulty:** Medium 🏷️ **Patterns:** Strategy, State, Command, Observer 🏢 **Asked at:** PhonePe, Flipkart, Amazon, Swiggy
 
@@ -13,19 +13,19 @@ permalink: /lld/SnakeLadder/
 
 ## Functional Requirements
 
-1. **Configurable board** — board size (default 100), configurable snakes and ladders with start/end positions
-2. **Multiple players** — support 2-4 players with turn-based play
-3. **Dice rolling** — pluggable dice strategy (normal, rigged, weighted)
-4. **Game loop** — turn management, automatic snake/ladder resolution, win detection
-5. **Move validation** — player can't move beyond the last cell, must land exactly on final cell to win
-6. **Game history** — track all moves with undo capability
+1. **Configurable board** - board size (default 100), configurable snakes and ladders with start/end positions
+2. **Multiple players** - support 2-4 players with turn-based play
+3. **Dice rolling** - pluggable dice strategy (normal, rigged, weighted)
+4. **Game loop** - turn management, automatic snake/ladder resolution, win detection
+5. **Move validation** - player can't move beyond the last cell, must land exactly on final cell to win
+6. **Game history** - track all moves with undo capability
 
 ## Non-Functional Requirements
 
-1. **Thread-safety** — concurrent game state access must be safe
-2. **Extensibility** — add new dice types or board elements without modifying existing code
-3. **Correctness** — no player can land on an invalid cell, snakes always go down, ladders always go up
-4. **O(1) move resolution** — snake/ladder lookup via HashMap
+1. **Thread-safety** - concurrent game state access must be safe
+2. **Extensibility** - add new dice types or board elements without modifying existing code
+3. **Correctness** - no player can land on an invalid cell, snakes always go down, ladders always go up
+4. **O(1) move resolution** - snake/ladder lookup via HashMap
 
 ---
 
@@ -36,14 +36,14 @@ permalink: /lld/SnakeLadder/
 | `Game` | Orchestrates the game loop, manages turns and win detection |
 | `Board` | Holds the grid, snakes, ladders, and resolves cell transitions |
 | `Player` | Name, id, current position on the board |
-| `Snake` | Head (start) and tail (end) — moves player down |
-| `Ladder` | Bottom (start) and top (end) — moves player up |
-| `Dice` | Strategy interface — roll returns a value |
+| `Snake` | Head (start) and tail (end) - moves player down |
+| `Ladder` | Bottom (start) and top (end) - moves player up |
+| `Dice` | Strategy interface - roll returns a value |
 | `NormalDice` | Standard 1-6 random roll |
 | `RiggedDice` | Returns a predetermined sequence (for testing) |
 | `Cell` | Position on board, may contain a snake head or ladder bottom |
-| `GameStatus` | Enum — IN_PROGRESS, FINISHED |
-| `Move` | Command object — stores player, from, to, dice value for undo |
+| `GameStatus` | Enum - IN_PROGRESS, FINISHED |
+| `Move` | Command object - stores player, from, to, dice value for undo |
 
 ---
 
@@ -112,19 +112,19 @@ classDiagram
 
 Here's what happens during a single turn:
 
-1. Game checks if status is IN_PROGRESS — if FINISHED, no-op
+1. Game checks if status is IN_PROGRESS - if FINISHED, no-op
 2. Current player is selected via round-robin index
-3. Dice strategy is invoked — `dice.roll()` returns 1-6 (or whatever the strategy dictates)
-4. Board validates the move — if `currentPos + roll > boardSize`, player stays put
+3. Dice strategy is invoked - `dice.roll()` returns 1-6 (or whatever the strategy dictates)
+4. Board validates the move - if `currentPos + roll > boardSize`, player stays put
 5. If valid, player moves to `currentPos + roll`
-6. Board resolves the new position — checks for snake head or ladder bottom at that cell
+6. Board resolves the new position - checks for snake head or ladder bottom at that cell
 7. If snake: player slides down to tail. If ladder: player climbs to top
 8. Move is recorded as a Command object for undo capability
 9. All registered GameObservers are notified of the move
 10. If player reaches the final cell (boardSize), game status → FINISHED, player wins
 11. Turn index advances to next player
 
-💡 *The board resolution is O(1) — snakes and ladders are stored in HashMaps keyed by their start position. No iteration over the board needed.*
+💡 *The board resolution is O(1) - snakes and ladders are stored in HashMaps keyed by their start position. No iteration over the board needed.*
 
 ---
 
@@ -320,7 +320,7 @@ public:
 
 The strategy interface for dice rolling. NormalDice gives a uniform random 1-6. RiggedDice returns a predetermined sequence (useful for testing deterministic game outcomes). WeightedDice allows custom probability distributions.
 
-💡 *Strategy pattern = define a family of algorithms, encapsulate each one, and make them interchangeable. The Game doesn't know or care which dice implementation it uses — it just calls `roll()`.*
+💡 *Strategy pattern = define a family of algorithms, encapsulate each one, and make them interchangeable. The Game doesn't know or care which dice implementation it uses - it just calls `roll()`.*
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -673,9 +673,9 @@ public:
 
 ### Move (Command)
 
-The Command pattern — each move is recorded as an object containing the player, from/to positions, and dice value. This enables undo functionality by simply restoring the player to the previous position.
+The Command pattern - each move is recorded as an object containing the player, from/to positions, and dice value. This enables undo functionality by simply restoring the player to the previous position.
 
-💡 *Command pattern = encapsulate a request as an object. Each Move stores everything needed to undo itself — the player reference and the original position. No need to recompute anything.*
+💡 *Command pattern = encapsulate a request as an object. Each Move stores everything needed to undo itself - the player reference and the original position. No need to recompute anything.*
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -766,7 +766,7 @@ public:
 
 ### GameObserver
 
-Observer interface to decouple game events from their consumers. Logging, UI updates, analytics — all can hook in without modifying the Game class.
+Observer interface to decouple game events from their consumers. Logging, UI updates, analytics - all can hook in without modifying the Game class.
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -880,7 +880,7 @@ public class Game {
         System.out.println("  " + current.getName() + " rolled " + diceValue);
 
         if (!board.isValidMove(oldPos, diceValue)) {
-            System.out.println("    Cannot move — would exceed board. Stay at " + oldPos);
+            System.out.println("    Cannot move - would exceed board. Stay at " + oldPos);
             Move move = new Move(current, oldPos, oldPos, diceValue);
             moveHistory.push(move);
             advanceTurn();
@@ -979,7 +979,7 @@ class Game:
         print(f"  {current.name} rolled {dice_value}")
 
         if not self.board.is_valid_move(old_pos, dice_value):
-            print(f"    Cannot move — would exceed board. Stay at {old_pos}")
+            print(f"    Cannot move - would exceed board. Stay at {old_pos}")
             move = Move(current, old_pos, old_pos, dice_value)
             self._move_history.append(move)
             self._advance_turn()
@@ -1078,7 +1078,7 @@ public:
         std::cout &lt;&lt; "  " &lt;&lt; current-&gt;name &lt;&lt; " rolled " &lt;&lt; diceValue &lt;&lt; "\n";
 
         if (!board.isValidMove(oldPos, diceValue)) {
-            std::cout &lt;&lt; "    Cannot move — stay at " &lt;&lt; oldPos &lt;&lt; "\n";
+            std::cout &lt;&lt; "    Cannot move - stay at " &lt;&lt; oldPos &lt;&lt; "\n";
             Move move(current, oldPos, oldPos, diceValue);
             moveHistory.push_back(move);
             advanceTurn();
@@ -1137,7 +1137,7 @@ public:
 
 ### Demo (Runnable)
 
-The demo creates a board with snakes and ladders, adds 3 players, uses a RiggedDice for deterministic output, and plays the game to completion — showing every turn, snake/ladder interactions, and the final winner.
+The demo creates a board with snakes and ladders, adds 3 players, uses a RiggedDice for deterministic output, and plays the game to completion - showing every turn, snake/ladder interactions, and the final winner.
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -1366,7 +1366,7 @@ int main() {
 
 ---
 
-## Game Loop — Algorithm Walkthrough
+## Game Loop - Algorithm Walkthrough
 
 <pre><code class="language-mermaid">flowchart LR
     A[Start Turn] --> B[Get Current Player]
@@ -1397,26 +1397,26 @@ int main() {
 | Feature | Implementation |
 |---|---|
 | **Double Roll** | New dice strategy that grants extra turn on doubles |
-| **Power-Ups** | New `BoardElement` interface — shield (ignore next snake), boost (double next roll) |
+| **Power-Ups** | New `BoardElement` interface - shield (ignore next snake), boost (double next roll) |
 | **Multiplayer Online** | Wrap Game in a network adapter, serialize Move objects |
-| **Undo/Redo** | Already supported — `undo()` pops from move stack |
+| **Undo/Redo** | Already supported - `undo()` pops from move stack |
 | **Variable Board** | Pass different size + snake/ladder configs to Board constructor |
 
 ---
 
 ## What Interviewers Look For
 
-1. ✅ Strategy pattern for dice — no hardcoded random logic in Game
-2. ✅ Command pattern for moves — undo support with stored state
-3. ✅ O(1) snake/ladder resolution — HashMap lookup, no board traversal
-4. ✅ Validation — snakes go down, ladders go up, no overlaps, can't exceed board
-5. ✅ Observer — decoupled event notifications
-6. ✅ Clean game loop — single responsibility per class
-7. ✅ Runnable demo — deterministic game with rigged dice proves correctness
+1. ✅ Strategy pattern for dice - no hardcoded random logic in Game
+2. ✅ Command pattern for moves - undo support with stored state
+3. ✅ O(1) snake/ladder resolution - HashMap lookup, no board traversal
+4. ✅ Validation - snakes go down, ladders go up, no overlaps, can't exceed board
+5. ✅ Observer - decoupled event notifications
+6. ✅ Clean game loop - single responsibility per class
+7. ✅ Runnable demo - deterministic game with rigged dice proves correctness
 
 ---
 
 ## Related Designs
 
-- [Splitwise](/lld/Splitwise) — Strategy pattern and Observer
-- [Parking Lot](/lld/ParkingLot) — Strategy-based assignment and extensible design
+- [Splitwise](/lld/Splitwise) - Strategy pattern and Observer
+- [Parking Lot](/lld/ParkingLot) - Strategy-based assignment and extensible design

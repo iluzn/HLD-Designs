@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Microsoft Interview Prep — System Design, DSA & Machine Coding"
+title: "Microsoft Interview Prep - System Design, DSA & Machine Coding"
 description: "Curated system design and DSA problems asked at Microsoft. Chat System, URL Shortener, Notification System, LRU Cache, Course Schedule."
 permalink: /companies/microsoft
 ---
@@ -32,7 +32,7 @@ permalink: /companies/microsoft
 
 # Microsoft Interview Prep
 
-Microsoft's interview loop for SDE-2+ includes 1 system design round alongside 2 coding rounds and a hiring manager round. System design is more collaborative than adversarial — the interviewer often acts as a partner helping you refine the design. Microsoft values practical engineering: monitoring, deployment strategies, and how you'd actually ship this to production.
+Microsoft's interview loop for SDE-2+ includes 1 system design round alongside 2 coding rounds and a hiring manager round. System design is more collaborative than adversarial - the interviewer often acts as a partner helping you refine the design. Microsoft values practical engineering: monitoring, deployment strategies, and how you'd actually ship this to production.
 
 ---
 

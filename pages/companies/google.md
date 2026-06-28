@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Google Interview Prep — System Design, DSA & Machine Coding"
+title: "Google Interview Prep - System Design, DSA & Machine Coding"
 description: "Curated system design and DSA problems asked at Google. Key-Value Store, Google Docs, YouTube, Rate Limiter, LRU Cache, Word Ladder."
 permalink: /companies/google
 ---
@@ -32,7 +32,7 @@ permalink: /companies/google
 
 # Google Interview Prep
 
-Google's SWE loop for L4+ includes 1 system design round alongside 2-3 coding rounds and a behavioral round. System design at Google emphasizes scalability, correctness, and your ability to break ambiguous problems into concrete components. They value simplicity — overengineering is penalized. Expect follow-ups on failure modes, data consistency, and cost.
+Google's SWE loop for L4+ includes 1 system design round alongside 2-3 coding rounds and a behavioral round. System design at Google emphasizes scalability, correctness, and your ability to break ambiguous problems into concrete components. They value simplicity - overengineering is penalized. Expect follow-ups on failure modes, data consistency, and cost.
 
 ---
 
@@ -68,10 +68,10 @@ Google's SWE loop for L4+ includes 1 system design round alongside 2-3 coding ro
 
 ## Tips for Google Interviews
 
-1. **Coding bar is high.** Google's DSA rounds are harder than most companies — expect medium-hard to hard problems with optimal solutions required. Brute force won't pass.
+1. **Coding bar is high.** Google's DSA rounds are harder than most companies - expect medium-hard to hard problems with optimal solutions required. Brute force won't pass.
 2. **Simplicity wins in design.** Google penalizes overengineering. If you can solve it with one service and a database, don't add Kafka and 5 microservices. Justify every component.
-3. **Think about cost and efficiency.** Google runs at massive scale internally — interviewers appreciate candidates who think about compute cost, storage efficiency, and operational overhead.
-4. **The hiring committee matters.** Your interviewer writes feedback, but a separate committee decides. Be consistent across all rounds — one great round doesn't compensate for a bad one.
+3. **Think about cost and efficiency.** Google runs at massive scale internally - interviewers appreciate candidates who think about compute cost, storage efficiency, and operational overhead.
+4. **The hiring committee matters.** Your interviewer writes feedback, but a separate committee decides. Be consistent across all rounds - one great round doesn't compensate for a bad one.
 
 ---
 

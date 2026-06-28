@@ -1,20 +1,20 @@
 ---
 permalink: /hld/Pastebin/
 layout: default
-title: "Design Pastebin — System Design Interview"
+title: "Design Pastebin - System Design Interview"
 description: "System design for a text-sharing service like Pastebin - unique ID generation, object storage, metadata DB, CDN reads, and expiry cleanup. Beginner-friendly with diagrams."
 ---
 
 # Designing Pastebin
 
 ⚡ **Difficulty:** Beginner 🏷️ **Topics:** Object Storage, ID Generation, CDN, TTL 🏢 **Asked at:** Google, Amazon, Meta
-📋 **Prerequisites:** [Fundamentals](/concepts) — especially [Caching](/concepts#caching) and [CDN](/concepts#cdn-content-delivery-network)
+📋 **Prerequisites:** [Fundamentals](/concepts) - especially [Caching](/concepts#caching) and [CDN](/concepts#cdn-content-delivery-network)
 
 ---
 
 ## 1. Understanding the Problem
 
-Pastebin is a text-sharing service. You paste text (code snippets, logs, config files), get a unique short URL, and anyone with that URL can read the paste. No authentication needed to create or read. That's it — deceptively simple, but it covers real design concepts: unique ID generation, storage decisions, caching, and data lifecycle management.
+Pastebin is a text-sharing service. You paste text (code snippets, logs, config files), get a unique short URL, and anyone with that URL can read the paste. No authentication needed to create or read. That's it - deceptively simple, but it covers real design concepts: unique ID generation, storage decisions, caching, and data lifecycle management.
 
 **Real examples:** pastebin.com (18M+ pastes/month), GitHub Gist, Hastebin, Privatebin.
 
@@ -40,11 +40,11 @@ Store the paste content as a TEXT/BLOB column directly in SQL. Use auto-incremen
 
 **Why this breaks:**
 
-- **Large pastes in DB** — storing 10MB text blobs in a relational DB bloats the table, slows backups, and makes queries inefficient
-- **Sequential IDs** — auto-increment exposes paste count and is guessable (scraping `paste/1`, `paste/2`, ...)
-- **Single server** — one machine handles both reads and writes. Traffic spike kills everything.
-- **No caching** — every read hits the DB. With 10:1 read-to-write ratio, the DB drowns.
-- **No expiry** — pastes accumulate forever, storage grows unbounded
+- **Large pastes in DB** - storing 10MB text blobs in a relational DB bloats the table, slows backups, and makes queries inefficient
+- **Sequential IDs** - auto-increment exposes paste count and is guessable (scraping `paste/1`, `paste/2`, ...)
+- **Single server** - one machine handles both reads and writes. Traffic spike kills everything.
+- **No caching** - every read hits the DB. With 10:1 read-to-write ratio, the DB drowns.
+- **No expiry** - pastes accumulate forever, storage grows unbounded
 
 The rest of the doc evolves this into a proper scalable design.
 
@@ -52,9 +52,9 @@ The rest of the doc evolves this into a proper scalable design.
 
 ## 1.7. Prior Art We're Drawing From
 
-- **GitHub Gist** — Stores code snippets with Git-backed versioning. Content lives in object storage, metadata in Postgres. Demonstrates separation of content from metadata at scale. ([GitHub Engineering](https://github.blog/engineering/))
-- **Hastebin (haste-server)** — Minimal open-source paste service. Shows that the core problem is just ID generation + blob storage + serve. ([GitHub: haste-server](https://github.com/toptal/haste-server))
-- **Cloudflare Workers KV** — Globally distributed key-value store with CDN-like read performance. Demonstrates how immutable content benefits from aggressive edge caching. ([Cloudflare Workers KV docs](https://developers.cloudflare.com/kv/))
+- **GitHub Gist** - Stores code snippets with Git-backed versioning. Content lives in object storage, metadata in Postgres. Demonstrates separation of content from metadata at scale. ([GitHub Engineering](https://github.blog/engineering/))
+- **Hastebin (haste-server)** - Minimal open-source paste service. Shows that the core problem is just ID generation + blob storage + serve. ([GitHub: haste-server](https://github.com/toptal/haste-server))
+- **Cloudflare Workers KV** - Globally distributed key-value store with CDN-like read performance. Demonstrates how immutable content benefits from aggressive edge caching. ([Cloudflare Workers KV docs](https://developers.cloudflare.com/kv/))
 
 ---
 
@@ -62,9 +62,9 @@ The rest of the doc evolves this into a proper scalable design.
 
 ### Core (Top 3)
 
-1. **Create a paste** — user submits text, gets back a unique short URL
-2. **Read a paste** — anyone with the URL can retrieve the content
-3. **Expire pastes** — pastes can have a TTL (1 hour, 1 day, 1 week, never)
+1. **Create a paste** - user submits text, gets back a unique short URL
+2. **Read a paste** - anyone with the URL can retrieve the content
+3. **Expire pastes** - pastes can have a TTL (1 hour, 1 day, 1 week, never)
 
 ### Below the Line
 
@@ -104,9 +104,9 @@ The rest of the doc evolves this into a proper scalable design.
 
 ## 4. Core Entities
 
-- **Paste** — the content (text/code), up to 10MB
-- **Metadata** — paste ID, creation time, expiry time, language, owner (optional)
-- **Short URL** — the unique 7-character code that maps to a paste
+- **Paste** - the content (text/code), up to 10MB
+- **Metadata** - paste ID, creation time, expiry time, language, owner (optional)
+- **Short URL** - the unique 7-character code that maps to a paste
 
 ---
 
@@ -133,7 +133,7 @@ DELETE /v1/pastes/{id}
 
 Let's build this incrementally, one functional requirement at a time.
 
-### FR1: Create a Paste — Generating a Unique ID and Storing Content
+### FR1: Create a Paste - Generating a Unique ID and Storing Content
 
 The first thing a user does: paste text, click submit, get a short URL. We need to generate a unique ID, store the content somewhere, and return the URL.
 
@@ -141,10 +141,10 @@ The first thing a user does: paste text, click submit, get a short URL. We need 
 
 **New components:**
 
-1. **Paste Service** — the API layer. Validates input (size < 10MB), generates unique IDs, coordinates writes.
-2. **ID Generator** — produces unique, short, non-guessable IDs.<br>💡 *We use Base62 encoding (a-z, A-Z, 0-9) with 7 characters = 62⁷ = 3.5 trillion possible IDs. Even at 1000 pastes/sec, that's 100+ years before exhaustion.*
-3. **Object Storage (S3/GCS)** — stores the actual paste content. Key = paste ID, value = text blob. Cheap ($0.023/GB/month), durable (99.999999999%), scales infinitely.
-4. **Metadata DB (Postgres)** — stores small metadata per paste: ID, timestamps, expiry, language. Small rows (~200 bytes), fast lookups by primary key.
+1. **Paste Service** - the API layer. Validates input (size < 10MB), generates unique IDs, coordinates writes.
+2. **ID Generator** - produces unique, short, non-guessable IDs.<br>💡 *We use Base62 encoding (a-z, A-Z, 0-9) with 7 characters = 62⁷ = 3.5 trillion possible IDs. Even at 1000 pastes/sec, that's 100+ years before exhaustion.*
+3. **Object Storage (S3/GCS)** - stores the actual paste content. Key = paste ID, value = text blob. Cheap ($0.023/GB/month), durable (99.999999999%), scales infinitely.
+4. **Metadata DB (Postgres)** - stores small metadata per paste: ID, timestamps, expiry, language. Small rows (~200 bytes), fast lookups by primary key.
 
 ```mermaid
 flowchart LR
@@ -184,15 +184,15 @@ flowchart LR
 
 ---
 
-### FR2: Read a Paste — Serving Reads at Scale with Caching
+### FR2: Read a Paste - Serving Reads at Scale with Caching
 
 Now users want to read pastes. With a 10:1 read-to-write ratio, reads dominate. If every read hits Object Storage (S3), we're paying for latency (~50ms first byte) and per-request costs on every view.
 
-**The insight:** Pastes are immutable — once created, the content never changes. This is perfect for caching. A CDN can serve pastes from edge locations worldwide, and almost every read will be a cache hit.
+**The insight:** Pastes are immutable - once created, the content never changes. This is perfect for caching. A CDN can serve pastes from edge locations worldwide, and almost every read will be a cache hit.
 
 **New component:**
 
-5. **CDN (CloudFront/Cloudflare)** — caches paste content at edge locations globally. Since pastes are immutable, cache-hit rate is extremely high — most reads never reach your origin server.
+5. **CDN (CloudFront/Cloudflare)** - caches paste content at edge locations globally. Since pastes are immutable, cache-hit rate is extremely high - most reads never reach your origin server.
 
 ```mermaid
 flowchart LR
@@ -224,17 +224,17 @@ flowchart LR
 7. Service returns content with `Cache-Control: public, max-age=86400` headers
 8. CDN caches the response → next reader in the same region gets a cache hit
 
-**Why CDN works so well here:** Pastes are write-once, read-many. A popular paste might get 100K views — after the first CDN miss, the remaining 99,999 reads are served from cache with zero origin load. This is the highest-leverage optimization in the entire system.
+**Why CDN works so well here:** Pastes are write-once, read-many. A popular paste might get 100K views - after the first CDN miss, the remaining 99,999 reads are served from cache with zero origin load. This is the highest-leverage optimization in the entire system.
 
 ---
 
-### FR3: Expire Pastes — Handling TTL Without Slowing Reads
+### FR3: Expire Pastes - Handling TTL Without Slowing Reads
 
-Users can set an expiry: 1 hour, 1 day, 1 week. After expiry, the paste should return 404. But we also need to reclaim storage — expired content sitting in S3 still costs money.
+Users can set an expiry: 1 hour, 1 day, 1 week. After expiry, the paste should return 404. But we also need to reclaim storage - expired content sitting in S3 still costs money.
 
 **New component:**
 
-6. **Cleanup Service** — a background job that deletes expired paste content from Object Storage and removes metadata rows. Runs on a schedule.
+6. **Cleanup Service** - a background job that deletes expired paste content from Object Storage and removes metadata rows. Runs on a schedule.
 
 ```mermaid
 flowchart LR
@@ -254,13 +254,13 @@ flowchart LR
 
 **Two-pronged expiry strategy:**
 
-1. **Lazy check on read** — when someone requests a paste, Paste Service checks `expiresAt`. If expired → return 404 immediately. The data still exists but is inaccessible. This gives **instant correctness** — no one ever sees an expired paste.
+1. **Lazy check on read** - when someone requests a paste, Paste Service checks `expiresAt`. If expired → return 404 immediately. The data still exists but is inaccessible. This gives **instant correctness** - no one ever sees an expired paste.
 
-2. **Background cleanup job** — runs every 5 minutes:
+2. **Background cleanup job** - runs every 5 minutes:
    - Queries: `SELECT id FROM pastes WHERE expires_at < NOW() LIMIT 1000`
    - Deletes from Object Storage: `DELETE key=abc12XY`
    - Removes metadata row
-   - This **reclaims storage** — without it, expired content wastes money indefinitely.
+   - This **reclaims storage** - without it, expired content wastes money indefinitely.
 
 **Why both?** Lazy check is instant (no delay between expiry time and blocking access). But without cleanup, your S3 bill grows forever with dead content. The cleanup job handles the economics; the lazy check handles the user experience.
 
@@ -291,7 +291,7 @@ sequenceDiagram
     API-->>U: 201 url=paste.io/abc12XY
 ```
 
-**Non-obvious failure:** What if S3 write succeeds but the DB insert fails? The content exists in S3 but no metadata points to it — it's an orphan. Solution: the Cleanup Service also scans for S3 keys that don't have a corresponding metadata row (runs less frequently, once/hour).
+**Non-obvious failure:** What if S3 write succeeds but the DB insert fails? The content exists in S3 but no metadata points to it - it's an orphan. Solution: the Cleanup Service also scans for S3 keys that don't have a corresponding metadata row (runs less frequently, once/hour).
 
 ### Flow: Read a Paste (CDN Hit vs Miss)
 
@@ -322,15 +322,15 @@ sequenceDiagram
 
 ## 7. Deep Dives
 
-### Deep Dive 1: Unique ID Generation — Short, Unique, and Non-Guessable
+### Deep Dive 1: Unique ID Generation - Short, Unique, and Non-Guessable
 
 **Problem:** The paste ID appears in the URL (`paste.io/abc12XY`). It must be unique, short, and not guessable (sequential IDs let people scrape all pastes).
 
 **Bad:** Auto-increment IDs (1, 2, 3...). Sequential, guessable, easy to scrape. Also exposes business metrics (total paste count).
 
-**Good:** Hash-based — MD5/SHA256 of content, take first 7 chars of Base62. Same content = same ID (deduplication!). But different pastes can collide (same first 7 chars), requiring retry logic.
+**Good:** Hash-based - MD5/SHA256 of content, take first 7 chars of Base62. Same content = same ID (deduplication!). But different pastes can collide (same first 7 chars), requiring retry logic.
 
-**Great:** Random 7-character Base62 string with collision check. Generate `abc12XY` randomly, check if it exists in the metadata DB (fast primary key lookup), retry on collision. At 3.5 trillion possible IDs, the collision probability is astronomically low — less than lottery odds at 1 billion pastes.
+**Great:** Random 7-character Base62 string with collision check. Generate `abc12XY` randomly, check if it exists in the metadata DB (fast primary key lookup), retry on collision. At 3.5 trillion possible IDs, the collision probability is astronomically low - less than lottery odds at 1 billion pastes.
 
 **Why random beats hash:** With hash-based IDs, two different pastes CAN produce the same first 7 chars (collision). You'd need collision resolution anyway, so random is simpler. Hash-based is better when you WANT deduplication (same content → same URL), but that's not a requirement here.
 
@@ -338,7 +338,7 @@ sequenceDiagram
 
 ---
 
-### Deep Dive 2: Storage Choice — Why Object Storage Beats the Database
+### Deep Dive 2: Storage Choice - Why Object Storage Beats the Database
 
 **Problem:** Paste content ranges from 1 byte to 10MB. Where should it live?
 
@@ -348,7 +348,7 @@ sequenceDiagram
 |---|---|---|
 | **Max practical size** | ~1MB per row (performance degrades) | Up to 5TB per object |
 | **Cost** | $0.10-0.20/GB/month (EBS-backed) | $0.023/GB/month (S3 Standard) |
-| **Backup speed** | Slow when table has large blobs | Independent — DB stays lean |
+| **Backup speed** | Slow when table has large blobs | Independent - DB stays lean |
 | **Read latency** | Fast for small rows | ~50ms first byte (CDN fixes this) |
 | **Scaling** | Vertical (bigger instance) | Infinite horizontal |
 
@@ -358,7 +358,7 @@ sequenceDiagram
 
 ---
 
-### Deep Dive 3: CDN Caching Strategy — Immutable Content is Cache-Perfect
+### Deep Dive 3: CDN Caching Strategy - Immutable Content is Cache-Perfect
 
 **Problem:** 10K reads/sec. Object Storage charges per request and has ~50ms latency. We need most reads to never touch the origin.
 
@@ -369,7 +369,7 @@ sequenceDiagram
 **Great:** CDN at the edge. Pastes are immutable (write-once, never updated), making them ideal CDN candidates. Set `Cache-Control: public, max-age=86400` (24h). After the first read, all subsequent reads from the same region are served in <10ms from the CDN edge. For a popular paste with 100K views, only 1 request reaches your origin.
 
 **Cache invalidation:** For expired pastes, the CDN might serve stale content for up to `max-age` seconds. Solutions:
-- Set `max-age = min(time_until_expiry, 24h)` — paste expiring in 1 hour gets 1h cache
+- Set `max-age = min(time_until_expiry, 24h)` - paste expiring in 1 hour gets 1h cache
 - For immediate removal: call CDN purge API when a paste is deleted
 
 ---
@@ -432,11 +432,11 @@ flowchart LR
 
 ### Mid-level
 
-Design basic paste creation and retrieval. Propose object storage (S3) for content and a database for metadata. Understand Base62 ID generation (same pattern as URL shortener). Explain why storing large text blobs directly in a relational DB is a bad idea — cost, backup speed, and query performance all suffer.
+Design basic paste creation and retrieval. Propose object storage (S3) for content and a database for metadata. Understand Base62 ID generation (same pattern as URL shortener). Explain why storing large text blobs directly in a relational DB is a bad idea - cost, backup speed, and query performance all suffer.
 
 ### Senior
 
-Explain the separation of content (S3) from metadata (Postgres) — different access patterns, different cost profiles. Propose CDN caching for immutable pastes (write-once, read-many = perfect cache hit ratio). Discuss expiry handling with lazy deletion on read plus background cleanup for storage reclamation. Know the failure mode: S3 write succeeds but DB insert fails → orphan handling.
+Explain the separation of content (S3) from metadata (Postgres) - different access patterns, different cost profiles. Propose CDN caching for immutable pastes (write-once, read-many = perfect cache hit ratio). Discuss expiry handling with lazy deletion on read plus background cleanup for storage reclamation. Know the failure mode: S3 write succeeds but DB insert fails → orphan handling.
 
 ### Staff+
 
@@ -446,16 +446,16 @@ Address abuse prevention (rate limiting per IP, content scanning for malware/spa
 
 ## 🎯 Key Takeaways
 
-- **Separate metadata from content** — small DB rows for fast lookups, object storage for cheap blob storage
+- **Separate metadata from content** - small DB rows for fast lookups, object storage for cheap blob storage
 - **Base62 random IDs** give short, URL-safe, non-guessable paste links
-- **CDN is a perfect fit** because pastes are immutable — write once, read many
-- **Two-pronged expiry** — lazy check for correctness, background job for cleanup
+- **CDN is a perfect fit** because pastes are immutable - write once, read many
+- **Two-pronged expiry** - lazy check for correctness, background job for cleanup
 - This is essentially a simpler URL shortener: generate ID → store blob → serve it
 
 ---
 
 ## Related Designs
 
-- [URL Shortener](/hld/URLShortner) — same ID generation pattern, simpler storage
-- [Rate Limiter](/hld/RateLimiter) — protecting the paste API from abuse
-- [Instagram](/hld/Instagram) — object storage patterns for media
+- [URL Shortener](/hld/URLShortner) - same ID generation pattern, simpler storage
+- [Rate Limiter](/hld/RateLimiter) - protecting the paste API from abuse
+- [Instagram](/hld/Instagram) - object storage patterns for media

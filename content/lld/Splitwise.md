@@ -1,11 +1,11 @@
 ---
 layout: default
-title: "Design Splitwise — Machine Coding Interview"
+title: "Design Splitwise - Machine Coding Interview"
 description: "Low-level design for Splitwise / expense-splitting app with multiple split strategies, debt simplification, and group expense management. Strategy pattern with full runnable code."
 permalink: /lld/Splitwise/
 ---
 
-# Designing Splitwise — Expense Splitting System
+# Designing Splitwise - Expense Splitting System
 
 ⚡ **Difficulty:** Medium 🏷️ **Patterns:** Strategy, Observer, Facade 🏢 **Asked at:** PhonePe, Flipkart, Amazon, Razorpay
 
@@ -14,18 +14,18 @@ permalink: /lld/Splitwise/
 ## Functional Requirements
 
 1. **Add expenses** shared between users with a payer and multiple participants
-2. **Multiple split strategies** — EQUAL, EXACT (specify amounts), PERCENTAGE
-3. **Track balances** — who owes whom across all expenses
-4. **Simplify debts** — minimize the number of transactions needed to settle up
-5. **Group expenses** — organize expenses under a group (trip, apartment, etc.)
-6. **Balance summary** — show per-user net balance
+2. **Multiple split strategies** - EQUAL, EXACT (specify amounts), PERCENTAGE
+3. **Track balances** - who owes whom across all expenses
+4. **Simplify debts** - minimize the number of transactions needed to settle up
+5. **Group expenses** - organize expenses under a group (trip, apartment, etc.)
+6. **Balance summary** - show per-user net balance
 
 ## Non-Functional Requirements
 
-1. **Thread-safety** — concurrent expense additions must not corrupt balances
-2. **O(n log n) debt simplification** — greedy with heaps
-3. **Extensibility** — add new split types (SHARE, WEIGHT) without modifying existing code
-4. **Correctness** — split amounts must always sum to the total expense amount
+1. **Thread-safety** - concurrent expense additions must not corrupt balances
+2. **O(n log n) debt simplification** - greedy with heaps
+3. **Extensibility** - add new split types (SHARE, WEIGHT) without modifying existing code
+4. **Correctness** - split amounts must always sum to the total expense amount
 
 ---
 
@@ -33,15 +33,15 @@ permalink: /lld/Splitwise/
 
 | Entity | Description |
 |---|---|
-| `User` | Immutable — id, name, email |
+| `User` | Immutable - id, name, email |
 | `Group` | Named collection of users and their shared expenses |
 | `Expense` | Amount, payer, description, split strategy, participants |
-| `Split` | Strategy interface — computes each participant's share |
+| `Split` | Strategy interface - computes each participant's share |
 | `EqualSplit` | Divides equally among all participants |
 | `ExactSplit` | Each participant's amount specified explicitly |
 | `PercentageSplit` | Each participant pays a percentage of total |
 | `BalanceSheet` | Tracks net balances between every pair of users |
-| `ExpenseManager` | Facade — orchestrates expenses, groups, balances, and simplification |
+| `ExpenseManager` | Facade - orchestrates expenses, groups, balances, and simplification |
 
 ---
 
@@ -212,7 +212,7 @@ public:
 
 ### Transaction
 
-A simple value object representing a settlement — one user pays another a specific amount. Used as the output of debt simplification.
+A simple value object representing a settlement - one user pays another a specific amount. Used as the output of debt simplification.
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -283,7 +283,7 @@ public:
 
 ### Split (Strategy Interface)
 
-This is the strategy interface that defines how an expense is divided among participants. EqualSplit, ExactSplit, and PercentageSplit are three implementations — but you could add WeightedSplit or ShareSplit without touching any existing code.
+This is the strategy interface that defines how an expense is divided among participants. EqualSplit, ExactSplit, and PercentageSplit are three implementations - but you could add WeightedSplit or ShareSplit without touching any existing code.
 
 💡 *Strategy pattern = define a family of algorithms, encapsulate each one, and make them interchangeable. Each expense picks its own split strategy at creation time. Zero if/else branching in ExpenseManager.*
 
@@ -347,7 +347,7 @@ public:
 
 ### EqualSplit
 
-The simplest strategy — divides the total equally among all participants. Validation just checks that there's at least one participant.
+The simplest strategy - divides the total equally among all participants. Validation just checks that there's at least one participant.
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -633,7 +633,7 @@ public class Expense {
 
     @Override
     public String toString() {
-        return description + " — $" + String.format("%.2f", amount) + " paid by " + payer.getName();
+        return description + " - $" + String.format("%.2f", amount) + " paid by " + payer.getName();
     }
 }</code></pre>
 
@@ -651,7 +651,7 @@ public class Expense {
         self.participants = list(participants)
 
     def __str__(self):
-        return f"{self.description} — ${self.amount:.2f} paid by {self.payer.name}"</code></pre>
+        return f"{self.description} - ${self.amount:.2f} paid by {self.payer.name}"</code></pre>
 
 </div>
 <div class="tab-content">
@@ -679,7 +679,7 @@ public:
           participants(std::move(participants)) {}
 
     friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, const Expense&amp; e) {
-        os &lt;&lt; e.description &lt;&lt; " — $" &lt;&lt; e.amount &lt;&lt; " paid by " &lt;&lt; e.payer.name;
+        os &lt;&lt; e.description &lt;&lt; " - $" &lt;&lt; e.amount &lt;&lt; " paid by " &lt;&lt; e.payer.name;
         return os;
     }
 };</code></pre>
@@ -689,7 +689,7 @@ public:
 
 ### Group
 
-A group holds a set of users and their shared expenses — like a trip or an apartment. It provides a scoped view of expenses for that context.
+A group holds a set of users and their shared expenses - like a trip or an apartment. It provides a scoped view of expenses for that context.
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -782,7 +782,7 @@ The debt simplification algorithm uses a **greedy approach with heaps**:
 - Compute net balance for each user (positive = creditor, negative = debtor)
 - Push creditors into a max-heap, debtors into a min-heap
 - Match the largest creditor with the largest debtor, settle the minimum
-- Repeat until all settled — this minimizes total number of transactions
+- Repeat until all settled - this minimizes total number of transactions
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -944,8 +944,8 @@ class BalanceSheet:
 
         # Step 2: Separate creditors and debtors
         # Max-heap for creditors (negate for heapq), min-heap for debtors
-        creditors = []  # (-amount, user_id) — max-heap via negation
-        debtors = []    # (amount, user_id) — min-heap (most negative first)
+        creditors = []  # (-amount, user_id) - max-heap via negation
+        debtors = []    # (amount, user_id) - min-heap (most negative first)
 
         for uid, bal in net.items():
             if bal &gt; 0.01:
@@ -1059,7 +1059,7 @@ public:
 
 ### BalanceObserver
 
-Observer interface for balance change notifications. UI components, notification services, or logging can implement this to react when debts change — without the core system knowing about them.
+Observer interface for balance change notifications. UI components, notification services, or logging can implement this to react when debts change - without the core system knowing about them.
 
 💡 *Observer pattern = decouple the "what happened" from "who cares." ExpenseManager fires events; any number of observers can listen without modifying the manager.*
 
@@ -1111,7 +1111,7 @@ public:
 
 The single entry point for all operations. It orchestrates user registration, group creation, expense addition, balance queries, and debt simplification. All public methods are thread-safe via `ReentrantLock`.
 
-💡 *Facade pattern = provide a simplified interface to a complex subsystem. Clients call `addExpense()` on the manager — they never interact directly with BalanceSheet, Split strategies, or Groups.*
+💡 *Facade pattern = provide a simplified interface to a complex subsystem. Clients call `addExpense()` on the manager - they never interact directly with BalanceSheet, Split strategies, or Groups.*
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -1607,7 +1607,7 @@ int main() {
 
 ---
 
-## Debt Simplification — Algorithm Walkthrough
+## Debt Simplification - Algorithm Walkthrough
 
 <pre><code class="language-mermaid">flowchart LR
     A[Compute Net Balances] --> B[Separate Creditors and Debtors]
@@ -1632,7 +1632,7 @@ int main() {
 
 | Feature | Implementation |
 |---|---|
-| **Weighted Split** | New `WeightedSplit` — divide proportionally by weight values |
+| **Weighted Split** | New `WeightedSplit` - divide proportionally by weight values |
 | **Settlement** | Track settled transactions, reduce balances accordingly |
 | **Expense Editing** | Reverse old splits, apply new splits atomically |
 | **Currency Support** | Decorator on Split that converts amounts before computing |
@@ -1642,15 +1642,15 @@ int main() {
 
 ## What Interviewers Look For
 
-1. ✅ Strategy pattern for split types — no if/else chains
-2. ✅ Debt simplification — greedy with heaps, O(n log n)
-3. ✅ Thread-safety — locks on all mutable shared state
-4. ✅ Validation — splits must sum to total before recording
-5. ✅ Observer — decoupled notifications on balance changes
-6. ✅ Facade — ExpenseManager hides subsystem complexity
-7. ✅ Runnable demo — all three split types exercised end-to-end
+1. ✅ Strategy pattern for split types - no if/else chains
+2. ✅ Debt simplification - greedy with heaps, O(n log n)
+3. ✅ Thread-safety - locks on all mutable shared state
+4. ✅ Validation - splits must sum to total before recording
+5. ✅ Observer - decoupled notifications on balance changes
+6. ✅ Facade - ExpenseManager hides subsystem complexity
+7. ✅ Runnable demo - all three split types exercised end-to-end
 
 ---
 ## Related Designs
-- [Music Player](/lld/MusicPlayer) — Strategy and Observer patterns
-- [Parking Lot](/lld/ParkingLot) — Strategy-based pricing and extensible design
+- [Music Player](/lld/MusicPlayer) - Strategy and Observer patterns
+- [Parking Lot](/lld/ParkingLot) - Strategy-based pricing and extensible design

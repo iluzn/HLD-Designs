@@ -1,21 +1,21 @@
 ---
 permalink: /hld/UniqueIDGenerator/
 layout: default
-title: "Design a Unique ID Generator — System Design Interview"
+title: "Design a Unique ID Generator - System Design Interview"
 description: "System design for a distributed unique ID generator. Covers UUID, Snowflake, database sequences, and range-based allocation. Beginner-friendly with diagrams."
 ---
 
 # Designing a Distributed Unique ID Generator
 
 ⚡ **Difficulty:** Beginner
-📋 **Prerequisites:** [Fundamentals](/concepts) — especially [Back-of-Envelope Estimation](/concepts#back-of-envelope-estimation)
+📋 **Prerequisites:** [Fundamentals](/concepts) - especially [Back-of-Envelope Estimation](/concepts#back-of-envelope-estimation)
 🏢 **Asked at:** Twitter, Discord, Instagram, Amazon, Flipkart
 
 ---
 
 ## TL;DR
 
-Every distributed system needs unique IDs — for users, orders, messages, posts. A single auto-increment DB column breaks at scale. This design explores 4 approaches: UUID, database sequences, Snowflake IDs, and range-based allocation.
+Every distributed system needs unique IDs - for users, orders, messages, posts. A single auto-increment DB column breaks at scale. This design explores 4 approaches: UUID, database sequences, Snowflake IDs, and range-based allocation.
 
 ```mermaid
 flowchart LR
@@ -36,16 +36,16 @@ flowchart LR
 
 ## Understanding the Problem
 
-Almost every system needs unique identifiers. User IDs, order IDs, message IDs, transaction IDs — they must be globally unique across all servers, ideally sortable by creation time, and generated with extremely low latency (< 1ms). The challenge is generating these at scale (10K-100K IDs/sec) across multiple machines without coordination or collisions.
+Almost every system needs unique identifiers. User IDs, order IDs, message IDs, transaction IDs - they must be globally unique across all servers, ideally sortable by creation time, and generated with extremely low latency (< 1ms). The challenge is generating these at scale (10K-100K IDs/sec) across multiple machines without coordination or collisions.
 
 ---
 
 ## Prior Art We're Drawing From
 
-- **Twitter Snowflake** — The original distributed ID generator. 64-bit IDs composed of timestamp + datacenter + machine + sequence. Open-sourced in 2010, now the de facto standard. ([Twitter Engineering Blog](https://blog.twitter.com/engineering/en_us/a/2010/announcing-snowflake))
-- **Instagram Sharded IDs** — Modified Snowflake using Postgres schemas to embed shard information into IDs. Generates IDs at the DB layer without a separate service. ([Instagram Engineering](https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c))
-- **Discord Snowflakes** — Twitter Snowflake adapted for Discord with epoch starting at Discord's launch date. Used for messages, users, channels. ([Discord Developer Docs](https://discord.com/developers/docs/reference#snowflakes))
-- **MongoDB ObjectId** — 12-byte ID with timestamp + random + counter. No central coordination needed. Demonstrates the random + counter hybrid approach. ([MongoDB Docs](https://www.mongodb.com/docs/manual/reference/method/ObjectId/))
+- **Twitter Snowflake** - The original distributed ID generator. 64-bit IDs composed of timestamp + datacenter + machine + sequence. Open-sourced in 2010, now the de facto standard. ([Twitter Engineering Blog](https://blog.twitter.com/engineering/en_us/a/2010/announcing-snowflake))
+- **Instagram Sharded IDs** - Modified Snowflake using Postgres schemas to embed shard information into IDs. Generates IDs at the DB layer without a separate service. ([Instagram Engineering](https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c))
+- **Discord Snowflakes** - Twitter Snowflake adapted for Discord with epoch starting at Discord's launch date. Used for messages, users, channels. ([Discord Developer Docs](https://discord.com/developers/docs/reference#snowflakes))
+- **MongoDB ObjectId** - 12-byte ID with timestamp + random + counter. No central coordination needed. Demonstrates the random + counter hybrid approach. ([MongoDB Docs](https://www.mongodb.com/docs/manual/reference/method/ObjectId/))
 
 ---
 
@@ -68,11 +68,11 @@ Just use `AUTO_INCREMENT` in a single MySQL/Postgres table.
 
 **Why this breaks:**
 
-- Single point of failure — if the DB goes down, no service can generate IDs
-- Bottleneck — all ID generation is serialized through one DB
-- Can't scale horizontally — adding more app servers doesn't help, the DB is the limit
-- Sequential and guessable — exposes total count, easy to scrape
-- Cross-datacenter latency — if services are in multiple regions, every ID requires a round-trip to one DB
+- Single point of failure - if the DB goes down, no service can generate IDs
+- Bottleneck - all ID generation is serialized through one DB
+- Can't scale horizontally - adding more app servers doesn't help, the DB is the limit
+- Sequential and guessable - exposes total count, easy to scrape
+- Cross-datacenter latency - if services are in multiple regions, every ID requires a round-trip to one DB
 
 The rest of the doc explores 4 production-ready alternatives.
 
@@ -82,9 +82,9 @@ The rest of the doc explores 4 production-ready alternatives.
 
 ### Core
 
-1. **Generate globally unique IDs** — no two IDs should ever collide across all services and servers
-2. **IDs must be 64-bit numeric** — fits in a long/bigint, can be used as primary keys and sorted efficiently
-3. **Roughly time-ordered** — IDs generated later should be larger than IDs generated earlier (enables range queries and chronological sorting)
+1. **Generate globally unique IDs** - no two IDs should ever collide across all services and servers
+2. **IDs must be 64-bit numeric** - fits in a long/bigint, can be used as primary keys and sorted efficiently
+3. **Roughly time-ordered** - IDs generated later should be larger than IDs generated earlier (enables range queries and chronological sorting)
 
 ### Below the Line
 
@@ -101,17 +101,17 @@ The rest of the doc explores 4 production-ready alternatives.
 |---|---|
 | **Throughput** | 10K-100K IDs/sec per node |
 | **Latency** | < 1ms per ID generation |
-| **Availability** | 99.999% — ID generation cannot be a single point of failure |
+| **Availability** | 99.999% - ID generation cannot be a single point of failure |
 | **Uniqueness** | Zero collisions, ever, across all nodes |
 
 ---
 
 ## Core Entities
 
-- **ID** — the 64-bit unique identifier itself
-- **Node** — a machine/process that generates IDs (identified by a machine ID)
-- **Timestamp** — millisecond-precision time component within the ID
-- **Sequence** — per-node counter that resets each millisecond
+- **ID** - the 64-bit unique identifier itself
+- **Node** - a machine/process that generates IDs (identified by a machine ID)
+- **Timestamp** - millisecond-precision time component within the ID
+- **Sequence** - per-node counter that resets each millisecond
 
 ---
 
@@ -123,7 +123,7 @@ The rest of the doc explores 4 production-ready alternatives.
 550e8400-e29b-41d4-a716-446655440000
 ```
 
-128-bit random identifier. No coordination needed — any server can generate one independently.
+128-bit random identifier. No coordination needed - any server can generate one independently.
 
 | Pros | Cons |
 |------|------|
@@ -191,18 +191,18 @@ flowchart LR
 
 **How it works:**
 
-1. **41 bits for timestamp** — milliseconds since a custom epoch (e.g., Twitter uses Nov 4, 2010). Gives ~69 years of IDs before overflow.
-2. **5 bits datacenter ID** — supports 32 datacenters
-3. **5 bits machine ID** — supports 32 machines per datacenter (1024 total nodes)
-4. **12 bits sequence** — counter per millisecond per machine. Supports 4096 IDs/ms/machine = **4 million IDs/sec per machine**
+1. **41 bits for timestamp** - milliseconds since a custom epoch (e.g., Twitter uses Nov 4, 2010). Gives ~69 years of IDs before overflow.
+2. **5 bits datacenter ID** - supports 32 datacenters
+3. **5 bits machine ID** - supports 32 machines per datacenter (1024 total nodes)
+4. **12 bits sequence** - counter per millisecond per machine. Supports 4096 IDs/ms/machine = **4 million IDs/sec per machine**
 
 **Why this is great:**
 
-- No coordination — each machine generates independently using its own machine ID
-- Time-sorted — IDs increase over time (timestamp is the most significant bits)
-- 64-bit — fits in a bigint, great index performance
-- High throughput — 4M IDs/sec per node without any network calls
-- Unique — machine ID + sequence guarantees no collision within the same millisecond
+- No coordination - each machine generates independently using its own machine ID
+- Time-sorted - IDs increase over time (timestamp is the most significant bits)
+- 64-bit - fits in a bigint, great index performance
+- High throughput - 4M IDs/sec per node without any network calls
+- Unique - machine ID + sequence guarantees no collision within the same millisecond
 
 | Pros | Cons |
 |------|------|
@@ -237,7 +237,7 @@ flowchart LR
 **How it works:**
 
 1. Central allocator (backed by a DB) hands out ranges of 1000 or 10000 IDs at a time
-2. Each app server increments locally within its range — zero network calls per ID
+2. Each app server increments locally within its range - zero network calls per ID
 3. When a range is exhausted, fetch a new range from the allocator
 4. If a server crashes mid-range, those unused IDs are simply wasted (acceptable)
 
@@ -332,7 +332,7 @@ sequenceDiagram
 | "How is uniqueness guaranteed?" | Unique machine ID ensures no two nodes produce the same bits. Sequence resets per millisecond per node. |
 | "What about clock skew?" | Detect backward movement, wait until clock catches up. Or use logical clock. |
 | "How to assign machine IDs?" | ZooKeeper, etcd, or derive from MAC/hostname hash with collision check. |
-| "Is it truly globally unique?" | Yes — as long as machine IDs are unique and clocks don't go backward without detection. |
+| "Is it truly globally unique?" | Yes - as long as machine IDs are unique and clocks don't go backward without detection. |
 
 ---
 
@@ -354,16 +354,16 @@ Discuss multi-region ID generation with region bits, capacity planning for the 6
 
 ## 🎯 Key Takeaways
 
-- **Auto-increment is the naive solution** — breaks at scale, SPOF, guessable
-- **Snowflake is the industry standard** — 64-bit, time-sorted, no coordination, 4M IDs/sec/node
-- **UUID when ordering doesn't matter** — trace IDs, idempotency keys
-- **Range allocation for extreme scale** — Google Spanner pattern, trades ordering for simplicity
-- **Clock skew is the main operational risk** — detect and wait is the standard mitigation
+- **Auto-increment is the naive solution** - breaks at scale, SPOF, guessable
+- **Snowflake is the industry standard** - 64-bit, time-sorted, no coordination, 4M IDs/sec/node
+- **UUID when ordering doesn't matter** - trace IDs, idempotency keys
+- **Range allocation for extreme scale** - Google Spanner pattern, trades ordering for simplicity
+- **Clock skew is the main operational risk** - detect and wait is the standard mitigation
 
 ---
 
 ## Related Designs
 
-- [URL Shortener](/hld/URLShortner) — uses Base62 ID generation for short links
-- [Pastebin](/hld/Pastebin) — unique ID generation for paste URLs
-- [Key-Value Store](/hld/KeyValueStore) — consistent hashing uses similar partitioning concepts
+- [URL Shortener](/hld/URLShortner) - uses Base62 ID generation for short links
+- [Pastebin](/hld/Pastebin) - unique ID generation for paste URLs
+- [Key-Value Store](/hld/KeyValueStore) - consistent hashing uses similar partitioning concepts

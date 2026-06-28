@@ -1,20 +1,20 @@
 ---
 permalink: /hld/Leaderboard/
 layout: default
-title: "Design a Real-Time Leaderboard — System Design Interview"
+title: "Design a Real-Time Leaderboard - System Design Interview"
 description: "System design for a gaming leaderboard - Redis sorted sets, rank queries, and scaling to millions of players"
 ---
 
 # Designing a Real-Time Leaderboard
 
 ⚡ **Difficulty:** Beginner 🏷️ **Topics:** Redis Sorted Sets, Sharding, Real-Time Updates 🏢 **Asked at:** Dream11, Riot Games, Amazon, Google
-📋 **Prerequisites:** [Fundamentals](/concepts) — especially [Caching](/concepts#caching)
+📋 **Prerequisites:** [Fundamentals](/concepts) - especially [Caching](/concepts#caching)
 
 ---
 
 ## 1. Understanding the Problem
 
-You're building a game or competition with millions of players. Players earn scores, and you need to show a ranked leaderboard in real-time. Anyone can check their rank, see the top players, or see who's around them — all in under 50ms.
+You're building a game or competition with millions of players. Players earn scores, and you need to show a ranked leaderboard in real-time. Anyone can check their rank, see the top players, or see who's around them - all in under 50ms.
 
 **Real examples:** Dream11 fantasy cricket (live scoring), Riot Games ranked mode (100M+ players), Duolingo weekly leaderboards, Strava segments.
 
@@ -50,7 +50,7 @@ SELECT COUNT(*) + 1 FROM players WHERE score > (SELECT score FROM players WHERE 
 - `ORDER BY score DESC` on 10M rows = full table sort every query
 - "My rank" requires counting ALL players with higher scores = O(N) per query
 - At 100K rank queries/sec during a live event, the database melts
-- Every score update reshuffles the index — write-heavy workloads degrade reads
+- Every score update reshuffles the index - write-heavy workloads degrade reads
 - No way to serve "ranks around me" efficiently without scanning
 
 We need a data structure that keeps players sorted automatically and answers rank queries in O(log N), not O(N).
@@ -59,9 +59,9 @@ We need a data structure that keeps players sorted automatically and answers ran
 
 ## 1.7. Prior Art We're Drawing From
 
-- **Redis Sorted Sets** — Skip-list backed sorted set giving O(log N) for all rank operations. The de-facto standard for real-time leaderboards. Used by Dream11, Riot Games, and most gaming platforms. ([Redis documentation](https://redis.io/docs/data-types/sorted-sets/))
-- **Riot Games Leaderboard** — Handles 100M+ ranked players across multiple regions with composite scoring (MMR + LP). Uses Redis with regional sharding. ([Riot Engineering](https://technology.riotgames.com/))
-- **Discord Activity Status** — Real-time presence and activity leaderboards for millions of concurrent users using Redis pub/sub + sorted sets. ([Discord Engineering](https://discord.com/blog/how-discord-stores-trillions-of-messages))
+- **Redis Sorted Sets** - Skip-list backed sorted set giving O(log N) for all rank operations. The de-facto standard for real-time leaderboards. Used by Dream11, Riot Games, and most gaming platforms. ([Redis documentation](https://redis.io/docs/data-types/sorted-sets/))
+- **Riot Games Leaderboard** - Handles 100M+ ranked players across multiple regions with composite scoring (MMR + LP). Uses Redis with regional sharding. ([Riot Engineering](https://technology.riotgames.com/))
+- **Discord Activity Status** - Real-time presence and activity leaderboards for millions of concurrent users using Redis pub/sub + sorted sets. ([Discord Engineering](https://discord.com/blog/how-discord-stores-trillions-of-messages))
 
 ---
 
@@ -69,9 +69,9 @@ We need a data structure that keeps players sorted automatically and answers ran
 
 ### Core (Top 3)
 
-1. **Update a player's score** — when a player completes an action (wins a match, answers a question), their score changes
-2. **Get top N players** — show the leaderboard: top 10, top 100, etc.
-3. **Get a player's rank** — "what position am I?" among all players
+1. **Update a player's score** - when a player completes an action (wins a match, answers a question), their score changes
+2. **Get top N players** - show the leaderboard: top 10, top 100, etc.
+3. **Get a player's rank** - "what position am I?" among all players
 
 ### Below the Line
 
@@ -88,7 +88,7 @@ We need a data structure that keeps players sorted automatically and answers ran
 |---|---|
 | **Latency** | < 50ms for rank queries and score updates |
 | **Throughput** | 50K score updates/sec + 100K rank reads/sec during live events |
-| **Availability** | 99.99% — leaderboard is the main engagement feature |
+| **Availability** | 99.99% - leaderboard is the main engagement feature |
 | **Scale** | 10M+ players per leaderboard |
 
 ---
@@ -104,10 +104,10 @@ We need a data structure that keeps players sorted automatically and answers ran
 
 ## 4. Core Entities
 
-- **Player** — user with a unique ID and a current score
-- **Score** — numeric value representing the player's performance
-- **Leaderboard** — a named sorted collection (e.g., `leaderboard:weekly:2026-W26`)
-- **Rank** — player's position (1 = highest score)
+- **Player** - user with a unique ID and a current score
+- **Score** - numeric value representing the player's performance
+- **Leaderboard** - a named sorted collection (e.g., `leaderboard:weekly:2026-W26`)
+- **Rank** - player's position (1 = highest score)
 
 ---
 
@@ -140,13 +140,13 @@ Let's build this incrementally, one requirement at a time.
 
 The first thing we need: when a player scores, update the leaderboard instantly. The naive SQL approach fails at scale (see above). We need a data structure designed for sorted data with fast updates.
 
-**The solution: Redis Sorted Set (ZSET).**<br>💡 *A Redis Sorted Set stores (score, member) pairs and keeps them sorted automatically. Internally it uses a skip list — like a linked list with "express lanes" — giving O(log N) for insert, update, and rank lookup. For 10M players: log₂(10M) ≈ 23 comparisons. Microseconds.*
+**The solution: Redis Sorted Set (ZSET).**<br>💡 *A Redis Sorted Set stores (score, member) pairs and keeps them sorted automatically. Internally it uses a skip list - like a linked list with "express lanes" - giving O(log N) for insert, update, and rank lookup. For 10M players: log₂(10M) ≈ 23 comparisons. Microseconds.*
 
 **New components:**
 
-1. **Game Server** — the backend running your game logic. Knows when a player's score changes. Authoritative source of truth for scores.
-2. **Leaderboard Service** — API layer that translates business requests into Redis commands.
-3. **Redis Sorted Set** — the star. `ZADD` to add/update scores, maintains sorted order automatically.
+1. **Game Server** - the backend running your game logic. Knows when a player's score changes. Authoritative source of truth for scores.
+2. **Leaderboard Service** - API layer that translates business requests into Redis commands.
+3. **Redis Sorted Set** - the star. `ZADD` to add/update scores, maintains sorted order automatically.
 
 ```mermaid
 flowchart LR
@@ -167,10 +167,10 @@ flowchart LR
 1. Player wins a match → Game Server calculates new score (1500)
 2. Game Server calls Leaderboard Service: `POST /scores { playerId: "player_42", score: 1500 }`
 3. Leaderboard Service executes: `ZADD leaderboard 1500 "player_42"`
-4. Redis updates the skip list — player is now in sorted position. Done in ~0.1ms.
+4. Redis updates the skip list - player is now in sorted position. Done in ~0.1ms.
 5. Service returns the player's new rank (optional: `ZREVRANK leaderboard "player_42"`)
 
-**Why Redis and not a database?** At 50K writes/sec during live events, a database index rebuild would lag behind. Redis keeps everything in memory with O(log N) operations — microsecond response regardless of dataset size.
+**Why Redis and not a database?** At 50K writes/sec during live events, a database index rebuild would lag behind. Redis keeps everything in memory with O(log N) operations - microsecond response regardless of dataset size.
 
 ---
 
@@ -178,13 +178,13 @@ flowchart LR
 
 Now players want to see the leaderboard. "Show me the top 100." With our Redis Sorted Set already maintaining sorted order, this is trivial.
 
-**No new components needed** — Redis already has this built in.
+**No new components needed** - Redis already has this built in.
 
 **Step-by-step flow:**
 
 1. Player opens leaderboard page → `GET /leaderboard?top=100`
 2. Leaderboard Service executes: `ZREVRANGE leaderboard 0 99 WITHSCORES`
-3. Redis returns 100 players sorted by score (highest first) — O(log N + 100)
+3. Redis returns 100 players sorted by score (highest first) - O(log N + 100)
 4. Service returns the ranked list to the client
 
 ```mermaid
@@ -199,11 +199,11 @@ sequenceDiagram
     API-->>U: Ranked list with positions
 ```
 
-**But what about durability?** Redis is in-memory — if it restarts, the leaderboard is gone. We need a persistent backup.
+**But what about durability?** Redis is in-memory - if it restarts, the leaderboard is gone. We need a persistent backup.
 
 **New component:**
 
-4. **Postgres** — durable source of truth. Every score update is also written to Postgres. If Redis goes down, we rebuild the Sorted Set from the database.
+4. **Postgres** - durable source of truth. Every score update is also written to Postgres. If Redis goes down, we rebuild the Sorted Set from the database.
 
 ```mermaid
 flowchart LR
@@ -231,7 +231,7 @@ flowchart LR
 
 The most frequent query: "What's MY rank?" With 10M players, this must be instant.
 
-**Still no new components** — Redis Sorted Set handles this natively.
+**Still no new components** - Redis Sorted Set handles this natively.
 
 ```text
 ZREVRANK leaderboard "player_42"  → returns 1546 (0-indexed)
@@ -282,7 +282,7 @@ sequenceDiagram
 
 ## 7. Deep Dives
 
-### Deep Dive 1: Regional Sharding — What Happens During a Global Live Event
+### Deep Dive 1: Regional Sharding - What Happens During a Global Live Event
 
 **Problem:** Your game operates worldwide. Players in Asia, Europe, and US all compete. If Redis lives in `us-east-1`, Asian players get 200ms latency on every interaction. That's unacceptable for "real-time."
 
@@ -315,11 +315,11 @@ flowchart LR
     classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
 ```
 
-**Consistency tradeoff:** The global leaderboard lags regional by 100-500ms (Kafka consumer lag). For a leaderboard, this is perfectly acceptable — no one notices their global rank updating 300ms late.
+**Consistency tradeoff:** The global leaderboard lags regional by 100-500ms (Kafka consumer lag). For a leaderboard, this is perfectly acceptable - no one notices their global rank updating 300ms late.
 
 ---
 
-### Deep Dive 2: Tie-Breaking — When Two Players Have the Same Score
+### Deep Dive 2: Tie-Breaking - When Two Players Have the Same Score
 
 **Problem:** Redis Sorted Sets break ties lexicographically by member name. If Player A and Player B both have score 1500, their rank order is alphabetical. But you probably want "whoever scored first ranks higher."
 
@@ -331,7 +331,7 @@ flowchart LR
 effective_score = actual_score × 10_000_000_000 + (MAX_TIMESTAMP - timestamp)
 ```
 
-Higher effective score wins. For the same actual score, earlier timestamp produces a higher effective score. Redis stores scores as float64 — this works for scores up to ~100M with millisecond precision.
+Higher effective score wins. For the same actual score, earlier timestamp produces a higher effective score. Redis stores scores as float64 - this works for scores up to ~100M with millisecond precision.
 
 **Great:** For complex tie-breaking (score → then win-rate → then games played), use a composite score with weighted fields packed into a single number. Alternatively, maintain a secondary sorted set for the tiebreaker dimension and resolve in the application layer.
 
@@ -351,7 +351,7 @@ Higher effective score wins. For the same actual score, earlier timestamp produc
 RENAME leaderboard:current leaderboard:archive:2026-W25
 ```
 
-This is atomic — zero gap. The current leaderboard is now the archive, and a new empty `leaderboard:current` can be created. Persist the archive to Postgres, then delete from Redis.
+This is atomic - zero gap. The current leaderboard is now the archive, and a new empty `leaderboard:current` can be created. Persist the archive to Postgres, then delete from Redis.
 
 ---
 
@@ -418,11 +418,11 @@ flowchart LR
 
 ### Mid-level
 
-Propose Redis Sorted Set for real-time ranking. Understand ZADD for updates and ZREVRANK for rank queries. Explain why SQL `ORDER BY` doesn't scale — it's O(N log N) per query vs O(log N) in Redis. Know that Redis is in-memory and needs a persistent backup (Postgres).
+Propose Redis Sorted Set for real-time ranking. Understand ZADD for updates and ZREVRANK for rank queries. Explain why SQL `ORDER BY` doesn't scale - it's O(N log N) per query vs O(log N) in Redis. Know that Redis is in-memory and needs a persistent backup (Postgres).
 
 ### Senior
 
-Discuss regional sharding — local Redis per geography for low-latency writes. Explain tie-breaking with timestamp encoding. Propose dual-store (Redis for speed, Postgres for durability). Discuss the "1M viewers asking for top 100" problem and how application-level caching with short TTL solves it.
+Discuss regional sharding - local Redis per geography for low-latency writes. Explain tie-breaking with timestamp encoding. Propose dual-store (Redis for speed, Postgres for durability). Discuss the "1M viewers asking for top 100" problem and how application-level caching with short TTL solves it.
 
 ### Staff+
 
@@ -432,8 +432,8 @@ Design the tiered architecture for global live events: regional Redis + Kafka + 
 
 ## 🎯 Key Takeaways
 
-- **Redis Sorted Set** gives O(log N) rank queries and updates — microseconds for millions of players
-- **ZREVRANGE** for top-N, **ZREVRANK** for "my rank" — both sub-millisecond
+- **Redis Sorted Set** gives O(log N) rank queries and updates - microseconds for millions of players
+- **ZREVRANGE** for top-N, **ZREVRANK** for "my rank" - both sub-millisecond
 - **Separate hot store (Redis) from cold store (Postgres)** for speed + durability
 - **Cache the top-K** during live events to handle millions of identical reads
 
@@ -441,6 +441,6 @@ Design the tiered architecture for global live events: regional Redis + Kafka + 
 
 ## Related Designs
 
-- [Rate Limiter](/hld/RateLimiter) — Redis patterns, counters, sliding windows
-- [URL Shortener](/hld/URLShortner) — caching and CDN patterns
-- [Twitter Feed](/hld/TwitterFeed) — real-time updates pushed to users
+- [Rate Limiter](/hld/RateLimiter) - Redis patterns, counters, sliding windows
+- [URL Shortener](/hld/URLShortner) - caching and CDN patterns
+- [Twitter Feed](/hld/TwitterFeed) - real-time updates pushed to users

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Design Google Docs / Notion — Collaborative Editing System Design Interview"
+title: "Design Google Docs / Notion - Collaborative Editing System Design Interview"
 description: "System design for Google Docs / Notion with real-time collaborative editing, conflict resolution, OT/CRDT, presence indicators, and version history."
 permalink: /hld/GoogleDocs/
 ---
@@ -8,13 +8,13 @@ permalink: /hld/GoogleDocs/
 # Designing a Collaborative Editing Platform (Google Docs / Notion)
 
 ⚡ **Difficulty:** Advanced 🏷️ **Topics:** Real-Time Collaboration, OT/CRDT, WebSocket, Conflict Resolution, Presence Awareness 🏢 **Asked at:** Google, Notion, Figma, Microsoft, Amazon
-📋 **Prerequisites:** [Fundamentals](/concepts) — especially [Real-Time Communication](/concepts#real-time-communication-websocket-vs-sse-vs-polling) and [Consistency Models](/concepts#consistency-models)
+📋 **Prerequisites:** [Fundamentals](/concepts) - especially [Real-Time Communication](/concepts#real-time-communication-websocket-vs-sse-vs-polling) and [Consistency Models](/concepts#consistency-models)
 
 ---
 
 ## 1. Understanding the Problem
 
-A collaborative editing platform lets multiple users simultaneously edit the same document in real-time — seeing each other's cursors, changes appearing character-by-character as they type, without any user overwriting another's work. The hard part? When two users type at the same position in the same millisecond, you need a deterministic way to merge both changes without data loss, all while maintaining sub-100ms latency so typing feels instant.
+A collaborative editing platform lets multiple users simultaneously edit the same document in real-time - seeing each other's cursors, changes appearing character-by-character as they type, without any user overwriting another's work. The hard part? When two users type at the same position in the same millisecond, you need a deterministic way to merge both changes without data loss, all while maintaining sub-100ms latency so typing feels instant.
 
 ---
 
@@ -38,12 +38,12 @@ flowchart LR
 
 **How this breaks:**
 
-- Last-write-wins in Postgres means User 1's edits silently disappear when User 2 saves — data loss
-- No way to push changes to other users in real-time — polling every second is too slow and wasteful
+- Last-write-wins in Postgres means User 1's edits silently disappear when User 2 saves - data loss
+- No way to push changes to other users in real-time - polling every second is too slow and wasteful
 - Storing the full document on every keystroke creates massive write amplification (100 chars/min × millions of docs)
-- No conflict resolution — concurrent edits at the same position produce garbled text
+- No conflict resolution - concurrent edits at the same position produce garbled text
 - Single API server can't maintain persistent connections for millions of active editors
-- No presence awareness — users have no idea others are editing, leading to conflicting sections
+- No presence awareness - users have no idea others are editing, leading to conflicting sections
 
 The rest of the doc evolves this into a production-grade real-time collaborative editing system using operational transforms and persistent WebSocket connections.
 
@@ -51,11 +51,11 @@ The rest of the doc evolves this into a production-grade real-time collaborative
 
 ## 1.7. Prior Art We're Drawing From
 
-- **Google Wave OT** — Pioneered Operational Transformation for real-time collaborative editing. Jupiter protocol with a central server that transforms concurrent operations to maintain consistency. ([Google Research](https://svn.apache.org/repos/asf/incubator/wave/whitepapers/operational-transform/operational-transform.html))
-- **Figma CRDT** — Uses a custom CRDT (Conflict-free Replicated Data Type) for multiplayer design editing with no central coordination for conflict resolution. Demonstrated CRDTs can work at scale with structured documents. ([Figma Engineering Blog](https://www.figma.com/blog/how-figmas-multiplayer-technology-works/))
-- **Yjs** — Open-source CRDT framework used by Notion, JupyterLab, and others. YATA algorithm for text sequences with O(1) amortized insertion and efficient encoding. ([Yjs GitHub](https://github.com/yjs/yjs))
-- **Automerge** — Research CRDT library that treats documents as mergeable JSON structures. Demonstrates how CRDTs handle offline editing and eventual convergence. ([Ink and Switch](https://automerge.org/))
-- **Google Docs Jupiter Protocol** — Server-mediated OT where each client sends operations to a central server that transforms and broadcasts them. Single point of serialization ensures total ordering. ([Operational Transformation FAQ](https://operational-transformation.github.io/))
+- **Google Wave OT** - Pioneered Operational Transformation for real-time collaborative editing. Jupiter protocol with a central server that transforms concurrent operations to maintain consistency. ([Google Research](https://svn.apache.org/repos/asf/incubator/wave/whitepapers/operational-transform/operational-transform.html))
+- **Figma CRDT** - Uses a custom CRDT (Conflict-free Replicated Data Type) for multiplayer design editing with no central coordination for conflict resolution. Demonstrated CRDTs can work at scale with structured documents. ([Figma Engineering Blog](https://www.figma.com/blog/how-figmas-multiplayer-technology-works/))
+- **Yjs** - Open-source CRDT framework used by Notion, JupyterLab, and others. YATA algorithm for text sequences with O(1) amortized insertion and efficient encoding. ([Yjs GitHub](https://github.com/yjs/yjs))
+- **Automerge** - Research CRDT library that treats documents as mergeable JSON structures. Demonstrates how CRDTs handle offline editing and eventual convergence. ([Ink and Switch](https://automerge.org/))
+- **Google Docs Jupiter Protocol** - Server-mediated OT where each client sends operations to a central server that transforms and broadcasts them. Single point of serialization ensures total ordering. ([Operational Transformation FAQ](https://operational-transformation.github.io/))
 
 ---
 
@@ -63,9 +63,9 @@ The rest of the doc evolves this into a production-grade real-time collaborative
 
 ### Core (Top 3)
 
-1. **Real-time collaborative editing** — multiple users type simultaneously in the same document with changes appearing within 100ms for all participants
-2. **Document storage and retrieval** — create, open, and save documents; persist all content durably
-3. **Version history** — view previous versions of a document, restore any earlier state, see who made what changes
+1. **Real-time collaborative editing** - multiple users type simultaneously in the same document with changes appearing within 100ms for all participants
+2. **Document storage and retrieval** - create, open, and save documents; persist all content durably
+3. **Version history** - view previous versions of a document, restore any earlier state, see who made what changes
 
 ### Below the Line
 
@@ -85,8 +85,8 @@ The rest of the doc evolves this into a production-grade real-time collaborative
 | NFR | Target |
 |---|---|
 | **Edit propagation latency** | < 100ms from one user's keystroke to appearing on another user's screen |
-| **Consistency** | Eventual consistency — all users converge to the same document state regardless of operation order |
-| **Availability** | 99.99% — document editing must never be "down" during work hours |
+| **Consistency** | Eventual consistency - all users converge to the same document state regardless of operation order |
+| **Availability** | 99.99% - document editing must never be "down" during work hours |
 | **Scale** | Support 100M+ documents with up to 50 concurrent editors per document |
 
 ### Below the Line
@@ -128,11 +128,11 @@ Operations are append-only and partitioned by documentId. We need fast sequentia
 
 ## 4. Core Entities
 
-- **Document** — id, title, owner, permissions, current version number, created/updated timestamps
-- **Operation** — documentId, version number, userId, type (insert/delete), position, content, timestamp
-- **Session** — documentId, userId, WebSocket connection reference, cursor position, selection range
-- **Version Snapshot** — documentId, version number, full document content, timestamp (periodic checkpoint)
-- **User** — id, name, email, avatar, color assignment for presence
+- **Document** - id, title, owner, permissions, current version number, created/updated timestamps
+- **Operation** - documentId, version number, userId, type (insert/delete), position, content, timestamp
+- **Session** - documentId, userId, WebSocket connection reference, cursor position, selection range
+- **Version Snapshot** - documentId, version number, full document content, timestamp (periodic checkpoint)
+- **User** - id, name, email, avatar, color assignment for presence
 
 ---
 
@@ -178,11 +178,11 @@ The core challenge: when User A inserts "hello" at position 5 and User B simulta
 
 **New components we need:**
 
-1. **API Gateway** — Entry point for HTTP requests (document CRUD). Handles auth and routing.
-2. **WebSocket Gateway** — Maintains persistent connections with all active editors. One connection per user per document.
-3. **Collaboration Service** — The brain. Receives operations from clients, transforms them against concurrent ops using OT, assigns version numbers, and broadcasts to all participants.<br>💡 *Operational Transformation (OT) = an algorithm that adjusts the position/content of an operation based on other operations that happened concurrently. If User B deletes char at pos 3, User A's insert at pos 5 becomes an insert at pos 4.*
-4. **Operation Log (Cassandra)** — Append-only log of every operation, partitioned by documentId. Used for replaying history and conflict resolution.
-5. **Redis Pub/Sub** — Routes transformed operations to the correct WebSocket Gateway instance holding each collaborator's connection.
+1. **API Gateway** - Entry point for HTTP requests (document CRUD). Handles auth and routing.
+2. **WebSocket Gateway** - Maintains persistent connections with all active editors. One connection per user per document.
+3. **Collaboration Service** - The brain. Receives operations from clients, transforms them against concurrent ops using OT, assigns version numbers, and broadcasts to all participants.<br>💡 *Operational Transformation (OT) = an algorithm that adjusts the position/content of an operation based on other operations that happened concurrently. If User B deletes char at pos 3, User A's insert at pos 5 becomes an insert at pos 4.*
+4. **Operation Log (Cassandra)** - Append-only log of every operation, partitioned by documentId. Used for replaying history and conflict resolution.
+5. **Redis Pub/Sub** - Routes transformed operations to the correct WebSocket Gateway instance holding each collaborator's connection.
 
 ```mermaid
 flowchart LR
@@ -234,13 +234,13 @@ If User 1 is at version 42 and User 2 sends an op based on version 41, User 1 ne
 
 ### FR2: Document Storage and Retrieval
 
-Documents need to be persisted durably so users can close the browser and come back later. But we can't write the full document to disk on every keystroke — that's 5-10 writes per second per active document. Instead, we store operations and periodically create snapshots.
+Documents need to be persisted durably so users can close the browser and come back later. But we can't write the full document to disk on every keystroke - that's 5-10 writes per second per active document. Instead, we store operations and periodically create snapshots.
 
 **New components we need:**
 
-1. **Document Service** — Handles document CRUD (create, open, list, delete). Responsible for assembling the current document state from snapshot + recent operations.
-2. **Snapshot Service** — Periodically compacts the operation log into a full document snapshot. Without snapshots, opening a document with 100K operations would require replaying all of them.
-3. **Document DB (Postgres)** — Stores document metadata (title, owner, permissions, current version, latest snapshot version).
+1. **Document Service** - Handles document CRUD (create, open, list, delete). Responsible for assembling the current document state from snapshot + recent operations.
+2. **Snapshot Service** - Periodically compacts the operation log into a full document snapshot. Without snapshots, opening a document with 100K operations would require replaying all of them.
+3. **Document DB (Postgres)** - Stores document metadata (title, owner, permissions, current version, latest snapshot version).
 
 ```mermaid
 flowchart LR
@@ -278,7 +278,7 @@ flowchart LR
 
 **Why snapshot + operation log, not just store the full document?**
 
-Two reasons. First, writing the full document on every keystroke would be 5-10 Postgres writes/sec per active document — unsustainable at scale. Operations are tiny (insert 3 chars at pos 12) and append-only, which Cassandra handles trivially. Second, the operation log IS the version history. Every keystroke is preserved, enabling fine-grained undo and time-travel.
+Two reasons. First, writing the full document on every keystroke would be 5-10 Postgres writes/sec per active document - unsustainable at scale. Operations are tiny (insert 3 chars at pos 12) and append-only, which Cassandra handles trivially. Second, the operation log IS the version history. Every keystroke is preserved, enabling fine-grained undo and time-travel.
 
 ---
 
@@ -288,8 +288,8 @@ Users need to see what the document looked like at any point in the past, who ma
 
 **New components we need:**
 
-1. **History Service** — Reads the operation log and reconstructs document state at any historical version. Groups operations into logical "sessions" for a human-readable change timeline.
-2. **Change Summarizer** — Groups individual character operations into meaningful change descriptions ("User A added paragraph about pricing" rather than 847 individual insert operations).
+1. **History Service** - Reads the operation log and reconstructs document state at any historical version. Groups operations into logical "sessions" for a human-readable change timeline.
+2. **Change Summarizer** - Groups individual character operations into meaningful change descriptions ("User A added paragraph about pricing" rather than 847 individual insert operations).
 
 ```mermaid
 flowchart LR
@@ -365,8 +365,8 @@ sequenceDiagram
 **Walk-through:**
 
 1. Both users start at version 10 of the document
-2. User 1 inserts "A" at position 5 — arrives at server first, gets version 11 directly (no transformation needed since it's based on the current version)
-3. User 2's delete at position 3 arrives based on version 10, but server is now at version 11. Server transforms it against version 11's operation (insert at pos 5). Since the delete is at pos 3 and the insert was at pos 5, the delete position is unaffected — stays at pos 3
+2. User 1 inserts "A" at position 5 - arrives at server first, gets version 11 directly (no transformation needed since it's based on the current version)
+3. User 2's delete at position 3 arrives based on version 10, but server is now at version 11. Server transforms it against version 11's operation (insert at pos 5). Since the delete is at pos 3 and the insert was at pos 5, the delete position is unaffected - stays at pos 3
 4. Both users converge: the document has "A" inserted at pos 5 AND character at pos 3 deleted
 
 **Non-obvious failure path:** What if the Collaboration Service crashes mid-transform? The operation was never assigned a version number, so the client will timeout and retry. Operations are idempotent (same content + same base version = same transform). The client retries with the same baseVersion, and the server re-processes it.
@@ -398,7 +398,7 @@ sequenceDiagram
     WSG-->>User: Connected. Listening for ops from v988+
 ```
 
-**Non-obvious failure path:** What if a snapshot is corrupted in S3? The Document Service falls back to the previous snapshot (version 850) and replays 100 more operations (851-987). Slower, but guarantees correctness. If ALL snapshots are lost, the service can rebuild from operation 0 — the op log is the source of truth.
+**Non-obvious failure path:** What if a snapshot is corrupted in S3? The Document Service falls back to the previous snapshot (version 850) and replays 100 more operations (851-987). Slower, but guarantees correctness. If ALL snapshots are lost, the service can rebuild from operation 0 - the op log is the source of truth.
 
 ### Document Session State Machine
 
@@ -423,13 +423,13 @@ Each transition: EDITING buffers operations locally and sends over WebSocket. RE
 
 ## 7. Deep Dives
 
-### Deep Dive 1: OT vs CRDT — Conflict Resolution Strategy
+### Deep Dive 1: OT vs CRDT - Conflict Resolution Strategy
 
 **Problem:** Two users edit the same position simultaneously. Without conflict resolution, one user's changes are lost or the document becomes garbled.
 
 **Bad:** Last-write-wins (LWW). Overwrite the document with whoever saved last. Simple, but any concurrent edit is lost. Completely unacceptable for collaborative editing.
 
-**Good:** Lock-based editing. Lock paragraphs or sections while a user is editing them. Prevents conflicts but destroys the real-time collaboration experience — users see "section locked by User B" instead of fluid typing.
+**Good:** Lock-based editing. Lock paragraphs or sections while a user is editing them. Prevents conflicts but destroys the real-time collaboration experience - users see "section locked by User B" instead of fluid typing.
 
 **Great:** Server-mediated Operational Transformation using the Jupiter/dOPT protocol. (Borrowing from Google Wave and Google Docs.)
 
@@ -538,9 +538,9 @@ flowchart LR
 
 **Connection handling:**
 
-- **Heartbeat:** Client sends ping every 30 seconds. If server receives no ping for 60 seconds, connection is considered dead — clean up session.
+- **Heartbeat:** Client sends ping every 30 seconds. If server receives no ping for 60 seconds, connection is considered dead - clean up session.
 - **Reconnection:** Client stores last received version. On reconnect, sends `{resumeFrom: lastVersion}`. Server replays any missed operations from the op log.
-- **Graceful shutdown:** When a gateway instance is being drained (deploy), it sends a `REDIRECT` message to all connected clients with a new gateway URL. Clients reconnect within 5 seconds — zero downtime deploys.
+- **Graceful shutdown:** When a gateway instance is being drained (deploy), it sends a `REDIRECT` message to all connected clients with a new gateway URL. Clients reconnect within 5 seconds - zero downtime deploys.
 
 **Scaling math:** At 10M concurrent users editing 2M documents, average 5 users per document. Each document channel has 5 subscribers. Redis Pub/Sub handles ~1M messages/sec per node. With 500 ops/sec per document × 2M documents = 1B messages/sec total → need 1000 Redis Pub/Sub shards partitioned by docId. In practice, only 10% of documents are actively being edited at any moment, so ~100 shards suffice.
 
@@ -548,7 +548,7 @@ flowchart LR
 
 ### Deep Dive 3: Version History and Efficient Undo
 
-**Problem:** A document with 100K edits over 6 months. User wants to see "what did this look like last Tuesday?" Replaying 100K operations from scratch takes seconds — too slow for an interactive timeline.
+**Problem:** A document with 100K edits over 6 months. User wants to see "what did this look like last Tuesday?" Replaying 100K operations from scratch takes seconds - too slow for an interactive timeline.
 
 **Bad:** Store the full document on every save (Ctrl+S). Massive storage waste (1MB doc × 1000 saves = 1GB per doc). Also misses all the changes between saves.
 
@@ -561,7 +561,7 @@ flowchart LR
 1. Every 100 operations (or every 5 minutes of activity), create a snapshot: serialize the full document state, store in S3 with version tag
 2. To reconstruct any version V: find the nearest snapshot before V, replay only the operations between that snapshot and V
 3. Worst case: replay 99 operations (not 100K)
-4. Snapshots are immutable — old ones are never deleted (they serve as checkpoints in version history)
+4. Snapshots are immutable - old ones are never deleted (they serve as checkpoints in version history)
 
 **Undo implementation:**
 
@@ -584,7 +584,7 @@ flowchart LR
 
 **Bad:** Single Collaboration Service instance handling all documents. Memory for 2M document states × OT buffers = too much. Single point of failure.
 
-**Good:** Shard by docId using consistent hashing across N Collaboration Service instances. Each instance owns a subset of documents. Works until an instance crashes — those documents become unavailable.
+**Good:** Shard by docId using consistent hashing across N Collaboration Service instances. Each instance owns a subset of documents. Works until an instance crashes - those documents become unavailable.
 
 **Great:** Consistent hash ring with virtual nodes + stateless OT workers backed by Redis for document state.
 
@@ -635,7 +635,7 @@ The OT transform operation needs atomic read-modify-write: "read current version
 
 **Problem:** Users need to see each other's cursors and selections in real-time. With 50 users in a document, each moving their cursor on every keystroke, that's 50 × 5 cursor updates/sec = 250 messages/sec just for presence.
 
-**Bad:** Broadcast every cursor movement to all users immediately. 250 messages/sec × 50 recipients = 12,500 messages/sec for one document. Wasteful — cursor positions between keystrokes are irrelevant.
+**Bad:** Broadcast every cursor movement to all users immediately. 250 messages/sec × 50 recipients = 12,500 messages/sec for one document. Wasteful - cursor positions between keystrokes are irrelevant.
 
 **Good:** Throttle cursor updates to 1 per 100ms per user. Reduces to 50 × 10/sec × 50 = 25K messages/sec per hot document. Still heavy.
 
@@ -657,11 +657,11 @@ The OT transform operation needs atomic read-modify-write: "read current version
 
 | Question | Answer |
 |---|---|
-| Dedicated search index? | Yes — Elasticsearch for full-text document search by title and content. Indexed asynchronously via Kafka on document save events |
+| Dedicated search index? | Yes - Elasticsearch for full-text document search by title and content. Indexed asynchronously via Kafka on document save events |
 | Stale reads after writes? | After typing, your own changes appear instantly (optimistic local apply). Other users see changes within 100ms via WebSocket push. Acceptable. |
 | Single points of failure? | Redis doc state has replicas with auto-failover. Collaboration workers are stateless (state in Redis). Cassandra op log uses RF=3. |
 | Dead-letter / reconciliation? | Failed snapshot jobs go to DLQ and retry. If a client's op is rejected (version mismatch), client rebases and retries automatically. Orphaned sessions (no heartbeat > 60s) are cleaned by a sweeper. |
-| Data freshness across caches? | Cursor presence TTL = 10s (stale cursors auto-disappear). Document metadata cache TTL = 30s. Op log is source of truth — no cache invalidation needed. |
+| Data freshness across caches? | Cursor presence TTL = 10s (stale cursors auto-disappear). Document metadata cache TTL = 30s. Op log is source of truth - no cache invalidation needed. |
 | Cost at scale? | Redis (OT state + Pub/Sub): 20 shards × r6g.large ≈ $4000/month. Cassandra op log (RF=3): 12 nodes ≈ $6000/month. WebSocket Gateways (100 instances): $10K/month. S3 snapshots: $500/month. Total hot-path: ~$21K/month for 10M DAU. |
 
 ---
@@ -743,7 +743,7 @@ flowchart LR
 | Term | What it is |
 |---|---|
 | **Operational Transformation (OT)** | Algorithm that adjusts concurrent edit positions so multiple users' changes merge without conflicts or data loss. |
-| **CRDT** | Conflict-free Replicated Data Type — a data structure that converges to the same state across replicas without coordination; used in peer-to-peer/offline-first editors. |
+| **CRDT** | Conflict-free Replicated Data Type - a data structure that converges to the same state across replicas without coordination; used in peer-to-peer/offline-first editors. |
 | **WebSocket** | Persistent bidirectional connection between client and server enabling sub-100ms operation push to all collaborators. |
 | **Kafka** | Event bus used for async document lifecycle events (snapshots, version summaries, change notifications). |
 | **Redis Pub/Sub** | In-memory publish/subscribe messaging used to route transformed operations to the correct WebSocket Gateway instance holding each user's connection. |
@@ -754,15 +754,15 @@ flowchart LR
 
 ## What's Expected at Each Level
 
-> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+> This section helps you calibrate your depth. You don't need to cover everything - just know what's expected for your level.
 
 ### Mid-level
 
-Understand the core problem — multiple users editing the same document simultaneously. Propose a server that broadcasts changes to all connected clients via WebSocket. With prompting, recognize that conflicts arise when edits overlap and that naive "last writer wins" destroys data.
+Understand the core problem - multiple users editing the same document simultaneously. Propose a server that broadcasts changes to all connected clients via WebSocket. With prompting, recognize that conflicts arise when edits overlap and that naive "last writer wins" destroys data.
 
 ### Senior
 
-Explain OT (Operational Transformation) or CRDT for conflict resolution — articulate how concurrent operations are transformed to maintain consistency. Propose WebSocket for real-time sync. Discuss cursor/presence indicators, document versioning, and how to handle offline edits that merge on reconnect using buffered operations.
+Explain OT (Operational Transformation) or CRDT for conflict resolution - articulate how concurrent operations are transformed to maintain consistency. Propose WebSocket for real-time sync. Discuss cursor/presence indicators, document versioning, and how to handle offline edits that merge on reconnect using buffered operations.
 
 ### Staff+
 
@@ -772,12 +772,12 @@ Compare OT vs CRDT trade-offs at scale (OT needs a central server for linear ord
 ## 🎯 Key Takeaways
 
 - **Operational Transform (OT)** resolves concurrent edits by transforming positions
-- **Server-mediated OT** gives linear version history — simpler than CRDT for online editing
+- **Server-mediated OT** gives linear version history - simpler than CRDT for online editing
 - **Snapshot + operation log** avoids writing full document on every keystroke
 - **Redis Pub/Sub** routes operations to the correct WebSocket gateway
 
 ---
 ## Related Designs
-- [Chat System (WhatsApp)](/hld/ChatSystem) — similar WebSocket fan-out, presence tracking
-- [Notification System](/hld/NotificationSystem) — multi-channel push delivery
-- [Stock Broker (Robinhood)](/hld/StockBroker) — event sourcing, ordered operations
+- [Chat System (WhatsApp)](/hld/ChatSystem) - similar WebSocket fan-out, presence tracking
+- [Notification System](/hld/NotificationSystem) - multi-channel push delivery
+- [Stock Broker (Robinhood)](/hld/StockBroker) - event sourcing, ordered operations

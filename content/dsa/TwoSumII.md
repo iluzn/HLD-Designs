@@ -1,11 +1,11 @@
 ---
 layout: default
-title: "Two Sum II — Input Array is Sorted"
+title: "Two Sum II - Input Array is Sorted"
 description: "Two Pointers pattern: find two numbers in a sorted array that add up to a target. O(n) time, O(1) space."
 permalink: /dsa/two-sum-ii
 ---
 
-# Two Sum II — Input Array is Sorted
+# Two Sum II - Input Array is Sorted
 
 ⚡ **Difficulty:** Easy 🏷️ **Pattern:** Two Pointers 🏢 **Asked at:** Amazon, Google, Microsoft, PhonePe
 
@@ -43,7 +43,7 @@ Each step eliminates one candidate. We converge to the answer in at most `n` ste
 
 ### Why not HashMap?
 
-HashMap works (O(n) time, O(n) space) but Two Pointers is O(n) time with **O(1) space** — strictly better when the input is sorted.
+HashMap works (O(n) time, O(n) space) but Two Pointers is O(n) time with **O(1) space** - strictly better when the input is sorted.
 
 ---
 
@@ -108,7 +108,7 @@ HashMap works (O(n) time, O(n) space) but Two Pointers is O(n) time with **O(1) 
 
 ## Key Insight
 
-> When the array is sorted and you need to find a pair, Two Pointers from both ends gives you O(1) space. The sorted property guarantees that moving `left` right increases the sum, and moving `right` left decreases it — so you always make progress.
+> When the array is sorted and you need to find a pair, Two Pointers from both ends gives you O(1) space. The sorted property guarantees that moving `left` right increases the sum, and moving `right` left decreases it - so you always make progress.
 
 ---
 

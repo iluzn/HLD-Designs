@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Design a Music Player — Machine Coding Interview"
+title: "Design a Music Player - Machine Coding Interview"
 description: "Low-level design for a music player with shuffle, history tracking, play/pause, and next/previous navigation. Strategy pattern, Observer, and thread-safe design."
 permalink: /lld/MusicPlayer/
 ---
@@ -15,16 +15,16 @@ permalink: /lld/MusicPlayer/
 
 1. **Play / Pause** a song
 2. **Next / Previous** song navigation
-3. **Enable / Disable shuffle** — toggle between sequential and random play order
-4. **No song repeats while shuffling** — every song plays exactly once before cycling
-5. **History of songs played** — track all played songs in order
+3. **Enable / Disable shuffle** - toggle between sequential and random play order
+4. **No song repeats while shuffling** - every song plays exactly once before cycling
+5. **History of songs played** - track all played songs in order
 
 ## Non-Functional Requirements
 
-1. **Thread-safety** — handle concurrent play/pause/next requests
-2. **O(1) next/previous** — instant track switching
-3. **Extensibility** — easy to add new play modes (repeat-one, repeat-all)
-4. **Memory-efficient shuffle** — Fisher-Yates in-place
+1. **Thread-safety** - handle concurrent play/pause/next requests
+2. **O(1) next/previous** - instant track switching
+3. **Extensibility** - easy to add new play modes (repeat-one, repeat-all)
+4. **Memory-efficient shuffle** - Fisher-Yates in-place
 
 ---
 
@@ -32,9 +32,9 @@ permalink: /lld/MusicPlayer/
 
 | Entity | Description |
 |---|---|
-| `Song` | Immutable — id, title, artist, duration |
+| `Song` | Immutable - id, title, artist, duration |
 | `Playlist` | Ordered collection of songs |
-| `MusicPlayer` | Main controller — state, mode, history |
+| `MusicPlayer` | Main controller - state, mode, history |
 | `PlayMode` | Strategy interface for next/previous |
 | `SequentialMode` | Plays in order |
 | `ShuffleMode` | Fisher-Yates, no repeats |
@@ -105,7 +105,7 @@ When the user enables shuffle mid-playback:
 
 1. `enableShuffle()` swaps the PlayMode strategy from Sequential → Shuffle
 2. ShuffleMode receives the playlist and runs Fisher-Yates in-place shuffle
-3. Every subsequent `next()` walks the shuffled array — every song plays exactly once
+3. Every subsequent `next()` walks the shuffled array - every song plays exactly once
 4. When all songs have played, it reshuffles and starts a new cycle
 5. `disableShuffle()` swaps back to SequentialMode seamlessly
 
@@ -115,7 +115,7 @@ When the user enables shuffle mid-playback:
 
 ### Song
 
-Song is an immutable value object — once created, it never changes. Immutability means it's safe to share across threads without synchronization. Equality is based on `id` so the same song in different playlists is recognized as identical.
+Song is an immutable value object - once created, it never changes. Immutability means it's safe to share across threads without synchronization. Equality is based on `id` so the same song in different playlists is recognized as identical.
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -147,7 +147,7 @@ public class Song {
 
     @Override
     public String toString() {
-        return title + " — " + artist + " (" + durationSec + "s)";
+        return title + " - " + artist + " (" + durationSec + "s)";
     }
 
     @Override
@@ -174,7 +174,7 @@ class Song:
     duration_sec: int
 
     def __str__(self):
-        return f"{self.title} — {self.artist} ({self.duration_sec}s)"</code></pre>
+        return f"{self.title} - {self.artist} ({self.duration_sec}s)"</code></pre>
 
 </div>
 <div class="tab-content">
@@ -196,7 +196,7 @@ public:
     bool operator==(const Song&amp; other) const { return id == other.id; }
 
     friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, const Song&amp; s) {
-        os &lt;&lt; s.title &lt;&lt; " — " &lt;&lt; s.artist &lt;&lt; " (" &lt;&lt; s.durationSec &lt;&lt; "s)";
+        os &lt;&lt; s.title &lt;&lt; " - " &lt;&lt; s.artist &lt;&lt; " (" &lt;&lt; s.durationSec &lt;&lt; "s)";
         return os;
     }
 };</code></pre>
@@ -206,7 +206,7 @@ public:
 
 ### Playlist
 
-A playlist is simply an ordered collection of songs. It doesn't know about play order or shuffling — that's the PlayMode's job. This separation means the same Playlist can be played sequentially, shuffled, or repeated without modification.
+A playlist is simply an ordered collection of songs. It doesn't know about play order or shuffling - that's the PlayMode's job. This separation means the same Playlist can be played sequentially, shuffled, or repeated without modification.
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -353,7 +353,7 @@ public:
 
 ### SequentialMode
 
-The simplest play mode — walks through songs in order with wraparound. Index-based traversal gives O(1) for both `next()` and `previous()`. When you reach the end, it wraps to the beginning (and vice versa for `previous()`).
+The simplest play mode - walks through songs in order with wraparound. Index-based traversal gives O(1) for both `next()` and `previous()`. When you reach the end, it wraps to the beginning (and vice versa for `previous()`).
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -487,7 +487,7 @@ public:
 
 The shuffle implementation guarantees every song plays exactly once before any repeat. On `reset()`, it copies the song list and shuffles it in-place using Fisher-Yates. When all songs have been played (`currentIndex >= size`), it reshuffles for a new cycle.
 
-💡 *Fisher-Yates shuffle guarantees each permutation is equally likely and runs in O(n). Every song plays exactly once before any repeat — unlike naive `random.nextInt(size)` which could repeat songs while skipping others.*
+💡 *Fisher-Yates shuffle guarantees each permutation is equally likely and runs in O(n). Every song plays exactly once before any repeat - unlike naive `random.nextInt(size)` which could repeat songs while skipping others.*
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -752,9 +752,9 @@ public:
 
 The orchestrator that ties everything together. It holds the current PlayMode strategy, manages state transitions (STOPPED → PLAYING → PAUSED), records history, and notifies observers on changes.
 
-💡 *Observer pattern = when something changes, automatically notify all interested parties without the subject knowing who they are. Here, UI components register as observers and get called on every song change or state transition — the player never imports UI code.*
+💡 *Observer pattern = when something changes, automatically notify all interested parties without the subject knowing who they are. Here, UI components register as observers and get called on every song change or state transition - the player never imports UI code.*
 
-Thread-safety is achieved with `ReentrantLock` — concurrent `next()`/`pause()` calls from UI threads or background timers won't corrupt state.
+Thread-safety is achieved with `ReentrantLock` - concurrent `next()`/`pause()` calls from UI threads or background timers won't corrupt state.
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -1318,7 +1318,7 @@ int main() {
 
 | Feature | Implementation |
 |---|---|
-| **Repeat One** | New `RepeatOneMode` — `next()` returns same song |
+| **Repeat One** | New `RepeatOneMode` - `next()` returns same song |
 | **Play Queue** | `Deque<Song>` checked before `PlayMode.next()` |
 | **Crossfade** | Timer observer triggers `next()` 3s before end |
 | **Lyrics sync** | New observer fetches lyrics on `onSongChanged` |
@@ -1328,13 +1328,13 @@ int main() {
 ## What Interviewers Look For
 
 1. ✅ Strategy pattern for shuffle vs sequential
-2. ✅ Fisher-Yates — no repeats, O(n)
-3. ✅ Thread-safety — locks + volatile/atomic
-4. ✅ Bounded history — deque with eviction
-5. ✅ Observer — decoupled notifications
-6. ✅ Runnable demo — compiles end-to-end
+2. ✅ Fisher-Yates - no repeats, O(n)
+3. ✅ Thread-safety - locks + volatile/atomic
+4. ✅ Bounded history - deque with eviction
+5. ✅ Observer - decoupled notifications
+6. ✅ Runnable demo - compiles end-to-end
 
 ---
 ## Related Designs
-- [Parking Lot](/lld/ParkingLot) — Strategy and Factory patterns
-- [Splitwise](/lld/Splitwise) — Strategy pattern for multiple algorithms
+- [Parking Lot](/lld/ParkingLot) - Strategy and Factory patterns
+- [Splitwise](/lld/Splitwise) - Strategy pattern for multiple algorithms

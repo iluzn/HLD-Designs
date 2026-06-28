@@ -1,20 +1,20 @@
 ---
 permalink: /hld/TwitterFeed/
 layout: default
-title: "Design Twitter (X) Feed — Social Feed System Design Interview"
+title: "Design Twitter (X) Feed - Social Feed System Design Interview"
 description: "System design for a social media news feed like Twitter (X) or Threads - fan-out, timeline generation, caching, ranking, and real-time updates"
 ---
 
 # Designing a Social Media Feed (Twitter / X / Threads)
 
 ⚡ **Difficulty:** Intermediate
-📋 **Prerequisites:** [Fundamentals](/concepts) — especially [Fan-Out Patterns](/concepts#fan-out-patterns), [Caching](/concepts#caching), and [Message Queues](/concepts#message-queues)
+📋 **Prerequisites:** [Fundamentals](/concepts) - especially [Fan-Out Patterns](/concepts#fan-out-patterns), [Caching](/concepts#caching), and [Message Queues](/concepts#message-queues)
 
 ---
 
 ## TL;DR
 
-A social feed shows each user a personalized timeline of posts from people they follow. The core challenge is **fan-out** — when a user with 10M followers tweets, how do you update 10M timelines quickly?
+A social feed shows each user a personalized timeline of posts from people they follow. The core challenge is **fan-out** - when a user with 10M followers tweets, how do you update 10M timelines quickly?
 
 ```mermaid
 flowchart LR
@@ -43,13 +43,13 @@ flowchart LR
 
 ## Understanding the Problem
 
-**What is a social feed?** When you open Twitter/X, Instagram, or LinkedIn, you see a stream of posts from accounts you follow (and maybe recommended content). That stream is your **timeline** — a personalized, ordered list assembled from thousands of content sources.
+**What is a social feed?** When you open Twitter/X, Instagram, or LinkedIn, you see a stream of posts from accounts you follow (and maybe recommended content). That stream is your **timeline** - a personalized, ordered list assembled from thousands of content sources.
 
 **Why is it hard?**
 - User A follows 500 people. Each tweets 5 times/day. Feed must merge 2500 posts/day into a ranked timeline.
 - Celebrity with 50M followers tweets once → 50M timelines need updating.
 - The feed must load in under 200ms on a slow phone connection.
-- "Out of order" tweets feel broken — chronological or ranked, but never randomly jumbled.
+- "Out of order" tweets feel broken - chronological or ranked, but never randomly jumbled.
 
 **Real numbers (Twitter/X scale):**
 - 500M+ DAU
@@ -88,18 +88,18 @@ On each feed request: `SELECT * FROM tweets WHERE author_id IN (SELECT followee_
 **Why this breaks:**
 - ❌ `IN (500 followee IDs)` → massive query scanning millions of rows
 - ❌ Every feed open = expensive DB query. 500M DAU × 10 opens/day = 5B queries/day
-- ❌ No caching — same expensive query repeated every few seconds
-- ❌ No ranking — just chronological, no relevance
+- ❌ No caching - same expensive query repeated every few seconds
+- ❌ No ranking - just chronological, no relevance
 - ❌ Celebrity tweet → 50M users all running this query simultaneously
 
 ---
 
 ## Prior Art We're Drawing From
 
-- **Twitter Fan-out Service** — The original implementation that coined "fan-out on write." Pre-computes timelines for users with < 500K followers; assembles on-read for celebrities. Processes 500M tweets/day into 200B+ timeline writes. ([Twitter Engineering blog](https://blog.twitter.com/engineering/en_us/topics/infrastructure))
-- **Facebook TAO** — Graph-aware caching layer serving the social graph at billions of QPS. Demonstrates that follow relationships must be cached separately from content for performance. ([Facebook TAO paper](https://www.usenix.org/conference/atc13/technical-sessions/presentation/bronson))
-- **Instagram Feed Ranking** — Moved from chronological to ML-ranked feed. Two-stage pipeline: candidate generation (pull from timeline) → ranking model predicting engagement probability. ([Instagram Engineering](https://instagram-engineering.com/))
-- **LinkedIn Feed Architecture** — Uses a "feed mixer" pattern that merges multiple content sources (network updates, sponsored content, recommendations) into a single ranked stream. ([LinkedIn Engineering blog](https://engineering.linkedin.com/blog/2016/03/followfeed--linkedins-feed-made-faster-and-smarter))
+- **Twitter Fan-out Service** - The original implementation that coined "fan-out on write." Pre-computes timelines for users with < 500K followers; assembles on-read for celebrities. Processes 500M tweets/day into 200B+ timeline writes. ([Twitter Engineering blog](https://blog.twitter.com/engineering/en_us/topics/infrastructure))
+- **Facebook TAO** - Graph-aware caching layer serving the social graph at billions of QPS. Demonstrates that follow relationships must be cached separately from content for performance. ([Facebook TAO paper](https://www.usenix.org/conference/atc13/technical-sessions/presentation/bronson))
+- **Instagram Feed Ranking** - Moved from chronological to ML-ranked feed. Two-stage pipeline: candidate generation (pull from timeline) → ranking model predicting engagement probability. ([Instagram Engineering](https://instagram-engineering.com/))
+- **LinkedIn Feed Architecture** - Uses a "feed mixer" pattern that merges multiple content sources (network updates, sponsored content, recommendations) into a single ranked stream. ([LinkedIn Engineering blog](https://engineering.linkedin.com/blog/2016/03/followfeed--linkedins-feed-made-faster-and-smarter))
 
 ---
 
@@ -133,7 +133,7 @@ flowchart LR
 
 | Pros | Cons |
 |---|---|
-| Feed reads are instant — just read from Redis | Celebrity with 50M followers = 50M Redis writes per tweet |
+| Feed reads are instant - just read from Redis | Celebrity with 50M followers = 50M Redis writes per tweet |
 | No computation at read time | Write latency proportional to follower count |
 | Simple read path | Wastes space for inactive users (push to followers who never open the app) |
 
@@ -161,7 +161,7 @@ flowchart LR
 
 | Pros | Cons |
 |---|---|
-| No write amplification for celebrities | Slow — merging 500 sources per request |
+| No write amplification for celebrities | Slow - merging 500 sources per request |
 | Only compute for active users | Read latency scales with follow count |
 | Always fresh (no stale cached feed) | Expensive at read time under high traffic |
 
@@ -198,10 +198,10 @@ The first interaction: a user types a tweet and hits Post. We need to store it d
 
 **New components:**
 
-1. **API Gateway** — authenticates, rate-limits, routes. Entry point for all client requests.
-2. **Tweet Service** — handles tweet creation: validates content, stores the tweet, uploads media references.<br>💡 *This service doesn't deliver tweets to followers — it just writes the tweet and announces "hey, a new tweet exists."*
-3. **Tweet Store (Cassandra)** — permanent storage for all tweets. Optimized for high write throughput.
-4. **Kafka** — event bus. Tweet Service publishes `TweetCreated` events for downstream consumers. Decouples posting from delivery.
+1. **API Gateway** - authenticates, rate-limits, routes. Entry point for all client requests.
+2. **Tweet Service** - handles tweet creation: validates content, stores the tweet, uploads media references.<br>💡 *This service doesn't deliver tweets to followers - it just writes the tweet and announces "hey, a new tweet exists."*
+3. **Tweet Store (Cassandra)** - permanent storage for all tweets. Optimized for high write throughput.
+4. **Kafka** - event bus. Tweet Service publishes `TweetCreated` events for downstream consumers. Decouples posting from delivery.
 
 ```mermaid
 flowchart LR
@@ -231,20 +231,20 @@ flowchart LR
 4. Tweet Service publishes `TweetCreated` event to Kafka (includes tweetId, authorId, timestamp)
 5. Responds to user: "Tweet posted!" in ~50ms
 
-**Why Kafka?** The poster shouldn't wait while we update millions of follower timelines. Kafka decouples creation from delivery — the user gets instant confirmation, and fan-out happens asynchronously.
+**Why Kafka?** The poster shouldn't wait while we update millions of follower timelines. Kafka decouples creation from delivery - the user gets instant confirmation, and fan-out happens asynchronously.
 
 ---
 
-### FR2: User Opens Their Feed — Pre-Built Timelines
+### FR2: User Opens Their Feed - Pre-Built Timelines
 
 Now users want to see their feed. The naive approach (query all followees' tweets on every request) is too slow at scale. Instead, we pre-build each user's timeline so reading it is just a cache lookup.
 
 **New components:**
 
-5. **Fan-out Service** — consumes `TweetCreated` events from Kafka and pushes tweet IDs into every follower's pre-built timeline.
-6. **Social Graph** — stores who-follows-whom. Queried during fan-out: "give me all 5000 followers of this user."
-7. **Timeline Cache (Redis sorted set)** — each user's feed stored as a sorted set of tweet IDs scored by timestamp. Reading the feed = `ZREVRANGE` — instant.<br>💡 *A Redis sorted set keeps elements ordered by score. "Get latest 50 tweets" is a single O(log N + 50) command.*
-8. **Feed Service** — handles "show me my feed" requests. Reads from cache, hydrates tweet IDs into full objects, applies ranking.
+5. **Fan-out Service** - consumes `TweetCreated` events from Kafka and pushes tweet IDs into every follower's pre-built timeline.
+6. **Social Graph** - stores who-follows-whom. Queried during fan-out: "give me all 5000 followers of this user."
+7. **Timeline Cache (Redis sorted set)** - each user's feed stored as a sorted set of tweet IDs scored by timestamp. Reading the feed = `ZREVRANGE` - instant.<br>💡 *A Redis sorted set keeps elements ordered by score. "Get latest 50 tweets" is a single O(log N + 50) command.*
+8. **Feed Service** - handles "show me my feed" requests. Reads from cache, hydrates tweet IDs into full objects, applies ranking.
 
 ```mermaid
 flowchart LR
@@ -286,17 +286,17 @@ flowchart LR
 3. Hydrates IDs → fetches full tweet objects from Cassandra (batch multi-get)
 4. Returns ranked feed to user
 
-**But wait — what about celebrities?** If a user has 50M followers, fan-out means 50M Redis writes per tweet. That takes minutes and blocks the queue. We need a different approach for them.
+**But wait - what about celebrities?** If a user has 50M followers, fan-out means 50M Redis writes per tweet. That takes minutes and blocks the queue. We need a different approach for them.
 
 ---
 
-### FR3: Handle Celebrities — The Hybrid Approach
+### FR3: Handle Celebrities - The Hybrid Approach
 
 The celebrity problem is the core design challenge. Fan-out on write breaks for mega-accounts. We need a hybrid.
 
 **The rule:** Regular users (< 10K followers) → fan-out on write. Celebrities (> 10K followers) → fan-out on read.
 
-**No new infrastructure components** — just different behavior at the Fan-out Service and Feed Service:
+**No new infrastructure components** - just different behavior at the Fan-out Service and Feed Service:
 
 - **Fan-out Service:** Checks follower count before pushing. If > 10K, skip this author's tweet (don't push to followers).
 - **Feed Service:** Maintains a list of "celebrity followees" per user. On feed load, fetches recent tweets from those 5-20 celebrity accounts directly from the Tweet Store and merges them with the pre-built cache.
@@ -441,9 +441,9 @@ Twitter uses an ML model (originally "Earlybird") but a weighted sum is fine for
 ### Deep Dive 3: Timeline Cache Design (Redis sorted set)
 
 **Why Redis sorted set?**
-- `ZADD timeline:{userId} <timestamp> <tweetId>` — O(log N) insert
-- `ZREVRANGE timeline:{userId} 0 50` — get latest 50 in O(log N + 50)
-- `ZREMRANGEBYRANK timeline:{userId} 0 -801` — trim to 800 entries
+- `ZADD timeline:{userId} <timestamp> <tweetId>` - O(log N) insert
+- `ZREVRANGE timeline:{userId} 0 50` - get latest 50 in O(log N + 50)
+- `ZREMRANGEBYRANK timeline:{userId} 0 -801` - trim to 800 entries
 - Perfect for "ordered list with efficient insert and range query"
 
 **Memory math:**
@@ -515,7 +515,7 @@ flowchart LR
 | "How do you handle celebrities?" | Don't push to 50M followers. Merge their tweets at read time. |
 | "How do you rank?" | Weighted score: freshness + engagement + social closeness |
 | "What about real-time?" | WebSocket for "new tweets available" banner, not auto-inject |
-| "Storage for tweets?" | Cassandra or DynamoDB — partition by tweetId, immutable, replicated |
+| "Storage for tweets?" | Cassandra or DynamoDB - partition by tweetId, immutable, replicated |
 | "Social graph storage?" | Adjacency list in Redis or dedicated graph DB. `followers:{userId} → Set<userId>` |
 | "What's the read latency?" | P99 < 200ms. Pre-built cache → hydrate → rank. |
 
@@ -537,7 +537,7 @@ flowchart LR
 
 ## What's Expected at Each Level
 
-> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+> This section helps you calibrate your depth. You don't need to cover everything - just know what's expected for your level.
 
 ### Mid-level
 
@@ -554,13 +554,13 @@ Address feed ranking vs chronological ordering trade-offs and the ML pipeline ne
 ---
 ## 🎯 Key Takeaways
 
-- **Fan-out on write** pre-computes feeds — reads are instant
-- **Celebrity exception** skips fan-out for >500K followers — merged at read time
+- **Fan-out on write** pre-computes feeds - reads are instant
+- **Celebrity exception** skips fan-out for >500K followers - merged at read time
 - **Kafka** decouples posting from feed distribution
 - **Redis** caches hot timelines for active users
 
 ---
 ## Related Designs
-- [Chat System](/hld/ChatSystem) — real-time message delivery
-- [Notification System](/hld/NotificationSystem) — push to users
-- [Leaderboard](/hld/Leaderboard) — real-time ranking updates
+- [Chat System](/hld/ChatSystem) - real-time message delivery
+- [Notification System](/hld/NotificationSystem) - push to users
+- [Leaderboard](/hld/Leaderboard) - real-time ranking updates

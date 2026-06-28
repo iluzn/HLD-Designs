@@ -1,7 +1,7 @@
 ---
 permalink: /hld/RateLimiter/
 layout: default
-title: "Design a Rate Limiter — System Design Interview"
+title: "Design a Rate Limiter - System Design Interview"
 description: "System design for a distributed rate limiter - token bucket, sliding window, Redis, edge limiting, and trade-offs. Beginner-friendly with diagrams."
 ---
 
@@ -38,19 +38,19 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-**In 3 sentences:** Every request passes through a rate limiter before reaching your API. The limiter checks a counter in Redis — if under the limit, allow and increment; if over, reject with HTTP 429. Multiple layers (edge + gateway + service) protect different things.
+**In 3 sentences:** Every request passes through a rate limiter before reaching your API. The limiter checks a counter in Redis - if under the limit, allow and increment; if over, reject with HTTP 429. Multiple layers (edge + gateway + service) protect different things.
 
 ---
 
 ## Understanding the Problem
 
-**What is a rate limiter?** When you use an API — say Twitter or Stripe — you can only make a certain number of requests per minute. Go over the limit and you get a "429 Too Many Requests" error. That's a rate limiter.
+**What is a rate limiter?** When you use an API - say Twitter or Stripe - you can only make a certain number of requests per minute. Go over the limit and you get a "429 Too Many Requests" error. That's a rate limiter.
 
 **Why do we need it?**
-- **Protect servers** — one angry client sending 1M requests shouldn't crash the service for everyone
-- **Fair usage** — free-tier users get 100 calls/min, paid users get 10000
-- **Cost control** — downstream services (databases, third-party APIs) have their own limits
-- **Security** — stop brute-force login attempts, credential stuffing, DDoS
+- **Protect servers** - one angry client sending 1M requests shouldn't crash the service for everyone
+- **Fair usage** - free-tier users get 100 calls/min, paid users get 10000
+- **Cost control** - downstream services (databases, third-party APIs) have their own limits
+- **Security** - stop brute-force login attempts, credential stuffing, DDoS
 
 **Real examples:**
 - GitHub API: 5000 requests/hour per authenticated user
@@ -61,18 +61,18 @@ flowchart LR
 
 ## Prior Art We're Drawing From
 
-- **Stripe Rate Limiting** — Uses token bucket with Redis Lua scripts. Publishes rate limit headers (X-RateLimit-Limit, Remaining, Reset) as the API industry standard. ([Stripe Engineering blog](https://stripe.com/blog/rate-limiters))
-- **Cloudflare Rate Limiting** — Processes 45M+ HTTP requests/sec. Uses sliding window counters at the edge for IP-level limits, with per-customer limits at the application layer. ([Cloudflare blog](https://blog.cloudflare.com/counting-things-a-lot-of-different-things/))
-- **Kong Gateway** — Open-source API gateway with pluggable rate limiting (local, Redis-backed, or cluster-wide). Shows the three-tier pattern: edge → gateway → service. ([Kong rate limiting plugin](https://docs.konghq.com/hub/kong-inc/rate-limiting/))
-- **Google Cloud Armor** — Demonstrates adaptive rate limiting that adjusts thresholds based on request patterns rather than fixed rules. ([Google Cloud docs](https://cloud.google.com/armor/docs/rate-limiting-overview))
+- **Stripe Rate Limiting** - Uses token bucket with Redis Lua scripts. Publishes rate limit headers (X-RateLimit-Limit, Remaining, Reset) as the API industry standard. ([Stripe Engineering blog](https://stripe.com/blog/rate-limiters))
+- **Cloudflare Rate Limiting** - Processes 45M+ HTTP requests/sec. Uses sliding window counters at the edge for IP-level limits, with per-customer limits at the application layer. ([Cloudflare blog](https://blog.cloudflare.com/counting-things-a-lot-of-different-things/))
+- **Kong Gateway** - Open-source API gateway with pluggable rate limiting (local, Redis-backed, or cluster-wide). Shows the three-tier pattern: edge → gateway → service. ([Kong rate limiting plugin](https://docs.konghq.com/hub/kong-inc/rate-limiting/))
+- **Google Cloud Armor** - Demonstrates adaptive rate limiting that adjusts thresholds based on request patterns rather than fixed rules. ([Google Cloud docs](https://cloud.google.com/armor/docs/rate-limiting-overview))
 
 ## Scale Estimation (Back-of-Envelope)
 
 - **Users:** Millions of API clients (both internal services and external developers)
 - **Write QPS:** 1M rate-limit checks/sec (every API request triggers a counter check)
-- **Read QPS:** Same as write — each check is a read-modify-write on the counter
+- **Read QPS:** Same as write - each check is a read-modify-write on the counter
 - **Storage:** ~10GB counter storage in Redis (key per client per window, short TTL)
-- **Bandwidth:** Sub-ms latency per check — rate limiter must not become the bottleneck
+- **Bandwidth:** Sub-ms latency per check - rate limiter must not become the bottleneck
 
 ---
 
@@ -98,10 +98,10 @@ Keep a `HashMap<userId, requestCount>` inside the API server. On each request: i
 
 **Why this breaks:**
 
-- ❌ **Multiple servers** — you have 10 API pods. Each has its own counter. Client hits different pods and effectively gets 10× the limit.
-- ❌ **Server restart** — counters vanish. Everyone gets a fresh quota after every deploy.
-- ❌ **Memory** — 10 million unique users = 10 million map entries = OOM risk.
-- ❌ **Window boundaries** — client sends 100 requests at 11:59:59, another 100 at 12:00:01. Both windows allow it, but 200 requests arrive in 2 seconds.
+- ❌ **Multiple servers** - you have 10 API pods. Each has its own counter. Client hits different pods and effectively gets 10× the limit.
+- ❌ **Server restart** - counters vanish. Everyone gets a fresh quota after every deploy.
+- ❌ **Memory** - 10 million unique users = 10 million map entries = OOM risk.
+- ❌ **Window boundaries** - client sends 100 requests at 11:59:59, another 100 at 12:00:01. Both windows allow it, but 200 requests arrive in 2 seconds.
 
 ---
 
@@ -109,8 +109,8 @@ Keep a `HashMap<userId, requestCount>` inside the API server. On each request: i
 
 **New components we need:**
 
-1. **Multiple API Pods** — your application servers running behind a load balancer. Requests hit any of them randomly.
-2. **Redis (shared counters)** — a single, blazing-fast in-memory database that ALL pods talk to. It holds the rate-limit counters so every pod sees the same global count.
+1. **Multiple API Pods** - your application servers running behind a load balancer. Requests hit any of them randomly.
+2. **Redis (shared counters)** - a single, blazing-fast in-memory database that ALL pods talk to. It holds the rate-limit counters so every pod sees the same global count.
 
 ```mermaid
 flowchart LR
@@ -132,7 +132,7 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-All pods check the SAME counter in Redis. Doesn't matter which pod handles the request — the global count is always accurate.
+All pods check the SAME counter in Redis. Doesn't matter which pod handles the request - the global count is always accurate.
 
 ><br>💡 **What is Redis?** An in-memory database that responds in under 1 millisecond. Perfect for counters because it's fast enough to check on every single request without slowing down your API.
 
@@ -189,8 +189,8 @@ flowchart LR
 
 | Pros | Cons |
 |---|---|
-| ✅ Dead simple — one INCR + one EXPIRE | ❌ Boundary burst allows 2× the limit |
-| ✅ Minimal memory — 1 counter per user | ❌ Not accurate for tight limits |
+| ✅ Dead simple - one INCR + one EXPIRE | ❌ Boundary burst allows 2× the limit |
+| ✅ Minimal memory - 1 counter per user | ❌ Not accurate for tight limits |
 | ✅ O(1) per request | ❌ Resets abruptly |
 
 **Used by:** GitHub API (60/hour for unauthenticated), Twitter/X (15-minute fixed windows), Slack API.
@@ -229,7 +229,7 @@ else:
 
 | Pros | Cons |
 |---|---|
-| ✅ Perfectly accurate — zero boundary burst | ❌ Memory-heavy: stores every timestamp |
+| ✅ Perfectly accurate - zero boundary burst | ❌ Memory-heavy: stores every timestamp |
 | ✅ True rolling window | ❌ 10K req/min limit = 10K entries per user |
 | ✅ No approximation | ❌ O(n) cleanup on each request |
 
@@ -241,7 +241,7 @@ else:
 
 ### Algorithm 3: Sliding Window Counter (Cloudflare's approach)
 
-💡 *This is the "best of both worlds" — accuracy of sliding window + memory of fixed window.*
+💡 *This is the "best of both worlds" - accuracy of sliding window + memory of fixed window.*
 
 **How it works:**
 Keep TWO counters: one for the current fixed window, one for the previous window. Estimate the rolling count using a weighted formula:
@@ -295,11 +295,11 @@ else:
 
 | Pros | Cons |
 |---|---|
-| ✅ Smooth — no boundary bursts | ❌ Approximate (~0.003% error rate) |
-| ✅ O(1) memory — just 2 counters per user | ❌ Slightly more logic than fixed window |
+| ✅ Smooth - no boundary bursts | ❌ Approximate (~0.003% error rate) |
+| ✅ O(1) memory - just 2 counters per user | ❌ Slightly more logic than fixed window |
 | ✅ Cloudflare tested: 400M requests, 0.003% error | |
 
-**Memory:** Same as fixed window — 2 integers per user. At 1M users: ~16MB. Negligible.
+**Memory:** Same as fixed window - 2 integers per user. At 1M users: ~16MB. Negligible.
 
 **Used by:** Cloudflare (45M+ req/sec), most modern REST APIs. The go-to choice when you need accuracy without the memory cost of sliding log.
 
@@ -325,7 +325,7 @@ else:
 - At 12:00:12 → 1 more token → bucket = 4
 - User sends 5 requests → 5 tokens consumed → bucket now has -1? No → 4 used, 1 rejected
 
-**Why bursts are OK here:** The bucket starts full, so a user can "burst" up to 10 requests instantly. But then they must wait for refills. Over time, the average rate converges to the refill rate (10/min). This matches real user behavior — people don't send requests at a perfectly steady rate.
+**Why bursts are OK here:** The bucket starts full, so a user can "burst" up to 10 requests instantly. But then they must wait for refills. Over time, the average rate converges to the refill rate (10/min). This matches real user behavior - people don't send requests at a perfectly steady rate.
 
 ```mermaid
 flowchart TD
@@ -347,7 +347,7 @@ flowchart TD
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-**Redis implementation (lazy refill — no background timer):**
+**Redis implementation (lazy refill - no background timer):**
 ```
 key = "bucket:{userId}"
 stored = GET key → {tokens: 7, last_refill: 1750000000}
@@ -371,7 +371,7 @@ else:
 |---|---|
 | ✅ Allows natural burst behavior | ❌ Two values stored per user (tokens + timestamp) |
 | ✅ Smooth long-term rate enforcement | ❌ Tuning capacity + refill rate takes thought |
-| ✅ Memory efficient — ~50 bytes per user | ❌ In distributed systems, need Redis for sync |
+| ✅ Memory efficient - ~50 bytes per user | ❌ In distributed systems, need Redis for sync |
 | ✅ Best UX for API consumers | |
 
 **Used by:** Stripe, AWS API Gateway, GitHub, Amazon. The industry default for public APIs.
@@ -421,7 +421,7 @@ Token Bucket allows bursts; Leaky Bucket smooths everything to a constant output
 
 | Pros | Cons |
 |---|---|
-| ✅ Perfectly smooth output — protects backends | ❌ No burst tolerance — strict constant rate |
+| ✅ Perfectly smooth output - protects backends | ❌ No burst tolerance - strict constant rate |
 | ✅ Prevents downstream overload | ❌ Adds latency (requests wait in queue) |
 | ✅ Simple FIFO queue implementation | ❌ Old requests processed before new ones |
 
@@ -434,7 +434,7 @@ Token Bucket allows bursts; Leaky Bucket smooths everything to a constant output
 | Algorithm | Memory per user | Burst handling | Accuracy | Best for |
 |---|---|---|---|---|
 | **Fixed Window** | ~8 bytes (1 counter) | ❌ 2× burst at boundaries | Low | Simple internal APIs, MVPs |
-| **Sliding Window Log** | O(n) — 80KB+ at scale | ✅ None (perfect) | Perfect | Billing, payment systems |
+| **Sliding Window Log** | O(n) - 80KB+ at scale | ✅ None (perfect) | Perfect | Billing, payment systems |
 | **Sliding Window Counter** | ~16 bytes (2 counters) | ✅ Smooth | ~99.99% | Most public REST APIs |
 | **Token Bucket** ⭐ | ~50 bytes (token + timestamp) | ✅ Controlled bursts | High | User-facing APIs (Stripe, AWS) |
 | **Leaky Bucket** | ~50 bytes or 1KB (queue) | ❌ None (smooths all) | High | Traffic shaping, backend protection |
@@ -629,7 +629,7 @@ flowchart LR
 | **Local + periodic sync** | Each pod counts locally, syncs to Redis every 100ms | Fast but can overshoot by ~10% |
 | **Sticky routing** | Load balancer always sends same user to same pod | Simple but uneven load distribution |
 
-**Interview answer:** "For protective limits (abuse prevention), local + periodic sync is fine — 10% overshoot is acceptable. For strict limits (billing, credits), always check centralized Redis."
+**Interview answer:** "For protective limits (abuse prevention), local + periodic sync is fine - 10% overshoot is acceptable. For strict limits (billing, credits), always check centralized Redis."
 
 ---
 
@@ -662,7 +662,7 @@ Both limits must pass:
 - **Burst:** max 10 requests in any 1-second window
 - **Sustained:** max 100 requests in any 60-second window
 
-This is what Stripe does — they publish both a "per-second" and "per-minute" limit.
+This is what Stripe does - they publish both a "per-second" and "per-minute" limit.
 
 ---
 
@@ -700,9 +700,9 @@ flowchart LR
 
 | Question | Answer |
 |---|---|
-| "Which algorithm?" | Token Bucket — allows bursts, caps sustained rate |
-| "Where to store counters?" | Redis — sub-ms latency, atomic Lua, built-in TTL |
-| "How to make it atomic?" | Redis Lua script — read + check + decrement in one operation |
+| "Which algorithm?" | Token Bucket - allows bursts, caps sustained rate |
+| "Where to store counters?" | Redis - sub-ms latency, atomic Lua, built-in TTL |
+| "How to make it atomic?" | Redis Lua script - read + check + decrement in one operation |
 | "What if Redis is down?" | Fail-open + local fallback. Never be a single point of failure. |
 | "Where to put it?" | 3 layers: Edge (IP/DDoS) → Gateway (per-user) → Service (domain logic) |
 | "How to handle distributed?" | Centralized Redis for strict limits; local sync for soft limits |
@@ -721,21 +721,21 @@ flowchart LR
 | **Token Bucket** | Algorithm: bucket of tokens, refills at steady rate. Each request costs a token. Empty bucket = rejected. |
 | **HTTP 429** | Standard HTTP status code meaning "Too Many Requests." Client should back off and retry later. |
 
-><br>💡 Redis Lua scripts execute atomically on the server — critical for distributed rate limiting where multiple pods check the same counter.
+><br>💡 Redis Lua scripts execute atomically on the server - critical for distributed rate limiting where multiple pods check the same counter.
 
 ---
 
 ## What's Expected at Each Level
 
-> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+> This section helps you calibrate your depth. You don't need to cover everything - just know what's expected for your level.
 
 ### Mid-level
 
-Explain the token bucket or fixed window algorithm. Propose Redis INCR for counting requests per time window. Understand why in-memory counters fail across multiple servers — each server has its own count, so a client can exceed limits by hitting different servers.
+Explain the token bucket or fixed window algorithm. Propose Redis INCR for counting requests per time window. Understand why in-memory counters fail across multiple servers - each server has its own count, so a client can exceed limits by hitting different servers.
 
 ### Senior
 
-Compare token bucket vs sliding window vs sliding window log — articulate the tradeoffs (burst tolerance, memory, precision). Propose Redis Lua scripts for atomic check-and-increment. Discuss multi-tier limiting (edge + gateway + service) and what happens when Redis goes down (fail-open vs fail-closed tradeoff).
+Compare token bucket vs sliding window vs sliding window log - articulate the tradeoffs (burst tolerance, memory, precision). Propose Redis Lua scripts for atomic check-and-increment. Discuss multi-tier limiting (edge + gateway + service) and what happens when Redis goes down (fail-open vs fail-closed tradeoff).
 
 ### Staff+
 
@@ -745,12 +745,12 @@ Address distributed rate limiting across multiple regions with eventual consiste
 ## 🎯 Key Takeaways
 
 - **Token bucket** allows bursts; **sliding window** is smoother but more complex
-- **Redis Lua scripts** make check-and-increment atomic — no race conditions
+- **Redis Lua scripts** make check-and-increment atomic - no race conditions
 - **Apply at multiple levels**: per-user, per-IP, per-endpoint, global
-- **Return 429 with Retry-After header** — good API citizenship
+- **Return 429 with Retry-After header** - good API citizenship
 
 ---
 ## Related Designs
-- [URL Shortener](/hld/URLShortner) — high-QPS API design
-- [Leaderboard](/hld/Leaderboard) — Redis patterns
-- [Notification System](/hld/NotificationSystem) — protecting downstream services
+- [URL Shortener](/hld/URLShortner) - high-QPS API design
+- [Leaderboard](/hld/Leaderboard) - Redis patterns
+- [Notification System](/hld/NotificationSystem) - protecting downstream services

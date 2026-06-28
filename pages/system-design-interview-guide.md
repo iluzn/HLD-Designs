@@ -1,11 +1,11 @@
 ---
 layout: default
-title: "System Design Interview Guide 2025 — Complete Preparation Roadmap"
+title: "System Design Interview Guide 2025 - Complete Preparation Roadmap"
 description: "How to prepare for system design interviews at FAANG, startups, and top tech companies. Step-by-step guide with topics, patterns, and practice problems."
 permalink: /system-design-interview-guide/
 ---
 
-# System Design Interview Guide — Complete Preparation Roadmap
+# System Design Interview Guide - Complete Preparation Roadmap
 
 ⚡ **Updated:** June 2025 🏢 **Target:** Amazon, Google, Meta, Microsoft, Uber, Stripe, Flipkart, and startups
 
@@ -35,10 +35,10 @@ After these three, start solving: [Practice Problems →](/hld)
 
 A typical system design interview is 45-60 minutes. The interviewer gives you an open-ended problem ("Design Uber" or "Design a notification system") and evaluates:
 
-1. **Problem scoping** — Can you ask the right clarifying questions and narrow requirements?
-2. **High-level architecture** — Can you identify the right components and how they communicate?
-3. **Deep dive ability** — Can you go deep on 2-3 technical challenges and discuss trade-offs?
-4. **Communication** — Can you drive the conversation and explain your decisions clearly?
+1. **Problem scoping** - Can you ask the right clarifying questions and narrow requirements?
+2. **High-level architecture** - Can you identify the right components and how they communicate?
+3. **Deep dive ability** - Can you go deep on 2-3 technical challenges and discuss trade-offs?
+4. **Communication** - Can you drive the conversation and explain your decisions clearly?
 
 You're NOT expected to design a production system. You're expected to demonstrate structured thinking and trade-off awareness.
 
@@ -84,31 +84,31 @@ You're NOT expected to design a production system. You're expected to demonstrat
 
 ### Beginner (Start Here)
 
-1. [URL Shortener (Bitly)](/hld/URLShortner) — ID generation, caching, redirects
-2. [Pastebin](/hld/Pastebin) — Object storage, metadata, TTL
-3. [Rate Limiter](/hld/RateLimiter) — Redis patterns, token bucket, sliding window
-4. [Key-Value Store](/hld/KeyValueStore) — Partitioning, replication, consistency
-5. [Unique ID Generator](/hld/UniqueIDGenerator) — Snowflake, UUID, range allocation
+1. [URL Shortener (Bitly)](/hld/URLShortner) - ID generation, caching, redirects
+2. [Pastebin](/hld/Pastebin) - Object storage, metadata, TTL
+3. [Rate Limiter](/hld/RateLimiter) - Redis patterns, token bucket, sliding window
+4. [Key-Value Store](/hld/KeyValueStore) - Partitioning, replication, consistency
+5. [Unique ID Generator](/hld/UniqueIDGenerator) - Snowflake, UUID, range allocation
 
 ### Intermediate
 
-5. [Chat System (WhatsApp)](/hld/ChatSystem) — WebSockets, message delivery, offline handling
-6. [Notification System](/hld/NotificationSystem) — Multi-channel, Kafka, templating
-7. [Twitter Feed](/hld/TwitterFeed) — Fan-out, timeline, caching
-8. [Instagram](/hld/Instagram) — Photo upload, CDN, news feed
-9. [Leaderboard](/hld/Leaderboard) — Redis sorted sets, real-time ranking
-10. [Netflix / YouTube](/hld/Netflix) — Video encoding, adaptive streaming, recommendations
+5. [Chat System (WhatsApp)](/hld/ChatSystem) - WebSockets, message delivery, offline handling
+6. [Notification System](/hld/NotificationSystem) - Multi-channel, Kafka, templating
+7. [Twitter Feed](/hld/TwitterFeed) - Fan-out, timeline, caching
+8. [Instagram](/hld/Instagram) - Photo upload, CDN, news feed
+9. [Leaderboard](/hld/Leaderboard) - Redis sorted sets, real-time ranking
+10. [Netflix / YouTube](/hld/Netflix) - Video encoding, adaptive streaming, recommendations
 
 ### Advanced
 
-11. [Uber / Lyft](/hld/Uber) — Real-time matching, Redis Geo, surge pricing
-12. [Zomato / Uber Eats](/hld/Zomato) — Search, dispatch, live tracking
-13. [BookMyShow](/hld/BookMyShow) — Seat booking, distributed locks, payment
-14. [Stock Broker (Robinhood)](/hld/StockBroker) — Order matching, event sourcing, CQRS
-15. [Digital Wallet (PhonePe)](/hld/DigitalWallet) — Double-entry ledger, saga, idempotency
-16. [Google Docs](/hld/GoogleDocs) — Collaborative editing, CRDT, real-time sync
-17. [Distributed Job Scheduler](/hld/JobScheduler) — Leader election, exactly-once, retries
-18. [Delayed Trigger Service](/hld/DelayedTriggerService) — Timing wheels, scheduled execution
+11. [Uber / Lyft](/hld/Uber) - Real-time matching, Redis Geo, surge pricing
+12. [Zomato / Uber Eats](/hld/Zomato) - Search, dispatch, live tracking
+13. [BookMyShow](/hld/BookMyShow) - Seat booking, distributed locks, payment
+14. [Stock Broker (Robinhood)](/hld/StockBroker) - Order matching, event sourcing, CQRS
+15. [Digital Wallet (PhonePe)](/hld/DigitalWallet) - Double-entry ledger, saga, idempotency
+16. [Google Docs](/hld/GoogleDocs) - Collaborative editing, CRDT, real-time sync
+17. [Distributed Job Scheduler](/hld/JobScheduler) - Leader election, exactly-once, retries
+18. [Delayed Trigger Service](/hld/DelayedTriggerService) - Timing wheels, scheduled execution
 
 ---
 
@@ -124,12 +124,12 @@ You're NOT expected to design a production system. You're expected to demonstrat
 
 ## Common Mistakes to Avoid
 
-1. **Jumping to solutions** — Always spend 3-5 minutes on requirements first
-2. **Over-engineering** — A URL shortener doesn't need Kafka and microservices
-3. **Ignoring scale** — "Just use a database" isn't a design answer at 100K QPS
-4. **Not discussing trade-offs** — Every choice has downsides. Name them.
-5. **Monologuing** — The interview is a conversation. Pause and check in with the interviewer.
-6. **Solving random problems** — Study by pattern, not by difficulty. See [the framework](/approach).
+1. **Jumping to solutions** - Always spend 3-5 minutes on requirements first
+2. **Over-engineering** - A URL shortener doesn't need Kafka and microservices
+3. **Ignoring scale** - "Just use a database" isn't a design answer at 100K QPS
+4. **Not discussing trade-offs** - Every choice has downsides. Name them.
+5. **Monologuing** - The interview is a conversation. Pause and check in with the interviewer.
+6. **Solving random problems** - Study by pattern, not by difficulty. See [the framework](/approach).
 
 ---
 
@@ -191,8 +191,8 @@ Week 6+:  Mock interviews + revisit weak areas
 
 ## Related Resources
 
-- [System Design Fundamentals](/concepts) — CAP, caching, sharding, queues, DBs
-- [The 45-Min Interview Framework](/approach) — Exact structure and scoring criteria
-- [Quick-Fire 50 Cheatsheet](/cheatsheet) — DSA patterns at a glance
-- [Company-Specific: Amazon](/companies/amazon) — Amazon's design interview format
-- [LLD Fundamentals](/lld-fundamentals) — For machine coding rounds
+- [System Design Fundamentals](/concepts) - CAP, caching, sharding, queues, DBs
+- [The 45-Min Interview Framework](/approach) - Exact structure and scoring criteria
+- [Quick-Fire 50 Cheatsheet](/cheatsheet) - DSA patterns at a glance
+- [Company-Specific: Amazon](/companies/amazon) - Amazon's design interview format
+- [LLD Fundamentals](/lld-fundamentals) - For machine coding rounds

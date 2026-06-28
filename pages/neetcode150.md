@@ -1,13 +1,13 @@
 ---
 permalink: /the-150/
 layout: default
-title: "NeetCode 150 — Complete Coding Interview Prep Cheatsheet"
+title: "NeetCode 150 - Complete Coding Interview Prep Cheatsheet"
 description: "150 coding problems with LeetCode links, pattern tags, and one-line approaches. Complete deep coverage in 6-8 weeks."
 ---
 
-# The 150 — Complete Interview Prep
+# The 150 - Complete Interview Prep
 
-The expanded interview prep list — 150 problems covering every pattern in depth. If you have 6-8 weeks, this is the definitive set. Each row links directly to LeetCode.
+The expanded interview prep list - 150 problems covering every pattern in depth. If you have 6-8 weeks, this is the definitive set. Each row links directly to LeetCode.
 
 > 📋 **Which list should I use?**
 > - **1 week of prep?** → [Quick-Fire 50](/cheatsheet)
@@ -131,7 +131,7 @@ The expanded interview prep list — 150 problems covering every pattern in dept
 | 67 | [Task Scheduler](https://leetcode.com/problems/task-scheduler/) | Count max-freq, compute idle slots | O(n) |
 | 68 | [Design Twitter](https://leetcode.com/problems/design-twitter/) | HashMap + merge K sorted (heap of recent 10) | O(k log k) |
 | 69 | [Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/) | Max-heap left + min-heap right | O(log n) |
-| 70 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | (dup — see #5) | O(n log k) |
+| 70 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | (dup - see #5) | O(n log k) |
 
 ## Backtracking (9)
 
@@ -162,7 +162,7 @@ The expanded interview prep list — 150 problems covering every pattern in dept
 | 88 | [Course Schedule II](https://leetcode.com/problems/course-schedule-ii/) | Topo sort, return the order | O(V+E) |
 | 89 | [Graph Valid Tree](https://leetcode.com/problems/graph-valid-tree/) | V-1 edges + connected (Union-Find) | O(V+E) |
 | 90 | [Number of Connected Components](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/) | Union-Find or DFS count | O(V+E) |
-| 91 | [Redundant Connection](https://leetcode.com/problems/redundant-connection/) | Union-Find — edge that creates cycle | O(V+E) |
+| 91 | [Redundant Connection](https://leetcode.com/problems/redundant-connection/) | Union-Find - edge that creates cycle | O(V+E) |
 | 92 | [Word Ladder](https://leetcode.com/problems/word-ladder/) | BFS level-by-level, change one char | O(n×26×L) |
 
 ## Advanced Graphs (6)
@@ -265,6 +265,6 @@ The expanded interview prep list — 150 problems covering every pattern in dept
 
 ---
 
-> ✅ **Your progress is saved automatically** in your browser. Check off problems as you solve them — come back anytime and pick up where you left off.
+> ✅ **Your progress is saved automatically** in your browser. Check off problems as you solve them - come back anytime and pick up where you left off.
 
 *For full solutions with walkthroughs, check the [DSA section](/dsa). For the shorter version, see [The 75](/the-75).*

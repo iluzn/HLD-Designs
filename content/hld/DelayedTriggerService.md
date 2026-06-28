@@ -1,14 +1,14 @@
 ---
 permalink: /hld/DelayedTriggerService/
 layout: default
-title: "Design a Delayed Trigger Service — System Design Interview"
+title: "Design a Delayed Trigger Service - System Design Interview"
 description: "System design for Delayed Trigger Service - architecture, deep dives, and trade-offs"
 ---
 
 # HLD: Delayed Trigger Service
 
 ⚡ **Difficulty:** Intermediate–Advanced
-📋 **Prerequisites:** [Fundamentals](/concepts) — especially [Message Queues](/concepts#message-queues) and [Leader Election](/concepts#leader-election)
+📋 **Prerequisites:** [Fundamentals](/concepts) - especially [Message Queues](/concepts#message-queues) and [Leader Election](/concepts#leader-election)
 
 ---
 
@@ -74,22 +74,22 @@ flowchart LR
 
 Why this breaks under real constraints:
 
-- **Process crash loses every pending trigger** — no durability. If the box reboots, every "fire in 10 min" is gone.
-- **One JVM caps throughput** — `ScheduledExecutorService` is fine for thousands of timers, hopeless at millions.
-- **No horizontal scale** — two replicas would each fire the callback, giving duplicates.
-- **No retry on callback failure** — if the caller's endpoint is down at fire time, the trigger is silently lost.
-- **No long delays** — JVM heap pressure with millions of `DelayedTask` objects.
-- **Hot fire-time spikes** — "fire at top of the hour" thundering herd would saturate the executor.
+- **Process crash loses every pending trigger** - no durability. If the box reboots, every "fire in 10 min" is gone.
+- **One JVM caps throughput** - `ScheduledExecutorService` is fine for thousands of timers, hopeless at millions.
+- **No horizontal scale** - two replicas would each fire the callback, giving duplicates.
+- **No retry on callback failure** - if the caller's endpoint is down at fire time, the trigger is silently lost.
+- **No long delays** - JVM heap pressure with millions of `DelayedTask` objects.
+- **Hot fire-time spikes** - "fire at top of the hour" thundering herd would saturate the executor.
 
 The rest of the doc evolves this into a durable, sharded, bucketed scheduler with a timing-wheel front end and at-least-once HTTP callback delivery.
 
 ## 1.7. Prior Art We're Drawing From
 
-- **[Airbnb Dynein](https://medium.com/airbnb-engineering/dynein-building-a-distributed-delayed-job-queueing-system-93ab10f05f99)** — short-delay jobs (≤15 min) go straight to SQS; long-delay jobs sit in DynamoDB and a sweeper moves them to SQS as fire time approaches. We borrow this two-tier split.
-- **[Apache Kafka Purgatory + Hierarchical Timing Wheels](https://www.confluent.io/blog/apache-kafka-purgatory-hierarchical-timing-wheels/)** — O(1) insert/expire for millions of in-memory timers across multiple resolutions. We use this for the hot, near-future tier.
-- **[AWS SQS delay queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-delay-queues.html)** — built-in 0–15 min delay primitive. We treat SQS as the "execution lane" once a trigger is within 15 min.
-- **[Stripe Idempotency-Key](https://stripe.com/docs/api/idempotent_requests)** — caller-supplied idempotency key on register so repeated submissions don't create duplicate triggers.
-- **[Netflix Maestro](https://blog.bytebytego.com/p/how-netflix-orchestrates-millions)** — sharded execution layer; we use the same partition-by-triggerId model so each shard is independently leader-led.
+- **[Airbnb Dynein](https://medium.com/airbnb-engineering/dynein-building-a-distributed-delayed-job-queueing-system-93ab10f05f99)** - short-delay jobs (≤15 min) go straight to SQS; long-delay jobs sit in DynamoDB and a sweeper moves them to SQS as fire time approaches. We borrow this two-tier split.
+- **[Apache Kafka Purgatory + Hierarchical Timing Wheels](https://www.confluent.io/blog/apache-kafka-purgatory-hierarchical-timing-wheels/)** - O(1) insert/expire for millions of in-memory timers across multiple resolutions. We use this for the hot, near-future tier.
+- **[AWS SQS delay queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-delay-queues.html)** - built-in 0–15 min delay primitive. We treat SQS as the "execution lane" once a trigger is within 15 min.
+- **[Stripe Idempotency-Key](https://stripe.com/docs/api/idempotent_requests)** - caller-supplied idempotency key on register so repeated submissions don't create duplicate triggers.
+- **[Netflix Maestro](https://blog.bytebytego.com/p/how-netflix-orchestrates-millions)** - sharded execution layer; we use the same partition-by-triggerId model so each shard is independently leader-led.
 
 When deep dives below cite "borrowing from Dynein" or "borrowing from Kafka Purgatory," that's what they mean.
 
@@ -116,7 +116,7 @@ Two non-obvious picks worth a note:
 
 1. `registerTrigger(callerId, callbackUrl, payload, delaySeconds, idempotencyKey)` returns a `triggerId`. Persists the intent durably.
 2. At `now + delaySeconds`, the service POSTs `{triggerId, payload}` to `callbackUrl` and considers the trigger fired only after a 2xx ack.
-3. `cancelTrigger(triggerId)` — best-effort cancel before fire time.
+3. `cancelTrigger(triggerId)` - best-effort cancel before fire time.
 
 **Below the line (out of scope for the interview):**
 
@@ -129,10 +129,10 @@ Two non-obvious picks worth a note:
 
 **Core:**
 
-- **Durability** — once `register` returns 200, the trigger must fire even if every component crashes. No silent drops.
-- **On-time firing** — P99 jitter < 1s for short delays, < 5s for long (>15 min) delays.
-- **Throughput** — 100K registers/sec, 100K fires/sec at peak.
-- **At-least-once + idempotent** — callback may fire twice; caller must dedupe via `triggerId`.
+- **Durability** - once `register` returns 200, the trigger must fire even if every component crashes. No silent drops.
+- **On-time firing** - P99 jitter < 1s for short delays, < 5s for long (>15 min) delays.
+- **Throughput** - 100K registers/sec, 100K fires/sec at peak.
+- **At-least-once + idempotent** - callback may fire twice; caller must dedupe via `triggerId`.
 
 **Below the line:** strict-once delivery, sub-millisecond jitter, multi-region failover.
 
@@ -142,15 +142,15 @@ Two non-obvious picks worth a note:
 - **Write QPS:** 500K new triggers/hour (~140 triggers/sec), 10K fires/sec at peak
 - **Read QPS:** Sweeper scans 1K buckets/sec, 5K status queries/sec from callers
 - **Storage:** 200GB trigger metadata/year (Cassandra, with TTL cleanup after firing)
-- **Bandwidth:** <1s jitter SLA for firing — timing wheel precision in the 100ms range
+- **Bandwidth:** <1s jitter SLA for firing - timing wheel precision in the 100ms range
 
 ## 4. Core Entities
 
-- **Trigger** — id, callerId, callbackUrl, payload, fireAt, status (PENDING / IN_FLIGHT / FIRED / FAILED / CANCELLED), attemptCount.
-- **Caller** — registered service with auth credentials and (optionally) per-tenant rate limits.
-- **Bucket** — a 1-minute window keyed by floor(fireAt). Triggers live in their bucket's row in Cassandra.
-- **Dispatcher** — worker that turns "trigger is due" into "HTTP POST to callbackUrl."
-- **Sweeper** — process that scans upcoming buckets and pushes due-soon triggers into the in-memory wheel.
+- **Trigger** - id, callerId, callbackUrl, payload, fireAt, status (PENDING / IN_FLIGHT / FIRED / FAILED / CANCELLED), attemptCount.
+- **Caller** - registered service with auth credentials and (optionally) per-tenant rate limits.
+- **Bucket** - a 1-minute window keyed by floor(fireAt). Triggers live in their bucket's row in Cassandra.
+- **Dispatcher** - worker that turns "trigger is due" into "HTTP POST to callbackUrl."
+- **Sweeper** - process that scans upcoming buckets and pushes due-soon triggers into the in-memory wheel.
 
 ## 5. API / System Interface
 
@@ -198,9 +198,9 @@ We'll layer in components as the three FRs demand them.
 
 **New components we need:**
 
-1. **Trigger API** — the HTTP service callers hit to register or cancel triggers. Validates requests and handles idempotency.
-2. **Redis Idempotency Cache** — stores `(callerId, idempotencyKey) → triggerId` so retried requests don't create duplicate triggers.<br>💡 *Idempotency means: if the caller's network drops and they retry, we return the same triggerId instead of creating a second trigger. Safe retries. [Learn more →](/concepts#idempotency)*
-3. **Cassandra (partitioned by fire-time bucket)** — durable storage for all triggers. Partitioned by the 1-minute window containing `fireAt`, so the sweeper can efficiently ask "give me all triggers due in minute M" with one partition read.
+1. **Trigger API** - the HTTP service callers hit to register or cancel triggers. Validates requests and handles idempotency.
+2. **Redis Idempotency Cache** - stores `(callerId, idempotencyKey) → triggerId` so retried requests don't create duplicate triggers.<br>💡 *Idempotency means: if the caller's network drops and they retry, we return the same triggerId instead of creating a second trigger. Safe retries. [Learn more →](/concepts#idempotency)*
+3. **Cassandra (partitioned by fire-time bucket)** - durable storage for all triggers. Partitioned by the 1-minute window containing `fireAt`, so the sweeper can efficiently ask "give me all triggers due in minute M" with one partition read.
 
 ```mermaid
 flowchart LR
@@ -220,25 +220,25 @@ flowchart LR
 
 1. Caller (e.g., the Order Service) calls `POST /v1/triggers` with a callback URL and `delaySeconds: 420` (7 minutes) → "Call me back in 7 minutes to expire this seat hold"
 2. Trigger API checks Redis: have we seen this `(callerId, idempotencyKey)` before? If yes → return the cached `triggerId` (no duplicate created)
-3. API computes `fireAt = now + 420s`, generates a unique ULID `triggerId`, and writes the row to Cassandra. The partition key is the 1-minute bucket containing `fireAt` (e.g., `14:31`) — this groups triggers by fire time for efficient sweeping later
+3. API computes `fireAt = now + 420s`, generates a unique ULID `triggerId`, and writes the row to Cassandra. The partition key is the 1-minute bucket containing `fireAt` (e.g., `14:31`) - this groups triggers by fire time for efficient sweeping later
 4. API caches the `triggerId` in Redis under the idempotency key (TTL = delay + grace period) so future retries short-circuit
 5. Returns `200 OK` with the `triggerId` and exact `fireAt` timestamp
 
-**Why partition by 1-minute buckets?** The sweeper needs to efficiently find "all triggers about to fire." Without bucketing, it would scan millions of rows. With bucketing, it reads one partition per minute — a single disk seek in Cassandra.
+**Why partition by 1-minute buckets?** The sweeper needs to efficiently find "all triggers about to fire." Without bucketing, it would scan millions of rows. With bucketing, it reads one partition per minute - a single disk seek in Cassandra.
 
 ### FR2: Fire the callback at the right time
 
 We split by delay length, borrowing from Dynein:
 
-- **Short delay (≤ 15 min)** — push directly to SQS with `DelaySeconds = delay`. SQS handles the wait, the dispatcher picks up the message when visible. We keep the Cassandra row as the source of truth.
-- **Long delay (> 15 min)** — leave it in Cassandra. The **Sweeper** scans the next bucket every 30 s and, when within 15 min of fireAt, pushes into SQS the same way. This caps the in-memory state and lets the long tail live cheaply in Cassandra.
+- **Short delay (≤ 15 min)** - push directly to SQS with `DelaySeconds = delay`. SQS handles the wait, the dispatcher picks up the message when visible. We keep the Cassandra row as the source of truth.
+- **Long delay (> 15 min)** - leave it in Cassandra. The **Sweeper** scans the next bucket every 30 s and, when within 15 min of fireAt, pushes into SQS the same way. This caps the in-memory state and lets the long tail live cheaply in Cassandra.
 
 **New components we need (in addition to the ones above):**
 
-1. **Sweeper (leader-elected, per shard)** — scans Cassandra for triggers due in the next 15 minutes and loads them into the timing wheel.<br>💡 *Leader election ensures only one sweeper owns each shard — without it, duplicate fires would happen. [Learn more →](/concepts#leader-election)*
-2. **Timing Wheel (in-process)** — a ring-buffer data structure that fires callbacks at precise times with O(1) insert and expiry.<br>💡 *Think of it as an alarm clock with thousands of slots — you set the alarm (insert), and when the hand reaches your slot, it goes off (expires). Kafka's internals use this exact structure. [Learn more →](/concepts#message-queues)*
-3. **SQS (delay queue)** — the execution lane. Once a trigger is within seconds of firing, the timing wheel pushes it to SQS. Dispatchers consume from SQS.
-4. **Dispatcher Pool** — workers that pull from SQS, read the trigger from Cassandra, and POST the callback to the caller's URL. Stateless; scales horizontally.
+1. **Sweeper (leader-elected, per shard)** - scans Cassandra for triggers due in the next 15 minutes and loads them into the timing wheel.<br>💡 *Leader election ensures only one sweeper owns each shard - without it, duplicate fires would happen. [Learn more →](/concepts#leader-election)*
+2. **Timing Wheel (in-process)** - a ring-buffer data structure that fires callbacks at precise times with O(1) insert and expiry.<br>💡 *Think of it as an alarm clock with thousands of slots - you set the alarm (insert), and when the hand reaches your slot, it goes off (expires). Kafka's internals use this exact structure. [Learn more →](/concepts#message-queues)*
+3. **SQS (delay queue)** - the execution lane. Once a trigger is within seconds of firing, the timing wheel pushes it to SQS. Dispatchers consume from SQS.
+4. **Dispatcher Pool** - workers that pull from SQS, read the trigger from Cassandra, and POST the callback to the caller's URL. Stateless; scales horizontally.
 
 ```mermaid
 flowchart LR
@@ -263,20 +263,20 @@ flowchart LR
 **Step-by-step flow:**
 
 1. Sweeper runs per shard, leader-elected via ZooKeeper/etcd. Every 30 seconds, it scans Cassandra for the bucket that's about to enter the 15-minute firing window
-2. Each trigger from the scan is inserted into the in-process timing wheel — O(1) per insert, handles millions of pending triggers per shard
+2. Each trigger from the scan is inserted into the in-process timing wheel - O(1) per insert, handles millions of pending triggers per shard
 3. When a wheel slot expires (fire time arrives!), the triggerId is pushed to SQS with a tiny `DelaySeconds` (usually 0-60s of slack)
-4. Dispatcher pulls from SQS, reads the current trigger row from Cassandra (checking status — it might have been cancelled!), and POSTs the payload to the callback URL
+4. Dispatcher pulls from SQS, reads the current trigger row from Cassandra (checking status - it might have been cancelled!), and POSTs the payload to the callback URL
 5. On `2xx` response → dispatcher writes `status = FIRED` to Cassandra and deletes the SQS message. Done!
 6. On non-2xx or timeout → dispatcher requeues to SQS with exponential backoff (10s → 30s → 2min → 10min → 30min). After N attempts → Dead Letter Queue
-7. If dispatcher crashes after POST but before deleting from SQS → SQS visibility timeout expires → another dispatcher picks up and retries. The caller dedupes on `triggerId` — at-least-once is the contract
+7. If dispatcher crashes after POST but before deleting from SQS → SQS visibility timeout expires → another dispatcher picks up and retries. The caller dedupes on `triggerId` - at-least-once is the contract
 
-**Why the timing wheel when SQS already has delay?** Two reasons: (a) SQS caps at 15-minute delay — not enough for our 30-day triggers. (b) At the top of the hour, 200K triggers all want `DelaySeconds=0` simultaneously. The wheel acts as a smoothing front-end, releasing messages into SQS in sub-second batches so the dispatcher pool sees an even rate instead of a thundering herd.
+**Why the timing wheel when SQS already has delay?** Two reasons: (a) SQS caps at 15-minute delay - not enough for our 30-day triggers. (b) At the top of the hour, 200K triggers all want `DelaySeconds=0` simultaneously. The wheel acts as a smoothing front-end, releasing messages into SQS in sub-second batches so the dispatcher pool sees an even rate instead of a thundering herd.
 
-**Why does the dispatcher read from Cassandra before firing?** The SQS message only holds the `triggerId` (to keep messages small). More importantly, the trigger might have been cancelled since it was enqueued — checking status at fire time is the "lazy cancel" pattern that avoids expensive queue surgery.
+**Why does the dispatcher read from Cassandra before firing?** The SQS message only holds the `triggerId` (to keep messages small). More importantly, the trigger might have been cancelled since it was enqueued - checking status at fire time is the "lazy cancel" pattern that avoids expensive queue surgery.
 
 ### FR3: Cancel a trigger
 
-**New components we need:** None! Cancellation reuses existing infrastructure — it just flips a status flag in Cassandra that the dispatcher checks at fire time.
+**New components we need:** None! Cancellation reuses existing infrastructure - it just flips a status flag in Cassandra that the dispatcher checks at fire time.
 
 ```mermaid
 flowchart LR
@@ -296,11 +296,11 @@ flowchart LR
 **Step-by-step flow:**
 
 1. Caller hits `DELETE /v1/triggers/{triggerId}` → API sets `status = CANCELLED` in Cassandra (only if current status is `PENDING`)
-2. We DON'T try to remove the trigger from SQS or the timing wheel — that's too racy and SQS doesn't support targeted deletion by content
+2. We DON'T try to remove the trigger from SQS or the timing wheel - that's too racy and SQS doesn't support targeted deletion by content
 3. When the trigger's fire time arrives, the dispatcher reads the row, sees `CANCELLED`, and quietly drops it without firing the callback
 4. This is "lazy cancel": the cancel is durable instantly, but the trigger message may sit in the queue until its fire time before being discarded
 
-**Why not remove from the queue immediately?** SQS doesn't support "find and delete message with triggerId X." And even if it did, there's a race: the message might be in-flight to a dispatcher at the exact moment you try to cancel. Lazy cancel avoids all these races — the flag in Cassandra is the single source of truth, checked at the last possible moment.
+**Why not remove from the queue immediately?** SQS doesn't support "find and delete message with triggerId X." And even if it did, there's a race: the message might be in-flight to a dispatcher at the exact moment you try to cancel. Lazy cancel avoids all these races - the flag in Cassandra is the single source of truth, checked at the last possible moment.
 
 ## 6.5. Core Flows
 
@@ -342,7 +342,7 @@ sequenceDiagram
 2. After 120s SQS makes the message visible. Dispatcher receives it and looks up the trigger row.
 3. Dispatcher POSTs the payload to the caller's `callbackUrl`.
 4. On 2xx, mark `FIRED` and delete from SQS. **Failure path:** on 5xx or timeout, dispatcher pushes the message back with exponential `ChangeMessageVisibility` (e.g., 10s, 30s, 2m, 10m, 30m). After 6 attempts it goes to DLQ.
-5. **Non-obvious failure path:** dispatcher crashes after POST but before deleting from SQS. SQS visibility timeout expires, another dispatcher receives the message, POSTs again. The caller is expected to dedupe on `triggerId` — at-least-once is the contract.
+5. **Non-obvious failure path:** dispatcher crashes after POST but before deleting from SQS. SQS visibility timeout expires, another dispatcher receives the message, POSTs again. The caller is expected to dedupe on `triggerId` - at-least-once is the contract.
 
 ### Flow B: Long delay (> 15 min)
 
@@ -373,7 +373,7 @@ sequenceDiagram
 3. Each row is inserted into the in-process timing wheel.
 4. The wheel ticks; when a slot expires, that triggerId is shipped to SQS with a small `DelaySeconds` (typically 0–60 s).
 5. Dispatcher path is identical to Flow A from there.
-6. **Non-obvious failure path:** sweeper leader crashes mid-scan. ZooKeeper detects the session loss, elects a new leader. The new leader rescans the bucket — Cassandra row's `status` is still `PENDING` so it gets re-inserted into the wheel. Possible duplicate fire if the old leader had already pushed to SQS; dedupe on `triggerId` handles it.
+6. **Non-obvious failure path:** sweeper leader crashes mid-scan. ZooKeeper detects the session loss, elects a new leader. The new leader rescans the bucket - Cassandra row's `status` is still `PENDING` so it gets re-inserted into the wheel. Possible duplicate fire if the old leader had already pushed to SQS; dedupe on `triggerId` handles it.
 
 ### Trigger state machine
 
@@ -394,11 +394,11 @@ Self-audit found these as the real risk areas: (1) hot bucket at top-of-the-hour
 
 ### 7.1 Hot bucket: thundering herd at popular fire times
 
-**Bad** — single Cassandra partition keyed by `bucket = fireAt minute`. At 14:00:00 sharp every cron-aligned trigger lands in the same partition. Cassandra hot partition warning, sweeper read fan-out spikes, and the wheel inserts a million entries in one go. Latency for that bucket blows up.
+**Bad** - single Cassandra partition keyed by `bucket = fireAt minute`. At 14:00:00 sharp every cron-aligned trigger lands in the same partition. Cassandra hot partition warning, sweeper read fan-out spikes, and the wheel inserts a million entries in one go. Latency for that bucket blows up.
 
-**Good** — sub-shard the bucket. Partition key becomes `(bucket, hash(triggerId) % 64)`. The single 14:00 minute is now 64 partitions, evenly distributed. Sweeper runs 64 parallel reads (one per sub-shard).
+**Good** - sub-shard the bucket. Partition key becomes `(bucket, hash(triggerId) % 64)`. The single 14:00 minute is now 64 partitions, evenly distributed. Sweeper runs 64 parallel reads (one per sub-shard).
 
-**Great** — combine sub-sharding with **jittered fireAt**. Caller asks for `delay = 1h`; we add ±5s of jitter (`fireAt = requested + rand(-5s, +5s)`). This is invisible to the caller (they wanted "in roughly an hour") but spreads the load across many seconds. For callers that need exact timing (e.g., `delay = 0`), skip the jitter — usually the exact-timing callers are a small fraction. Borrowed from Airbnb Dynein's load-spreading approach.
+**Great** - combine sub-sharding with **jittered fireAt**. Caller asks for `delay = 1h`; we add ±5s of jitter (`fireAt = requested + rand(-5s, +5s)`). This is invisible to the caller (they wanted "in roughly an hour") but spreads the load across many seconds. For callers that need exact timing (e.g., `delay = 0`), skip the jitter - usually the exact-timing callers are a small fraction. Borrowed from Airbnb Dynein's load-spreading approach.
 
 ```mermaid
 flowchart LR
@@ -416,27 +416,27 @@ flowchart LR
 
 ### 7.2 Exactly-once-ish: idempotency on register and dedupe at fire
 
-**Bad** — caller retries the register request after a network blip. We create two trigger rows. Two callbacks fire at the same time. Caller is confused.
+**Bad** - caller retries the register request after a network blip. We create two trigger rows. Two callbacks fire at the same time. Caller is confused.
 
-**Good** — caller supplies `Idempotency-Key`. API stores `(callerId, idemKey) → triggerId` in Redis with TTL covering the delay. Repeat requests get the same triggerId.
+**Good** - caller supplies `Idempotency-Key`. API stores `(callerId, idemKey) → triggerId` in Redis with TTL covering the delay. Repeat requests get the same triggerId.
 
-**Great** — combine register-side idempotency with **fire-side dedupe**. The dispatcher writes `status = FIRED` using a Cassandra `IF status = IN_FLIGHT` condition. If two dispatchers race on the same SQS message (visibility-timeout edge case), one wins the conditional write, the other gets a "no-op" and skips the callback. Borrowed from Stripe's idempotency layer pattern. The caller still has to be ready for at-least-once because the conditional write reduces but doesn't eliminate duplicates (window between POST returning 2xx and the conditional write).
+**Great** - combine register-side idempotency with **fire-side dedupe**. The dispatcher writes `status = FIRED` using a Cassandra `IF status = IN_FLIGHT` condition. If two dispatchers race on the same SQS message (visibility-timeout edge case), one wins the conditional write, the other gets a "no-op" and skips the callback. Borrowed from Stripe's idempotency layer pattern. The caller still has to be ready for at-least-once because the conditional write reduces but doesn't eliminate duplicates (window between POST returning 2xx and the conditional write).
 
 ### 7.3 Long-delay tail: 30-day triggers without bloating SQS
 
-**Bad** — push 30-day triggers to SQS with `DelaySeconds=2592000`. SQS doesn't support that — caps at 15 min.
+**Bad** - push 30-day triggers to SQS with `DelaySeconds=2592000`. SQS doesn't support that - caps at 15 min.
 
-**Good** — keep them in Cassandra; sweeper migrates them to SQS within 15 min of fire. Already the design.
+**Good** - keep them in Cassandra; sweeper migrates them to SQS within 15 min of fire. Already the design.
 
-**Great** — bucket-aligned **Cassandra TTL** so old fired/cancelled rows auto-purge. Set TTL on inserts to `delaySeconds + 30 days` so audit data sticks around but the active table stays lean. For super-long delays (> 30 days, e.g., subscription renewal in 1 year), promote to a separate cold table (`triggers_cold`) and have a daily job migrate rows back into the hot table when they're a day away. Borrowed from Dynein's "secondary store for far-future" pattern.
+**Great** - bucket-aligned **Cassandra TTL** so old fired/cancelled rows auto-purge. Set TTL on inserts to `delaySeconds + 30 days` so audit data sticks around but the active table stays lean. For super-long delays (> 30 days, e.g., subscription renewal in 1 year), promote to a separate cold table (`triggers_cold`) and have a daily job migrate rows back into the hot table when they're a day away. Borrowed from Dynein's "secondary store for far-future" pattern.
 
 ### 7.4 Bad caller endpoints: blocking dispatchers
 
-**Bad** — one caller's callback URL hangs (60s read timeout). Dispatcher pool fills with stuck threads. All other triggers stall. Single-tenant outage becomes platform-wide.
+**Bad** - one caller's callback URL hangs (60s read timeout). Dispatcher pool fills with stuck threads. All other triggers stall. Single-tenant outage becomes platform-wide.
 
-**Good** — per-caller dispatcher pools with bulkhead semantics. Each caller gets a slice of the pool capped at, say, 100 concurrent calls. A misbehaving caller can saturate their own slice but not others'.
+**Good** - per-caller dispatcher pools with bulkhead semantics. Each caller gets a slice of the pool capped at, say, 100 concurrent calls. A misbehaving caller can saturate their own slice but not others'.
 
-**Great** — circuit breaker per caller (e.g., Resilience4j). Track success rate per `callerId`; if >50% errors over the last 30s, open the circuit and fast-fail callbacks to that caller for 60s, dumping them to a per-caller delayed retry SQS. This both protects the dispatcher pool and gives the caller breathing room to recover. Pair with a dashboard surfacing "callers with open circuit" so on-call can reach out. Borrowed from Netflix Hystrix-style isolation.
+**Great** - circuit breaker per caller (e.g., Resilience4j). Track success rate per `callerId`; if >50% errors over the last 30s, open the circuit and fast-fail callbacks to that caller for 60s, dumping them to a per-caller delayed retry SQS. This both protects the dispatcher pool and gives the caller breathing room to recover. Pair with a dashboard surfacing "callers with open circuit" so on-call can reach out. Borrowed from Netflix Hystrix-style isolation.
 
 💡 *Circuit breaker = if a downstream service fails X times in a row, stop calling it for a cooldown period (the circuit "opens"). Prevents cascading failures and gives the failing service time to recover.*
 
@@ -458,15 +458,15 @@ flowchart LR
 
 ### 7.5 Cancellation race: cancel arrives mid-fire
 
-**Bad** — caller cancels at T-2s; dispatcher reads `status = PENDING` at T-3s, fires at T+0. Caller confused.
+**Bad** - caller cancels at T-2s; dispatcher reads `status = PENDING` at T-3s, fires at T+0. Caller confused.
 
-**Good** — dispatcher reads `status` at the moment of dispatch (just before POST), not when SQS message is received.
+**Good** - dispatcher reads `status` at the moment of dispatch (just before POST), not when SQS message is received.
 
-**Great** — use a Cassandra LWT (`UPDATE ... IF status='PENDING'`) to atomically transition `PENDING → IN_FLIGHT` right before POST. If the cancel raced and won, the LWT fails and dispatcher skips. This gives us a consistent linearization point at fire time.
+**Great** - use a Cassandra LWT (`UPDATE ... IF status='PENDING'`) to atomically transition `PENDING → IN_FLIGHT` right before POST. If the cancel raced and won, the LWT fails and dispatcher skips. This gives us a consistent linearization point at fire time.
 
 ### 7.6 Dead-letter / reconciliation
 
-If a callback fails N times, the trigger lands in a DLQ topic (Kafka). A small operator dashboard surfaces failures by caller. Critically, a **reconciler job** runs hourly: scans Cassandra for rows with `fireAt < now - 1h` and `status IN (PENDING, IN_FLIGHT)` — these are leaks. They get re-pushed to SQS. This is the safety net for any sweeper / leader-election bug. Borrowed from Dynein's reconciler.
+If a callback fails N times, the trigger lands in a DLQ topic (Kafka). A small operator dashboard surfaces failures by caller. Critically, a **reconciler job** runs hourly: scans Cassandra for rows with `fireAt < now - 1h` and `status IN (PENDING, IN_FLIGHT)` - these are leaks. They get re-pushed to SQS. This is the safety net for any sweeper / leader-election bug. Borrowed from Dynein's reconciler.
 
 ## 7.5. Design Self-Audit
 
@@ -474,9 +474,9 @@ If a callback fails N times, the trigger lands in a DLQ topic (Kafka). A small o
 - **Stale reads?** Dispatcher LWT on `IF status='PENDING'` is strongly consistent (Paxos round). The sub-second window between LWT and HTTP POST is the at-least-once gap, accepted. ✅
 - **Hot partition?** Addressed in 7.1 with sub-sharding + jitter. ✅
 - **DLQ + reconciliation story?** 7.6. ✅
-- **Cost callout for hot tier?** SQS at 100K msgs/sec is non-trivial — ~$0.40/M requests, plus delay queue charges. At 100K/s × 86400 = 8.6B msgs/day, that's ~$3500/day in SQS alone. Worth noting we'd evaluate SQS FIFO vs Redis Streams for cost-sensitive deployments. ✅
-- **Search?** Not relevant — callers query their own triggers by `triggerId`, no full-text need.
-- **What would a skeptical senior push back on?** "Why not just Temporal?" Fair — Temporal solves this and more. Tradeoff: heavier ops, harder to scale to 100K/s of simple delayed triggers without serious tuning. Our scope is the narrow "fire one HTTP callback later" use case, where a purpose-built service is leaner.
+- **Cost callout for hot tier?** SQS at 100K msgs/sec is non-trivial - ~$0.40/M requests, plus delay queue charges. At 100K/s × 86400 = 8.6B msgs/day, that's ~$3500/day in SQS alone. Worth noting we'd evaluate SQS FIFO vs Redis Streams for cost-sensitive deployments. ✅
+- **Search?** Not relevant - callers query their own triggers by `triggerId`, no full-text need.
+- **What would a skeptical senior push back on?** "Why not just Temporal?" Fair - Temporal solves this and more. Tradeoff: heavier ops, harder to scale to 100K/s of simple delayed triggers without serious tuning. Our scope is the narrow "fire one HTTP callback later" use case, where a purpose-built service is leaner.
 
 ## 8. Final Architecture
 
@@ -517,19 +517,19 @@ flowchart LR
 
 ## Glossary (named components)
 
-- **Sweeper** — periodic process that scans Cassandra for triggers due in the next 15 min and pushes them into the in-memory timing wheel. Why it exists: Cassandra is the durable store, but range-scanning it at every tick would be slow; the sweeper hydrates a fast in-memory structure.
-- **Timing wheel** — ring buffer of time slots (e.g., 1024 slots × 1 ms). Insert is O(1); each tick fires expired slots. Multiple wheels chained give hierarchical resolution (ms → s → min). Borrowed from Kafka Purgatory.
-- **Dispatcher** — worker that pulls from SQS, reads the trigger row, POSTs to the caller's callback URL, marks `FIRED`. Stateless; scale horizontally.
-- **Reconciler** — hourly safety-net job that finds triggers stuck in `PENDING` past their fireAt and re-injects them. Catches any leak from sweeper / leader-election bugs.
-- **Bucket** — Cassandra partition keyed by `floor(fireAt / 1min)` plus a sub-shard hash. The unit of work the sweeper scans.
+- **Sweeper** - periodic process that scans Cassandra for triggers due in the next 15 min and pushes them into the in-memory timing wheel. Why it exists: Cassandra is the durable store, but range-scanning it at every tick would be slow; the sweeper hydrates a fast in-memory structure.
+- **Timing wheel** - ring buffer of time slots (e.g., 1024 slots × 1 ms). Insert is O(1); each tick fires expired slots. Multiple wheels chained give hierarchical resolution (ms → s → min). Borrowed from Kafka Purgatory.
+- **Dispatcher** - worker that pulls from SQS, reads the trigger row, POSTs to the caller's callback URL, marks `FIRED`. Stateless; scale horizontally.
+- **Reconciler** - hourly safety-net job that finds triggers stuck in `PENDING` past their fireAt and re-injects them. Catches any leak from sweeper / leader-election bugs.
+- **Bucket** - Cassandra partition keyed by `floor(fireAt / 1min)` plus a sub-shard hash. The unit of work the sweeper scans.
 
 ## Sources
 
-- [Airbnb Dynein](https://medium.com/airbnb-engineering/dynein-building-a-distributed-delayed-job-queueing-system-93ab10f05f99) — two-tier (SQS + DynamoDB) design, reconciler pattern. Content rephrased for compliance.
-- [Kafka Purgatory + Hierarchical Timing Wheels](https://www.confluent.io/blog/apache-kafka-purgatory-hierarchical-timing-wheels/) — wheel structure for O(1) timer insert/expire.
-- [AWS SQS delay queues docs](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-delay-queues.html) — 15-min delay primitive.
-- [Stripe Idempotency-Key](https://stripe.com/docs/api/idempotent_requests) — caller-supplied idempotency pattern.
-- [Netflix Maestro overview](https://blog.bytebytego.com/p/how-netflix-orchestrates-millions) — sharded execution layer.
+- [Airbnb Dynein](https://medium.com/airbnb-engineering/dynein-building-a-distributed-delayed-job-queueing-system-93ab10f05f99) - two-tier (SQS + DynamoDB) design, reconciler pattern. Content rephrased for compliance.
+- [Kafka Purgatory + Hierarchical Timing Wheels](https://www.confluent.io/blog/apache-kafka-purgatory-hierarchical-timing-wheels/) - wheel structure for O(1) timer insert/expire.
+- [AWS SQS delay queues docs](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-delay-queues.html) - 15-min delay primitive.
+- [Stripe Idempotency-Key](https://stripe.com/docs/api/idempotent_requests) - caller-supplied idempotency pattern.
+- [Netflix Maestro overview](https://blog.bytebytego.com/p/how-netflix-orchestrates-millions) - sharded execution layer.
 
 
 ---
@@ -551,11 +551,11 @@ flowchart LR
 
 ## What's Expected at Each Level
 
-> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+> This section helps you calibrate your depth. You don't need to cover everything - just know what's expected for your level.
 
 ### Mid-level
 
-Understand the problem — schedule an action to happen at a future time (e.g., "send reminder in 30 min"). Propose a simple DB + polling mechanism. Recognize why polling every second doesn't scale to millions of triggers — scanning the entire table is O(N) per tick.
+Understand the problem - schedule an action to happen at a future time (e.g., "send reminder in 30 min"). Propose a simple DB + polling mechanism. Recognize why polling every second doesn't scale to millions of triggers - scanning the entire table is O(N) per tick.
 
 ### Senior
 
@@ -571,10 +571,10 @@ Address sub-second precision at scale using timing wheels (Kafka-style HashedWhe
 - **Timing wheel** gives O(1) insert and fire for scheduled events
 - **Two-tier**: Redis for near-term (<1hr), Cassandra for far-term timers
 - **Circuit breaker** protects downstream services during cascade failures
-- **Lazy cancellation** — mark as cancelled, skip on fire (cheaper than deleting from wheel)
+- **Lazy cancellation** - mark as cancelled, skip on fire (cheaper than deleting from wheel)
 
 ---
 ## Related Designs
-- [Job Scheduler](/hld/JobScheduler) — distributed task scheduling
-- [Digital Wallet](/hld/DigitalWallet) — payment retry workflows
-- [Notification System](/hld/NotificationSystem) — delayed and scheduled delivery
+- [Job Scheduler](/hld/JobScheduler) - distributed task scheduling
+- [Digital Wallet](/hld/DigitalWallet) - payment retry workflows
+- [Notification System](/hld/NotificationSystem) - delayed and scheduled delivery

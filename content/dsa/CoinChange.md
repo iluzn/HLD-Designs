@@ -131,7 +131,7 @@ Bottom-up from `1` to `amount`.
 
 ## Key Insight
 
-> This is the **unbounded knapsack** variant — you can reuse coins. The "bounded" version (each coin used once) would iterate coins in the outer loop and amounts in inner, but here it doesn't matter because reuse is allowed.
+> This is the **unbounded knapsack** variant - you can reuse coins. The "bounded" version (each coin used once) would iterate coins in the outer loop and amounts in inner, but here it doesn't matter because reuse is allowed.
 
 ---
 

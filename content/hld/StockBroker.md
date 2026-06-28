@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Design Robinhood / Zerodha — Stock Broker System Design Interview"
+title: "Design Robinhood / Zerodha - Stock Broker System Design Interview"
 description: "System design for a stock broker like Robinhood or Zerodha with order matching, transaction history, notifications, and delivery semantics. Event-driven architecture with Kafka."
 permalink: /hld/StockBroker/
 ---
@@ -8,13 +8,13 @@ permalink: /hld/StockBroker/
 # Designing a Stock Broker Platform (Robinhood / Zerodha)
 
 ⚡ **Difficulty:** Advanced 🏷️ **Topics:** Order Matching, Event Sourcing, CQRS, Kafka, Delivery Semantics 🏢 **Asked at:** Robinhood, Zerodha, Groww, Upstox, Goldman Sachs
-📋 **Prerequisites:** [Fundamentals](/concepts) — especially [Event Sourcing](/concepts#event-sourcing--cqrs), [Message Queues](/concepts#message-queues), and [Idempotency](/concepts#idempotency)
+📋 **Prerequisites:** [Fundamentals](/concepts) - especially [Event Sourcing](/concepts#event-sourcing--cqrs), [Message Queues](/concepts#message-queues), and [Idempotency](/concepts#idempotency)
 
 ---
 
 ## 1. Understanding the Problem
 
-A stock broker platform lets retail users buy and sell financial instruments (stocks, ETFs, options). The broker receives user orders, validates them against account balances and risk rules, routes them to an exchange (or internal matching engine), and shows real-time status updates. The system must handle thousands of concurrent orders during market hours with strong consistency guarantees — a lost or duplicate trade is a regulatory violation.
+A stock broker platform lets retail users buy and sell financial instruments (stocks, ETFs, options). The broker receives user orders, validates them against account balances and risk rules, routes them to an exchange (or internal matching engine), and shows real-time status updates. The system must handle thousands of concurrent orders during market hours with strong consistency guarantees - a lost or duplicate trade is a regulatory violation.
 
 ---
 
@@ -39,11 +39,11 @@ flowchart LR
 
 **How this breaks:**
 - Single API server can't handle 100K+ orders/sec during market open
-- Synchronous exchange call blocks the API — timeouts pile up
-- No order queue — if exchange is slow, user retries create duplicates
+- Synchronous exchange call blocks the API - timeouts pile up
+- No order queue - if exchange is slow, user retries create duplicates
 - No way to notify users of fills without polling
 - Single DB becomes write bottleneck during peak hours
-- No audit trail — regulators require full event history of every order state change
+- No audit trail - regulators require full event history of every order state change
 
 The rest of the doc evolves this into a production-grade event-driven architecture.
 
@@ -51,11 +51,11 @@ The rest of the doc evolves this into a production-grade event-driven architectu
 
 ## 1.7. Prior Art We're Drawing From
 
-- **Zerodha Kite OMS** — Silo-based user partitioning, pre-trade validation at the gateway, async order routing to exchange. Handles millions of orders daily on commodity hardware. ([zerodha.tech blog](https://zerodha.tech/blog/))
-- **LMAX Exchange Disruptor** — Single-threaded matching engine processing 6M orders/sec using a lock-free ring buffer. Demonstrates that matching is CPU-bound, not I/O-bound.
-- **Coinbase Matching Engine** — Continuous first-come-first-serve order book with price-time priority. Publishes trade events via WebSocket feed. ([Coinbase docs](https://docs.cdp.coinbase.com/exchange/concepts/matching-engine))
-- **Kafka + Flink for Exchange** — Event-driven architecture where every state change is a Kafka event; Flink processes matching and settlement in real-time streams. ([Medium article](https://medium.com/@swayam.imo001/how-we-built-a-real-time-stock-exchange-with-an-event-driven-architecture-on-kafka-and-flink-51e5902fdc6c))
-- **Robinhood** — Routes orders to market makers (PFOF model) rather than running own matching engine. Emphasizes idempotent order submission and real-time push notifications.
+- **Zerodha Kite OMS** - Silo-based user partitioning, pre-trade validation at the gateway, async order routing to exchange. Handles millions of orders daily on commodity hardware. ([zerodha.tech blog](https://zerodha.tech/blog/))
+- **LMAX Exchange Disruptor** - Single-threaded matching engine processing 6M orders/sec using a lock-free ring buffer. Demonstrates that matching is CPU-bound, not I/O-bound.
+- **Coinbase Matching Engine** - Continuous first-come-first-serve order book with price-time priority. Publishes trade events via WebSocket feed. ([Coinbase docs](https://docs.cdp.coinbase.com/exchange/concepts/matching-engine))
+- **Kafka + Flink for Exchange** - Event-driven architecture where every state change is a Kafka event; Flink processes matching and settlement in real-time streams. ([Medium article](https://medium.com/@swayam.imo001/how-we-built-a-real-time-stock-exchange-with-an-event-driven-architecture-on-kafka-and-flink-51e5902fdc6c))
+- **Robinhood** - Routes orders to market makers (PFOF model) rather than running own matching engine. Emphasizes idempotent order submission and real-time push notifications.
 
 ---
 
@@ -63,9 +63,9 @@ The rest of the doc evolves this into a production-grade event-driven architectu
 
 ### Core (Top 3)
 
-1. **Place and match buy/sell orders** — submit limit/market orders, match based on price-time priority
-2. **Show users their transactions** — real-time order status, trade history, portfolio positions
-3. **Send notifications** — push notifications on order fills, partial fills, rejections, price alerts
+1. **Place and match buy/sell orders** - submit limit/market orders, match based on price-time priority
+2. **Show users their transactions** - real-time order status, trade history, portfolio positions
+3. **Send notifications** - push notifications on order fills, partial fills, rejections, price alerts
 
 ### Below the Line
 
@@ -85,7 +85,7 @@ The rest of the doc evolves this into a production-grade event-driven architectu
 |---|---|
 | **Latency** | Order placement < 50ms P99 (broker side); matching < 5ms |
 | **Throughput** | 100K orders/sec during market open |
-| **Consistency** | Exactly-once order execution — no duplicates, no lost fills |
+| **Consistency** | Exactly-once order execution - no duplicates, no lost fills |
 | **Availability** | 99.99% during market hours (09:15 - 15:30 IST) |
 
 ### Below the Line
@@ -117,7 +117,7 @@ The rest of the doc evolves this into a production-grade event-driven architectu
 | Object Store | Trade confirmations, reports | PDFs, CSVs | Batch reads | S3 | GCS, MinIO |
 
 **Why Postgres for the order DB, not DynamoDB?**
-Orders are relational (order → fills → settlements), need ACID transactions for balance deductions, and regulators require complex queries for audits. Postgres with partitioning by date handles the write volume. The matching engine itself uses in-memory structures — the DB is for persistence, not matching speed.
+Orders are relational (order → fills → settlements), need ACID transactions for balance deductions, and regulators require complex queries for audits. Postgres with partitioning by date handles the write volume. The matching engine itself uses in-memory structures - the DB is for persistence, not matching speed.
 
 **Why Kafka, not a simple queue?**
 Orders need event replay (for reconciliation), partitioning by symbol (for ordered matching), and multiple consumers (matcher, notifier, portfolio updater, audit logger). Kafka's log-based model fits perfectly.
@@ -126,12 +126,12 @@ Orders need event replay (for reconciliation), partitioning by symbol (for order
 
 ## 4. Core Entities
 
-- **User** — account, KYC status, cash balance, margin
-- **Order** — symbol, side (buy/sell), type (market/limit), quantity, price, status, timestamps
-- **Trade (Fill)** — matched order pair, execution price, quantity, timestamp
-- **Position** — user's holding in a symbol (quantity, avg price)
-- **Notification** — type, user, payload, delivery status
-- **OrderBook** — per-symbol sorted structure of active limit orders
+- **User** - account, KYC status, cash balance, margin
+- **Order** - symbol, side (buy/sell), type (market/limit), quantity, price, status, timestamps
+- **Trade (Fill)** - matched order pair, execution price, quantity, timestamp
+- **Position** - user's holding in a symbol (quantity, avg price)
+- **Notification** - type, user, payload, delivery status
+- **OrderBook** - per-symbol sorted structure of active limit orders
 
 ---
 
@@ -167,11 +167,11 @@ The first thing a user does is place a buy or sell order. Let's build the simple
 
 **New components we need:**
 
-1. **API Gateway** — Entry point for all requests. Handles auth (JWT), rate limiting, and idempotency checks. Idempotency means: if a user's network drops and they retry, we don't accidentally place the order twice.
-2. **Order Management Service (OMS)** — The brain. Validates orders (enough balance? valid symbol? market open?), persists them, and publishes events.
-3. **Kafka** — Our event bus.<br>💡 *Kafka is a distributed log where events are appended and consumed by multiple services independently. Think of it as a super-reliable conveyor belt for messages. [Learn more →](/concepts#message-queues)*
-4. **Matching Engine** — Consumes order events and matches buyers with sellers using price-time priority (highest bidder meets lowest seller first).
-5. **Order DB (Postgres)** — Stores all orders and their current state. Source of truth.
+1. **API Gateway** - Entry point for all requests. Handles auth (JWT), rate limiting, and idempotency checks. Idempotency means: if a user's network drops and they retry, we don't accidentally place the order twice.
+2. **Order Management Service (OMS)** - The brain. Validates orders (enough balance? valid symbol? market open?), persists them, and publishes events.
+3. **Kafka** - Our event bus.<br>💡 *Kafka is a distributed log where events are appended and consumed by multiple services independently. Think of it as a super-reliable conveyor belt for messages. [Learn more →](/concepts#message-queues)*
+4. **Matching Engine** - Consumes order events and matches buyers with sellers using price-time priority (highest bidder meets lowest seller first).
+5. **Order DB (Postgres)** - Stores all orders and their current state. Source of truth.
 
 ```mermaid
 flowchart LR
@@ -208,9 +208,9 @@ flowchart LR
 1. User taps "Buy 10 RELIANCE at ₹2,850" in the app → request hits API Gateway
 2. Gateway checks: Is the user authenticated? Has this request been sent before (idempotency key)? Is the user within rate limits?
 3. Gateway forwards to OMS. OMS validates: Does the user have enough cash? Is RELIANCE a valid symbol? Is the market open?
-4. OMS persists the order in Postgres with status `PENDING` and blocks ₹28,500 from the user's available balance (soft hold — money isn't gone yet, just reserved)
+4. OMS persists the order in Postgres with status `PENDING` and blocks ₹28,500 from the user's available balance (soft hold - money isn't gone yet, just reserved)
 5. OMS publishes an `order.placed` event to Kafka, **partitioned by symbol**
-6. User gets back `202 Accepted` with their orderId — they don't wait for matching
+6. User gets back `202 Accepted` with their orderId - they don't wait for matching
 
 **Why Kafka between OMS and Matching Engine?**
 
@@ -230,10 +230,10 @@ This is where we use **CQRS**.<br>💡 *CQRS (Command Query Responsibility Segre
 
 **New components:**
 
-1. **Event Projector** — A Kafka consumer that listens to `trade.executed` events and updates a read-optimized database.<br>💡 *Think of it as a translator: it takes raw events and builds the "current state" views that users see. [Learn more →](/concepts#message-queues)*
-2. **Query Service** — Serves all read requests (portfolio, order history). Hits cache first, falls back to read replica.
-3. **Redis Cache** — Stores hot data (user's current portfolio, recent orders) for sub-10ms reads.
-4. **Postgres Read Replica** — A copy of the DB optimized for reads. Doesn't slow down the write path.
+1. **Event Projector** - A Kafka consumer that listens to `trade.executed` events and updates a read-optimized database.<br>💡 *Think of it as a translator: it takes raw events and builds the "current state" views that users see. [Learn more →](/concepts#message-queues)*
+2. **Query Service** - Serves all read requests (portfolio, order history). Hits cache first, falls back to read replica.
+3. **Redis Cache** - Stores hot data (user's current portfolio, recent orders) for sub-10ms reads.
+4. **Postgres Read Replica** - A copy of the DB optimized for reads. Doesn't slow down the write path.
 
 ```mermaid
 flowchart LR
@@ -280,10 +280,10 @@ When a user's order fills, we need to tell them immediately. If they're in the a
 
 **New components:**
 
-1. **Notification Service** — Consumes fill/reject events from Kafka, resolves user preferences, and routes to the right channel.
-2. **WebSocket Gateway** — Maintains persistent connections with active users. When a user opens the app, they connect here for real-time updates.
-3. **FCM / APNs** — Firebase Cloud Messaging (Android) and Apple Push Notification Service (iOS). External services that deliver push notifications to locked phones.
-4. **Dead Letter Queue (DLQ)** — Where failed notifications go for retry.<br>💡 *A DLQ is a holding pen for messages that couldn't be processed. A separate job retries them later instead of losing them.*
+1. **Notification Service** - Consumes fill/reject events from Kafka, resolves user preferences, and routes to the right channel.
+2. **WebSocket Gateway** - Maintains persistent connections with active users. When a user opens the app, they connect here for real-time updates.
+3. **FCM / APNs** - Firebase Cloud Messaging (Android) and Apple Push Notification Service (iOS). External services that deliver push notifications to locked phones.
+4. **Dead Letter Queue (DLQ)** - Where failed notifications go for retry.<br>💡 *A DLQ is a holding pen for messages that couldn't be processed. A separate job retries them later instead of losing them.*
 
 ```mermaid
 flowchart LR
@@ -314,8 +314,8 @@ flowchart LR
 
 **Delivery semantics:**
 
-- **Notifications: at-least-once** — getting "Order filled" twice is annoying but harmless
-- **Order execution: exactly-once** — filling an order twice is a regulatory violation. This is achieved through idempotency keys (explained in Deep Dive 2)
+- **Notifications: at-least-once** - getting "Order filled" twice is annoying but harmless
+- **Order execution: exactly-once** - filling an order twice is a regulatory violation. This is achieved through idempotency keys (explained in Deep Dive 2)
 
 ---
 
@@ -398,7 +398,7 @@ stateDiagram-v2
 
 ### Deep Dive 1: Order Matching (Price-Time Priority)
 
-**Bad:** Scan all open orders linearly on each new order — O(n) per match, breaks at scale.
+**Bad:** Scan all open orders linearly on each new order - O(n) per match, breaks at scale.
 
 **Good:** Sorted data structure (TreeMap/BST) keyed by price. Buy side = max-heap (highest bid first). Sell side = min-heap (lowest ask first). O(log n) insert, O(1) match against best price.
 
@@ -420,18 +420,18 @@ flowchart LR
 ```
 
 **Mechanism:** When a BUY order arrives at price P:
-1. Check best ASK — if ask_price <= P, execute at ask_price (price improvement for buyer)
+1. Check best ASK - if ask_price <= P, execute at ask_price (price improvement for buyer)
 2. Fill as much quantity as available at that level
 3. If partially filled, move to next ask level
 4. If unfilled quantity remains and it's a LIMIT order, add to bids at price P
 
-Single-threaded per symbol — no locks needed. Borrowing from LMAX Disruptor: one thread per symbol partition achieves millions of matches/sec.
+Single-threaded per symbol - no locks needed. Borrowing from LMAX Disruptor: one thread per symbol partition achieves millions of matches/sec.
 
 ---
 
 ### Deep Dive 2: Exactly-Once Delivery Semantics
 
-**Bad:** Fire-and-forget — orders get lost on crashes. Or naive retry — user gets double-filled.
+**Bad:** Fire-and-forget - orders get lost on crashes. Or naive retry - user gets double-filled.
 
 **Good:** Idempotency key on order submission + DB unique constraint. Kafka consumer with manual offset commit after processing.
 
@@ -448,7 +448,7 @@ Single-threaded per symbol — no locks needed. Borrowing from LMAX Disruptor: o
 
 ### Deep Dive 3: Real-Time Notifications and WebSocket Delivery
 
-**Bad:** Client polls every second — wastes bandwidth, adds latency, doesn't scale to millions.
+**Bad:** Client polls every second - wastes bandwidth, adds latency, doesn't scale to millions.
 
 **Good:** WebSocket connection per user, server pushes events. But: how do you route a fill event to the correct WebSocket server holding that user's connection?
 
@@ -461,7 +461,7 @@ Single-threaded per symbol — no locks needed. Borrowing from LMAX Disruptor: o
 5. If user is offline (no WebSocket), fall back to FCM/APNs push notification
 
 **Why Redis Pub/Sub, not Kafka for this?**
-Kafka guarantees durability but adds latency. WebSocket delivery is best-effort and ephemeral — if the push fails, the notification still gets sent via FCM as backup. Redis Pub/Sub is sub-millisecond.
+Kafka guarantees durability but adds latency. WebSocket delivery is best-effort and ephemeral - if the push fails, the notification still gets sent via FCM as backup. Redis Pub/Sub is sub-millisecond.
 
 ---
 
@@ -469,7 +469,7 @@ Kafka guarantees durability but adds latency. WebSocket delivery is best-effort 
 
 **Problem:** Market opens at 09:15 IST. Within 30 seconds, 80% of daily orders flood in. Specific symbols (RELIANCE, NIFTY futures) get 10x more orders than others.
 
-**Bad:** Single Kafka partition per symbol — the hot symbol partition overwhelms one consumer.
+**Bad:** Single Kafka partition per symbol - the hot symbol partition overwhelms one consumer.
 
 **Good:** Pre-split hot symbols into sub-partitions (e.g., RELIANCE-0 through RELIANCE-3). Round-robin incoming orders across sub-partitions. Each sub-partition has its own matching engine instance.
 
@@ -486,7 +486,7 @@ Kafka guarantees durability but adds latency. WebSocket delivery is best-effort 
 ### Deep Dive 5: CQRS and Event Sourcing for Audit
 
 **Why event sourcing for a broker?**
-Regulators (SEBI, SEC) require a full audit trail of every order state change. "What was the state of order X at 10:32:47.123?" must be answerable. Event sourcing gives this for free — replay events to any point in time.
+Regulators (SEBI, SEC) require a full audit trail of every order state change. "What was the state of order X at 10:32:47.123?" must be answerable. Event sourcing gives this for free - replay events to any point in time.
 
 **Architecture:**
 - Every state change is an immutable event in Kafka (retained forever / 7 years)
@@ -510,7 +510,7 @@ Regulators (SEBI, SEC) require a full audit trail of every order state change. "
 5. If conflict → duplicate, return the existing `order_id` and its current status
 6. Keys expire after 24 hours (cron cleanup)
 
-**Cost:** One extra DB lookup per order. At 100K orders/sec, this table is write-hot. Solution: partition by key hash, or use Redis with TTL for the idempotency check (faster, but less durable — acceptable since the DB has a unique constraint as backstop).
+**Cost:** One extra DB lookup per order. At 100K orders/sec, this table is write-hot. Solution: partition by key hash, or use Redis with TTL for the idempotency check (faster, but less durable - acceptable since the DB has a unique constraint as backstop).
 
 ---
 
@@ -518,9 +518,9 @@ Regulators (SEBI, SEC) require a full audit trail of every order state change. "
 
 | Question | Answer |
 |---|---|
-| Dedicated search index? | Not needed — users search by symbol (indexed column), not free text |
+| Dedicated search index? | Not needed - users search by symbol (indexed column), not free text |
 | Stale reads after writes? | Read-your-writes for order status via write-DB; portfolio via cache invalidation on fill |
-| Single points of failure? | Matching engine is single-leader per symbol — failover via standby replica with Kafka replay |
+| Single points of failure? | Matching engine is single-leader per symbol - failover via standby replica with Kafka replay |
 | Dead-letter / reconciliation? | ✅ Reconciler scans PENDING orders, DLQ for failed notifications |
 | Data freshness across caches? | Portfolio cache TTL 30s + event-driven invalidation on fills |
 | Cost at scale? | Kafka retention (7 years) → tier to S3 after 30 days. Matching engine is CPU-only, no expensive DB |
@@ -609,38 +609,38 @@ flowchart LR
 
 | Term | What it is |
 |---|---|
-| **CQRS** | Command Query Responsibility Segregation — separating the fast write path (order placement) from the scalable read path (portfolio, history) so each scales independently. |
+| **CQRS** | Command Query Responsibility Segregation - separating the fast write path (order placement) from the scalable read path (portfolio, history) so each scales independently. |
 | **Event Sourcing** | Storing every order state change as an immutable event in Kafka, enabling full audit replay and point-in-time reconstruction for regulators. |
 | **Kafka** | Distributed event log partitioned by symbol ensuring ordered matching per stock and enabling multiple independent consumers (matcher, notifier, auditor). |
-| **Order Matching Engine** | In-memory TreeMap-based order book with price-time priority — single-threaded per symbol for lock-free matching at millions of ops/sec. |
+| **Order Matching Engine** | In-memory TreeMap-based order book with price-time priority - single-threaded per symbol for lock-free matching at millions of ops/sec. |
 | **WebSocket** | Persistent connection pushing real-time order fills and market price updates to active clients without polling. |
 | **Redis** | In-memory cache for market data, user sessions, portfolio snapshots, and Pub/Sub routing for WebSocket fan-out. |
 | **Postgres** | ACID relational DB for order state, balance management, and idempotency key storage with partitioning by date. |
-| **Dead Letter Queue** | Holding queue for failed notifications or unprocessable events — retried by a sweeper or escalated for manual review. |
+| **Dead Letter Queue** | Holding queue for failed notifications or unprocessable events - retried by a sweeper or escalated for manual review. |
 
 ---
 
 ## What's Expected at Each Level
 
-> This section helps you calibrate your depth. You don't need to cover everything — just know what's expected for your level.
+> This section helps you calibrate your depth. You don't need to cover everything - just know what's expected for your level.
 
 ### Mid-level
 
-Design a basic order placement and execution flow. Understand the need for an order book — that buy and sell orders must be matched by price. Propose a database for storing trades and a queue for processing orders asynchronously. With prompting, discuss why exactly-once delivery matters and what happens if an order is processed twice.
+Design a basic order placement and execution flow. Understand the need for an order book - that buy and sell orders must be matched by price. Propose a database for storing trades and a queue for processing orders asynchronously. With prompting, discuss why exactly-once delivery matters and what happens if an order is processed twice.
 
 ### Senior
 
-Propose event sourcing for the order lifecycle — every state change is an immutable event. Explain CQRS and why separating the write model from the read model matters for a broker. Discuss Kafka for event streaming with partitions ordered by symbol. Articulate idempotency for order submission (client-generated keys + DB unique constraints) and the need for sequence numbers to detect gaps.
+Propose event sourcing for the order lifecycle - every state change is an immutable event. Explain CQRS and why separating the write model from the read model matters for a broker. Discuss Kafka for event streaming with partitions ordered by symbol. Articulate idempotency for order submission (client-generated keys + DB unique constraints) and the need for sequence numbers to detect gaps.
 
 ### Staff+
 
-Address matching engine internals — price-time priority with a TreeMap per side, single-threaded per symbol partition (LMAX-style). Discuss market data fan-out to millions of clients via tiered pub-sub or multicast. Proactively mention regulatory requirements (7-year audit trail, trade reconstruction from event log), split-brain scenarios during network partition (matching engine is single-leader with standby failover), and the cost of real-time position calculation at scale.
+Address matching engine internals - price-time priority with a TreeMap per side, single-threaded per symbol partition (LMAX-style). Discuss market data fan-out to millions of clients via tiered pub-sub or multicast. Proactively mention regulatory requirements (7-year audit trail, trade reconstruction from event log), split-brain scenarios during network partition (matching engine is single-leader with standby failover), and the cost of real-time position calculation at scale.
 
 
 ---
 ## 🎯 Key Takeaways
 
-- **Exactly-once** via idempotency keys + Kafka transactions — no double fills
+- **Exactly-once** via idempotency keys + Kafka transactions - no double fills
 - **CQRS** separates write path (fast, consistent) from read path (scalable, eventually consistent)
 - **Partition by symbol** in Kafka ensures ordered matching per stock
 - **Reconciler** catches edge cases that the primary path misses
@@ -648,6 +648,6 @@ Address matching engine internals — price-time priority with a TreeMap per sid
 ---
 ## Related Designs
 
-- [Digital Wallet (PhonePe)](/hld/DigitalWallet) — payment orchestration, saga pattern, idempotency
-- [Uber / Lyft](/hld/Uber) — real-time matching with distributed locks
-- [BookMyShow](/hld/BookMyShow) — seat reservation concurrency, exactly-once processing
+- [Digital Wallet (PhonePe)](/hld/DigitalWallet) - payment orchestration, saga pattern, idempotency
+- [Uber / Lyft](/hld/Uber) - real-time matching with distributed locks
+- [BookMyShow](/hld/BookMyShow) - seat reservation concurrency, exactly-once processing

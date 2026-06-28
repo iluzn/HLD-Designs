@@ -1,7 +1,7 @@
 ---
 permalink: /lld-fundamentals/
 layout: default
-title: "LLD Fundamentals — SOLID, Design Patterns, Machine Coding Approach"
+title: "LLD Fundamentals - SOLID, Design Patterns, Machine Coding Approach"
 description: "Core concepts for Low-Level Design interviews: SOLID principles, design patterns, when to use what, class design approach, and concurrency fundamentals."
 ---
 
@@ -9,7 +9,7 @@ description: "Core concepts for Low-Level Design interviews: SOLID principles, d
 
 > 💡 **Language note:** Examples use Java-like syntax for readability. The patterns (Strategy, State, Observer, etc.) apply identically in Python, C++, Go, or any OOP language. Individual problem solutions will be available in multiple languages.
 
-Everything you need before tackling machine-coding problems. These concepts are what interviewers grade on — not clever algorithms, but how well you organize code under time pressure.
+Everything you need before tackling machine-coding problems. These concepts are what interviewers grade on - not clever algorithms, but how well you organize code under time pressure.
 
 ---
 
@@ -30,7 +30,7 @@ Everything you need before tackling machine-coding problems. These concepts are 
 
 The five principles interviewers most often probe. Know what each one means and be ready to spot a violation in code.
 
-### S — Single Responsibility
+### S - Single Responsibility
 
 > A class should have only one reason to change.
 
@@ -45,7 +45,7 @@ class OrderService {
 
 **Fix:** Split into `OrderService`, `EmailService`, `InvoiceService`. Each changes for exactly one business reason.
 
-### O — Open/Closed
+### O - Open/Closed
 
 > Open for extension, closed for modification.
 
@@ -60,15 +60,15 @@ class WeekendSurgePricing implements PricingStrategy { ... }
 // Adding DiscountPricing? Just implement the interface.
 ```
 
-### L — Liskov Substitution
+### L - Liskov Substitution
 
 > Subtypes must be usable wherever their base type is expected, without breaking behavior.
 
 **Classic violation:** `Square extends Rectangle`. If `setWidth` changes only width but the base contract says width and height are independent, the subtype breaks the substitution.
 
-**Rule of thumb:** If your override narrows behavior, adds preconditions, or throws where the base doesn't — it violates LSP.
+**Rule of thumb:** If your override narrows behavior, adds preconditions, or throws where the base doesn't - it violates LSP.
 
-### I — Interface Segregation
+### I - Interface Segregation
 
 > Many small interfaces > one fat interface.
 
@@ -84,7 +84,7 @@ interface Worker {
 
 **Fix:** Split into `Coder`, `Tester`, `Designer`, `Manager`. Each class implements only what it actually does.
 
-### D — Dependency Inversion
+### D - Dependency Inversion
 
 > Depend on abstractions, not concretions. Inject implementations.
 
@@ -103,13 +103,13 @@ class PaymentService {
 }
 ```
 
-Now you can inject `RazorpayGateway`, `StripeGateway`, or a `MockGateway` for tests — without touching `PaymentService`.
+Now you can inject `RazorpayGateway`, `StripeGateway`, or a `MockGateway` for tests - without touching `PaymentService`.
 
 ---
 
-## Design Patterns — The 8 You Actually Need
+## Design Patterns - The 8 You Actually Need
 
-In ~90% of machine-coding problems, one or more of these will fit. Don't shoehorn — use what the problem naturally calls for.
+In ~90% of machine-coding problems, one or more of these will fit. Don't shoehorn - use what the problem naturally calls for.
 
 ### Strategy (most important)
 
@@ -211,7 +211,7 @@ class TwilioAdapter implements NotificationChannel {
 
 ---
 
-## Class Design — The 5-Minute Sketch
+## Class Design - The 5-Minute Sketch
 
 Before coding, spend 5 minutes sketching this on paper:
 
@@ -240,7 +240,7 @@ This sketch becomes your file structure. Then code the skeleton (class shells wi
 
 ---
 
-## Concurrency — When It Matters
+## Concurrency - When It Matters
 
 Machine-coding problems touch concurrency when they have **shared mutable state**:
 - Cache entries (multiple readers/writers)
@@ -297,7 +297,7 @@ This alone has been cited as a rejection reason at PhonePe in multiple interview
 
 ---
 
-## State Machine — Explicit Transitions
+## State Machine - Explicit Transitions
 
 Many problems have an entity with a lifecycle (Order, Issue, Booking). Always validate transitions explicitly:
 
@@ -317,7 +317,7 @@ This prevents invalid state changes and earns points for edge-case handling.
 
 ---
 
-## The Demo Class — Non-Negotiable
+## The Demo Class - Non-Negotiable
 
 Every machine-coding submission MUST include a `Demo.java` / `Main.java` that:
 

@@ -47,7 +47,7 @@ Use a HashMap/Set to track characters in the current window. When `s[right]` is 
 
 | | Time | Space |
 |---|---|---|
-| Sliding Window | O(n) | O(min(n, 128)) — at most the character set |
+| Sliding Window | O(n) | O(min(n, 128)) - at most the character set |
 | Brute force | O(n³) | O(n) |
 
 ---
@@ -111,7 +111,7 @@ Use a HashMap/Set to track characters in the current window. When `s[right]` is 
 
 ## Key Insight
 
-> The `left = lastSeen[c] + 1` jump is what makes this O(n) instead of O(n²). You don't shrink one character at a time — you teleport `left` past the conflict. The `lastSeen[c] >= left` check ensures you don't jump backward (the old occurrence might be before the current window).
+> The `left = lastSeen[c] + 1` jump is what makes this O(n) instead of O(n²). You don't shrink one character at a time - you teleport `left` past the conflict. The `lastSeen[c] >= left` check ensures you don't jump backward (the old occurrence might be before the current window).
 
 ---
 

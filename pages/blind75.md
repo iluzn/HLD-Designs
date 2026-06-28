@@ -1,11 +1,11 @@
 ---
 permalink: /the-75/
 layout: default
-title: "Blind 75 — LeetCode Interview Cheatsheet with Progress Tracker"
+title: "Blind 75 - LeetCode Interview Cheatsheet with Progress Tracker"
 description: "75 essential coding problems with LeetCode links, pattern tags, and one-line approaches. Complete your interview prep in 4-5 weeks."
 ---
 
-# The 75 — Interview Sprint
+# The 75 - Interview Sprint
 
 75 problems that cover every pattern asked in tech interviews. Solve these and you've seen every trick interviewers use. Each row links directly to the problem on LeetCode.
 
@@ -103,7 +103,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 |---|---|---|---|---|
 | 40 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | Heap / Bucket Sort | Count freq → min-heap of size K (or bucket sort O(n)) | O(n log k) |
 | 41 | [Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/) | Two Heaps | Max-heap (left half) + min-heap (right half), balance sizes | O(log n) per add |
-| 42 | [Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) | Heap | (duplicate — see #25) | O(n log k) |
+| 42 | [Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) | Heap | (duplicate - see #25) | O(n log k) |
 
 ## Backtracking (2)
 
@@ -155,8 +155,8 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 69 | [Maximum Subarray](https://leetcode.com/problems/maximum-subarray/) | Kadane | (duplicate — see #5) | O(n) |
-| 70 | [Jump Game](https://leetcode.com/problems/jump-game/) | Greedy | (duplicate — see #61) | O(n) |
+| 69 | [Maximum Subarray](https://leetcode.com/problems/maximum-subarray/) | Kadane | (duplicate - see #5) | O(n) |
+| 70 | [Jump Game](https://leetcode.com/problems/jump-game/) | Greedy | (duplicate - see #61) | O(n) |
 
 ## Bit Manipulation (5)
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "How to Approach System Design Interviews — The Delivery Framework"
+title: "How to Approach System Design Interviews - The Delivery Framework"
 description: "A step-by-step framework for acing system design interviews. Timing, structure, what to say at each stage. Bookmark this before your next interview."
 permalink: /approach
 ---
@@ -9,7 +9,7 @@ permalink: /approach
 
 > 📖 **Part of the [System Design Interview Guide](/system-design-interview-guide).** Read the [Fundamentals](/concepts) first if CAP, caching, or sharding aren't second nature yet.
 
-This is the framework. Memorize the structure, not the answers. Every system design interview follows the same arc — here's how to navigate it in 45 minutes.
+This is the framework. Memorize the structure, not the answers. Every system design interview follows the same arc - here's how to navigate it in 45 minutes.
 
 ## The 45-Minute Structure
 
@@ -25,16 +25,16 @@ This is the framework. Memorize the structure, not the answers. Every system des
 
 Start by asking "Users should be able to..." questions. Your goal is to lock down scope fast and show product thinking.
 
-- **List top 3 functional requirements** — be ruthless. Only 3. More than 3 and you won't finish.
-- **List top 3 non-functional requirements with NUMBERS** — latency < 200ms, 99.9% availability, 10K QPS. Concrete targets show you think like an engineer, not a student.
-- **List "below the line" items** — things you're intentionally skipping. This shows product sense and prioritization.
+- **List top 3 functional requirements** - be ruthless. Only 3. More than 3 and you won't finish.
+- **List top 3 non-functional requirements with NUMBERS** - latency < 200ms, 99.9% availability, 10K QPS. Concrete targets show you think like an engineer, not a student.
+- **List "below the line" items** - things you're intentionally skipping. This shows product sense and prioritization.
 
 > **Pro tip:** If you can't prioritize, ask the interviewer: "Which of these would you like me to focus on?"
 
 ## Phase 2: Core Entities + API (5 min)
 
-- **List 4-6 entities** as bullet points — User, Order, Restaurant, Driver, etc. No full schemas yet.
-- **Define one API endpoint per functional requirement** — method, path, request body, response.
+- **List 4-6 entities** as bullet points - User, Order, Restaurant, Driver, etc. No full schemas yet.
+- **Define one API endpoint per functional requirement** - method, path, request body, response.
 - **Always mention:** auth via JWT, never trust client for IDs/timestamps/prices.
 
 > **Pro tip:** This is your contract with the interviewer. Once they agree on APIs, you both know what "done" looks like.
@@ -44,9 +44,9 @@ Start by asking "Users should be able to..." questions. Your goal is to lock dow
 This is where you build. Go through each functional requirement ONE AT A TIME.
 
 - For each FR: introduce 1-3 new components, draw a small diagram, walk through the flow step by step.
-- **Start simple** — 4-5 nodes. Add complexity only when the requirement forces it.
-- **Name every component:** "This is the Order Service — it validates orders and publishes events."
-- **Always explain WHY:** "I'm making this async because the matching engine is the bottleneck — I don't want to block the user."
+- **Start simple** - 4-5 nodes. Add complexity only when the requirement forces it.
+- **Name every component:** "This is the Order Service - it validates orders and publishes events."
+- **Always explain WHY:** "I'm making this async because the matching engine is the bottleneck - I don't want to block the user."
 
 > **Pro tip:** If you're stuck, ask yourself: What's the most naive solution? What breaks about it at scale? That's your next component.
 
@@ -72,15 +72,15 @@ Pick 2-3 areas driven by your non-functional requirements. Use the **Bad → Goo
 ## Phase 5: Wrap-up (5 min)
 
 - **Summarize the 2-3 key trade-offs** you made and why.
-- **Mention what you'd improve with more time** — monitoring, multi-region, cost optimization, observability.
-- **Don't introduce new complexity** — just show you know what's missing.
+- **Mention what you'd improve with more time** - monitoring, multi-region, cost optimization, observability.
+- **Don't introduce new complexity** - just show you know what's missing.
 
 ## The 7 Deadly Sins (What Gets You Rejected)
 
 1. Jumping to the diagram without requirements
 2. Designing the entire system at once (not incrementally)
 3. Using buzzwords without explaining them
-4. Not asking questions — treating it as a monologue
+4. Not asking questions - treating it as a monologue
 5. Over-engineering when a simple solution works
 6. Ignoring non-functional requirements
 7. Not explaining trade-offs ("Why this and not that?")
@@ -122,6 +122,6 @@ Pick 2-3 areas driven by your non-functional requirements. Use the **Bad → Goo
 | Step | Page |
 |------|------|
 | 1. Prep Roadmap | [Interview Guide](/system-design-interview-guide) |
-| 2. Fundamentals | [Concepts — CAP, Caching, Queues →](/concepts) |
+| 2. Fundamentals | [Concepts - CAP, Caching, Queues →](/concepts) |
 | 3. Interview Framework | **You're here** |
 | 4. Practice | [HLD Problems →](/hld) |

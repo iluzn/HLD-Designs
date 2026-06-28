@@ -1,11 +1,11 @@
 ---
 layout: default
-title: "Design Multilevel Cache — Machine Coding Interview"
+title: "Design Multilevel Cache - Machine Coding Interview"
 description: "Low-level design for a multilevel cache with LRU/LFU eviction strategies, read-through and write-through patterns. Strategy pattern with full runnable code."
 permalink: /lld/MultilevelCache/
 ---
 
-# Designing Multilevel Cache — Hierarchical Caching System
+# Designing Multilevel Cache - Hierarchical Caching System
 
 ⚡ **Difficulty:** Medium-Hard 🏷️ **Patterns:** Strategy, Composition, Facade 🏢 **Asked at:** PhonePe, Flipkart, Amazon, Walmart
 
@@ -13,19 +13,19 @@ permalink: /lld/MultilevelCache/
 
 ## Functional Requirements
 
-1. **Multiple cache levels** — L1 (fast, small capacity) and L2 (slower, larger capacity), extensible to N levels
-2. **Configurable eviction** — each level can use a different eviction strategy (LRU or LFU)
-3. **Read-through** — on cache miss at L1, check L2, then origin; populate upper levels on hit
-4. **Write-through** — writes propagate to all cache levels (top-down)
-5. **TTL support** — entries expire after a configurable time-to-live
-6. **Get/Put/Delete** — standard cache operations with O(1) average time complexity
+1. **Multiple cache levels** - L1 (fast, small capacity) and L2 (slower, larger capacity), extensible to N levels
+2. **Configurable eviction** - each level can use a different eviction strategy (LRU or LFU)
+3. **Read-through** - on cache miss at L1, check L2, then origin; populate upper levels on hit
+4. **Write-through** - writes propagate to all cache levels (top-down)
+5. **TTL support** - entries expire after a configurable time-to-live
+6. **Get/Put/Delete** - standard cache operations with O(1) average time complexity
 
 ## Non-Functional Requirements
 
-1. **O(1) operations** — get, put, delete must be constant time (HashMap + DoublyLinkedList for LRU, HashMap + frequency lists for LFU)
-2. **Thread-safety** — concurrent reads and writes must not corrupt cache state
-3. **Extensibility** — add new eviction policies (FIFO, Random) without modifying existing code
-4. **Correctness** — eviction removes the correct entry per policy, TTL expiry is honored
+1. **O(1) operations** - get, put, delete must be constant time (HashMap + DoublyLinkedList for LRU, HashMap + frequency lists for LFU)
+2. **Thread-safety** - concurrent reads and writes must not corrupt cache state
+3. **Extensibility** - add new eviction policies (FIFO, Random) without modifying existing code
+4. **Correctness** - eviction removes the correct entry per policy, TTL expiry is honored
 
 ---
 
@@ -33,14 +33,14 @@ permalink: /lld/MultilevelCache/
 
 | Entity | Description |
 |---|---|
-| `Cache` | Interface — get, put, delete operations |
+| `Cache` | Interface - get, put, delete operations |
 | `CacheEntry` | Key, value, creation time, TTL |
-| `EvictionPolicy` | Strategy interface — tracks access, evicts entries |
-| `LRUEviction` | Least Recently Used — doubly linked list + HashMap |
-| `LFUEviction` | Least Frequently Used — frequency map + min-frequency tracking |
+| `EvictionPolicy` | Strategy interface - tracks access, evicts entries |
+| `LRUEviction` | Least Recently Used - doubly linked list + HashMap |
+| `LFUEviction` | Least Frequently Used - frequency map + min-frequency tracking |
 | `CacheLevel` | Single cache level with capacity, eviction policy, and TTL |
 | `MultilevelCache` | Composes multiple CacheLevels with read-through and write-through |
-| `CacheManager` | Facade — provides simple get/put/delete to clients |
+| `CacheManager` | Facade - provides simple get/put/delete to clients |
 
 ---
 
@@ -112,8 +112,8 @@ Here's what happens on a **read (get)**:
 
 1. Client calls `get(key)` on CacheManager
 2. CacheManager delegates to MultilevelCache
-3. MultilevelCache checks L1 first — if hit and not expired, return value
-4. If L1 miss: check L2 — if hit and not expired, promote entry to L1 (write-through up), return value
+3. MultilevelCache checks L1 first - if hit and not expired, return value
+4. If L1 miss: check L2 - if hit and not expired, promote entry to L1 (write-through up), return value
 5. If L2 miss: return null (or fetch from origin if configured)
 6. On each access: eviction policy's `onAccess(key)` is called to update recency/frequency
 
@@ -135,7 +135,7 @@ Here's what happens on a **write (put)**:
 
 ### CacheEntry
 
-A value object wrapping the cached data with metadata: creation timestamp and TTL. The `isExpired()` check is O(1) — just compare current time against creation + TTL.
+A value object wrapping the cached data with metadata: creation timestamp and TTL. The `isExpired()` check is O(1) - just compare current time against creation + TTL.
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -300,7 +300,7 @@ public:
 
 ### LRUEviction
 
-Least Recently Used eviction using a **DoublyLinkedList + HashMap**. The list maintains access order — most recent at head, least recent at tail. On access, the node is moved to head in O(1). On eviction, the tail node is removed in O(1). The HashMap maps keys to list nodes for O(1) lookup.
+Least Recently Used eviction using a **DoublyLinkedList + HashMap**. The list maintains access order - most recent at head, least recent at tail. On access, the node is moved to head in O(1). On eviction, the tail node is removed in O(1). The HashMap maps keys to list nodes for O(1) lookup.
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -932,7 +932,7 @@ public:
 
 Composes multiple CacheLevel instances into a hierarchy with read-through and write-through semantics. On a read miss at any level, lower levels are checked. On a hit at a lower level, the entry is promoted to all upper levels. Writes propagate to all levels.
 
-💡 *Composition pattern = build complex behavior by combining simple objects. MultilevelCache doesn't inherit from CacheLevel — it composes N of them. Adding a third level (L3) is just adding another CacheLevel to the list.*
+💡 *Composition pattern = build complex behavior by combining simple objects. MultilevelCache doesn't inherit from CacheLevel - it composes N of them. Adding a third level (L3) is just adding another CacheLevel to the list.*
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -1078,7 +1078,7 @@ public:
 
 The single entry point for clients. Provides simple get/put/delete and a stats() method showing hits, misses, and sizes per level. All operations are thread-safe via `ReentrantLock`.
 
-💡 *Facade pattern = provide a simplified interface to a complex subsystem. Clients call `get(key)` on the manager — they never interact directly with CacheLevels, EvictionPolicies, or the multilevel composition.*
+💡 *Facade pattern = provide a simplified interface to a complex subsystem. Clients call `get(key)` on the manager - they never interact directly with CacheLevels, EvictionPolicies, or the multilevel composition.*
 
 <div class="code-tabs">
 <div class="tab-buttons">
@@ -1440,7 +1440,7 @@ int main() {
 
 ## Data Structure Walkthrough
 
-### LRU — DoublyLinkedList + HashMap
+### LRU - DoublyLinkedList + HashMap
 
 <pre><code class="language-mermaid">flowchart LR
     A[HashMap key to Node] --> B[DoublyLinkedList]
@@ -1452,7 +1452,7 @@ int main() {
 
 **Why this works:** HashMap gives O(1) lookup of the node. The doubly-linked list gives O(1) removal and insertion at head/tail because we have direct pointers to prev/next.
 
-### LFU — Frequency Map + MinFreq Pointer
+### LFU - Frequency Map + MinFreq Pointer
 
 <pre><code class="language-mermaid">flowchart LR
     A[keyFreq Map: key to freq] --> B[freqKeys Map: freq to OrderedSet]
@@ -1469,8 +1469,8 @@ int main() {
 
 | Feature | Implementation |
 |---|---|
-| **FIFO Eviction** | New `FIFOEviction` — simple queue, evict from front |
-| **Random Eviction** | New `RandomEviction` — pick random key from a list |
+| **FIFO Eviction** | New `FIFOEviction` - simple queue, evict from front |
+| **Random Eviction** | New `RandomEviction` - pick random key from a list |
 | **Write-Back** | Dirty flag on entries, flush to lower levels on eviction |
 | **TTL Cleanup** | Background thread that periodically scans and removes expired entries |
 | **Metrics/Monitoring** | Observer on CacheLevel to emit hit/miss rates to monitoring systems |
@@ -1480,17 +1480,17 @@ int main() {
 
 ## What Interviewers Look For
 
-1. ✅ Strategy pattern for eviction — no if/else chains based on policy type
-2. ✅ O(1) LRU — DoublyLinkedList + HashMap, not a LinkedHashMap black box
-3. ✅ O(1) LFU — frequency buckets with minFreq pointer, LRU tiebreaker
-4. ✅ Composition — multilevel cache composed of independent level objects
-5. ✅ Thread-safety — locks on all mutable shared state
-6. ✅ TTL support — entries self-expire on access
-7. ✅ Runnable demo — shows eviction, promotion, hits/misses end-to-end
+1. ✅ Strategy pattern for eviction - no if/else chains based on policy type
+2. ✅ O(1) LRU - DoublyLinkedList + HashMap, not a LinkedHashMap black box
+3. ✅ O(1) LFU - frequency buckets with minFreq pointer, LRU tiebreaker
+4. ✅ Composition - multilevel cache composed of independent level objects
+5. ✅ Thread-safety - locks on all mutable shared state
+6. ✅ TTL support - entries self-expire on access
+7. ✅ Runnable demo - shows eviction, promotion, hits/misses end-to-end
 
 ---
 
 ## Related Designs
 
-- [Splitwise](/lld/Splitwise) — Strategy pattern and Facade
-- [Snake & Ladder](/lld/SnakeLadder) — Strategy and Command patterns
+- [Splitwise](/lld/Splitwise) - Strategy pattern and Facade
+- [Snake & Ladder](/lld/SnakeLadder) - Strategy and Command patterns

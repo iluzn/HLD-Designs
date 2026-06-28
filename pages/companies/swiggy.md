@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Swiggy Interview Prep — System Design, DSA & Machine Coding"
+title: "Swiggy Interview Prep - System Design, DSA & Machine Coding"
 description: "Curated system design, DSA, and LLD problems asked at Swiggy. Food Delivery, Rate Limiter, Notification System, Splitwise, Parking Lot."
 permalink: /companies/swiggy
 ---
@@ -32,7 +32,7 @@ permalink: /companies/swiggy
 
 # Swiggy Interview Prep
 
-Swiggy's interview process for SDE-2+ follows the Indian product company template: DSA, machine coding (90 min), system design, and HM round. The machine coding round is the biggest filter — candidates are expected to produce clean, extensible code with design patterns in 90 minutes. System design focuses on food-delivery-adjacent problems: dispatch, real-time tracking, and high-throughput event processing.
+Swiggy's interview process for SDE-2+ follows the Indian product company template: DSA, machine coding (90 min), system design, and HM round. The machine coding round is the biggest filter - candidates are expected to produce clean, extensible code with design patterns in 90 minutes. System design focuses on food-delivery-adjacent problems: dispatch, real-time tracking, and high-throughput event processing.
 
 ---
 
@@ -78,9 +78,9 @@ Swiggy's interview process for SDE-2+ follows the Indian product company templat
 ## Tips for Swiggy Interviews
 
 1. **Machine coding is make-or-break.** Swiggy eliminates most candidates here. Practice writing full OOP solutions with Strategy/Observer patterns in 90 minutes. Working `main()` with output matters more than perfect coverage.
-2. **Think about delivery logistics.** Swiggy's core is dispatch and routing — show awareness of geo-queries, rider assignment, and order state machines in system design.
+2. **Think about delivery logistics.** Swiggy's core is dispatch and routing - show awareness of geo-queries, rider assignment, and order state machines in system design.
 3. **Expect follow-ups on real-time.** "How does the customer see the rider moving?" is a guaranteed follow-up. Know WebSocket vs SSE, and how location pings flow through the system.
-4. **DSA is medium difficulty.** Swiggy's coding rounds are LeetCode medium — focus on clean implementation and edge case handling over exotic algorithms.
+4. **DSA is medium difficulty.** Swiggy's coding rounds are LeetCode medium - focus on clean implementation and edge case handling over exotic algorithms.
 
 ---
 
