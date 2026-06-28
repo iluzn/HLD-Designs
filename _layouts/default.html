@@ -416,8 +416,10 @@
         // Progress bar
         window.addEventListener('scroll', function() { var h = document.documentElement.scrollHeight - window.innerHeight; document.getElementById('progress-bar').style.width = (window.scrollY / h * 100) + '%'; });
 
-        // Problem progress tracker
+        // Problem progress tracker (skip on fundamentals/concepts pages)
         (function() {
+            var path = window.location.pathname;
+            if (path.indexOf('fundamentals') !== -1 || path.indexOf('concepts') !== -1 || path.indexOf('approach') !== -1 || path.indexOf('guide') !== -1) return;
             var tables = document.querySelectorAll('.content table');
             if (!tables.length) return;
             var pageKey = 'progress:' + window.location.pathname;
