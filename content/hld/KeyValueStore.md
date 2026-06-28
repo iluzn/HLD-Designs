@@ -143,7 +143,7 @@ The first problem: we have more data than fits on one machine. We need to split 
 
 **The naive approach** is `node = hash(key) % num_nodes`. This works until you add or remove a server — then ALL keys need to remap. With 1 billion keys, that's catastrophic.
 
-**What we need instead:** Consistent hashing.<br>💡 *Consistent hashing maps both keys AND nodes onto a circular ring (0 to 2³²). A key is assigned to the first node clockwise from its position on the ring. When a node is added/removed, only its neighbors' keys move — everything else stays put.*
+**What we need instead:** [Consistent hashing](/concepts#consistent-hashing).<br>💡 *Consistent hashing maps both keys AND nodes onto a circular ring (0 to 2³²). A key is assigned to the first node clockwise from its position on the ring. When a node is added/removed, only its neighbors' keys move — everything else stays put. [Learn more →](/concepts#consistent-hashing)*
 
 **New components:**
 
@@ -377,7 +377,7 @@ flowchart LR
 
 **Good:** Append-only log. All writes are sequential appends (fast!). But reads require scanning the entire log to find a key (slow). Add an in-memory hash index pointing key → offset in the log. Reads are fast now, but the log grows forever.
 
-**Great:** Log-Structured Merge Tree (LSM Tree).<br>💡 *An LSM Tree splits storage into two layers: a fast in-memory buffer (memtable) and sorted files on disk (SSTables). All writes go to the memtable. When it's full, it's flushed to disk as a sorted file. Reads check memtable first, then disk files.*
+**Great:** Log-Structured Merge Tree (LSM Tree).<br>💡 *An LSM Tree splits storage into two layers: a fast in-memory buffer (memtable) and sorted files on disk (SSTables). All writes go to the memtable. When it's full, it's flushed to disk as a sorted file. Reads check memtable first, then disk files. [Learn more about WAL →](/concepts#write-ahead-log-wal)*
 
 ```mermaid
 flowchart LR
@@ -411,7 +411,7 @@ flowchart LR
 
 **The read path:**
 1. Check the memtable (fastest — it's in memory)
-2. If not found, check the Bloom filter for each SSTable.<br>💡 *A Bloom filter is a space-efficient structure that tells you "definitely not here" or "maybe here." It avoids expensive disk reads for keys that don't exist in a given file.*
+2. If not found, check the [Bloom filter](/concepts#bloom-filters) for each SSTable.<br>💡 *A Bloom filter is a space-efficient structure that tells you "definitely not here" or "maybe here." It avoids expensive disk reads for keys that don't exist in a given file. [Learn more →](/concepts#bloom-filters)*
 3. If Bloom filter says "maybe," read the SSTable from disk
 4. Return the value (or 404 if not found anywhere)
 
@@ -433,7 +433,7 @@ flowchart LR
 
 **Read Repair** — when a read hits multiple replicas and detects version mismatch, the router pushes the latest version to the stale replica. Passive healing on every read.
 
-**Anti-Entropy (Merkle Trees)** — for long outages where hints might overflow, a background process compares Merkle tree hashes between replicas.<br>💡 *A Merkle tree hashes data in a tree structure — if the root hashes differ, you recursively check children to find exactly which keys diverged. This minimizes data transfer during repair.*
+**Anti-Entropy ([Merkle Trees](/concepts#merkle-trees))** — for long outages where hints might overflow, a background process compares Merkle tree hashes between replicas.<br>💡 *A Merkle tree hashes data in a tree structure — if the root hashes differ, you recursively check children to find exactly which keys diverged. This minimizes data transfer during repair. [Learn more →](/concepts#merkle-trees)*
 
 ```mermaid
 sequenceDiagram
@@ -461,7 +461,7 @@ sequenceDiagram
 
 **Good:** Last-writer-wins with synchronized clocks (NTP). Acceptable for many use cases where losing an occasional write is tolerable (caching, session stores).
 
-**Great:** Vector clocks. Each write carries a vector clock that tracks which nodes have seen which version. If two writes are concurrent (neither "happened before" the other), the system detects the conflict and either:
+**Great:** [Vector clocks](/concepts#vector-clocks). Each write carries a vector clock that tracks which nodes have seen which version. If two writes are concurrent (neither "happened before" the other), the system detects the conflict and either:
 - Returns BOTH values to the client to resolve (DynamoDB's approach)
 - Merges automatically using a CRDT (conflict-free data type)
 
