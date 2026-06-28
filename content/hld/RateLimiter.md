@@ -9,7 +9,6 @@ description: "System design for a distributed rate limiter - token bucket, slidi
 
 ⚡ **Difficulty:** Beginner–Intermediate
 📋 **Prerequisites:** None (this is a great first system design problem)
-⏱️ **Reading time:** 20 min
 
 ---
 

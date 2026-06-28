@@ -8,8 +8,7 @@ description: "System design for Designing a Food Delivery Service Like Zomato, U
 # Designing a Food Delivery Service Like Zomato / Uber Eats / DoorDash
 
 ⚡ **Difficulty:** Intermediate–Advanced
-📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Message Queues, Caching, and Databases
-⏱️ **Reading time:** 25 min
+📋 **Prerequisites:** [Fundamentals](/concepts) — especially [Geospatial Indexing](/concepts#geospatial-indexing), [Message Queues](/concepts#message-queues), and [Real-Time Communication](/concepts#real-time-communication-websocket-vs-sse-vs-polling)
 
 ---
 

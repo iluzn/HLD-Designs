@@ -8,8 +8,7 @@ description: "System design for Designing a Payment Wallet Like PhonePe, Venmo, 
 # Designing a Payment Wallet Like PhonePe / Venmo / Cash App
 
 ⚡ **Difficulty:** Advanced
-📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Databases, Consistency, and Message Queues
-⏱️ **Reading time:** 35 min
+📋 **Prerequisites:** [Fundamentals](/concepts) — especially [Saga Pattern](/concepts#saga-pattern), [Event Sourcing](/concepts#event-sourcing--cqrs), and [Idempotency](/concepts#idempotency)
 
 ---
 

@@ -8,8 +8,7 @@ description: "System design for a distributed unique ID generator. Covers UUID, 
 # Designing a Distributed Unique ID Generator
 
 ⚡ **Difficulty:** Beginner
-📋 **Prerequisites:** [System Design Fundamentals](/concepts)
-⏱️ **Reading time:** 10 min
+📋 **Prerequisites:** [Fundamentals](/concepts) — especially [Back-of-Envelope Estimation](/concepts#back-of-envelope-estimation)
 🏢 **Asked at:** Twitter, Discord, Instagram, Amazon, Flipkart
 
 ---

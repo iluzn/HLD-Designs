@@ -8,7 +8,7 @@ permalink: /hld/StockBroker/
 # Designing a Stock Broker Platform (Robinhood / Zerodha)
 
 ⚡ **Difficulty:** Advanced 🏷️ **Topics:** Order Matching, Event Sourcing, CQRS, Kafka, Delivery Semantics 🏢 **Asked at:** Robinhood, Zerodha, Groww, Upstox, Goldman Sachs
-⏱️ **Reading time:** 21 min
+📋 **Prerequisites:** [Fundamentals](/concepts) — especially [Event Sourcing](/concepts#event-sourcing--cqrs), [Message Queues](/concepts#message-queues), and [Idempotency](/concepts#idempotency)
 
 ---
 

@@ -8,8 +8,7 @@ description: "System design for a distributed key-value store like Redis or Dyna
 # Designing a Distributed Key-Value Store
 
 ⚡ **Difficulty:** Beginner–Intermediate 🏷️ **Topics:** Consistent Hashing, Replication, LSM Tree, Quorum 🏢 **Asked at:** Amazon, Google, Meta, Microsoft, Databricks
-⏱️ **Reading time:** 18 min
-📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Consistent Hashing, CAP Theorem, and [Merkle Trees](/concepts#merkle-trees)
+📋 **Prerequisites:** [Fundamentals](/concepts) — especially [Consistent Hashing](/concepts#consistent-hashing), [CAP Theorem](/concepts#cap-theorem), and [Merkle Trees](/concepts#merkle-trees)
 
 ---
 

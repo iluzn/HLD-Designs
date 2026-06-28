@@ -8,8 +8,7 @@ description: "System design for Designing a URL Shortener Like Bitly or TinyURL 
 # Designing a URL Shortener Like Bitly or TinyURL
 
 ⚡ **Difficulty:** Beginner
-📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Caching and CDN
-⏱️ **Reading time:** 25 min
+�� **Prerequisites:** [Fundamentals](/concepts) — especially [Caching](/concepts#caching) and [CDN](/concepts#cdn-content-delivery-network)
 
 ---
 
