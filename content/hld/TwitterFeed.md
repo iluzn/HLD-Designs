@@ -9,7 +9,7 @@ description: "System design for a social media news feed like Twitter (X) or Thr
 
 ⚡ **Difficulty:** Intermediate
 📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Caching and Message Queues
-⏱️ **Reading time:** 20 min
+⏱️ **Reading time:** 10 min
 
 ---
 

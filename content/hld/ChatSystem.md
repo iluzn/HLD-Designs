@@ -9,7 +9,7 @@ description: "System design for a real-time messaging platform like WhatsApp or 
 
 ⚡ **Difficulty:** Intermediate
 📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Message Queues and Caching
-⏱️ **Reading time:** 20 min
+⏱️ **Reading time:** 15 min
 
 ---
 

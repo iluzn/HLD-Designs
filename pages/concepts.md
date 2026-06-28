@@ -556,6 +556,166 @@ Used in: [Twitter Feed](/hld/TwitterFeed), [Instagram](/hld/Instagram), [Notific
 
 ---
 
+## Merkle Trees
+
+Used in: [Key-Value Store](/hld/KeyValueStore)
+
+A Merkle tree is a hash tree used to efficiently detect differences between two copies of data. Instead of comparing every key one by one (O(N)), you compare hashes at each tree level (O(log N)).
+
+**How it works:**
+
+```
+         Root Hash (abc...)
+        /                  \
+   Hash(left)          Hash(right)
+   /       \           /        \
+Hash(K1) Hash(K2)  Hash(K3)  Hash(K4)
+  |         |        |          |
+ K1        K2       K3         K4
+```
+
+1. Each leaf is the hash of one key-value pair
+2. Each internal node is the hash of its children
+3. The root hash represents ALL data on the node
+
+**To find which keys diverged between two replicas:**
+1. Compare root hashes. Different? → go deeper.
+2. Compare left and right children. Left matches, right doesn't? → only check the right subtree.
+3. Recurse until you find the exact leaves that differ.
+
+**Why it matters:** After a node failure and recovery, you need to sync it with a healthy replica. Without Merkle trees, you'd transfer ALL keys to check which are stale. With Merkle trees, you only transfer the specific keys that actually diverged — saving enormous bandwidth.
+
+**Used by:** Cassandra (anti-entropy repair), DynamoDB, Git (internal object storage), IPFS, Ethereum.
+
+---
+
+## Vector Clocks
+
+Used in: [Key-Value Store](/hld/KeyValueStore)
+
+A vector clock tracks **causality** between events in a distributed system. It tells you: "did event A happen before event B, or were they concurrent?"
+
+**The problem:** In a distributed system with no global clock, two replicas can independently write to the same key. When they sync, which write is "newer"? Wall-clock timestamps are unreliable (clock skew), so we need a logical clock.
+
+**How it works:**
+
+Each node maintains a vector (array) of counters, one per node:
+
+```
+Node A writes: [A:1, B:0, C:0]
+Node B writes: [A:0, B:1, C:0]
+
+These are CONCURRENT — neither happened before the other.
+
+Node A reads B's write and writes again: [A:2, B:1, C:0]
+This HAPPENED AFTER B's write (A:2 > A:1 AND B:1 >= B:1).
+```
+
+**Comparison rules:**
+- V1 < V2 (V1 happened before V2) if ALL elements of V1 ≤ V2 and at least one is strictly less
+- V1 || V2 (concurrent) if neither V1 < V2 nor V2 < V1
+
+**What to do with conflicts:**
+- **Last-writer-wins (LWW):** Pick one arbitrarily. Simple but loses data.
+- **Return both to client:** Let the application merge (DynamoDB's "sibling resolution").
+- **CRDT auto-merge:** Use a data structure designed to merge without conflict (counters, sets).
+
+> ⚠️ **Interview tip:** Most systems use LWW for simplicity. Mention vector clocks to show depth, but say "for our use case, LWW with a version counter is sufficient — vector clocks add complexity we don't need unless we have multi-master writes."
+
+---
+
+## Fencing Tokens
+
+Used in: [Uber](/hld/Uber), [BookMyShow](/hld/BookMyShow), [Job Scheduler](/hld/JobScheduler)
+
+A fencing token prevents **stale processes** from corrupting data after their lock has expired.
+
+**The problem:** Process A acquires a distributed lock (TTL = 30s). Process A pauses (GC, network delay) for 35 seconds. Lock expires. Process B acquires the same lock. Now Process A wakes up, thinks it still holds the lock, and writes — corrupting Process B's work.
+
+**The solution:** Every lock acquisition returns a monotonically increasing **fencing token** (a number). Any downstream write must include the token. The resource rejects writes with a token older than the latest one it's seen.
+
+```
+Process A gets lock → token = 33
+Process A pauses...
+Lock expires. Process B gets lock → token = 34
+Process A wakes up, tries to write with token 33
+Resource sees: 33 < 34 (latest seen) → REJECTED
+```
+
+**Where to apply:** Any system where distributed locks protect a shared resource: seat booking, order assignment, job execution.
+
+---
+
+## Outbox Pattern
+
+Used in: [Digital Wallet](/hld/DigitalWallet), [Stock Broker](/hld/StockBroker)
+
+The outbox pattern solves: "how do I update my database AND publish an event atomically?"
+
+**The problem:** You want to save an order to the DB and send an event to Kafka. If the DB write succeeds but Kafka publish fails (or vice versa), your systems are inconsistent.
+
+**The solution:**
+
+1. Write both the business data AND the event to the SAME database transaction (the event goes into an "outbox" table)
+2. A separate process (CDC or poller) reads the outbox table and publishes events to Kafka
+3. Once published, mark the outbox row as processed
+
+```
+BEGIN TRANSACTION
+  INSERT INTO orders (...) 
+  INSERT INTO outbox (event_type, payload) VALUES ('OrderCreated', '{...}')
+COMMIT
+
+-- Separate process (CDC/poller):
+-- Reads outbox → publishes to Kafka → marks as sent
+```
+
+**Why not just publish to Kafka directly?** Because you can't atomically commit to Postgres AND Kafka in one transaction. The outbox makes it a local DB transaction (atomic), then handles the Kafka publish separately with retries.
+
+**CDC (Change Data Capture)** is the production approach: tools like Debezium watch the database transaction log and stream changes to Kafka automatically. No polling needed.
+
+---
+
+## Durable Execution (Temporal / Cadence)
+
+Used in: [Uber](/hld/Uber), [Zomato](/hld/Zomato), [Job Scheduler](/hld/JobScheduler)
+
+Temporal (formerly Cadence, open-sourced by Uber) is a framework for running **long-lived, multi-step workflows** that survive crashes.
+
+**The problem:** A food delivery dispatch involves: offer to rider → wait for response (15s) → if rejected, try next rider → if accepted, notify customer → track delivery. Any step can fail. If a server crashes mid-workflow, the whole dispatch is lost.
+
+**How Temporal solves it:**
+
+You write workflow code as a normal function. Temporal records every step. If the process crashes, it replays from the last checkpoint — your workflow continues exactly where it left off.
+
+```
+// Pseudocode — this survives crashes
+function dispatchOrder(orderId) {
+  riders = findNearbyRiders(orderId)
+  for rider in riders:
+    offer = sendOffer(rider, timeout=15s)  // persisted step
+    if offer.accepted:
+      notifyCustomer(orderId, rider)       // persisted step
+      return
+  escalateToOps(orderId)
+}
+```
+
+**When to use:**
+- Multi-step processes with human-in-the-loop (rider accepts/declines)
+- Workflows with timeouts and retries
+- Saga orchestration (each step has a compensation)
+- Anything where "a server crash should NOT lose progress"
+
+**When NOT to use:**
+- Simple request-response APIs
+- Stateless operations
+- High-throughput hot paths (Temporal adds latency per step)
+
+> ⚠️ **Interview tip:** Mention Temporal when the interviewer asks "what if the server crashes mid-workflow?" It shows you know production tools. But don't over-engineer — for simple retry logic, a dead-letter queue is enough.
+
+---
+
 ## Numbers Every Engineer Should Know
 
 Quick reference for capacity planning:

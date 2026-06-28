@@ -9,7 +9,7 @@ description: "System design for Designing a Food Delivery Service Like Zomato, U
 
 ⚡ **Difficulty:** Intermediate–Advanced
 📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Message Queues, Caching, and Databases
-⏱️ **Reading time:** 25 min
+⏱️ **Reading time:** 20 min
 
 ---
 

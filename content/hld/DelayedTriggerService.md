@@ -9,7 +9,7 @@ description: "System design for Delayed Trigger Service - architecture, deep div
 
 ⚡ **Difficulty:** Intermediate–Advanced
 📋 **Prerequisites:** [System Design Fundamentals](/concepts) — especially Message Queues and Caching
-⏱️ **Reading time:** 25 min
+⏱️ **Reading time:** 20 min
 
 ---
 
