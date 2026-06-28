@@ -98,13 +98,17 @@ permalink: /hld
     </a>
 </div>
 
-<!-- Filter tabs -->
+<!-- Filter tabs + View toggle -->
 <div class="section">
     <div class="filter-bar">
         <button class="filter-btn active" data-filter="all">All</button>
         <button class="filter-btn" data-filter="beginner">Beginner</button>
         <button class="filter-btn" data-filter="intermediate">Intermediate</button>
         <button class="filter-btn" data-filter="advanced">Advanced</button>
+        <div style="margin-left:auto;display:flex;gap:0.3rem;">
+            <button class="view-btn active" data-view="cards" title="Card view">&#9638;</button>
+            <button class="view-btn" data-view="list" title="List view">&#9776;</button>
+        </div>
     </div>
 </div>
 
@@ -666,9 +670,22 @@ nav a.active { color: var(--accent); background: rgba(129,140,248,0.1); font-wei
 .start-here-arrow { font-size: 1.2rem; color: var(--accent); margin-left: auto; }
 
 /* Filter bar */
-.filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+.filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; align-items: center; }
 .filter-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
 .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+.filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.view-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 0.4rem 0.6rem; border-radius: 6px; font-size: 1rem; cursor: pointer; transition: all 0.2s; line-height: 1; }
+.view-btn:hover { border-color: var(--accent); color: var(--text); }
+.view-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* List view */
+.problems-grid.list-view { grid-template-columns: 1fr; gap: 0.4rem; }
+.problems-grid.list-view .problem-card { flex-direction: row; align-items: center; padding: 0.8rem 1.2rem; gap: 1rem; }
+.problems-grid.list-view .problem-card .card-top { margin-bottom: 0; min-width: 90px; }
+.problems-grid.list-view .problem-card h3 { font-size: 0.9rem; margin-bottom: 0; min-width: 250px; }
+.problems-grid.list-view .problem-card .card-desc { display: none; }
+.problems-grid.list-view .problem-card .card-tags { margin-bottom: 0; }
+.problems-grid.list-view .problem-card .card-companies { display: none; }
 .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
 /* Difficulty groups */
@@ -828,6 +845,27 @@ footer a:hover { text-decoration: underline; }
                 } else {
                     g.style.display = 'none';
                 }
+            });
+        });
+    });
+
+    // View toggle (cards vs list)
+    var viewBtns = document.querySelectorAll('.view-btn');
+    var grids = document.querySelectorAll('.problems-grid');
+    var savedView = localStorage.getItem('hld-view') || 'cards';
+    if (savedView === 'list') {
+        grids.forEach(function(g) { g.classList.add('list-view'); });
+        viewBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-view') === 'list'); });
+    }
+    viewBtns.forEach(function(vb) {
+        vb.addEventListener('click', function() {
+            viewBtns.forEach(function(b) { b.classList.remove('active'); });
+            vb.classList.add('active');
+            var view = vb.getAttribute('data-view');
+            localStorage.setItem('hld-view', view);
+            grids.forEach(function(g) {
+                if (view === 'list') { g.classList.add('list-view'); }
+                else { g.classList.remove('list-view'); }
             });
         });
     });
