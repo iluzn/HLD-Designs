@@ -521,6 +521,16 @@
     });
     </script>
 
+    <!-- Style 💡 hints as blocks — must run BEFORE deep dive tabs -->
+    <script>
+    (function() {
+        var el = document.querySelector('.content');
+        if (!el) return;
+        el.innerHTML = el.innerHTML.replace(/<br>💡\s*<em>([\s\S]*?)<\/em>/g, '<span class="hint-block">💡 $1</span>');
+        el.innerHTML = el.innerHTML.replace(/^💡\s*<em>([\s\S]*?)<\/em>/gm, '<span class="hint-block">💡 $1</span>');
+    })();
+    </script>
+
     <!-- Deep dive Bad/Good/Great tabs -->
     <script>
     (function() {
@@ -646,16 +656,6 @@
 
     <!-- Cloudflare Web Analytics -->
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "46af7c683dec42ceb435ae3e97b8d9a1"}'></script>
-
-    <!-- Style 💡 hints as blocks -->
-    <script>
-    (function() {
-        var el = document.querySelector('.content');
-        if (!el) return;
-        el.innerHTML = el.innerHTML.replace(/<br>💡\s*<em>([\s\S]*?)<\/em>/g, '<span class="hint-block">💡 $1</span>');
-        el.innerHTML = el.innerHTML.replace(/^💡\s*<em>([\s\S]*?)<\/em>/gm, '<span class="hint-block">💡 $1</span>');
-    })();
-    </script>
 
     <!-- Reading time -->
     <script>
