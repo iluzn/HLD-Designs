@@ -162,7 +162,7 @@ DELETE /api/v1/bookings/{bookingId}
   Response: { status: "CANCELLED", seatsReleased: ["A1", "A2", "A3"] }
   Auth: JWT Bearer token
 
-GET /api/v1/movies?city=bangalore&date=2025-01-15
+GET /api/v1/movies?city=bangalore&date=2026-01-15
   Response: { movies: [{ id, title, shows: [{ showId, time, cinema, availability }] }] }
   Auth: Optional (public endpoint, rate limited)
 ```

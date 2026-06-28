@@ -1,13 +1,13 @@
 ---
 layout: default
-title: "System Design Interview Guide 2025 - Complete Preparation Roadmap"
+title: "System Design Interview Guide 2026 - Complete Preparation Roadmap"
 description: "How to prepare for system design interviews at FAANG, startups, and top tech companies. Step-by-step guide with topics, patterns, and practice problems."
 permalink: /system-design-interview-guide/
 ---
 
 # System Design Interview Guide - Complete Preparation Roadmap
 
-⚡ **Updated:** June 2025 🏢 **Target:** Amazon, Google, Meta, Microsoft, Uber, Stripe, Flipkart, and startups
+⚡ **Updated:** June 2026 🏢 **Target:** Amazon, Google, Meta, Microsoft, Uber, Stripe, Flipkart, and startups
 
 ---
 
