@@ -400,31 +400,6 @@
         btt.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
         // Copy buttons
-        document.querySelectorAll('.content pre').forEach(function(pre) {
-            if (pre.querySelector('.mermaid')) return;
-            var b = document.createElement('button'); b.className = 'copy-btn'; b.textContent = 'Copy';
-            b.addEventListener('click', function() {
-                var code = pre.querySelector('code');
-                var text = code ? code.textContent : pre.textContent;
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(text).then(function() {
-                        b.textContent = 'Copied!'; b.classList.add('copied');
-                        setTimeout(function() { b.textContent = 'Copy'; b.classList.remove('copied'); }, 2000);
-                    }).catch(function() { fallbackCopy(text, b); });
-                } else { fallbackCopy(text, b); }
-            });
-            pre.appendChild(b);
-        });
-        function fallbackCopy(text, btn) {
-            var ta = document.createElement('textarea');
-            ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-            document.body.appendChild(ta); ta.select();
-            try { document.execCommand('copy'); btn.textContent = 'Copied!'; btn.classList.add('copied'); }
-            catch(e) { btn.textContent = 'Failed'; }
-            document.body.removeChild(ta);
-            setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-        }
-
         // Code tabs
         document.querySelectorAll('.code-tabs').forEach(function(tabGroup) {
             var buttons = tabGroup.querySelectorAll('.tab-btn'), contents = tabGroup.querySelectorAll('.tab-content');
@@ -548,6 +523,36 @@
         if (!el) return;
         el.innerHTML = el.innerHTML.replace(/<br>💡\s*<em>([\s\S]*?)<\/em>/g, '<span class="hint-block">💡 $1</span>');
         el.innerHTML = el.innerHTML.replace(/^💡\s*<em>([\s\S]*?)<\/em>/gm, '<span class="hint-block">💡 $1</span>');
+    })();
+    </script>
+
+    <!-- Copy buttons (must run AFTER hint script which replaces innerHTML) -->
+    <script>
+    (function() {
+        document.querySelectorAll('.content pre').forEach(function(pre) {
+            if (pre.querySelector('.mermaid')) return;
+            var b = document.createElement('button'); b.className = 'copy-btn'; b.textContent = 'Copy';
+            b.addEventListener('click', function() {
+                var code = pre.querySelector('code');
+                var text = code ? code.textContent : pre.textContent;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(function() {
+                        b.textContent = 'Copied!'; b.classList.add('copied');
+                        setTimeout(function() { b.textContent = 'Copy'; b.classList.remove('copied'); }, 2000);
+                    }).catch(function() { fallbackCopy(text, b); });
+                } else { fallbackCopy(text, b); }
+            });
+            pre.appendChild(b);
+        });
+        function fallbackCopy(text, btn) {
+            var ta = document.createElement('textarea');
+            ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); btn.textContent = 'Copied!'; btn.classList.add('copied'); }
+            catch(e) { btn.textContent = 'Failed'; }
+            document.body.removeChild(ta);
+            setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+        }
     })();
     </script>
 
