@@ -428,11 +428,11 @@ flowchart LR
 
 **Great:** Three mechanisms working together:
 
-1. **Hinted Handoff** — while a node is down, writes meant for it are temporarily stored on another node as "hints." When the dead node comes back, hints are replayed to bring it up to date. Fast recovery for short outages.
+**Hinted Handoff** — while a node is down, writes meant for it are temporarily stored on another node as "hints." When the dead node comes back, hints are replayed to bring it up to date. Fast recovery for short outages.
 
-2. **Read Repair** — when a read hits multiple replicas and detects version mismatch, the router pushes the latest version to the stale replica. Passive healing on every read.
+**Read Repair** — when a read hits multiple replicas and detects version mismatch, the router pushes the latest version to the stale replica. Passive healing on every read.
 
-3. **Anti-Entropy (Merkle Trees)** — for long outages where hints might overflow, a background process compares Merkle tree hashes between replicas.<br>💡 *A Merkle tree hashes data in a tree structure — if the root hashes differ, you recursively check children to find exactly which keys diverged. This minimizes data transfer during repair.*
+**Anti-Entropy (Merkle Trees)** — for long outages where hints might overflow, a background process compares Merkle tree hashes between replicas.<br>💡 *A Merkle tree hashes data in a tree structure — if the root hashes differ, you recursively check children to find exactly which keys diverged. This minimizes data transfer during repair.*
 
 ```mermaid
 sequenceDiagram
