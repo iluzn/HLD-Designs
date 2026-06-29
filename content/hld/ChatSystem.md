@@ -217,6 +217,17 @@ flowchart LR
 2. **Push Service** - sends push notifications to wake up the user's phone.<br>💡 *Think of it as the "tap on the shoulder" that tells the user to open the app.*
 3. **FCM / APNs** - Firebase Cloud Messaging (Android) and Apple Push Notification service (iOS). External services that deliver notifications to locked phones.<br>💡 *FCM doesn't "know" a message arrived - YOUR server tells FCM to send the push. When Bob installs the app, FCM gives his device a unique token. Your server stores this token. When Bob is offline and a message arrives, your server calls FCM's API with Bob's token + notification content. FCM maintains its own persistent connection to every Android device in the world and routes the push through that always-on channel. APNs works the same way for iOS. [Learn more about real-time communication →](/concepts#real-time-communication-websocket-vs-sse-vs-polling)*
 
+**How does the notification show the actual message text (with E2E encryption)?**
+
+For E2E encrypted apps like WhatsApp/Signal, FCM does NOT carry the message content (the server can't read it). Instead:
+
+1. Server sends a **silent data message** via FCM - just a "wake up, you have a new message" signal with sender ID and message reference
+2. FCM wakes up the app's background process on the device
+3. The app connects to the server, pulls the encrypted message, and **decrypts it locally on the device**
+4. The app constructs the notification itself ("Alice: Hey, are you free?") and hands it to the OS for display
+
+For non-E2E apps, the server CAN send the message text directly in the FCM payload (notification message type) - simpler but less secure.
+
 ```mermaid
 flowchart LR
     SENDER["Sender"]:::client
