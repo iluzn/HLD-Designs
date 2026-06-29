@@ -79,8 +79,6 @@ A typical system design interview is 45-60 minutes. The interviewer gives you an
 
 You're NOT expected to design a production system. You're expected to demonstrate structured thinking and trade-off awareness.
 
-> **New here?** Start with the [fundamentals](/concepts) if terms like "CAP theorem" or "consistent hashing" don't ring a bell. Then read the [interview framework](/approach) to understand the 45-minute structure.
-
 ---
 
 ## Topics to Study (Priority Order)
@@ -199,31 +197,10 @@ The patterns transfer. If you've done 12 designs, you've seen caching, queues, d
 
 ## The Complete Prep Roadmap
 
-```
-Week 1-2: Learn fundamentals (/concepts)
-              ↓
-Week 2-3: Master the framework (/approach)
-              ↓
-Week 3-6: Solve problems by difficulty (beginner → advanced)
-              ↓
-Week 6+:  Mock interviews + revisit weak areas
-```
-
 **Daily routine:**
 - 30 min: Read one concept from [fundamentals](/concepts)
 - 60 min: Solve one HLD problem (timer: 45 min attempt, 15 min review)
 - 15 min: Review the [approach framework](/approach) patterns table
-
----
-
-## Next Steps
-
-| Where you are | What to do next |
-|---------------|-----------------|
-| Don't know the basics | [Read System Design Fundamentals →](/concepts) |
-| Know the concepts but freeze in interviews | [Read The 45-Min Framework →](/approach) |
-| Ready to practice | [Start with URL Shortener →](/hld/URLShortner) |
-| Want a quick reference | [Cheatsheet →](/cheatsheet) |
 
 ---
 
@@ -232,5 +209,5 @@ Week 6+:  Mock interviews + revisit weak areas
 - [System Design Fundamentals](/concepts) - CAP, caching, sharding, queues, DBs
 - [The 45-Min Interview Framework](/approach) - Exact structure and scoring criteria
 - [Quick-Fire 50 Cheatsheet](/cheatsheet) - DSA patterns at a glance
-- [Company-Specific: Amazon](/companies/amazon) - Amazon's design interview format
+- [Company-Specific Prep](/companies) - Amazon, Google, Uber, Flipkart
 - [LLD Fundamentals](/lld-fundamentals) - For machine coding rounds
