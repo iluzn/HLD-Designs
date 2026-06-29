@@ -304,31 +304,101 @@ flowchart LR
 
 ### Deep Dive 1 - How to handle 2M WebSocket connections per server
 
-**Bad - one thread per connection (Java BIO).**
-2M threads = impossible. OOM at ~10K threads.
+**Problem:** A chat system with 50M concurrent users needs to maintain 50M persistent WebSocket connections. If each server handles 500K connections, that's 100 servers just for connection holding. The challenge: each connection is stateful (long-lived TCP), consumes memory, and requires efficient event handling.
 
-**Good - NIO event loop (Netty, Node.js).**
-Netty handles millions of connections on a single event loop group. Each connection is just a file descriptor + a small buffer. Memory = ~10KB per idle connection. 2M connections ≈ 20GB RAM. Doable on a 64GB box.
+**Bad - one thread per connection (Java BIO / traditional blocking I/O).**
 
-**Great - tiered connection handling.**
-- **Edge tier:** lightweight WebSocket terminators (Envoy, HAProxy) that handle TLS + keepalive. Millions of connections per node.
-- **Logic tier:** actual message routing in a separate service. Edge proxies messages to logic tier via gRPC.
-- Separation means you can scale connection capacity (edge) independently from processing capacity (logic).
+Classic Java `ServerSocket.accept()` → spawn a thread per client. At 10K threads you hit OS limits, context-switching overhead makes the CPU thrash, and each thread stack takes ~512KB. 2M threads × 512KB = 1TB RAM. Impossible.
+
+**Good - NIO event loop model (Netty, Node.js, Go goroutines).**
+
+Instead of one thread per connection, use a small pool of threads (event loops) that multiplex thousands of connections using OS-level I/O selectors (`epoll` on Linux, `kqueue` on macOS).
+
+**What Netty is:** An asynchronous, event-driven network framework for Java. It implements the Reactor pattern - a single thread monitors many sockets, and only wakes up when there's data to read/write. No blocking, no idle threads.
+
+```
+Event Loop (1 thread) monitors 100K connections via epoll
+    → Connection has data? → Read it, process, respond
+    → Connection idle? → Costs nothing (just a file descriptor)
+```
+
+**Real numbers:**
+- Each idle WebSocket = ~10KB RAM (file descriptor + small read/write buffers)
+- 2M connections × 10KB = 20GB RAM (fits in a 64GB server)
+- Netty can handle 1-2M connections per JVM instance on modern hardware
+- Go's goroutines achieve similar density (goroutine = ~4KB stack vs Java thread = 512KB)
+
+**Tech used in production:**
+- **WhatsApp:** Erlang/OTP (lightweight processes, similar to goroutines - famously ran 2M connections per server)
+- **Discord:** Elixir/Erlang on the gateway, Rust for hot paths
+- **Slack:** Java + Netty for WebSocket gateway (project "Flannel")
+- **Signal:** Java + Netty
+- **WeChat:** C++ custom framework
+
+**Great - tiered architecture separating connection from logic.**
+
+At extreme scale (100M+ connections), even Netty hits limits on a single machine. The solution: split into two layers.
+
+```
+Clients → [Edge Tier: connection handling] → [Logic Tier: message routing]
+```
+
+- **Edge tier (WebSocket terminators):** Lightweight servers that ONLY manage TCP connections, TLS termination, and heartbeats. No business logic. Can hold 2M+ connections each because they do almost nothing per connection. Built with: Envoy proxy, HAProxy, or custom Go/Rust services.
+- **Logic tier (message processing):** Receives messages from edge via gRPC/internal protocol. Handles routing ("who gets this message?"), persistence, fan-out. Stateless, scales independently.
+
+**Why separate?** You can scale connection capacity (add edge nodes) without scaling processing (expensive). During idle hours, connections exist but messages are rare - edge handles the load, logic tier is mostly sleeping.
+
+**Connection routing problem:** When a message arrives for Bob, which edge server holds Bob's WebSocket? Answer: a Connection Registry (Redis hash: `userId → edgeServerId:connectionId`). Logic tier looks up the registry and routes to the correct edge node.
+
+---
 
 ### Deep Dive 2 - Message ordering in distributed systems
 
-**Problem:** Sender sends "Hello" then "How are you?" but they arrive at different servers or are processed out of order.
+**Problem:** Alice sends "Hello" then "How are you?" in quick succession. These hit different server instances (load balanced). Or one arrives via WebSocket, another via a retry. Bob must see them in the correct order. Out-of-order messages make conversations nonsensical.
+
+**Why this is hard:** In a distributed system, there's no global clock. Server A's timestamp might be 50ms ahead of Server B. Network latency varies. Messages can be retried out of order.
 
 **Bad - rely on server timestamps.**
-Clock skew between servers means timestamps can be out of order. NTP gives ~10ms accuracy at best.
+
+Each server stamps the message with `System.currentTimeMillis()` on arrival. Sort by timestamp on display.
+
+Fails because:
+- Clock skew between servers (NTP syncs every few seconds, drift is 10-50ms)
+- Alice's "Hello" hits Server A at T=1000, "How are you?" hits Server B whose clock reads T=999. Bob sees them reversed.
+- Even on one server, if two messages arrive in the same millisecond, order is random.
 
 **Good - per-conversation monotonic sequence number.**
-Chat Service assigns a `seqNo` per conversation using Redis `INCR conv_seq:{convId}`. Messages display in `seqNo` order. Client sorts locally.
 
-**Great - combine sequence number + client-side vector clock for offline conflict resolution.**
-- Server assigns `seqNo` for ordering.
-- Client embeds `lastSeenSeqNo` in each message so the server can detect gaps (missing message → re-request).
-- For multi-device, each device maintains its own "last synced seqNo" and pulls delta on reconnect.
+Assign a strictly increasing `seqNo` per conversation. Every message in a conversation gets the next number in sequence.
+
+**Implementation:** Redis `INCR` on key `conv_seq:{conversationId}`.
+
+```
+Alice sends "Hello"     → server does INCR conv_seq:alice_bob → gets 42
+Alice sends "How are you?" → server does INCR conv_seq:alice_bob → gets 43
+```
+
+Bob's client sorts by `seqNo` regardless of arrival order. Even if msg 43 arrives before 42 (network jitter), the UI holds 43 and renders after 42 arrives.
+
+**Why Redis INCR?** Atomic, single-threaded, sub-ms. Even at 100K messages/sec across all conversations, one Redis cluster handles it because each conversation is an independent key (no contention across conversations).
+
+**What about gaps?** If Bob receives seqNo 42 then 44 (missed 43), client knows there's a gap and requests: "give me message 43 for this conversation." Server fetches from the message store.
+
+**Great - sequence numbers + client vector clock + multi-device sync.**
+
+For apps with multiple devices (phone + web + desktop), ordering gets harder. User sends from phone (seqNo 42), then from desktop (seqNo 43). Both devices need to converge.
+
+**The approach (used by WhatsApp, Slack, Facebook Messenger):**
+
+1. **Server is the source of truth** for sequence numbers. Server assigns seqNo on receipt - NOT the client.
+2. **Each device maintains a cursor:** `lastSyncedSeqNo`. On reconnect, device says "give me everything after seqNo 38" and server sends the delta.
+3. **Client embeds `lastSeenSeqNo` in outgoing messages** so the server can detect if the client missed something and proactively push missing messages.
+4. **Conflict resolution for near-simultaneous sends from multiple devices:** Both get seqNos from the same atomic counter, so they're naturally ordered by who hit the server first. No conflict possible at the ordering level.
+
+**Tech used in production:**
+- **WhatsApp:** Server-assigned message IDs + per-chat ordering. Each message has a globally unique ID + per-conversation sequence.
+- **Slack:** Uses a `ts` (timestamp) as the unique message ID within a channel. Server-generated, monotonically increasing per channel. Format: `1234567890.123456`.
+- **Discord:** Snowflake IDs (time-based, globally unique). Messages sorted by Snowflake ID which is inherently time-ordered since timestamp is the most significant bits.
 
 ### Deep Dive 3 - Reliable delivery with at-least-once + client dedupe
 
