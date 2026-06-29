@@ -215,7 +215,7 @@ flowchart LR
 
 1. **Offline Queue (Redis sorted set)** - when the receiver isn't connected, we park message IDs here. Scored by sequence number so when they reconnect, we drain messages in perfect order.
 2. **Push Service** - sends push notifications to wake up the user's phone.<br>💡 *Think of it as the "tap on the shoulder" that tells the user to open the app.*
-3. **FCM / APNs** - Firebase Cloud Messaging (Android) and Apple Push Notification service (iOS). External services that deliver notifications to locked phones.
+3. **FCM / APNs** - Firebase Cloud Messaging (Android) and Apple Push Notification service (iOS). External services that deliver notifications to locked phones.<br>💡 *FCM doesn't "know" a message arrived - YOUR server tells FCM to send the push. When Bob installs the app, FCM gives his device a unique token. Your server stores this token. When Bob is offline and a message arrives, your server calls FCM's API with Bob's token + notification content. FCM maintains its own persistent connection to every Android device in the world and routes the push through that always-on channel. APNs works the same way for iOS. [Learn more about real-time communication →](/concepts#real-time-communication-websocket-vs-sse-vs-polling)*
 
 ```mermaid
 flowchart LR
