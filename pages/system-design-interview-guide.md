@@ -22,49 +22,48 @@ Whether you're a mid-level engineer preparing for your first system design round
 Follow these steps in order. Each builds on the previous.
 
 <div class="learning-path">
-<div class="path-step current">
+<a class="path-step current" href="/system-design-interview-guide">
 <div class="step-number">1</div>
 <div class="step-content">
 <strong>Prep Roadmap</strong> (You're here)
 <p>What to study, in what order, how long it takes</p>
 </div>
-</div>
-<div class="path-connector"></div>
-<div class="path-step">
+</a>
+<div class="path-connector">↓</div>
+<a class="path-step" href="/concepts">
 <div class="step-number">2</div>
 <div class="step-content">
-<strong><a href="/concepts">System Design Fundamentals →</a></strong>
+<strong>System Design Fundamentals</strong>
 <p>CAP theorem, caching, sharding, queues, databases, geospatial indexing</p>
 </div>
-</div>
-<div class="path-connector"></div>
-<div class="path-step">
+</a>
+<div class="path-connector">↓</div>
+<a class="path-step" href="/approach">
 <div class="step-number">3</div>
 <div class="step-content">
-<strong><a href="/approach">The 45-Min Interview Framework →</a></strong>
+<strong>The 45-Min Interview Framework</strong>
 <p>Exact structure, timing, phases, and what interviewers score on</p>
 </div>
-</div>
-<div class="path-connector"></div>
-<div class="path-step">
+</a>
+<div class="path-connector">↓</div>
+<a class="path-step" href="/hld">
 <div class="step-number">4</div>
 <div class="step-content">
-<strong><a href="/hld">Practice Problems →</a></strong>
+<strong>Practice Problems</strong>
 <p>20 system designs, beginner to advanced. Start solving.</p>
 </div>
-</div>
+</a>
 </div>
 
 <style>
-.learning-path { margin: 1.5rem 0 2rem; }
-.path-step { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card, rgba(25,25,35,0.6)); }
+.learning-path { margin: 1.5rem 0 2rem; display: flex; flex-direction: column; align-items: center; }
+.path-step { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card, rgba(25,25,35,0.6)); width: 100%; max-width: 600px; text-decoration: none; color: var(--text); transition: border-color 0.2s, transform 0.2s; cursor: pointer; }
+.path-step:hover { border-color: var(--accent); transform: translateY(-2px); }
 .path-step.current { border-color: var(--accent); background: rgba(129,140,248,0.06); }
-.step-number { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
-.step-content strong { font-size: 0.95rem; }
+.step-number { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
+.step-content strong { font-size: 0.95rem; color: var(--text); }
 .step-content p { font-size: 0.82rem; color: var(--text-muted); margin: 0.2rem 0 0; }
-.step-content a { color: var(--accent); text-decoration: none; }
-.step-content a:hover { text-decoration: underline; }
-.path-connector { width: 2px; height: 20px; background: var(--accent); margin-left: 15px; opacity: 0.4; }
+.path-connector { color: var(--accent); font-size: 1.2rem; margin: 0.3rem 0; opacity: 0.6; }
 </style>
 
 ---
