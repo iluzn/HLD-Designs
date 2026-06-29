@@ -238,6 +238,67 @@ Protect services from abuse or thundering herds.
 
 ---
 
+## Authentication - JWT and Sessions
+
+Almost every system design includes "auth via JWT" in the API section. Here's what that means and when to use which approach.
+
+**Session-based auth (traditional):**
+
+```
+Client logs in → Server creates a session (stored in Redis/DB) → returns session ID as a cookie
+Client sends cookie on every request → Server looks up session → "yes, this is user 42"
+```
+
+- Server stores state (session data in Redis)
+- Easy to invalidate (delete the session)
+- Requires centralized session store (all servers must access it)
+
+**JWT (JSON Web Token) - stateless auth:**
+
+```
+Client logs in → Server creates a signed token containing {userId: 42, exp: ...} → returns token
+Client sends token in every request header → Server verifies the signature → "yes, this is user 42"
+```
+
+A JWT is a self-contained token with three parts:
+```
+header.payload.signature
+
+Header:  { "alg": "HS256" }
+Payload: { "userId": 42, "role": "admin", "exp": 1719500000 }
+Signature: HMAC-SHA256(header + payload, SECRET_KEY)
+```
+
+- Server does NOT store anything - just verifies the signature is valid
+- Scales horizontally (any server can verify without hitting a DB)
+- Hard to invalidate (token is valid until it expires, unless you maintain a blocklist)
+
+**When to use which:**
+
+| | JWT | Sessions |
+|---|---|---|
+| Scale | Scales horizontally (no shared state) | Needs centralized session store |
+| Invalidation | Hard (wait for expiry or maintain blocklist) | Easy (delete from Redis) |
+| Payload | Can carry user data (role, permissions) | Just an opaque ID |
+| Best for | Microservices, APIs, service-to-service | Monoliths, web apps with logout needs |
+
+**In system design interviews, default to JWT** because it's stateless and doesn't require a session store. But mention the trade-off: "JWT can't be revoked instantly - for sensitive operations like password change, we'd use a short-lived access token (15 min) + a long-lived refresh token stored server-side."
+
+**Access + Refresh Token pattern (what most production systems use):**
+
+```
+Login → get access token (15 min TTL) + refresh token (7 days, stored in DB)
+Every API call → send access token (verified locally, no DB hit)
+Access token expires → call /refresh with refresh token → get new access token
+Logout → delete refresh token from DB (access token expires naturally in 15 min)
+```
+
+This gives you the scalability of JWT (no DB hit per request) with the revocability of sessions (delete refresh token = user is logged out within 15 min).
+
+> Interview tip: When asked "how do you handle auth?" say: "Short-lived JWT access token verified at the gateway, refresh token stored server-side for revocation. The gateway validates the signature without hitting a DB on every request." That shows you understand both scalability and security.
+
+---
+
 ## CDN (Content Delivery Network)
 
 Cache static content at edge locations close to users.
