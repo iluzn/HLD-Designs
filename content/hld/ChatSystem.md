@@ -468,6 +468,7 @@ flowchart LR
     FCM["FCM and APNs"]:::external
 
     CLIENTS --> LB
+    CLIENTS -->|"presigned upload"| MEDIA
     LB --> WS
     WS --> CHAT
     CHAT --> REG
