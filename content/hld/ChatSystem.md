@@ -337,18 +337,55 @@ Event Loop (1 thread) monitors 100K connections via epoll
 
 **Great - tiered architecture separating connection from logic.**
 
-At extreme scale (100M+ connections), even Netty hits limits on a single machine. The solution: split into two layers.
+At extreme scale (100M+ connections), even Netty hits limits on a single machine. The problem: the server holding connections ALSO processes messages (routing, persistence, fan-out). Under load, message processing slows down AND connection handling suffers - they compete for the same CPU/memory.
 
+The solution: split into two independent layers, each doing one job.
+
+**Edge Tier (connection holding) - the "receptionist":**
+- ONLY manages TCP/WebSocket connections, TLS handshake, and heartbeat pings
+- Does NO business logic - just holds open connections and passes messages through
+- Extremely lightweight: each connection costs ~10KB (just a file descriptor + buffer)
+- Can hold 2M+ connections per node because it's barely doing anything per connection
+- Built with: Envoy proxy, HAProxy, custom Go/Rust services, or Netty with minimal handlers
+
+**Logic Tier (message processing) - the "brain":**
+- Receives raw messages from edge tier via internal gRPC
+- Handles all business logic: routing, persistence to Cassandra, fan-out to group members, push notifications
+- Stateless - scales horizontally based on message throughput
+- Doesn't hold any WebSocket connections - just processes and responds
+
+**How a message flows through both tiers:**
+
+1. Alice's phone is connected to Edge Server #3 via WebSocket
+2. Alice sends "Hey Bob" → Edge Server #3 receives the raw bytes
+3. Edge Server #3 forwards to Logic Tier via internal gRPC: "message from userId=alice, payload=Hey Bob"
+4. Logic Tier stores in Cassandra, then checks Connection Registry: "Bob is on Edge Server #7"
+5. Logic Tier sends to Edge Server #7: "deliver this to Bob's WebSocket connection"
+6. Edge Server #7 pushes the message down Bob's WebSocket
+7. If Bob is offline → Logic Tier calls Push Service instead (FCM/APNs)
+
+**The Connection Registry (Redis) ties both tiers together:**
+
+```text
+Redis Hash: connection_registry
+  alice → edge-server-3:conn-8842
+  bob   → edge-server-7:conn-1204
+  carol → edge-server-3:conn-9921
 ```
-Clients → [Edge Tier: connection handling] → [Logic Tier: message routing]
-```
 
-- **Edge tier (WebSocket terminators):** Lightweight servers that ONLY manage TCP connections, TLS termination, and heartbeats. No business logic. Can hold 2M+ connections each because they do almost nothing per connection. Built with: Envoy proxy, HAProxy, or custom Go/Rust services.
-- **Logic tier (message processing):** Receives messages from edge via gRPC/internal protocol. Handles routing ("who gets this message?"), persistence, fan-out. Stateless, scales independently.
+When Logic Tier needs to deliver to Bob, it looks up this registry and routes to the correct edge server. When Bob disconnects, Edge Server #7 removes the entry.
 
-**Why separate?** You can scale connection capacity (add edge nodes) without scaling processing (expensive). During idle hours, connections exist but messages are rare - edge handles the load, logic tier is mostly sleeping.
+**Why this is better than one server doing everything:**
 
-**Connection routing problem:** When a message arrives for Bob, which edge server holds Bob's WebSocket? Answer: a Connection Registry (Redis hash: `userId → edgeServerId:connectionId`). Logic tier looks up the registry and routes to the correct edge node.
+- Adding more connections = adding cheap, lightweight edge nodes (no processing overhead)
+- A slow DB write in Logic Tier doesn't block Edge Tier from handling new connections/pings
+- If an edge node crashes: clients reconnect to another edge node. No messages are lost (Logic Tier handles durability separately)
+- During idle hours (3 AM): connections exist but messages are rare. Edge handles the load efficiently, Logic Tier is mostly idle
+
+**Real-world implementations:**
+- **WhatsApp:** Erlang nodes at edge, backend services for routing/storage
+- **Discord:** "Gateway" servers (Elixir) hold connections, "Guild" servers handle message logic
+- **Slack:** "Flannel" is their edge/cache layer, backend services do the real work
 
 ---
 
