@@ -421,6 +421,8 @@ sequenceDiagram
 
 **Problem:** Chronological feed is simple but engagement is lower. Users miss important tweets because they happened while asleep.
 
+**In simple terms:** Showing posts purely by time means you miss important tweets that happened while you slept. We need to surface the posts you'd actually care about.
+
 **Ranking signals (simplified):**
 
 ```mermaid
@@ -468,6 +470,8 @@ Fall back to fan-out on read: fetch recent tweets from all followees, build a fr
 ### Deep Dive 4: Real-time feed updates
 
 **Problem:** User is looking at their feed. Someone they follow tweets. Should it appear immediately?
+
+**In simple terms:** You're scrolling your feed. A new tweet appears from someone you follow. Should it pop in immediately (disrupting your reading) or show a 'new tweets' banner?
 
 **Options:**
 - **Polling:** Client checks every 30s. Wastes resources.

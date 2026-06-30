@@ -240,6 +240,8 @@ If User 1 is at version 42 and User 2 sends an op based on version 41, User 1 ne
 
 Documents need to be persisted durably so users can close the browser and come back later. But we can't write the full document to disk on every keystroke - that's 5-10 writes per second per active document. Instead, we store operations and periodically create snapshots.
 
+**In simple terms:** You're typing in Google Docs. Every keystroke needs to be saved, but writing the full document to disk 10 times per second is too expensive. We need a smarter approach.
+
 **New components we need:**
 
 1. **Document Service** - Handles document CRUD (create, open, list, delete). Responsible for assembling the current document state from snapshot + recent operations.
@@ -289,6 +291,8 @@ Two reasons. First, writing the full document on every keystroke would be 5-10 P
 ### FR3: Version History
 
 Users need to see what the document looked like at any point in the past, who made changes, and restore earlier versions. This is built directly on top of the operation log.
+
+**In simple terms:** Your boss asks 'what did this document say last Tuesday?' We need version history without storing a complete copy of the document for every single keystroke.
 
 **New components we need:**
 

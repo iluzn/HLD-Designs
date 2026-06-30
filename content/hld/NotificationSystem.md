@@ -507,6 +507,10 @@ Running the self-audit against the checklist surfaces eleven worth doing. Deep D
 
 ### Deep Dive 1 - Hot write path: notification intake at scale
 
+**Problem:** Product teams send 500K notification requests per second during peak (flash sales, morning digests). The system that receives these must not become the bottleneck.
+
+**In simple terms:** Imagine 500K "send this notification" requests arriving every second. If each one requires a database write before responding, the database melts. We need a way to accept requests instantly and process them asynchronously.
+
 **Bad**: Product service inserts directly into `notifications` + publishes to Kafka + writes an audit log. Three writes on the critical path. At 500k/sec burst, the DB is the bottleneck.
 
 **Good**: Notification API does one insert with `INSERT ... RETURNING id`, then publishes. Two writes, still DB-bound. Campaigns that fire 10M sends in a minute still melt Postgres.
