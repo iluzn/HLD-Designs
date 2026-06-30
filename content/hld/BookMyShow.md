@@ -520,6 +520,8 @@ Even though Redis handles the fast path, the Booking Service writes the confirme
 
 **Great:** Redis TTL for lock release + background reconciler for state consistency + Kafka event for downstream notifications.
 
+**In simple terms:** When you select a seat, we lock it for 10 minutes using Redis with an auto-expiry timer. If you don't pay in time, the lock disappears automatically and the seat becomes available again. A background job double-checks that Redis and the database agree.
+
 **Mechanism:**
 
 1. **Redis TTL (primary):** The lock key expires after exactly 600 seconds. After expiry, any new SET NX on that key will succeed - seat is available for others.
@@ -546,6 +548,8 @@ User pays at minute 9:58 (2 seconds before expiry). Payment gateway takes 5 seco
 **Good:** Optimistic approach - assume payment will succeed, confirm booking first, then process payment. If payment fails, roll back the booking. Problem: user already has a "confirmed" ticket for a brief moment (bad UX and potential fraud vector).
 
 **Great:** Saga pattern with explicit compensating transactions. (Borrowing from Stripe's idempotency key pattern and Razorpay's orchestration.)
+
+**In simple terms:** Booking involves multiple steps (lock seat → charge card → confirm). If step 2 fails (card declined), we automatically "undo" step 1 (release the seat). Each step has a pre-defined rollback action.
 
 ```mermaid
 flowchart LR
@@ -605,6 +609,8 @@ flowchart LR
 **Good:** Rate limit at the API gateway (500 requests/sec). Most users get rejected. Better for the system, but terrible UX - "try again later" for 499K users.
 
 **Great:** Virtual waiting room with fair queue. (Borrowing from Ticketmaster's approach.)
+
+**In simple terms:** During a hot event (Avengers premiere), instead of letting 500K people hammer the system simultaneously, we put them in a virtual queue. We let them through in batches of 1000, preventing the system from crashing while keeping it fair (first come, first served).
 
 ```mermaid
 flowchart LR

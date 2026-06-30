@@ -435,6 +435,8 @@ Each transition: EDITING buffers operations locally and sends over WebSocket. RE
 
 **Great:** Server-mediated Operational Transformation using the Jupiter/dOPT protocol. (Borrowing from Google Wave and Google Docs.)
 
+**In simple terms:** When two users type at the same time, their edits might conflict (User A inserts at position 5, User B deletes at position 3 — now position 5 is wrong). The server "transforms" each operation based on what happened before it, so both users end up with the same correct document.
+
 **How OT works:**
 
 The core OT algorithm maintains a server version counter and transforms each incoming operation against all operations that happened between the client's base version and the server's current version.

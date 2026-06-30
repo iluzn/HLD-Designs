@@ -418,6 +418,8 @@ Append-only log of transfers: `{from, to, amount, timestamp}`. Balance = `SUM(cr
 
 **Great - full double-entry ledger with a chart of accounts.**
 
+**In simple terms:** Every money movement writes TWO balanced entries (debit one account, credit another). If debits don't equal credits, the database rejects it — making it physically impossible to create or lose money. Balances are computed from these entries, never stored directly.
+
 This is how every real wallet works. Borrowed directly from accounting:
 
 ```
@@ -492,6 +494,8 @@ Problem: `FOR UPDATE` serializes concurrent transfers for that one user. Fine fo
 
 **Great - row-level locks for user accounts + async aggregation for hot platform accounts + optimistic concurrency as a safety net.**
 
+**In simple terms:** When user A sends money, we lock ONLY A's row in the database. Other users' transactions proceed in parallel unaffected. This prevents double-spending while keeping the system fast for everyone else.
+
 For user accounts:
 - `SELECT FOR UPDATE` pattern above. User rate of ~10 tx/sec is trivial.
 - Add a **version column** for belt-and-suspenders optimistic control: `UPDATE ... WHERE account_id = ? AND version = ?`. If 0 rows updated, someone else wrote concurrently - retry the full transaction.
@@ -518,6 +522,8 @@ Single-row lookup per user. Correctness comes from the same DB transaction that 
 This is already a huge win. Most real wallets stop here. But at PhonePe-scale (360M transactions/day, hundreds of thousands of balance reads/sec), even a single-row Postgres read is pressure on the primary.
 
 **Great - three-tier balance cache: Redis hot tier + read replicas + snapshot rebuilds.**
+
+**In simple terms:** Instead of calculating balance from scratch every time (slow), we cache it in Redis. When a transaction happens, we update both the ledger (truth) and the cache (speed). If the cache fails, we fall back to computing from the ledger.
 
 1. **Redis cache** holds `balance:{userId}` with a 30s TTL. On every ledger write, the same CDC pipeline that produces Kafka events also invalidates the Redis entry (or writes the new balance directly). Read-your-writes consistency within the write pipeline is preserved by making the API response include the new balance from the DB transaction, not the cache.
 
@@ -592,6 +598,8 @@ Guaranteed to eventually send the same user two identical transfers for the same
 Client sends a UUID; server checks `UNIQUE(user_id, idempotency_key)`. Duplicates return the original response.
 
 **Great - Airbnb Orpheus-style idempotency framework with three-phase contract.**
+
+**In simple terms:** Every request gets a unique key. If the same request arrives twice (network retry), we recognize the key and return the same result without processing again. No double-charges, ever.
 
 Lifted directly from Airbnb's production design:
 

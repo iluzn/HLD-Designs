@@ -292,6 +292,8 @@ sequenceDiagram
 
 **Great:** Regional Redis for writes + async global aggregation for unified rankings. A Kafka-based pipeline merges regional scores into a global leaderboard with 100-500ms lag. For a leaderboard, this is invisible to users.
 
+**In simple terms:** Each region (US, EU, Asia) has its own leaderboard for instant local updates. A background job merges them into one global leaderboard every few hundred milliseconds. Users don't notice the tiny delay.
+
 ```mermaid
 flowchart LR
     G1["Game Server US"]:::client

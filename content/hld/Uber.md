@@ -431,6 +431,8 @@ Each transition emits a Kafka event consumed by: Billing (fare calculation), Not
 
 **Great:** Sharded Redis Geo, partitioned by geohash prefix.<br>💡 *Geohash encodes a 2D coordinate into a 1D string where nearby points share a common prefix. A geohash like "tdr1w" covers a ~5km² cell. We shard by the first 3-4 characters, so each shard owns a geographic region. [Learn more →](/concepts#geospatial-indexing)*
 
+**In simple terms:** Divide the city into geographic regions. Each region gets its own Redis instance. When looking for nearby drivers, query only the relevant region (+ its neighbors). This spreads the 500K writes/sec across 8 machines instead of one.
+
 ```mermaid
 flowchart LR
     LI["Location Ingestion"]:::service
@@ -474,6 +476,8 @@ flowchart LR
 **Good:** Database-level optimistic locking with a version column. `UPDATE drivers SET ride_id = ? WHERE id = ? AND ride_id IS NULL`. Only one UPDATE succeeds (returns rowcount=1). The other gets rowcount=0 and retries with next driver. Works but adds a DB round-trip in the hot path.
 
 **Great:** Redis distributed lock with fence tokens.<br>💡 *A distributed lock is a mechanism where only one process can "hold" a key at a time. A fence token is a monotonically increasing number that prevents stale locks from causing harm - if a process holds token 5 but the lock has moved to token 6, its writes are rejected.*
+
+**In simple terms:** When we pick a driver for a ride, we "lock" that driver for 20 seconds using Redis. If another ride request also picks the same driver, the lock fails and it moves to the next candidate. Auto-expires after 20 seconds so drivers don't stay locked forever if something crashes.
 
 ```mermaid
 flowchart LR
@@ -551,6 +555,8 @@ Redlock (Redis distributed lock across N nodes) adds latency and complexity. For
 **Good:** One WebSocket per rider, server pushes location. But: how does the location event (arriving at Location Ingestion Service) get routed to the correct WebSocket Gateway instance holding that rider's connection?
 
 **Great:** Kafka-partitioned fan-out + Redis Pub/Sub for last-mile delivery.<br>💡 *Fan-out = delivering one event to multiple subscribers. Here the "fan" is narrow (one rider per ride), but the routing is the challenge - which server holds the connection? [Learn more →](/concepts#message-queues)*
+
+**In simple terms:** Driver sends GPS ping → it goes to Kafka (durable queue). From Kafka, a router figures out which WebSocket server holds the rider's connection and pushes the location there. The rider sees the driver move on the map within 200-400ms.
 
 ```mermaid
 flowchart LR

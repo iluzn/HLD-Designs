@@ -349,6 +349,8 @@ The router reads from R nodes, compares versions, returns the highest. If a repl
 
 **Great:** Consistent hashing with virtual nodes (borrowing from DynamoDB). Each physical node gets 100-200 positions on the ring. This ensures even distribution - without virtual nodes, some physical nodes might get 60% of keys by luck of the hash.
 
+**In simple terms:** Instead of assigning each key to a server using simple math (which breaks when you add/remove servers), we put servers on a circle and each key goes to the nearest server clockwise. Virtual nodes make sure no single server gets overloaded by bad luck.
+
 ```mermaid
 flowchart LR
     subgraph "Hash Ring"
@@ -380,6 +382,8 @@ flowchart LR
 **Good:** Append-only log. All writes are sequential appends (fast!). But reads require scanning the entire log to find a key (slow). Add an in-memory hash index pointing key → offset in the log. Reads are fast now, but the log grows forever.
 
 **Great:** Log-Structured Merge Tree (LSM Tree).<br>💡 *An LSM Tree splits storage into two layers: a fast in-memory buffer (memtable) and sorted files on disk (SSTables). All writes go to the memtable. When it's full, it's flushed to disk as a sorted file. Reads check memtable first, then disk files. [Learn more about WAL →](/concepts#write-ahead-log-wal)*
+
+**In simple terms:** Instead of writing directly to disk (slow random writes), dump everything into memory first, then flush to disk in big sorted batches. Reads check memory first, then disk files. This makes writes 100x faster.
 
 ```mermaid
 flowchart LR
@@ -431,6 +435,8 @@ flowchart LR
 
 **Great:** Three mechanisms working together:
 
+**In simple terms:** When a server comes back from being dead, we have 3 ways to catch it up: (1) replay writes that were saved for it while it was down, (2) fix stale data whenever someone reads it, (3) periodically compare what each server has and sync the differences.
+
 **Hinted Handoff** - while a node is down, writes meant for it are temporarily stored on another node as "hints." When the dead node comes back, hints are replayed to bring it up to date. Fast recovery for short outages.
 
 **Read Repair** - when a read hits multiple replicas and detects version mismatch, the router pushes the latest version to the stale replica. Passive healing on every read.
@@ -466,6 +472,8 @@ sequenceDiagram
 **Great:** [Vector clocks](/concepts#vector-clocks). Each write carries a vector clock that tracks which nodes have seen which version. If two writes are concurrent (neither "happened before" the other), the system detects the conflict and either:
 - Returns BOTH values to the client to resolve (DynamoDB's approach)
 - Merges automatically using a CRDT (conflict-free data type)
+
+**In simple terms:** When two servers both update the same key at the same time, we need to know if one happened "before" the other or if they truly conflict. Vector clocks track this by counting updates per server — if neither is strictly ahead, we have a conflict and must resolve it.
 
 **For most interview answers:** Say "we use LWW with versioning for simplicity, but for critical data we'd use vector clocks." That shows you know both and can choose pragmatically.
 

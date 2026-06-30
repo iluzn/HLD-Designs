@@ -66,6 +66,8 @@ The rest of the doc evolves this into a globally distributed streaming platform 
 - **Netflix Cosmos (Encoding Pipeline)** - Microservice-based media processing platform replacing the monolithic encoder. Uses per-title encoding to optimize bitrate per scene complexity. ([Netflix Tech Blog - Cosmos](https://netflixtechblog.com/the-netflix-cosmos-platform-35c14d9351ad))
 - **Netflix Recommendations (Two-Stage Ranking)** - Candidate generation via collaborative filtering, then re-ranking via deep learning. Row-based homepage layout driven by ML. ([Netflix Tech Blog - Recommendations](https://netflixtechblog.com/netflix-recommendations-beyond-the-5-stars-part-1-55838468f429))
 
+**In simple terms:** Instead of encoding every video the same way, analyze each scene separately. Action scenes get more bits (complex), talking-head scenes get fewer bits (simple). Result: consistent visual quality throughout without wasting bandwidth on easy scenes.
+
 ---
 
 ## 2. Functional Requirements

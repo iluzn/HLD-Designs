@@ -334,6 +334,8 @@ sequenceDiagram
 
 **Great:** Random 7-character Base62 string with collision check. Generate `abc12XY` randomly, check if it exists in the metadata DB (fast primary key lookup), retry on collision. At 3.5 trillion possible IDs, the collision probability is astronomically low - less than lottery odds at 1 billion pastes.
 
+**In simple terms:** Generate a random 7-character code (like "aB3xY9"), check if it already exists in the database (extremely unlikely with 3.5 trillion possibilities), and use it. Simple, fast, and non-guessable.
+
 **Why random beats hash:** With hash-based IDs, two different pastes CAN produce the same first 7 chars (collision). You'd need collision resolution anyway, so random is simpler. Hash-based is better when you WANT deduplication (same content → same URL), but that's not a requirement here.
 
 **Why random beats counter/Snowflake:** Snowflake IDs are time-sorted and somewhat predictable. For a paste service where privacy matters (users don't want their paste URLs guessable), random is preferred.
@@ -358,6 +360,8 @@ sequenceDiagram
 
 **Great:** Object Storage + content-hash deduplication. If two users paste identical content, store it once in S3 with the content hash as the key. Both paste metadata rows point to the same S3 object. Saves storage at scale.
 
+**In simple terms:** If two users paste the exact same text, store it only once in S3 and have both paste URLs point to the same file. Saves storage money.
+
 ---
 
 ### Deep Dive 3: CDN Caching Strategy - Immutable Content is Cache-Perfect
@@ -369,6 +373,8 @@ sequenceDiagram
 **Good:** Application-level cache (Redis) in front of S3. Reduces origin hits. But Redis costs memory, and popular pastes might be large (10MB cache entry).
 
 **Great:** CDN at the edge. Pastes are immutable (write-once, never updated), making them ideal CDN candidates. Set `Cache-Control: public, max-age=86400` (24h). After the first read, all subsequent reads from the same region are served in <10ms from the CDN edge. For a popular paste with 100K views, only 1 request reaches your origin.
+
+**In simple terms:** Since pastes never change after creation, a CDN can cache them forever. After the first person reads a paste, everyone else in that region gets it instantly from the CDN — your origin server is never hit again for that paste.
 
 **Cache invalidation:** For expired pastes, the CDN might serve stale content for up to `max-age` seconds. Solutions:
 - Set `max-age = min(time_until_expiry, 24h)` - paste expiring in 1 hour gets 1h cache
