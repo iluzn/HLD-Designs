@@ -405,6 +405,8 @@ sequenceDiagram
 
 **Problem:** Elon tweets → 100M followers. If we fan-out on write, that's 100M Redis writes. Takes minutes, and during that time the tweet is "invisible" to most followers.
 
+**In simple terms:** A celebrity with 100M followers posts. If we try to push that post into 100M timelines, it takes minutes. During that time, most followers don't see the post. We need a different strategy for mega-accounts.
+
 **Bad:** Fan-out on write for everyone. Celebrities block the queue for hours.
 
 **Good:** Skip fan-out for celebrities (> 10K followers). Fetch their tweets at read time.

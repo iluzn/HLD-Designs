@@ -85,6 +85,8 @@ Why it collapses under real use:
 - **Scheduler and worker coupled** - long-running jobs block the schedule tick.
 - **No leader election** - if you run two cron loops for HA, both pick up the same due job and run it twice.
 - **No retries or backoff** - worker crashes mid-run, job is lost.
+
+**In simple terms:** A worker was running a 4-hour job and crashed at hour 3. Is the job done? Should we retry? If we retry, it runs from scratch - wasting 3 hours of work.
 - **Tick granularity** - one-per-minute poll can't handle sub-second precision or 100k due-jobs-per-second bursts.
 - **No isolation** - a runaway tenant saturates the worker pool, everyone else's jobs miss their SLA.
 - **No observability** - "did my job run?" requires grep across worker logs.
@@ -429,6 +431,8 @@ Self-audit surfaces these weak spots. Eight deep dives.
 
 **Bad**: single dispatcher leader polling one Redis ZSET. At 1M jobs/min the single thread is saturated, polling latency creeps into seconds.
 
+**In simple terms:** One machine is responsible for checking 'which jobs need to run right now?' If that machine gets overloaded, jobs fire late. We need to split the work.
+
 **Good**: shard the ZSET by `hash(jobId) % N`. Each shard has its own leader (picked via etcd). N dispatchers poll N ZSETs in parallel.
 
 **Great - dynamic sharding with consistent hashing and idle thievery**:
@@ -487,6 +491,8 @@ This is the **Outbox + fencing** pattern borrowed from Stripe's idempotency work
 
 **Bad**: worker crashes mid-run. Execution sits in `RUNNING` forever. Nobody retries.
 
+**In simple terms:** A worker was running a 4-hour job and crashed at hour 3. Is the job done? Should we retry? If we retry, it runs from scratch - wasting 3 hours of work.
+
 **Good**: heartbeat-based liveness. Workers write to Redis every 10s. A sweeper scans executions stuck in `RUNNING` with expired heartbeats and marks them `FAILED_WORKER_LOST`, triggering retry.
 
 **Great - heartbeat TTL + at-most-once interpretation + retry with backoff**:
@@ -513,6 +519,8 @@ This is the **Outbox + fencing** pattern borrowed from Stripe's idempotency work
 ### Deep Dive 5 - Multi-tenant isolation and fairness
 
 **Bad**: tenant A schedules 10M cron jobs all firing at `0 0 * * *` (midnight UTC). At midnight, the dispatcher is overwhelmed, tenant B's urgent jobs miss their SLA.
+
+**In simple terms:** One customer floods the system with millions of jobs. Other customers' urgent jobs get stuck behind them. We need fairness - one noisy customer shouldn't starve others.
 
 **Good**: per-tenant quotas enforced at job-submit time. Cap at N concurrent executions per tenant.
 

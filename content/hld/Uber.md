@@ -550,6 +550,8 @@ Redlock (Redis distributed lock across N nodes) adds latency and complexity. For
 
 **Problem:** During an active ride, the rider needs to see the driver's position update every 3-5 seconds on the map. With 1M concurrent rides, that's 1M WebSocket connections each receiving 200-300 messages per ride.
 
+**In simple terms:** During your Uber ride, you watch the driver's car move on the map. With 1M concurrent rides, that's 1M persistent connections each receiving updates every 3-5 seconds.
+
 **Bad:** Rider polls `GET /rides/{id}/driver-location` every 2 seconds. At 1M rides, that's 500K HTTP requests/sec just for tracking. Wastes bandwidth, adds 2-second latency, burns server CPU on connection setup.
 
 **Good:** One WebSocket per rider, server pushes location. But: how does the location event (arriving at Location Ingestion Service) get routed to the correct WebSocket Gateway instance holding that rider's connection?
@@ -609,6 +611,8 @@ flowchart LR
 ### Deep Dive 5: ETA Calculation and Route Optimization
 
 **Problem:** The rider needs accurate ETA both at matching time ("driver arrives in 4 minutes") and during the trip ("arriving at destination in 12 minutes"). Calling Google Maps API for every location update (500K/sec) would cost $millions/month and add latency.
+
+**In simple terms:** The app says 'driver arriving in 4 minutes.' This needs to be accurate - not just distance/speed calculation but actual road conditions, one-way streets, and live traffic.
 
 **Bad:** Straight-line distance / average speed. "2km away = 4 minutes." Completely wrong in urban areas with one-way streets, traffic, and construction.
 

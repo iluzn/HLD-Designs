@@ -2,6 +2,8 @@
 layout: default
 title: "Design Robinhood / Zerodha - Stock Broker System Design Interview"
 description: "System design for a stock broker like Robinhood or Zerodha with order matching, transaction history, notifications, and delivery semantics. Event-driven architecture with Kafka."
+
+**In simple terms:** When you place a 'buy AAPL at $150' order, the system needs to find a matching 'sell AAPL at $150' order. This must happen in microseconds, correctly, and never match the same order twice.
 permalink: /hld/StockBroker/
 ---
 

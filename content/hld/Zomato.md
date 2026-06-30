@@ -288,6 +288,8 @@ flowchart LR
 
 ### Deep Dive 1 - How do we handle 200K riders pinging their location every few seconds?
 
+**In simple terms:** 200K delivery drivers are sending their GPS location every 4 seconds. That's 50K writes per second of tiny geo records. A normal database can't handle this volume.
+
 **Problem.** 200K riders × 1 ping / 4s ≈ 50K writes/sec of tiny geo records. Standard databases (PostgreSQL, DynamoDB) would either fall over on write volume or cost a fortune. And we also need to answer "give me riders within 3 km of this point" fast - a lat/lng scan of millions of rows is a non-starter.
 
 **Bad - store every ping in PostgreSQL with a B-tree on (lat, lng).**
@@ -337,6 +339,8 @@ flowchart LR
 
 **Problem.** Matching is a race. Multiple concurrent orders in the same area may see the same candidate rider at the top of their list. Without coordination we could double-book a rider, or send the same customer's order to two riders.
 
+**In simple terms:** Two orders in the same area both see the same delivery driver as the 'best match.' Without coordination, both orders get assigned to the same driver. We need a lock.
+
 **Bad - optimistically send to the top candidate, hope for the best.**
 Under high concurrency this produces double-offers. Riders get confused, customers get delayed.
 
@@ -357,6 +361,8 @@ This gives us strong consistency in matching without introducing a traditional d
 
 **Problem.** The customer's map needs to show the rider moving smoothly. We can't have the app hammer the server with polling queries - at 20 million DAU, that's catastrophic.
 
+**In simple terms:** The customer wants to see their delivery driver moving on the map in real-time. Polling the server every 2 seconds for 20M users = catastrophic load. We need push updates.
+
 **Bad - short polling every 3 seconds.**
 Easy to implement but means millions of wasted requests for orders that aren't moving, and 3-second lag feels laggy.
 
@@ -375,6 +381,8 @@ Consistent hashing at the edge routes all subscribers for one order to the same 
 
 **Problem.** This is a multi-step human-in-the-loop workflow. Any step can fail: rider doesn't respond, app crashes, phone loses signal, offer times out. We need to move on to the next rider automatically and never strand an order.
 
+**In simple terms:** We sent a delivery offer to a rider. They didn't respond (phone died, went to bathroom). We need to automatically move to the next rider after a timeout without losing the order.
+
 **Bad - best-effort timers in the matching service.**
 If the matching service pod restarts mid-offer, the state is lost and the order hangs. Customer waits forever.
 
@@ -389,6 +397,8 @@ Uber themselves open-sourced Cadence for exactly this reason; food-delivery disp
 ### Deep Dive 5 - How do we search across 500K restaurants with text, filters, and ranking?
 
 **Problem.** Zomato isn't just "tap the nearest pin" - customers type "biryani," filter by "pure veg, rating 4+, under ₹300," and expect relevant results in under 300ms. At 50K search QPS peak across a catalog of 500K restaurants with nested menu items, the requirements are: text search, faceted filters, geo constraint, custom ranking, and personalization, all at low latency.
+
+**In simple terms:** Customers type 'biryani' and expect results in under 300ms, filtered by location, rating, price, and dietary preferences. A regular SQL query can't handle this complexity at speed.
 
 **Bad - `WHERE name ILIKE '%biryani%' AND is_open = true` on Postgres.**
 Full table scans. No relevance ranking. No typo tolerance - "biriyani" returns nothing. Facet counts (how many veg results? how many 4+ rated?) require a separate aggregation query per facet. Falls apart past 50 QPS.

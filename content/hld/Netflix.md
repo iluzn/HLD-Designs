@@ -182,6 +182,8 @@ GET /api/v1/search?q=<query>&filters=genre,year
 
 When a studio delivers a new movie to Netflix, it arrives as a massive master file (ProRes 4K, 50-100GB). We need to convert it into playable formats: multiple resolutions (240p to 4K), multiple bitrates per resolution, multiple codecs (H.264, H.265, VP9, AV1), and package them into streamable segments (HLS for Apple, DASH for everything else). This is a multi-hour pipeline.
 
+**In simple terms:** Netflix receives a 50-100GB raw movie file. It needs to be converted into dozens of formats (different resolutions, codecs, devices). This takes hours of processing.
+
 **New components:**
 
 1. **Ingest Service** - Receives upload notification, validates master file, creates encoding job. Think of it as the "front desk" for new content.
@@ -234,6 +236,8 @@ flowchart LR
 
 When a user hits "Play," we need to start delivering video segments immediately and adapt quality to their bandwidth in real-time. If they're on WiFi, stream 4K. If they switch to cellular, drop to 720p without buffering.
 
+**In simple terms:** When you press play, the video should start within 2 seconds and never buffer. But your internet speed changes (WiFi → cellular). The player must adapt quality in real-time.
+
 The key protocol: **HLS (HTTP Live Streaming)** or **DASH (Dynamic Adaptive Streaming over HTTP)**.<br>💡 *Both work the same way: the video is split into small segments (2-4 seconds each). A manifest file lists all available quality levels. The player fetches segments one at a time, choosing quality level based on current bandwidth.*
 
 **New components:**
@@ -285,6 +289,8 @@ flowchart LR
 ### FR3: Personalized Recommendations
 
 When users open Netflix, they see a homepage with rows of titles ("Because you watched X," "Trending Now," "Top 10 in India"). Each user's homepage is different. Recommendation quality directly drives engagement and retention - Netflix estimates their rec system is worth $1B/year in reduced churn.
+
+**In simple terms:** Your Netflix homepage shows different movies than your friend's - based on what you've watched before. This personalization needs to happen in under 200ms when you open the app.
 
 **New components:**
 

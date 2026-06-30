@@ -441,6 +441,8 @@ For apps with multiple devices (phone + web + desktop), ordering gets harder. Us
 
 **Problem:** Network is unreliable. Message might be delivered twice if the ack is lost.
 
+**In simple terms:** The internet is flaky. A message might arrive twice if the 'got it' confirmation gets lost. We need to make sure Bob sees each message exactly once, even if the system retries delivery.
+
 **Flow:**
 ```
 Sender → Server: message (clientMsgId: "abc")
@@ -459,6 +461,8 @@ Receiver → Server: delivered ack (messageId: "msg_1")
 
 **Problem:** User has phone + web + desktop. All three must show the same messages.
 
+**In simple terms:** You send a message from your phone. When you open WhatsApp on your laptop 5 minutes later, that same message should be there. All your devices need to stay in sync.
+
 **Solution: pull-based sync with sequence numbers.**
 - Each conversation has a `maxSeqNo`.
 - Each device tracks `lastSyncedSeqNo` per conversation.
@@ -471,6 +475,8 @@ This is the "ordered log" model (Facebook Iris). The server is the source of tru
 ### Deep Dive 5 - Group fan-out: write amplification vs read amplification
 
 **Write amplification (push model):**
+
+**In simple terms:** When you send a message to a 500-person group, should we write 500 copies (one per member) or write one copy and let each member fetch it? Each approach has trade-offs.
 - On group message, write a copy to each member's inbox.
 - 256-member group × 1000 messages/day = 256K writes/day for one group.
 - **Pro:** reads are fast (each user reads their own inbox).

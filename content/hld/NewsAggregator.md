@@ -366,6 +366,8 @@ sequenceDiagram
 
 **Problem:** A major event happens. The first publisher posts about it. Our crawler might not check that source for another 10 minutes. By then, users have already seen it on Twitter.
 
+**In simple terms:** Breaking news just happened. If we wait for our next scheduled crawl (could be 10 minutes), users see it on Twitter first. We need to detect and surface breaking news faster.
+
 **Bad:** Crawl all 50K sources every 5 minutes. At 50K sources with 2s average response time, that's 100K seconds of crawl time / parallelism. Even with 100 workers = 1000 seconds per full cycle. Too slow and wasteful for sources that rarely update.
 
 **Good:** Adaptive crawl frequency. Track how often each source publishes. BBC publishes every 2 minutes → crawl every 3 min. A local blog publishes weekly → crawl every 6 hours. Prioritize sources by historical freshness.
@@ -382,6 +384,8 @@ sequenceDiagram
 ### Deep Dive 3: Feed Ranking - Personalization Without Being a Filter Bubble
 
 **Problem:** Pure personalization creates filter bubbles - a user who reads only tech news never sees important political events. Pure chronological is noisy - most stories aren't relevant to any specific user.
+
+**In simple terms:** If we only show you tech news because you read tech news, you'll never learn about important political events. But showing everything is noisy. We need balance.
 
 **Bad:** Sort by publish time only. User drowns in irrelevant content.
 
@@ -411,6 +415,8 @@ score = 0.3 * topic_relevance
 ### Deep Dive 4: Handling Traffic Spikes During Breaking Events
 
 **Problem:** Normal traffic is 50K QPS. During election night or a natural disaster, traffic spikes to 500K QPS in minutes. The same 3 stories are requested by everyone simultaneously.
+
+**In simple terms:** Election night. Traffic spikes 10x in minutes. Everyone wants the same 3 stories. If we recompute the feed for each user, the system melts.
 
 **Bad:** Every user's feed request triggers a fresh ranking computation. At 500K QPS, ranking service melts.
 

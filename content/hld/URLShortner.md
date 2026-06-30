@@ -142,6 +142,8 @@ Rule of thumb: **managed > self-hosted** when the workload isn't a differentiato
 - **Uniqueness** - no two long URLs can accidentally share a short code.
 - **Scale** - 100M new links/day, 10B redirects/day, 5-year retention → ~200B rows at peak.
 
+**In simple terms:** 10 billion clicks per day on short links. A database lookup for every click is too slow and too expensive. We need the mapping cached as close to the user as possible.
+
 ### Below the line
 - Strong consistency on analytics counts (eventual is fine)
 - Strict ordering of click events
@@ -152,6 +154,8 @@ Rule of thumb: **managed > self-hosted** when the workload isn't a differentiato
 - **Users:** 100M DAU (link creators + clickers combined)
 - **Write QPS:** 1K new URLs/sec (100M new links/day)
 - **Read QPS:** 100K redirects/sec (100:1 read-write ratio, 10B redirects/day)
+
+**In simple terms:** 10 billion clicks per day on short links. A database lookup for every click is too slow and too expensive. We need the mapping cached as close to the user as possible.
 - **Storage:** 500GB URL mapping data/year (~200B rows at 5-year retention)
 - **Bandwidth:** ~50 Gbps at peak for redirect responses + analytics event ingestion
 
@@ -333,6 +337,8 @@ Flow:
 
 **Problem.** We need every short code to be globally unique. With 100M links/day, we're generating ~1,200/sec sustained. Naive approaches either collide, don't scale, or require coordination on every request.
 
+**In simple terms:** Every time someone shortens a URL, we need to generate a unique 7-character code. With millions of URLs, random generation might accidentally create the same code twice.
+
 **Bad - MD5 or SHA256 hash of the long URL, take first 7 chars.**
 - Same URL always hashes to the same code, which **seems** like a nice dedupe property - but now two users submitting the same URL share a code and share click stats, which is almost never what they want.
 - Hash collisions force you to rehash with a salt and retry, which means an unknown number of DB round-trips per write.
@@ -362,6 +368,8 @@ For custom aliases (if we support them), we use a separate write path: first try
 ### Deep Dive 2 - How do we serve 10B redirects per day at <100ms P99 globally?
 
 **Problem.** 10B redirects/day = ~120K/sec average, 500K/sec peak. A round-trip to a primary DB in us-east-1 from Singapore is already 200ms, before you touch the data. We need data close to the user.
+
+**In simple terms:** 10 billion clicks per day on short links. A database lookup for every click is too slow and too expensive. We need the mapping cached as close to the user as possible.
 
 **Bad - single origin DB, one region, hope for the best.**
 Falls over on raw QPS and gives lousy latency to anyone outside the origin region.
@@ -410,6 +418,8 @@ flowchart LR
 
 **Problem.** "Celebrity problem." Elon tweets a short link. 100K people click it in the first second. Every redirect goes to the same Redis key on the same shard. A single Redis node tops out around 100-200K ops/sec; we've saturated one shard while the rest of the cluster sits idle.
 
+**In simple terms:** Elon tweets a short link. 100K people click it in one second. All those requests hit the same Redis key on the same server. One key becomes a bottleneck.
+
 **Bad - scale up by adding more Redis nodes.**
 Doesn't help. Consistent hashing still lands all requests on the same node for this key.
 
@@ -429,6 +439,8 @@ For the rare path of a brand-new viral link (cold across all tiers), use **reque
 ### Deep Dive 4 - How do we handle analytics without slowing down the redirect path?
 
 **Problem.** We want per-link click counts, country breakdowns, referrer stats, time-series graphs. If we synchronously write to an analytics DB on every redirect, we just added 20ms to the hot path and a second point of failure. Multiply by 120K/sec sustained.
+
+**In simple terms:** We need to count every click (country, device, time) without adding latency to the redirect. The redirect must stay fast; analytics can be slightly delayed.
 
 **Bad - synchronously increment a counter in Redis or Postgres on each redirect.**
 Adds latency. Redis `INCR` on one key creates the same hot-partition problem as redirect. A counter row in Postgres is even worse. Also loses events on Redis restart.
@@ -450,6 +462,8 @@ Eventual consistency tradeoff is explicit: dashboard numbers lag the true count 
 ### Deep Dive 5 - How do we scale the writes to the links store?
 
 **Problem.** 100M new links per day = ~1,200 writes/sec average. Over 5 years: 200B rows. A single Postgres instance groans somewhere around a few billion rows even with good indexing.
+
+**In simple terms:** 100M new URLs per day, stored for 5 years = 200 billion rows. A single Postgres can't hold this. We need to split the data across multiple databases.
 
 **Bad - one big Postgres table, add read replicas when it gets slow.**
 Replicas don't help writes. Indexes balloon. Backup and restore take 12+ hours.

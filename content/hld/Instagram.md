@@ -106,6 +106,8 @@ The rest of the doc evolves this into a globally distributed media platform with
 
 - **Users:** 2B MAU, 500M DAU, 50M feed loads/day at peak
 - **Write QPS:** 400M resize ops/day (100M photos/day × 4 variants = ~4,600 resize ops/sec sustained)
+
+**In simple terms:** 100M photos per day means 200TB of new storage every day. At S3 prices, that's millions per month. We need tiered storage - hot photos on fast storage, old ones on cheap storage.
 - **Read QPS:** 50M feed loads/day peak = ~580K feed reads/sec + image CDN requests
 - **Storage:** ~200TB new storage/day before dedup (100M photos × 4 variants × 500KB avg)
 - **Bandwidth:** ~15 Tbps at peak (500M users × avg 10 images/session × 200KB per image)
@@ -416,6 +418,8 @@ stateDiagram-v2
 
 **Bad:** Process images synchronously during upload - user waits 15+ seconds while server resizes, compresses, and uploads variants. Timeouts on slow connections cause lost uploads.
 
+**In simple terms:** User uploads a photo. Should we make them wait 15 seconds while we resize it to 5 different sizes? No - accept the upload instantly, process in the background.
+
 **Good:** Accept upload, store original, process asynchronously. Notify user when done. But: single worker processes all images serially - backlog grows during peak hours.
 
 **Great:** Multi-stage pipeline with auto-scaling worker pools:
@@ -456,6 +460,8 @@ flowchart LR
 
 **Bad:** Fan-out-on-read only - every feed request queries 500 users' posts, sorts, ranks. At 100M DAU opening feeds simultaneously, this is billions of queries per minute.
 
+**In simple terms:** When you open Instagram, should the app go ask 500 different users 'got any new posts?' That's too slow. Better to pre-build your feed ahead of time.
+
 **Good:** Fan-out-on-write - when user posts, push postId to all followers' feeds (Cassandra write). Feed reads become a single partition scan. But: celebrities with 100M followers generate 100M writes per post.
 
 **Great:** Hybrid approach (borrowing from Instagram and Twitter):
@@ -477,6 +483,8 @@ flowchart LR
 
 **Bad:** Serve all images from origin S3 directly - high latency for distant users (300ms+ for cross-continent), massive egress costs, origin overwhelmed.
 
+**In simple terms:** If every image request goes to one server in the US, users in India wait 300ms. CDN puts copies of popular images close to users worldwide.
+
 **Good:** Put CloudFront/Cloudflare in front of S3 - cache at edge nodes. But: cache misses on first access, no adaptive quality based on connection speed.
 
 **Great:** Multi-layer CDN strategy with client-driven quality selection:
@@ -493,6 +501,8 @@ flowchart LR
 ### Deep Dive 4: Celebrity / Hot User Problem
 
 **Problem:** When a celebrity (100M followers) posts, naive fan-out means 100M Cassandra writes. At 10 celebrity posts/hour, that's 1B writes/hour just for fan-out - unsustainable.
+
+**In simple terms:** Cristiano Ronaldo posts a photo. If we try to add it to 100M people's feeds instantly, that's 100M database writes. The system would crash. We need a special path for celebrities.
 
 **Bad:** Treat celebrities the same as everyone - fan-out to all followers. System collapses under write load.
 
@@ -514,6 +524,8 @@ flowchart LR
 
 **Problem:** Chronological feed shows everything in time order. But users follow 500 people and check the app 5x/day - they miss 80% of content. Need to surface the most relevant posts.
 
+**In simple terms:** Showing posts purely by time means you miss the important ones posted while you slept. We need to surface the posts you'd actually care about, not just the newest ones.
+
 **Bad:** Pure chronological - users miss important posts from close friends buried under high-frequency posters.
 
 **Good:** Simple scoring: `score = recency_weight * time_decay + engagement_weight * (likes + comments)`. Better than chronological but doesn't personalize.
@@ -533,6 +545,8 @@ Feed ranking runs on every feed load for 500M daily users. At 200M feed loads/da
 ### Deep Dive 6: Storage and Data Lifecycle
 
 **Problem:** 100M photos/day × 4 variants × average 500KB = 200TB new storage per day. At $0.023/GB, that's $4.6M/month in S3 Standard alone.
+
+**In simple terms:** 100M photos per day means 200TB of new storage every day. At S3 prices, that's millions per month. We need tiered storage - hot photos on fast storage, old ones on cheap storage.
 
 **Bad:** Keep everything in S3 Standard forever - cost grows linearly, unbounded.
 

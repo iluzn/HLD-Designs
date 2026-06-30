@@ -186,6 +186,8 @@ POST /api/v1/documents/{docId}/restore
 
 The core challenge: when User A inserts "hello" at position 5 and User B simultaneously deletes character at position 3, the positions shift. Without transformation, User A's insert lands at the wrong spot. We need Operational Transformation (OT) to adjust positions based on concurrent operations.
 
+**In simple terms:** Two people type in the same document at the same time. Alice inserts a word at position 5, Bob deletes a character at position 3. Without coordination, the positions get messed up and text corrupts.
+
 **New components we need:**
 
 1. **API Gateway** - Entry point for HTTP requests (document CRUD). Handles auth and routing.
