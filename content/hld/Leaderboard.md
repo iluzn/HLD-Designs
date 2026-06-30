@@ -325,15 +325,23 @@ flowchart LR
 
 **Problem:** Redis Sorted Sets break ties lexicographically by member name. If Player A and Player B both have score 1500, their rank order is alphabetical. But you probably want "whoever scored first ranks higher."
 
+**In simple terms:** Two players both have 1500 points. Who gets the higher rank? Redis will just sort by their name alphabetically - that's unfair. We need a better tie-breaker.
+
 **Bad:** Accept lexicographic tie-breaking. Players named "Aaron" always rank above "Zeus" on ties. Not fair.
 
-**Good:** Encode timestamp into the score itself:
+**Good:** Encode timestamp into the score itself. Combine the actual score with the time they achieved it into ONE number:
 
 ```
 effective_score = actual_score × 10_000_000_000 + (MAX_TIMESTAMP - timestamp)
 ```
 
-Higher effective score wins. For the same actual score, earlier timestamp produces a higher effective score. Redis stores scores as float64 - this works for scores up to ~100M with millisecond precision.
+**How this works with an example:**
+- Player A scores 1500 at timestamp 1000 → effective = 1500 × 10B + (MAX - 1000)
+- Player B scores 1500 at timestamp 2000 → effective = 1500 × 10B + (MAX - 2000)
+- Player A's effective score is HIGHER (because MAX-1000 > MAX-2000)
+- So Player A ranks above Player B (earlier scorer wins)
+
+Redis stores scores as float64 - this works for scores up to ~100M with millisecond precision.
 
 **Great:** For complex tie-breaking (score → then win-rate → then games played), use a composite score with weighted fields packed into a single number. Alternatively, maintain a secondary sorted set for the tiebreaker dimension and resolve in the application layer.
 
@@ -343,9 +351,11 @@ Higher effective score wins. For the same actual score, earlier timestamp produc
 
 **Problem:** Many games have weekly/seasonal leaderboards that reset. How do you atomically start a fresh leaderboard without downtime?
 
-**Bad:** `DEL leaderboard` → create new one. Between delete and first writes, players see empty leaderboard.
+**In simple terms:** Every Monday, the leaderboard should start fresh (everyone back to 0). But how do you swap to a new empty leaderboard without players seeing a blank page for even a second?
 
-**Good:** Use time-bucketed keys: `leaderboard:weekly:2026-W26`. When the week changes, new writes go to the new key. Old key stays readable until archived.
+**Bad:** `DEL leaderboard` → create new one. Between delete and first writes, players see empty leaderboard. Even if just for 100ms, during that gap any rank query returns nothing.
+
+**Good:** Use time-bucketed keys: `leaderboard:weekly:2026-W26`. When the week changes, new writes go to the new key. Old key stays readable until archived. No deletion needed.
 
 **Great:** Redis `RENAME` for atomic swap:
 
@@ -353,7 +363,7 @@ Higher effective score wins. For the same actual score, earlier timestamp produc
 RENAME leaderboard:current leaderboard:archive:2026-W25
 ```
 
-This is atomic - zero gap. The current leaderboard is now the archive, and a new empty `leaderboard:current` can be created. Persist the archive to Postgres, then delete from Redis.
+This is atomic - zero gap. In a single operation: the current leaderboard becomes the archive, and a new empty `leaderboard:current` can be created immediately. Persist the archive to Postgres for historical queries, then delete from Redis after a day.
 
 ---
 
@@ -361,11 +371,19 @@ This is atomic - zero gap. The current leaderboard is now the archive, and a new
 
 **Problem:** During a tournament final, 1M players all load the leaderboard simultaneously. They're all asking for the same "top 100." That's 1M identical `ZREVRANGE` calls hitting Redis.
 
-**Bad:** Let all 1M requests hit Redis directly. Even though each ZREVRANGE is O(log N + 100), at 1M QPS the network bandwidth saturates the Redis node.
+**In simple terms:** A million people asking the exact same question ("who's in the top 100?") at the same time. Even though each individual question is cheap, a million of them overwhelms even Redis.
 
-**Good:** Application-level cache. Cache the "top 100" result with a 1-second TTL. 999,999 of those 1M requests are served from cache. Only 1 actually hits Redis.
+**Bad:** Let all 1M requests hit Redis directly. Even though each ZREVRANGE is O(log N + 100), at 1M QPS the network bandwidth saturates the Redis node (each response is ~5KB × 1M = 5GB/sec of bandwidth).
 
-**Great:** Dedicated "Top-K Cache" service with 1s TTL + WebSocket push for live updates. The top 100 is computed once per second and pushed to all connected clients. Zero polling, zero Redis load from viewers.
+**Good:** Application-level cache. Cache the "top 100" result with a 1-second TTL. First request computes it from Redis, caches the result. The next 999,999 requests in that second are served from cache. Only 1 request/second actually hits Redis.
+
+**Great:** Dedicated "Top-K Cache" service with 1s TTL + WebSocket push for live updates. Instead of players polling "show me the top 100" repeatedly, the server pushes the updated top 100 to all connected players once per second via WebSocket. Zero polling, zero Redis load from viewers.
+
+**How it works:**
+1. A background job runs `ZREVRANGE` once per second → gets the latest top 100
+2. Compares with previous top 100 → computes the diff (who moved up/down)
+3. Pushes the diff to all connected WebSocket clients
+4. Client updates the UI smoothly (player 5 moved to position 3, new score: 2450)
 
 ---
 
