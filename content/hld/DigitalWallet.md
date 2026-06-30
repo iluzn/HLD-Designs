@@ -290,7 +290,7 @@ How the Ledger Service actually learns the rail succeeded - **it doesn't activel
 4. Rail responds "accepted, I'll tell you later" - we return `202 Processing` to the app immediately. User sees "pending" in the UI
 5. Seconds to minutes later, the user approves in their bank app. Bank fires a signed webhook to our Webhook Handler with the result, referencing our `txn_id`
 6. Webhook Handler verifies the HMAC signature, then publishes a `rail.confirmed` event to Kafka
-7. Ledger Service consumes the event, locks the Transaction row (`SELECT FOR UPDATE WHERE status = 'PENDING'`), posts a balanced journal entry (`DEBIT rail_receivable ₹500, CREDIT user_wallet ₹500`), flips status to `SUCCEEDED` - all in one atomic DB transaction
+7. Ledger Service consumes the event, locks this specific Transaction row (`SELECT * FROM transactions WHERE id = :txnId AND status = 'PENDING' FOR UPDATE` - locks only this one row, not all pending), posts a balanced journal entry (`DEBIT rail_receivable ₹500, CREDIT user_wallet ₹500`), flips status to `SUCCEEDED` - all in one atomic DB transaction. If the row isn't PENDING (already processed), the query returns 0 rows and we skip - prevents double processing.
 8. If the webhook was lost? No problem - the Reconciler polls the rail within 30-60s and produces the same event
 9. Notification fires: "₹500 added to your wallet!" 🎉
 
