@@ -36,6 +36,16 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
+| Color | Meaning |
+|---|---|
+| 🟠 Purple-Orange | Client apps |
+| 🔵 Blue | Edge / Gateway |
+| 🟢 Green | Backend services |
+| 🟡 Yellow | Data stores |
+| 🟣 Purple | Async (Kafka) |
+| 🔴 Pink | External services |
+
+
 **How this breaks:**
 
 - Querying "nearest driver" in Postgres with lat/lng is a full table scan - won't work with 2M active drivers
@@ -205,14 +215,6 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-| Color | Meaning |
-|---|---|
-| 🟠 Purple-Orange | Client apps |
-| 🔵 Blue | Edge / Gateway |
-| 🟢 Green | Backend services |
-| 🟡 Yellow | Data stores |
-| 🟣 Purple | Async (Kafka) |
-| 🔴 Pink | External services |
 
 **Step-by-step flow:**
 

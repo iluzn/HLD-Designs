@@ -36,6 +36,14 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
+| Color | Meaning |
+|---|---|
+| 🟣 Purple | Clients |
+| 🟢 Green | Services |
+| 🟡 Yellow | Data stores |
+| 🔵 Blue | Edge / CDN |
+
+
 Store the paste content as a TEXT/BLOB column directly in SQL. Use auto-increment IDs.
 
 **Why this breaks:**
@@ -164,12 +172,6 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-| Color | Meaning |
-|---|---|
-| 🟣 Purple | Clients |
-| 🟢 Green | Services |
-| 🟡 Yellow | Data stores |
-| 🔵 Blue | Edge / CDN |
 
 **Step-by-step flow:**
 

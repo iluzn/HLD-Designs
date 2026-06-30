@@ -36,6 +36,16 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
+| Color | Meaning |
+|---|---|
+| 🟠 Purple-Orange | Client apps |
+| 🔵 Blue | Edge / Gateway |
+| 🟢 Green | Backend services |
+| 🟡 Yellow | Data stores |
+| 🟣 Purple | Async (Kafka / Pub/Sub) |
+| 🔴 Pink | External services |
+
+
 **How this breaks:**
 
 - Last-write-wins in Postgres means User 1's edits silently disappear when User 2 saves - data loss
@@ -207,14 +217,6 @@ flowchart LR
     classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
 ```
 
-| Color | Meaning |
-|---|---|
-| 🟠 Purple-Orange | Client apps |
-| 🔵 Blue | Edge / Gateway |
-| 🟢 Green | Backend services |
-| 🟡 Yellow | Data stores |
-| 🟣 Purple | Async (Kafka / Pub/Sub) |
-| 🔴 Pink | External services |
 
 **Step-by-step flow:**
 

@@ -36,6 +36,16 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
+| Color | Meaning |
+|---|---|
+| 🟠 Purple | Client |
+| 🔵 Blue | Edge / Gateway |
+| 🟢 Green | Service |
+| 🟣 Purple | Async (Workflow / Queue) |
+| 🟡 Yellow | Data store |
+| 🔴 Pink | External |
+
+
 **How this breaks:**
 - Single file server can't serve 200M concurrent streams - bandwidth alone would be 200 Tbps
 - No encoding pipeline - raw 4K master files are too large (50GB per hour of content) to stream directly
@@ -204,14 +214,6 @@ flowchart LR
     classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
-| Color | Meaning |
-|---|---|
-| 🟠 Purple | Client |
-| 🔵 Blue | Edge / Gateway |
-| 🟢 Green | Service |
-| 🟣 Purple | Async (Workflow / Queue) |
-| 🟡 Yellow | Data store |
-| 🔴 Pink | External |
 
 **Step-by-step flow:**
 

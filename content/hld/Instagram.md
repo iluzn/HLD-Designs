@@ -36,6 +36,15 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
+| Color | Meaning |
+|---|---|
+| 🟠 Purple | Client |
+| 🔵 Blue | Edge / Gateway |
+| 🟢 Green | Service |
+| 🟣 Purple | Async (Queue / Kafka) |
+| 🟡 Yellow | Data store |
+
+
 **How this breaks:**
 - Local disk storage can't serve images globally - users in Tokyo wait 2+ seconds for images stored in US-East
 - Single API server becomes bottleneck during upload spikes (New Year's Eve, live events)
@@ -199,13 +208,6 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-| Color | Meaning |
-|---|---|
-| 🟠 Purple | Client |
-| 🔵 Blue | Edge / Gateway |
-| 🟢 Green | Service |
-| 🟣 Purple | Async (Queue / Kafka) |
-| 🟡 Yellow | Data store |
 
 **Step-by-step flow:**
 

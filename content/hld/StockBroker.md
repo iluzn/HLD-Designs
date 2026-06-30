@@ -37,6 +37,15 @@ flowchart LR
     classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
+| Color | Meaning |
+|---|---|
+| 🟠 Orange | Client |
+| 🔵 Blue | Edge / Gateway |
+| 🟢 Green | Service |
+| 🟣 Purple | Async (Kafka) |
+| 🟡 Yellow | Data store |
+
+
 **How this breaks:**
 - Single API server can't handle 100K+ orders/sec during market open
 - Synchronous exchange call blocks the API - timeouts pile up
@@ -195,13 +204,6 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-| Color | Meaning |
-|---|---|
-| 🟠 Orange | Client |
-| 🔵 Blue | Edge / Gateway |
-| 🟢 Green | Service |
-| 🟣 Purple | Async (Kafka) |
-| 🟡 Yellow | Data store |
 
 **Step-by-step flow:**
 

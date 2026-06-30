@@ -41,6 +41,16 @@ flowchart LR
     classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
+| Color | Role |
+|---|---|
+| Blue | Edge / API gateway |
+| Green | Service |
+| Purple | Async / message broker |
+| Pink | External dependency |
+| Yellow | Data store |
+| Orange | Client |
+
+
 **In 3 sentences:** Backend services emit events ("order confirmed") to Kafka. The notification service consumes these, renders a template, picks the channel (push/SMS/email based on user preferences), and dispatches. Delivery tracking, retries, and send-time optimization ensure messages reach users when they're most likely to engage.
 
 ---
@@ -341,14 +351,6 @@ flowchart LR
 
 **Legend**
 
-| Color | Role |
-|---|---|
-| Blue | Edge / API gateway |
-| Green | Service |
-| Purple | Async / message broker |
-| Pink | External dependency |
-| Yellow | Data store |
-| Orange | Client |
 
 **Step-by-step flow:**
 

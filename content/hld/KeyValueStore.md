@@ -35,6 +35,14 @@ flowchart LR
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
 ```
 
+| Color | Meaning |
+|---|---|
+| 🟣 Purple | Client apps |
+| 🟢 Green | Services / routing |
+| 🟡 Yellow | Data stores / nodes |
+| 🟣 Dark purple | Async / coordination |
+
+
 A single server with an in-memory hashmap. `PUT` adds to the map, `GET` retrieves.
 
 **Why this breaks:**
@@ -177,12 +185,6 @@ flowchart LR
     classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
 ```
 
-| Color | Meaning |
-|---|---|
-| 🟣 Purple | Client apps |
-| 🟢 Green | Services / routing |
-| 🟡 Yellow | Data stores / nodes |
-| 🟣 Dark purple | Async / coordination |
 
 **Step-by-step flow for PUT:**
 

@@ -41,6 +41,16 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
+| Color | Layer |
+|---|---|
+| 🟠 Orange | Clients |
+| 🔵 Blue | Edge |
+| 🟢 Green | Services |
+| 🟣 Purple | Async / Streaming |
+| 🟡 Yellow | Data |
+| 🩷 Pink | External |
+
+
 **In 3 sentences:** Customer searches for restaurants (Elasticsearch with geo + relevance scoring), places an order (Postgres with idempotency), and the system finds a nearby rider (Redis Geo for proximity, Temporal for the multi-step dispatch workflow). The rider's live location streams to the customer via WebSocket. Each component is independently scalable.
 
 💡 *WebSocket is a persistent two-way connection. Unlike HTTP (ask → answer → done), WebSocket stays open so the server can push updates instantly. [Learn more →](/concepts#real-time-communication-websocket-vs-sse-vs-polling)*
@@ -164,14 +174,6 @@ flowchart LR
 
 ### Color Legend
 
-| Color | Layer |
-|---|---|
-| 🟠 Orange | Clients |
-| 🔵 Blue | Edge |
-| 🟢 Green | Services |
-| 🟣 Purple | Async / Streaming |
-| 🟡 Yellow | Data |
-| 🩷 Pink | External |
 
 **Step-by-step flow:**
 

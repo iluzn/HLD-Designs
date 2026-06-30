@@ -40,6 +40,16 @@ flowchart LR
     classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
+| Color | Layer |
+|---|---|
+| 🟠 Orange | Clients |
+| 🔵 Blue | Edge |
+| 🟢 Green | Services |
+| 🟣 Purple | Async / Streaming |
+| 🟡 Yellow | Data |
+| 🩷 Pink | External |
+
+
 **In 3 sentences:** Users load money from banks (async, webhook-confirmed), send to each other (instant, single DB transaction), and withdraw (async again). The core is a double-entry ledger in Postgres - every balance change creates both a debit and a credit line that sum to zero. Redis caches balances for fast reads; Kafka fans out events to notifications and analytics.
 
 ---
@@ -304,14 +314,6 @@ Tricks that make this safe:
 
 ### Color Legend
 
-| Color | Layer |
-|---|---|
-| 🟠 Orange | Clients |
-| 🔵 Blue | Edge |
-| 🟢 Green | Services |
-| 🟣 Purple | Async / Streaming |
-| 🟡 Yellow | Data |
-| 🩷 Pink | External |
 
 ### 2) User sends money to another wallet user
 

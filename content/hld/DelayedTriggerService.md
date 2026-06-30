@@ -41,6 +41,13 @@ flowchart LR
     classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
+| Color | Meaning |
+|---|---|
+| 🟧 client | calling service |
+| 🟩 service | application service |
+| 🟨 data | storage / state |
+
+
 **In 3 sentences:** Services register "call me back in X minutes" requests. The system persists the trigger durably, then fires the HTTP callback at the right time with retries. Two tiers: short delays use a managed queue (SQS); long delays sit in a database until a sweeper promotes them.
 
 ---
@@ -66,11 +73,6 @@ flowchart LR
   class Mem data
 ```
 
-| Color | Meaning |
-|---|---|
-| 🟧 client | calling service |
-| 🟩 service | application service |
-| 🟨 data | storage / state |
 
 Why this breaks under real constraints:
 

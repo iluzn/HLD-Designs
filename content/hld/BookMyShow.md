@@ -37,6 +37,16 @@ flowchart LR
     classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
+| Color | Meaning |
+|---|---|
+| 🟠 Purple-Orange | Client apps |
+| 🔵 Blue | Edge / Gateway |
+| 🟢 Green | Backend services |
+| 🟡 Yellow | Data stores |
+| 🟣 Purple | Async (Kafka) |
+| 🔴 Pink | External services |
+
+
 **How this breaks:**
 
 - Two users select the same seat simultaneously → both see it as "available" → both attempt to book → double-booking
@@ -206,14 +216,6 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-| Color | Meaning |
-|---|---|
-| 🟠 Purple-Orange | Client apps |
-| 🔵 Blue | Edge / Gateway |
-| 🟢 Green | Backend services |
-| 🟡 Yellow | Data stores |
-| 🟣 Purple | Async (Kafka) |
-| 🔴 Pink | External services |
 
 **Step-by-step flow:**
 

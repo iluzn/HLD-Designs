@@ -35,6 +35,16 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
+| Color | Layer |
+|---|---|
+| 🟠 Orange | Clients |
+| 🔵 Blue | Edge |
+| 🟢 Green | Services |
+| 🟣 Purple | Async / Streaming |
+| 🟡 Yellow | Data |
+| 🩷 Pink | External |
+
+
 **In 3 sentences:** User submits a long URL → system generates a unique short code (base62 of a Snowflake ID) → stores the mapping. On redirect, the system looks up the short code through CDN → Redis → DB tiers and returns a 302. Analytics events fire async to Kafka without slowing the redirect.
 
 💡 *Base62 encoding uses [0-9a-zA-Z] (62 characters) to represent numbers compactly. A 7-char Base62 string gives 62^7 = 3.5 trillion unique short codes.*
@@ -217,14 +227,6 @@ flowchart LR
 
 ### Color Legend
 
-| Color | Layer |
-|---|---|
-| 🟠 Orange | Clients |
-| 🔵 Blue | Edge |
-| 🟢 Green | Services |
-| 🟣 Purple | Async / Streaming |
-| 🟡 Yellow | Data |
-| 🩷 Pink | External |
 
 **Step-by-step flow:**
 

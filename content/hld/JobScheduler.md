@@ -37,6 +37,16 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
+| Color | Role |
+|---|---|
+| Orange | Client |
+| Blue | Edge / API |
+| Green | Service |
+| Purple | Async / broker |
+| Yellow | Data store |
+| Pink | External |
+
+
 **In 3 sentences:** Users register jobs with a schedule (cron expression) or a one-time fire time. A "ticker" process scans the database for due jobs and enqueues them to Kafka. Worker pods consume from Kafka, execute the job, and report success/failure back. Leader election ensures only one ticker runs per shard.
 
 ---
@@ -263,14 +273,6 @@ flowchart LR
 
 **Legend**
 
-| Color | Role |
-|---|---|
-| Orange | Client |
-| Blue | Edge / API |
-| Green | Service |
-| Purple | Async / broker |
-| Yellow | Data store |
-| Pink | External |
 
 **Step-by-step flow:**
 
