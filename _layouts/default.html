@@ -461,14 +461,25 @@
                     total++;
                     var td = document.createElement('td'); td.style.textAlign = 'center';
                     var cb = document.createElement('input'); cb.type = 'checkbox'; cb.style.cssText = 'cursor:pointer;width:16px;height:16px;accent-color:var(--accent);';
-                    if (!window._firebaseUser) { cb.disabled = true; cb.title = 'Sign in to track progress'; cb.style.opacity = '0.4'; cb.style.cursor = 'not-allowed'; }
+                    if (!window._firebaseUser) { cb.disabled = true; cb.style.opacity = '0.35'; cb.style.cursor = 'default'; }
                     if (saved[problemName]) cb.checked = true;
                     cb.addEventListener('change', function() { saved[problemName] = cb.checked; if (!cb.checked) delete saved[problemName]; localStorage.setItem(pageKey, JSON.stringify(saved)); updateProgressBar(); if (window.saveProgressToFirestore) window.saveProgressToFirestore(window.location.pathname, JSON.parse(localStorage.getItem(pageKey) || '{}')); });
                     td.appendChild(cb); row.insertBefore(td, row.firstChild);
                 });
             });
             if (total > 0) {
-                var bar = document.createElement('div'); bar.style.cssText = 'background:var(--glass);backdrop-filter:blur(8px);padding:0.6rem 1.2rem;margin-bottom:1.2rem;border:1px solid var(--glass-border);border-radius:10px;display:flex;align-items:center;gap:0.8rem;font-size:0.8rem;color:var(--text-muted);';
+                // Show sign-in prompt if not logged in
+                if (!window._firebaseUser) {
+                    var signInBanner = document.createElement('div');
+                    signInBanner.id = 'progress-signin-banner';
+                    signInBanner.style.cssText = 'background:rgba(129,140,248,0.06);border:1px solid rgba(129,140,248,0.15);border-radius:10px;padding:0.7rem 1rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:0.8rem;flex-wrap:wrap;';
+                    signInBanner.innerHTML = '<span style="font-size:0.8rem;color:var(--text-muted);display:flex;align-items:center;gap:0.4rem;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>Sign in to track your progress across devices</span><button onclick="document.getElementById(\'auth-btn\').click()" style="background:var(--accent);color:#fff;border:none;padding:0.35rem 0.8rem;border-radius:6px;font-size:0.72rem;font-weight:600;cursor:pointer;white-space:nowrap;">Sign in with Google</button>';
+                    var content = document.querySelector('.content');
+                    if (content) content.insertBefore(signInBanner, content.firstChild);
+                }
+
+                var bar = document.createElement('div'); bar.id = 'progress-bar-container'; bar.style.cssText = 'background:var(--glass);backdrop-filter:blur(8px);padding:0.6rem 1.2rem;margin-bottom:1.2rem;border:1px solid var(--glass-border);border-radius:10px;display:flex;align-items:center;gap:0.8rem;font-size:0.8rem;color:var(--text-muted);';
+                if (!window._firebaseUser) bar.style.opacity = '0.5';
                 var fill = document.createElement('div'); fill.style.cssText = 'flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;';
                 var inner = document.createElement('div'); inner.id = 'progress-fill'; inner.style.cssText = 'height:100%;background:linear-gradient(90deg,var(--accent),#a78bfa);border-radius:3px;transition:width 0.4s;';
                 fill.appendChild(inner);
@@ -798,8 +809,13 @@
 
                 // Enable checkboxes now that user is signed in
                 document.querySelectorAll('.content table input[type="checkbox"]').forEach(function(cb) {
-                    cb.disabled = false; cb.style.opacity = '1'; cb.style.cursor = 'pointer'; cb.title = '';
+                    cb.disabled = false; cb.style.opacity = '1'; cb.style.cursor = 'pointer';
                 });
+                // Remove sign-in banner and restore progress bar opacity
+                var banner = document.getElementById('progress-signin-banner');
+                if (banner) banner.remove();
+                var progressBar = document.getElementById('progress-bar-container');
+                if (progressBar) progressBar.style.opacity = '1';
             } catch (err) {
                 console.error('Firestore read error:', err);
             }
