@@ -781,6 +781,10 @@
                     });
                     window._userProgress = {};
                 }
+
+                // One-time migration: push localStorage progress to Firestore
+                migrateLocalStorageToFirestore(user.uid);
+
                 // Restore checkboxes from Firestore data
                 restoreProgressFromFirestore();
             } catch (err) {
@@ -794,6 +798,64 @@
             authDropdown.classList.remove('open');
         }
     });
+
+    // One-time migration: push all localStorage progress to Firestore
+    async function migrateLocalStorageToFirestore(uid) {
+        var migrationKey = 'firestore-migrated:' + uid;
+        if (localStorage.getItem(migrationKey)) return; // Already migrated
+
+        var localProgress = {};
+        var hasData = false;
+
+        // Find all localStorage keys that match 'progress:*'
+        for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            if (key && key.startsWith('progress:')) {
+                var pagePath = key.replace('progress:', '');
+                var safeKey = pagePath.replace(/\//g, '_').replace(/^_|_$/g, '') || 'root';
+                var data = JSON.parse(localStorage.getItem(key) || '{}');
+                if (Object.keys(data).length > 0) {
+                    // Merge: Firestore data takes priority, localStorage fills gaps
+                    var existing = window._userProgress[safeKey] || {};
+                    var merged = Object.assign({}, data, existing);
+                    localProgress[safeKey] = merged;
+                    hasData = true;
+                }
+            }
+        }
+
+        // Also migrate design-read status
+        var hldDesigns = window._userProgress['hld-designs'] || {};
+        for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            if (key && key.startsWith('design-read:')) {
+                var designPath = key.replace('design-read:', '');
+                var safeKey = designPath.replace(/\//g, '_').replace(/^_|_$/g, '');
+                if (!hldDesigns[safeKey]) {
+                    hldDesigns[safeKey] = localStorage.getItem(key);
+                    hasData = true;
+                }
+            }
+        }
+
+        if (!hasData) {
+            localStorage.setItem(migrationKey, 'true');
+            return;
+        }
+
+        // Write merged progress to Firestore
+        try {
+            if (Object.keys(hldDesigns).length > 0) {
+                localProgress['hld-designs'] = hldDesigns;
+            }
+            var merged = Object.assign({}, window._userProgress, localProgress);
+            await updateDoc(doc(db, 'users', uid), { progress: merged });
+            window._userProgress = merged;
+            localStorage.setItem(migrationKey, 'true');
+        } catch (err) {
+            console.error('Migration error:', err);
+        }
+    }
 
     // Restore checkboxes from Firestore progress
     function restoreProgressFromFirestore() {
