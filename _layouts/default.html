@@ -455,6 +455,7 @@
                     total++;
                     var td = document.createElement('td'); td.style.textAlign = 'center';
                     var cb = document.createElement('input'); cb.type = 'checkbox'; cb.style.cssText = 'cursor:pointer;width:16px;height:16px;accent-color:var(--accent);';
+                    if (!window._firebaseUser) { cb.disabled = true; cb.title = 'Sign in to track progress'; cb.style.opacity = '0.4'; cb.style.cursor = 'not-allowed'; }
                     if (saved[problemName]) cb.checked = true;
                     cb.addEventListener('change', function() { saved[problemName] = cb.checked; if (!cb.checked) delete saved[problemName]; localStorage.setItem(pageKey, JSON.stringify(saved)); updateProgressBar(); if (window.saveProgressToFirestore) window.saveProgressToFirestore(window.location.pathname, JSON.parse(localStorage.getItem(pageKey) || '{}')); });
                     td.appendChild(cb); row.insertBefore(td, row.firstChild);
@@ -787,6 +788,11 @@
 
                 // Restore checkboxes from Firestore data
                 restoreProgressFromFirestore();
+
+                // Enable checkboxes now that user is signed in
+                document.querySelectorAll('.content table input[type="checkbox"]').forEach(function(cb) {
+                    cb.disabled = false; cb.style.opacity = '1'; cb.style.cursor = 'pointer'; cb.title = '';
+                });
             } catch (err) {
                 console.error('Firestore read error:', err);
             }
