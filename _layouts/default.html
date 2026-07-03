@@ -830,17 +830,23 @@
     window.saveProgressToFirestore = async function(pageKey, data) {
         if (!window._firebaseUser) return;
         try {
-            var progressPath = 'progress.' + pageKey.replace(/\//g, '_').replace(/^_|_$/g, '');
-            await updateDoc(doc(db, 'users', window._firebaseUser.uid), {
-                [progressPath]: data
-            });
-        } catch (err) {
-            // If document doesn't exist yet, create it
-            if (err.code === 'not-found') {
-                await setDoc(doc(db, 'users', window._firebaseUser.uid), {
-                    progress: { [pageKey.replace(/\//g, '_').replace(/^_|_$/g, '')]: data }
-                }, { merge: true });
+            var safeKey = pageKey.replace(/\//g, '_').replace(/^_|_$/g, '') || 'root';
+            var userRef = doc(db, 'users', window._firebaseUser.uid);
+            var userDoc = await getDoc(userRef);
+            if (userDoc.exists()) {
+                var existing = userDoc.data().progress || {};
+                existing[safeKey] = data;
+                await updateDoc(userRef, { progress: existing });
+            } else {
+                var progress = {};
+                progress[safeKey] = data;
+                await setDoc(userRef, {
+                    email: window._firebaseUser.email,
+                    name: window._firebaseUser.displayName,
+                    progress: progress
+                });
             }
+        } catch (err) {
             console.error('Firestore write error:', err);
         }
     };
@@ -849,9 +855,16 @@
     window.saveDesignReadToFirestore = async function(designPath) {
         if (!window._firebaseUser) return;
         try {
-            await updateDoc(doc(db, 'users', window._firebaseUser.uid), {
-                ['progress.hld-designs.' + designPath.replace(/\//g, '_').replace(/^_|_$/g, '')]: Date.now()
-            });
+            var safeKey = designPath.replace(/\//g, '_').replace(/^_|_$/g, '');
+            var userRef = doc(db, 'users', window._firebaseUser.uid);
+            var userDoc = await getDoc(userRef);
+            if (userDoc.exists()) {
+                var existing = userDoc.data().progress || {};
+                var hldDesigns = existing['hld-designs'] || {};
+                hldDesigns[safeKey] = Date.now();
+                existing['hld-designs'] = hldDesigns;
+                await updateDoc(userRef, { progress: existing });
+            }
         } catch (err) {
             console.error('Firestore design-read write error:', err);
         }
