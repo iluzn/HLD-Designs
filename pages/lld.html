@@ -593,8 +593,11 @@ footer a:hover { text-decoration: underline; }
         var cb = document.createElement('input');
         cb.type = 'checkbox';
         cb.className = 'card-check';
-        cb.title = 'Mark as completed';
+        cb.title = 'Sign in to track progress';
         cb.checked = !!saved[name];
+        cb.disabled = true;
+        cb.style.opacity = '0.35';
+        cb.style.cursor = 'default';
         cb.addEventListener('change', function(e) {
             e.stopPropagation();
             if (cb.checked) {
@@ -604,10 +607,10 @@ footer a:hover { text-decoration: underline; }
             }
             localStorage.setItem(pageKey, JSON.stringify(saved));
             updateProgress();
-            // Check if all available designs completed
+            if (window.saveProgressToFirestore) window.saveProgressToFirestore('/lld', JSON.parse(localStorage.getItem(pageKey) || '{}'));
             var done = Object.keys(JSON.parse(localStorage.getItem(pageKey) || '{}')).length;
             if (done >= checkableTotal && checkableTotal > 0) {
-                triggerCelebration('All LLD Designs Completed!', 'Machine coding mastery unlocked. You own OOP + design patterns. 🔥');
+                triggerCelebration('All LLD Designs Completed!', 'Machine coding mastery unlocked. You own OOP + design patterns.');
             }
         });
         cb.addEventListener('click', function(e) {

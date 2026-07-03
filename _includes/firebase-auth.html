@@ -116,8 +116,8 @@ onAuthStateChanged(auth, async function(user) {
         }
 
         // Enable checkboxes
-        document.querySelectorAll('.content table input[type="checkbox"], .problem-card input[type="checkbox"]').forEach(function(cb) {
-            cb.disabled = false; cb.style.opacity = '1'; cb.style.cursor = 'pointer';
+        document.querySelectorAll('.content table input[type="checkbox"], .problem-card input[type="checkbox"], input.card-check').forEach(function(cb) {
+            cb.disabled = false; cb.style.opacity = '1'; cb.style.cursor = 'pointer'; cb.title = 'Mark as completed';
         });
         // Remove sign-in banner
         var banner = document.getElementById('progress-signin-banner');

@@ -851,8 +851,11 @@ footer a:hover { text-decoration: underline; }
         var cb = document.createElement('input');
         cb.type = 'checkbox';
         cb.className = 'card-check';
-        cb.title = 'Mark as completed';
+        cb.title = 'Sign in to track progress';
         cb.checked = !!saved[name];
+        cb.disabled = true;
+        cb.style.opacity = '0.35';
+        cb.style.cursor = 'default';
         cb.addEventListener('change', function(e) {
             e.stopPropagation();
             if (cb.checked) {
@@ -862,10 +865,10 @@ footer a:hover { text-decoration: underline; }
             }
             localStorage.setItem(pageKey, JSON.stringify(saved));
             updateProgress();
-            // Check if all completed
+            if (window.saveProgressToFirestore) window.saveProgressToFirestore('/hld', JSON.parse(localStorage.getItem(pageKey) || '{}'));
             var done = Object.keys(JSON.parse(localStorage.getItem(pageKey) || '{}')).length;
             if (done === total) {
-                triggerCelebration('All HLD Designs Completed!', 'You crushed every single system design. Interview ready. 🚀');
+                triggerCelebration('All HLD Designs Completed!', 'You crushed every single system design. Interview ready.');
             }
         });
         cb.addEventListener('click', function(e) {
