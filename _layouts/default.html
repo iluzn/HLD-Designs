@@ -696,6 +696,7 @@
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "46af7c683dec42ceb435ae3e97b8d9a1"}'></script>
 
     <!-- Firebase Auth + Firestore Progress Sync -->
+    {% raw %}
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
@@ -850,6 +851,7 @@
         }
     };
     </script>
+    {% endraw %}
 
     <!-- Reading time -->
     <script>
