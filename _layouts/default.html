@@ -699,7 +699,7 @@
     {% raw %}
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+    import { getAuth, signInWithPopup, signInWithRedirect, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -735,8 +735,9 @@
             authDropdown.classList.toggle('open');
         } else {
             signInWithPopup(auth, provider).catch(function(err) {
-                console.error('Sign-in error:', err);
-                alert('Sign-in failed: ' + err.message);
+                console.error('Popup failed, trying redirect:', err);
+                // Popup blocked (common on mobile) — fallback to redirect
+                signInWithRedirect(auth, provider);
             });
         }
     });
@@ -797,21 +798,24 @@
     function restoreProgressFromFirestore() {
         if (!window._userProgress) return;
         var path = window.location.pathname;
+        var key = path.replace(/\//g, '_').replace(/^_|_$/g, '');
 
         // Restore problem checkboxes (DSA pages)
-        var pageProgress = window._userProgress[path];
+        var pageProgress = window._userProgress[key];
         if (pageProgress) {
             localStorage.setItem('progress:' + path, JSON.stringify(pageProgress));
-            // Re-check the boxes
-            var checkboxes = document.querySelectorAll('.content table input[type="checkbox"]');
-            checkboxes.forEach(function(cb) {
-                var row = cb.closest('tr');
-                if (!row) return;
-                var problemCell = row.querySelectorAll('td')[1];
-                if (!problemCell) return;
-                var problemName = problemCell.textContent.trim().substring(0, 60);
-                if (pageProgress[problemName]) cb.checked = true;
-            });
+            // Re-check the boxes (wait a tick for DOM to be ready)
+            setTimeout(function() {
+                var checkboxes = document.querySelectorAll('.content table input[type="checkbox"]');
+                checkboxes.forEach(function(cb) {
+                    var row = cb.closest('tr');
+                    if (!row) return;
+                    var problemCell = row.querySelectorAll('td')[1];
+                    if (!problemCell) return;
+                    var problemName = problemCell.textContent.trim().substring(0, 60);
+                    if (pageProgress[problemName]) cb.checked = true;
+                });
+            }, 500);
         }
 
         // Restore design-read status (HLD/LLD pages progress bar)
