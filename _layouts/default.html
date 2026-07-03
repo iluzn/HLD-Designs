@@ -429,7 +429,8 @@
         window.addEventListener('scroll', function() { var h = document.documentElement.scrollHeight - window.innerHeight; document.getElementById('progress-bar').style.width = (window.scrollY / h * 100) + '%'; });
 
         // Problem progress tracker (skip on fundamentals/concepts pages)
-        (function() {
+        // NOTE: Runs deferred to ensure it executes AFTER the hint script's innerHTML replacement
+        setTimeout(function() {
             var path = window.location.pathname;
             if (path.indexOf('fundamentals') !== -1 || path.indexOf('concepts') !== -1 || path.indexOf('approach') !== -1 || path.indexOf('guide') !== -1) return;
             var tables = document.querySelectorAll('.content table');
@@ -487,7 +488,7 @@
                     }
                 }
             }
-        })();
+        }, 0);
     </script>
 
     <!-- Prism.js syntax highlighting -->
