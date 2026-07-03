@@ -9,6 +9,8 @@
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YJL7ECBWD0');</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="BAYHhl0VtKB6M3UG5V97QDXNEMSXEiTvbls3ciAAocU" />
+    <!-- Google One Tap prompt -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <title>{{ page.title }} - SystemCraft</title>
     <meta name="description" content="{{ page.description }}">
     <link rel="icon" href="/favicon.ico" sizes="32x32">
@@ -718,7 +720,7 @@
     {% raw %}
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-    import { getAuth, signInWithPopup, signInWithRedirect, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+    import { getAuth, signInWithPopup, signInWithRedirect, signInWithCredential, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -748,7 +750,38 @@
     window._firebaseDb = db;
     window._userProgress = null;
 
-    // Sign in
+    // Google One Tap callback — handles the credential from One Tap prompt
+    window.handleOneTapCredential = function(response) {
+        var credential = GoogleAuthProvider.credential(response.credential);
+        signInWithCredential(auth, credential).catch(function(err) {
+            console.error('One Tap sign-in error:', err);
+        });
+    };
+
+    // Register One Tap callback after page loads
+    if (window.google && window.google.accounts) {
+        window.google.accounts.id.initialize({
+            client_id: '57513541148-sdbithm5smv31cc7a2tbs2fqkvk32s5e.apps.googleusercontent.com',
+            callback: window.handleOneTapCredential,
+            auto_select: true
+        });
+        window.google.accounts.id.prompt();
+    } else {
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (window.google && window.google.accounts) {
+                    window.google.accounts.id.initialize({
+                        client_id: '57513541148-sdbithm5smv31cc7a2tbs2fqkvk32s5e.apps.googleusercontent.com',
+                        callback: window.handleOneTapCredential,
+                        auto_select: true
+                    });
+                    if (!auth.currentUser) window.google.accounts.id.prompt();
+                }
+            }, 1000);
+        });
+    }
+
+    // Sign in button click
     authBtn.addEventListener('click', function() {
         if (window._firebaseUser) {
             authDropdown.classList.toggle('open');
