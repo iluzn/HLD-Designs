@@ -266,6 +266,20 @@
         }
     </style>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7164350749425405" crossorigin="anonymous"></script>
+    <!-- Firebase Auth + Firestore styles -->
+    <style>
+        .auth-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 6px; margin-left: 0.4rem; transition: all 0.2s; display: flex; align-items: center; gap: 0.3rem; }
+        .auth-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .auth-avatar { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); }
+        .auth-dropdown { position: absolute; top: calc(100% + 0.5rem); right: 0; background: var(--bg-header); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem; min-width: 160px; box-shadow: 0 12px 40px rgba(0,0,0,0.3); display: none; z-index: 200; }
+        .auth-dropdown.open { display: block; }
+        .auth-dropdown-name { font-size: 0.8rem; color: var(--text); font-weight: 600; padding: 0.3rem 0.6rem; }
+        .auth-dropdown-email { font-size: 0.7rem; color: var(--text-dim); padding: 0 0.6rem 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 0.4rem; }
+        .auth-dropdown-btn { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text-muted); font-size: 0.78rem; padding: 0.4rem 0.6rem; border-radius: 6px; cursor: pointer; }
+        .auth-dropdown-btn:hover { background: rgba(129,140,248,0.08); color: var(--text); }
+        .sync-indicator { font-size: 0.65rem; color: var(--accent); margin-left: 0.3rem; opacity: 0; transition: opacity 0.3s; }
+        .sync-indicator.show { opacity: 1; }
+    </style>
 </head>
 <body>
 
@@ -276,6 +290,12 @@
             <a href="/" class="logo"><svg class="logo-icon" width="22" height="22" viewBox="0 0 64 64" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c4b5fd"/></linearGradient></defs><rect width="64" height="64" rx="14" fill="url(#lg)"/><line x1="22" y1="20" x2="42" y2="20" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="42" y1="20" x2="32" y2="40" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="22" y1="20" x2="32" y2="40" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="22" cy="20" r="5" fill="#fff"/><circle cx="42" cy="20" r="5" fill="#fff"/><circle cx="32" cy="40" r="5" fill="#fff"/><circle cx="22" cy="20" r="2.5" fill="#818cf8"/><circle cx="42" cy="20" r="2.5" fill="#818cf8"/><circle cx="32" cy="40" r="2.5" fill="#818cf8"/></svg><span class="logo-text">System<span>Craft</span></span></a>
             <nav>
                 <button class="theme-toggle" id="theme-btn" title="Toggle theme">🌙</button>
+                <button class="auth-btn" id="auth-btn" title="Sign in to sync progress">Sign in</button>
+                <div class="auth-dropdown" id="auth-dropdown">
+                    <div class="auth-dropdown-name" id="auth-name"></div>
+                    <div class="auth-dropdown-email" id="auth-email"></div>
+                    <button class="auth-dropdown-btn" id="auth-signout">Sign out</button>
+                </div>
                 <button class="hamburger" id="hamburger-btn" aria-label="Menu">&#9776;</button>
                 <div class="nav-links" id="nav-links">
                     <a href="/hld">HLD</a>
@@ -435,7 +455,7 @@
                     var td = document.createElement('td'); td.style.textAlign = 'center';
                     var cb = document.createElement('input'); cb.type = 'checkbox'; cb.style.cssText = 'cursor:pointer;width:16px;height:16px;accent-color:var(--accent);';
                     if (saved[problemName]) cb.checked = true;
-                    cb.addEventListener('change', function() { saved[problemName] = cb.checked; if (!cb.checked) delete saved[problemName]; localStorage.setItem(pageKey, JSON.stringify(saved)); updateProgressBar(); });
+                    cb.addEventListener('change', function() { saved[problemName] = cb.checked; if (!cb.checked) delete saved[problemName]; localStorage.setItem(pageKey, JSON.stringify(saved)); updateProgressBar(); if (window.saveProgressToFirestore) window.saveProgressToFirestore(window.location.pathname, JSON.parse(localStorage.getItem(pageKey) || '{}')); });
                     td.appendChild(cb); row.insertBefore(td, row.firstChild);
                 });
             });
@@ -675,6 +695,162 @@
     <!-- Cloudflare Web Analytics -->
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "46af7c683dec42ceb435ae3e97b8d9a1"}'></script>
 
+    <!-- Firebase Auth + Firestore Progress Sync -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBRZYsCxcjkug4EVGmMuhAgKM4moRH_ewA",
+        authDomain: "systemcraft-in.firebaseapp.com",
+        projectId: "systemcraft-in",
+        storageBucket: "systemcraft-in.firebasestorage.app",
+        messagingSenderId: "57513541148",
+        appId: "1:57513541148:web:f929b383e79a7bf97869d9",
+        measurementId: "G-LCM0M6QFBZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    // DOM elements
+    const authBtn = document.getElementById('auth-btn');
+    const authDropdown = document.getElementById('auth-dropdown');
+    const authName = document.getElementById('auth-name');
+    const authEmail = document.getElementById('auth-email');
+    const authSignout = document.getElementById('auth-signout');
+
+    // Global state
+    window._firebaseUser = null;
+    window._firebaseDb = db;
+    window._userProgress = null;
+
+    // Sign in
+    authBtn.addEventListener('click', function() {
+        if (window._firebaseUser) {
+            authDropdown.classList.toggle('open');
+        } else {
+            signInWithPopup(auth, provider).catch(function(err) {
+                console.error('Sign-in error:', err);
+            });
+        }
+    });
+
+    // Sign out
+    authSignout.addEventListener('click', function() {
+        signOut(auth);
+        authDropdown.classList.remove('open');
+    });
+
+    // Close dropdown on outside click
+    document.addEventListener('click', function(e) {
+        if (!authBtn.contains(e.target) && !authDropdown.contains(e.target)) {
+            authDropdown.classList.remove('open');
+        }
+    });
+
+    // Auth state listener
+    onAuthStateChanged(auth, async function(user) {
+        if (user) {
+            window._firebaseUser = user;
+            authBtn.innerHTML = '<img class="auth-avatar" src="' + user.photoURL + '" alt=""> ' + user.displayName.split(' ')[0];
+            authBtn.title = 'Signed in as ' + user.email;
+            authName.textContent = user.displayName;
+            authEmail.textContent = user.email;
+
+            // Load progress from Firestore
+            try {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    window._userProgress = userDoc.data().progress || {};
+                } else {
+                    // First time user — create document
+                    await setDoc(doc(db, 'users', user.uid), {
+                        email: user.email,
+                        name: user.displayName,
+                        photoURL: user.photoURL,
+                        lastLogin: new Date().toISOString(),
+                        progress: {}
+                    });
+                    window._userProgress = {};
+                }
+                // Restore checkboxes from Firestore data
+                restoreProgressFromFirestore();
+            } catch (err) {
+                console.error('Firestore read error:', err);
+            }
+        } else {
+            window._firebaseUser = null;
+            window._userProgress = null;
+            authBtn.innerHTML = 'Sign in';
+            authBtn.title = 'Sign in to sync progress';
+            authDropdown.classList.remove('open');
+        }
+    });
+
+    // Restore checkboxes from Firestore progress
+    function restoreProgressFromFirestore() {
+        if (!window._userProgress) return;
+        var path = window.location.pathname;
+
+        // Restore problem checkboxes (DSA pages)
+        var pageProgress = window._userProgress[path];
+        if (pageProgress) {
+            localStorage.setItem('progress:' + path, JSON.stringify(pageProgress));
+            // Re-check the boxes
+            var checkboxes = document.querySelectorAll('.content table input[type="checkbox"]');
+            checkboxes.forEach(function(cb) {
+                var row = cb.closest('tr');
+                if (!row) return;
+                var problemCell = row.querySelectorAll('td')[1];
+                if (!problemCell) return;
+                var problemName = problemCell.textContent.trim().substring(0, 60);
+                if (pageProgress[problemName]) cb.checked = true;
+            });
+        }
+
+        // Restore design-read status (HLD/LLD pages progress bar)
+        var hldProgress = window._userProgress['hld-designs'] || {};
+        Object.keys(hldProgress).forEach(function(key) {
+            localStorage.setItem('design-read:' + key, hldProgress[key]);
+        });
+    }
+
+    // Save progress to Firestore (called by checkbox handlers)
+    window.saveProgressToFirestore = async function(pageKey, data) {
+        if (!window._firebaseUser) return;
+        try {
+            var progressPath = 'progress.' + pageKey.replace(/\//g, '_').replace(/^_|_$/g, '');
+            await updateDoc(doc(db, 'users', window._firebaseUser.uid), {
+                [progressPath]: data
+            });
+        } catch (err) {
+            // If document doesn't exist yet, create it
+            if (err.code === 'not-found') {
+                await setDoc(doc(db, 'users', window._firebaseUser.uid), {
+                    progress: { [pageKey.replace(/\//g, '_').replace(/^_|_$/g, '')]: data }
+                }, { merge: true });
+            }
+            console.error('Firestore write error:', err);
+        }
+    };
+
+    // Save design-read completion to Firestore
+    window.saveDesignReadToFirestore = async function(designPath) {
+        if (!window._firebaseUser) return;
+        try {
+            await updateDoc(doc(db, 'users', window._firebaseUser.uid), {
+                ['progress.hld-designs.' + designPath.replace(/\//g, '_').replace(/^_|_$/g, '')]: Date.now()
+            });
+        } catch (err) {
+            console.error('Firestore design-read write error:', err);
+        }
+    };
+    </script>
+
     <!-- Reading time -->
     <script>
     (function() {
@@ -853,6 +1029,7 @@
                 triggered = true;
                 if (!localStorage.getItem(readKey)) {
                     localStorage.setItem(readKey, Date.now());
+                    if (window.saveDesignReadToFirestore) window.saveDesignReadToFirestore(window.location.pathname);
                     triggerCelebration('Design Completed!', 'You just finished this design. Try explaining it to a friend in 3 minutes.');
                 }
             }
