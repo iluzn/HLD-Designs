@@ -1,0 +1,252 @@
+<!-- Google One Tap -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<!-- Firebase Auth + Firestore -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, signInWithPopup, signInWithRedirect, signInWithCredential, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBRZYsCxcjkug4EVGmMuhAgKM4moRH_ewA",
+    authDomain: "systemcraft-in.firebaseapp.com",
+    projectId: "systemcraft-in",
+    storageBucket: "systemcraft-in.firebasestorage.app",
+    messagingSenderId: "57513541148",
+    appId: "1:57513541148:web:f929b383e79a7bf97869d9"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+const authBtn = document.getElementById('auth-btn');
+const authDropdown = document.getElementById('auth-dropdown');
+const authName = document.getElementById('auth-name');
+const authEmail = document.getElementById('auth-email');
+const authSignout = document.getElementById('auth-signout');
+
+window._firebaseUser = null;
+window._firebaseDb = db;
+window._userProgress = null;
+
+// Google One Tap callback
+window.handleOneTapCredential = function(response) {
+    var credential = GoogleAuthProvider.credential(response.credential);
+    signInWithCredential(auth, credential).catch(function(err) {
+        console.error('One Tap sign-in error:', err);
+    });
+};
+
+// Initialize One Tap
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        if (window.google && window.google.accounts && !auth.currentUser) {
+            window.google.accounts.id.initialize({
+                client_id: '57513541148-sdbithm5smv31cc7a2tbs2fqkvk32s5e.apps.googleusercontent.com',
+                callback: window.handleOneTapCredential,
+                auto_select: true
+            });
+            window.google.accounts.id.prompt();
+        }
+    }, 1500);
+});
+
+// Sign in button click
+if (authBtn) {
+    authBtn.addEventListener('click', function() {
+        if (window._firebaseUser) {
+            authDropdown.classList.toggle('open');
+        } else {
+            signInWithPopup(auth, provider).catch(function(err) {
+                console.error('Popup failed, trying redirect:', err);
+                signInWithRedirect(auth, provider);
+            });
+        }
+    });
+}
+
+// Sign out
+if (authSignout) {
+    authSignout.addEventListener('click', function() {
+        signOut(auth);
+        authDropdown.classList.remove('open');
+    });
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', function(e) {
+    if (authBtn && authDropdown && !authBtn.contains(e.target) && !authDropdown.contains(e.target)) {
+        authDropdown.classList.remove('open');
+    }
+});
+
+// Auth state listener
+onAuthStateChanged(auth, async function(user) {
+    if (user) {
+        window._firebaseUser = user;
+        if (authBtn) {
+            authBtn.innerHTML = '<img class="auth-avatar" src="' + user.photoURL + '" alt="' + user.displayName + '">';
+            authBtn.classList.add('signed-in');
+            authBtn.title = user.displayName;
+        }
+        if (authName) authName.textContent = user.displayName;
+        if (authEmail) authEmail.textContent = user.email;
+
+        // Load progress from Firestore
+        try {
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+                window._userProgress = userDoc.data().progress || {};
+            } else {
+                await setDoc(doc(db, 'users', user.uid), {
+                    email: user.email,
+                    name: user.displayName,
+                    photoURL: user.photoURL,
+                    lastLogin: new Date().toISOString(),
+                    progress: {}
+                });
+                window._userProgress = {};
+            }
+            migrateLocalStorageToFirestore(user.uid);
+            restoreProgressFromFirestore();
+        } catch (err) {
+            console.error('Firestore read error:', err);
+        }
+
+        // Enable checkboxes
+        document.querySelectorAll('.content table input[type="checkbox"], .problem-card input[type="checkbox"]').forEach(function(cb) {
+            cb.disabled = false; cb.style.opacity = '1'; cb.style.cursor = 'pointer';
+        });
+        // Remove sign-in banner
+        var banner = document.getElementById('progress-signin-banner');
+        if (banner) banner.remove();
+        var progressBar = document.getElementById('progress-bar-container');
+        if (progressBar) progressBar.style.opacity = '1';
+
+    } else {
+        window._firebaseUser = null;
+        window._userProgress = null;
+        if (authBtn) {
+            authBtn.innerHTML = '<svg class="auth-google-icon" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>Sign in';
+            authBtn.classList.remove('signed-in');
+            authBtn.title = 'Sign in to sync progress';
+        }
+        if (authDropdown) authDropdown.classList.remove('open');
+    }
+});
+
+// Migration function
+async function migrateLocalStorageToFirestore(uid) {
+    var migrationKey = 'firestore-migrated:' + uid;
+    if (localStorage.getItem(migrationKey)) return;
+    var localProgress = {};
+    var hasData = false;
+    for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (key && key.startsWith('progress:')) {
+            var pagePath = key.replace('progress:', '');
+            var safeKey = pagePath.replace(/\//g, '_').replace(/^_|_$/g, '') || 'root';
+            var data = JSON.parse(localStorage.getItem(key) || '{}');
+            if (Object.keys(data).length > 0) {
+                var existing = window._userProgress[safeKey] || {};
+                localProgress[safeKey] = Object.assign({}, data, existing);
+                hasData = true;
+            }
+        }
+    }
+    var hldDesigns = window._userProgress['hld-designs'] || {};
+    for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (key && key.startsWith('design-read:')) {
+            var designPath = key.replace('design-read:', '');
+            var safeKey = designPath.replace(/\//g, '_').replace(/^_|_$/g, '');
+            if (!hldDesigns[safeKey]) { hldDesigns[safeKey] = localStorage.getItem(key); hasData = true; }
+        }
+    }
+    if (!hasData) { localStorage.setItem(migrationKey, 'true'); return; }
+    try {
+        if (Object.keys(hldDesigns).length > 0) localProgress['hld-designs'] = hldDesigns;
+        var merged = Object.assign({}, window._userProgress, localProgress);
+        await updateDoc(doc(db, 'users', uid), { progress: merged });
+        window._userProgress = merged;
+        localStorage.setItem(migrationKey, 'true');
+    } catch (err) { console.error('Migration error:', err); }
+}
+
+// Restore function
+function restoreProgressFromFirestore() {
+    if (!window._userProgress) return;
+    var path = window.location.pathname;
+    var key = path.replace(/\//g, '_').replace(/^_|_$/g, '');
+    var pageProgress = window._userProgress[key];
+    if (pageProgress) {
+        localStorage.setItem('progress:' + path, JSON.stringify(pageProgress));
+        var attempts = 0;
+        var restoreInterval = setInterval(function() {
+            attempts++;
+            var checkboxes = document.querySelectorAll('.content table input[type="checkbox"]');
+            if (checkboxes.length > 0 || attempts > 20) {
+                clearInterval(restoreInterval);
+                checkboxes.forEach(function(cb) {
+                    var row = cb.closest('tr');
+                    if (!row) return;
+                    var problemCell = row.querySelectorAll('td')[1];
+                    if (!problemCell) return;
+                    var problemName = problemCell.textContent.trim().substring(0, 60);
+                    if (pageProgress[problemName]) cb.checked = true;
+                });
+                var fillEl = document.getElementById('progress-fill');
+                var labelEl = document.getElementById('progress-label');
+                if (fillEl && labelEl) {
+                    var done = Object.keys(pageProgress).length;
+                    var total = checkboxes.length;
+                    var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+                    fillEl.style.width = pct + '%';
+                    labelEl.textContent = done + '/' + total + ' (' + pct + '%)';
+                }
+            }
+        }, 200);
+    }
+    var hldProgress = window._userProgress['hld-designs'] || {};
+    Object.keys(hldProgress).forEach(function(k) {
+        localStorage.setItem('design-read:/' + k.replace(/_/g, '/') + '/', hldProgress[k]);
+    });
+}
+
+// Save progress (called by checkbox handlers)
+window.saveProgressToFirestore = async function(pageKey, data) {
+    if (!window._firebaseUser) return;
+    try {
+        var safeKey = pageKey.replace(/\//g, '_').replace(/^_|_$/g, '') || 'root';
+        var userRef = doc(db, 'users', window._firebaseUser.uid);
+        var userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+            var existing = userDoc.data().progress || {};
+            existing[safeKey] = data;
+            await updateDoc(userRef, { progress: existing });
+        } else {
+            var progress = {};
+            progress[safeKey] = data;
+            await setDoc(userRef, { email: window._firebaseUser.email, name: window._firebaseUser.displayName, progress: progress });
+        }
+    } catch (err) { console.error('Firestore write error:', err); }
+};
+
+window.saveDesignReadToFirestore = async function(designPath) {
+    if (!window._firebaseUser) return;
+    try {
+        var safeKey = designPath.replace(/\//g, '_').replace(/^_|_$/g, '');
+        var userRef = doc(db, 'users', window._firebaseUser.uid);
+        var userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+            var existing = userDoc.data().progress || {};
+            var hldDesigns = existing['hld-designs'] || {};
+            hldDesigns[safeKey] = Date.now();
+            existing['hld-designs'] = hldDesigns;
+            await updateDoc(userRef, { progress: existing });
+        }
+    } catch (err) { console.error('Firestore design-read write error:', err); }
+};
+</script>

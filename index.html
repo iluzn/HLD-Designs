@@ -31,6 +31,7 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7164350749425405" crossorigin="anonymous"></script>
+    {% include auth-styles.html %}
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -222,14 +223,7 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
         <a href="/" class="logo"><svg class="logo-icon" width="22" height="22" viewBox="0 0 64 64" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c4b5fd"/></linearGradient></defs><rect width="64" height="64" rx="14" fill="url(#lg)"/><line x1="22" y1="20" x2="42" y2="20" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="42" y1="20" x2="32" y2="40" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="22" y1="20" x2="32" y2="40" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="22" cy="20" r="5" fill="#fff"/><circle cx="42" cy="20" r="5" fill="#fff"/><circle cx="32" cy="40" r="5" fill="#fff"/><circle cx="22" cy="20" r="2.5" fill="#818cf8"/><circle cx="42" cy="20" r="2.5" fill="#818cf8"/><circle cx="32" cy="40" r="2.5" fill="#818cf8"/></svg><span class="logo-text">System<span>Craft</span></span></a>
         <nav>
             <button id="theme-btn" title="Switch theme">🌙</button>
-            <button class="auth-btn" id="auth-btn" title="Sign in to sync progress" style="background:none;border:1px solid var(--border);color:var(--text-muted);cursor:pointer;font-size:0.72rem;padding:0.3rem 0.7rem;border-radius:20px;margin-left:0.5rem;display:flex;align-items:center;gap:0.35rem;font-weight:500;white-space:nowrap;transition:all 0.2s;"><svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>Sign in</button>
-            <div id="auth-dropdown" style="position:absolute;top:calc(100% + 0.8rem);right:0;background:var(--header-bg);backdrop-filter:blur(20px) saturate(1.4);border:1px solid var(--border);border-radius:12px;padding:0.5rem;min-width:200px;box-shadow:0 16px 48px rgba(0,0,0,0.4);display:none;z-index:200;">
-                <div style="padding:0.6rem 0.7rem;border-bottom:1px solid var(--border);margin-bottom:0.3rem;">
-                    <div id="auth-name" style="font-size:0.82rem;color:var(--text);font-weight:600;"></div>
-                    <div id="auth-email" style="font-size:0.7rem;color:var(--text-dim);margin-top:0.1rem;"></div>
-                </div>
-                <button id="auth-signout" style="display:block;width:100%;text-align:left;background:none;border:none;color:var(--text-muted);font-size:0.78rem;padding:0.5rem 0.7rem;border-radius:8px;cursor:pointer;">Sign out</button>
-            </div>
+            {% include auth-button.html %}
             <button class="hamburger" id="hamburger-btn" aria-label="Menu">&#9776;</button>
             <div class="nav-links" id="nav-links">
                 <a href="/hld">HLD</a>
@@ -513,65 +507,7 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
 })();
 </script>
 
-<!-- Firebase Auth (homepage) -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyBRZYsCxcjkug4EVGmMuhAgKM4moRH_ewA",
-    authDomain: "systemcraft-in.firebaseapp.com",
-    projectId: "systemcraft-in",
-    storageBucket: "systemcraft-in.firebasestorage.app",
-    messagingSenderId: "57513541148",
-    appId: "1:57513541148:web:f929b383e79a7bf97869d9"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-
-const authBtn = document.getElementById('auth-btn');
-const authDropdown = document.getElementById('auth-dropdown');
-const authName = document.getElementById('auth-name');
-const authEmail = document.getElementById('auth-email');
-const authSignout = document.getElementById('auth-signout');
-
-authBtn.addEventListener('click', function() {
-    if (auth.currentUser) {
-        authDropdown.style.display = authDropdown.style.display === 'block' ? 'none' : 'block';
-    } else {
-        signInWithPopup(auth, provider).catch(function(err) { console.error(err); });
-    }
-});
-
-authSignout.addEventListener('click', function() {
-    signOut(auth);
-    authDropdown.style.display = 'none';
-});
-
-document.addEventListener('click', function(e) {
-    if (!authBtn.contains(e.target) && !authDropdown.contains(e.target)) {
-        authDropdown.style.display = 'none';
-    }
-});
-
-onAuthStateChanged(auth, function(user) {
-    if (user) {
-        authBtn.innerHTML = '<img style="width:26px;height:26px;border-radius:50%;border:2px solid var(--border);" src="' + user.photoURL + '" alt="' + user.displayName + '">';
-        authBtn.style.padding = '0.2rem';
-        authBtn.style.borderRadius = '50%';
-        authBtn.style.borderColor = 'transparent';
-        authName.textContent = user.displayName;
-        authEmail.textContent = user.email;
-    } else {
-        authBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>Sign in';
-        authBtn.style.padding = '0.3rem 0.7rem';
-        authBtn.style.borderRadius = '20px';
-        authBtn.style.borderColor = 'var(--border)';
-        authDropdown.style.display = 'none';
-    }
-});
-</script>
+<!-- Firebase Auth -->
+{% include firebase-auth.html %}
 </body>
 </html>

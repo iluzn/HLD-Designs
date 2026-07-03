@@ -1,0 +1,17 @@
+<style>
+.auth-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-size: 0.72rem; padding: 0.3rem 0.7rem; border-radius: 20px; margin-left: 0.5rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 500; white-space: nowrap; position: relative; }
+.auth-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(129,140,248,0.05); }
+.auth-btn.signed-in { padding: 0.2rem; border-radius: 50%; border-color: transparent; background: none; }
+.auth-btn.signed-in:hover { background: rgba(129,140,248,0.1); border-color: rgba(129,140,248,0.3); }
+.auth-avatar { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border); transition: border-color 0.2s; }
+.auth-btn.signed-in:hover .auth-avatar { border-color: var(--accent); }
+.auth-google-icon { width: 14px; height: 14px; }
+.auth-dropdown { position: absolute; top: calc(100% + 0.8rem); right: 0; background: var(--header-bg, rgba(17,17,24,0.92)); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); border: 1px solid var(--border); border-radius: 12px; padding: 0.5rem; min-width: 200px; box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(129,140,248,0.05); display: none; z-index: 200; animation: authDropIn 0.15s ease; }
+@keyframes authDropIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.auth-dropdown.open { display: block; }
+.auth-dropdown-header { padding: 0.6rem 0.7rem; border-bottom: 1px solid var(--border); margin-bottom: 0.3rem; }
+.auth-dropdown-name { font-size: 0.82rem; color: var(--text); font-weight: 600; }
+.auth-dropdown-email { font-size: 0.7rem; color: var(--text-dim); margin-top: 0.1rem; }
+.auth-dropdown-btn { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text-muted); font-size: 0.78rem; padding: 0.5rem 0.7rem; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+.auth-dropdown-btn:hover { background: rgba(129,140,248,0.08); color: var(--text); }
+</style>
