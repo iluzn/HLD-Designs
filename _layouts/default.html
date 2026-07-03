@@ -804,25 +804,44 @@
         // Restore problem checkboxes (DSA pages)
         var pageProgress = window._userProgress[key];
         if (pageProgress) {
+            // Save to localStorage so the progress tracker picks it up
             localStorage.setItem('progress:' + path, JSON.stringify(pageProgress));
-            // Re-check the boxes (wait a tick for DOM to be ready)
-            setTimeout(function() {
+
+            // Wait for checkboxes to be created by the progress tracker (runs in setTimeout(0))
+            var attempts = 0;
+            var restoreInterval = setInterval(function() {
+                attempts++;
                 var checkboxes = document.querySelectorAll('.content table input[type="checkbox"]');
-                checkboxes.forEach(function(cb) {
-                    var row = cb.closest('tr');
-                    if (!row) return;
-                    var problemCell = row.querySelectorAll('td')[1];
-                    if (!problemCell) return;
-                    var problemName = problemCell.textContent.trim().substring(0, 60);
-                    if (pageProgress[problemName]) cb.checked = true;
-                });
-            }, 500);
+                if (checkboxes.length > 0 || attempts > 20) {
+                    clearInterval(restoreInterval);
+                    checkboxes.forEach(function(cb) {
+                        var row = cb.closest('tr');
+                        if (!row) return;
+                        var problemCell = row.querySelectorAll('td')[1];
+                        if (!problemCell) return;
+                        var problemName = problemCell.textContent.trim().substring(0, 60);
+                        if (pageProgress[problemName]) {
+                            cb.checked = true;
+                        }
+                    });
+                    // Update progress bar
+                    var fillEl = document.getElementById('progress-fill');
+                    var labelEl = document.getElementById('progress-label');
+                    if (fillEl && labelEl) {
+                        var done = Object.keys(pageProgress).length;
+                        var total = checkboxes.length;
+                        var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+                        fillEl.style.width = pct + '%';
+                        labelEl.textContent = done + '/' + total + ' (' + pct + '%)';
+                    }
+                }
+            }, 200);
         }
 
         // Restore design-read status (HLD/LLD pages progress bar)
         var hldProgress = window._userProgress['hld-designs'] || {};
-        Object.keys(hldProgress).forEach(function(key) {
-            localStorage.setItem('design-read:' + key, hldProgress[key]);
+        Object.keys(hldProgress).forEach(function(k) {
+            localStorage.setItem('design-read:/' + k.replace(/_/g, '/') + '/', hldProgress[k]);
         });
     }
 
