@@ -736,6 +736,7 @@
         } else {
             signInWithPopup(auth, provider).catch(function(err) {
                 console.error('Sign-in error:', err);
+                alert('Sign-in failed: ' + err.message);
             });
         }
     });
