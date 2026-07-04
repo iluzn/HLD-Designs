@@ -124,6 +124,9 @@ onAuthStateChanged(auth, async function(user) {
         if (banner) banner.remove();
         var progressBar = document.getElementById('progress-bar-container');
         if (progressBar) progressBar.style.opacity = '1';
+        // Enable HLD/LLD progress strip
+        var progressStrip = document.getElementById('progress-strip');
+        if (progressStrip) progressStrip.style.opacity = '1';
 
     } else {
         window._firebaseUser = null;
@@ -142,6 +145,9 @@ onAuthStateChanged(auth, async function(user) {
         // Re-show progress bar as dimmed
         var progressBar = document.getElementById('progress-bar-container');
         if (progressBar) progressBar.style.opacity = '0.5';
+        // Dim HLD/LLD progress strip
+        var progressStrip = document.getElementById('progress-strip');
+        if (progressStrip) progressStrip.style.opacity = '0.5';
     }
 });
 
