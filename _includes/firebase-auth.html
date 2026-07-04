@@ -134,6 +134,14 @@ onAuthStateChanged(auth, async function(user) {
             authBtn.title = 'Sign in to sync progress';
         }
         if (authDropdown) authDropdown.classList.remove('open');
+
+        // Disable checkboxes on sign-out
+        document.querySelectorAll('.content table input[type="checkbox"], .problem-card input[type="checkbox"], input.card-check').forEach(function(cb) {
+            cb.disabled = true; cb.style.opacity = '0.35'; cb.style.cursor = 'default'; cb.title = 'Sign in to track progress';
+        });
+        // Re-show progress bar as dimmed
+        var progressBar = document.getElementById('progress-bar-container');
+        if (progressBar) progressBar.style.opacity = '0.5';
     }
 });
 
