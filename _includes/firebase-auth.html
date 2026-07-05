@@ -211,14 +211,18 @@ function restoreProgressFromFirestore() {
                     var problemName = problemCell.textContent.trim().substring(0, 60);
                     if (pageProgress[problemName]) cb.checked = true;
                 });
-                var fillEl = document.getElementById('progress-fill');
-                var labelEl = document.getElementById('progress-label');
-                if (fillEl && labelEl) {
-                    var done = Object.keys(pageProgress).length;
-                    var total = checkboxes.length;
-                    var pct = total > 0 ? Math.round((done / total) * 100) : 0;
-                    fillEl.style.width = pct + '%';
-                    labelEl.textContent = done + '/' + total + ' (' + pct + '%)';
+                // Only update progress bar on DSA pages (table-based checkboxes)
+                // Skip on HLD/LLD pages which have their own card-based progress
+                if (checkboxes.length > 0) {
+                    var fillEl = document.getElementById('progress-fill');
+                    var labelEl = document.getElementById('progress-label');
+                    if (fillEl && labelEl) {
+                        var done = Object.keys(pageProgress).length;
+                        var total = checkboxes.length;
+                        var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+                        fillEl.style.width = pct + '%';
+                        labelEl.textContent = done + '/' + total + ' (' + pct + '%)';
+                    }
                 }
             }
         }, 200);
