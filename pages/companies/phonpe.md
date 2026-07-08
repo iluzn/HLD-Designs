@@ -70,9 +70,10 @@ PhonePe is one of India's most competitive fintech companies. The interview proc
 | 3 | Splitwise | 🟡 Intermediate | [Read →](/lld/Splitwise) |
 | 4 | Dispute/Ticket Resolution Service | 🟡 Intermediate | — |
 | 5 | Vehicle Rental System | 🟡 Intermediate | — |
-| 6 | Music Player | 🟡 Intermediate | [Read →](/lld/MusicPlayer) |
+| 6 | Journey Service (dynamic fare + promotions) | 🟡 Intermediate | — |
+| 7 | Music Player | 🟡 Intermediate | [Read →](/lld/MusicPlayer) |
 
-**Most asked machine coding:** Multilevel Cache and Dispute Resolution Service appear repeatedly across 2023-2025 experiences.
+**Most asked machine coding:** Multilevel Cache and Dispute Resolution Service appear repeatedly (2023-2026). Recent reports show take-home format on CodeSignal (90 min, submit ZIP, then 30-min code review call).
 
 ---
 
@@ -186,6 +187,23 @@ PhonePe is one of India's most competitive fintech companies. The interview proc
 | 62 | Combination Sum | Backtracking | Medium | [LeetCode →](https://leetcode.com/problems/combination-sum/) |
 | 63 | Generate Parentheses | Backtracking | Medium | [LeetCode →](https://leetcode.com/problems/generate-parentheses/) |
 
+### Union-Find / DSU (Trending in 2025-2026)
+
+| # | Problem | Pattern | Difficulty | Link |
+|---|---------|---------|-----------|------|
+| 64 | Number of Connected Components | Union-Find | Medium | [LeetCode →](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/) |
+| 65 | Redundant Connection | Union-Find | Medium | [LeetCode →](https://leetcode.com/problems/redundant-connection/) |
+| 66 | Accounts Merge | Union-Find + DFS | Medium | [LeetCode →](https://leetcode.com/problems/accounts-merge/) |
+
+### Additional Confirmed (2025-2026)
+
+| # | Problem | Pattern | Difficulty | Link |
+|---|---------|---------|-----------|------|
+| 67 | Distribute Coins in Binary Tree | Tree DFS | Medium | [LeetCode →](https://leetcode.com/problems/distribute-coins-in-binary-tree/) |
+| 68 | Maximum Product of Three Numbers | Sorting + Greedy | Easy | [LeetCode →](https://leetcode.com/problems/maximum-product-of-three-numbers/) |
+| 69 | Minimum Window Substring | Sliding Window | Hard | [LeetCode →](https://leetcode.com/problems/minimum-window-substring/) |
+| 70 | Container With Most Water | Two Pointers | Medium | [LeetCode →](https://leetcode.com/problems/container-with-most-water/) |
+
 ---
 
 ## PhonePe-Specific Questions (Not on LeetCode)
@@ -200,6 +218,8 @@ These are custom problems reported from PhonePe OA and interviews:
 | 4 | Minimum moves to convert string A to string B | Edit Distance variant | 2021 |
 | 5 | People pass a test: score starts at 0, person passes if score > threshold, bound value added after passing. Maximize people passing. | Greedy + Sorting | 2022 |
 | 6 | Matrix m x n, find max path sum from any element, can only move right or down | Grid DP | 2022 |
+| 7 | Lexicographically smallest word from NxN matrix with K letter-change operations | DP + Greedy | 2026 |
+| 8 | Balance coins in binary tree so every node has exactly one coin, minimize total moves | Tree DFS | 2026 |
 
 ---
 
