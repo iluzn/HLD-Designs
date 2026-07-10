@@ -414,7 +414,9 @@
         // NOTE: Runs deferred to ensure it executes AFTER the hint script's innerHTML replacement
         setTimeout(function() {
             var path = window.location.pathname;
-            if (path.indexOf('fundamentals') !== -1 || path.indexOf('concepts') !== -1 || path.indexOf('approach') !== -1 || path.indexOf('guide') !== -1) return;
+            if (path.indexOf('fundamentals') !== -1 || path.indexOf('approach') !== -1 || path.indexOf('guide') !== -1) return;
+            // For concepts: only track the main /concepts page, skip sub-pages (they have comparison tables)
+            if (path.indexOf('concepts') !== -1 && path !== '/concepts/' && path !== '/concepts') return;
             var tables = document.querySelectorAll('.content table');
             if (!tables.length) return;
             var pageKey = 'progress:' + window.location.pathname;
@@ -525,6 +527,18 @@
             a.setAttribute('rel', 'noopener noreferrer');
         }
     });
+    </script>
+
+    <!-- Concepts deep-dive links open in new tab (so users don't lose the tracker page) -->
+    <script>
+    (function() {
+        if (window.location.pathname === '/concepts/' || window.location.pathname === '/concepts') {
+            document.querySelectorAll('.content table a[href^="/concepts/"]').forEach(function(a) {
+                a.setAttribute('target', '_blank');
+                a.setAttribute('rel', 'noopener');
+            });
+        }
+    })();
     </script>
 
     <!-- Style 💡 hints as blocks — must run BEFORE deep dive tabs -->
