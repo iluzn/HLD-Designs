@@ -1207,3 +1207,16 @@ Address notification deduplication across channels (Air Traffic Control pattern 
 - [Chat System](/hld/ChatSystem) - WebSocket real-time delivery
 - [Job Scheduler](/hld/JobScheduler) - scheduled and delayed notifications
 - [Twitter Feed](/hld/TwitterFeed) - fan-out patterns
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Message Queues →](/concepts/message-queues/) — decouple event producers from the per-channel senders
+- [Fan-Out Patterns →](/concepts/fan-out/) — deliver one event across many users and channels (push, email, SMS)
+- [Idempotency →](/concepts/idempotency/) — dedupe so a user isn't notified twice for the same event
+- [Dead Letter Queue →](/concepts/dead-letter-queue/) — parks notifications that permanently fail delivery for inspection
+- [Retry & Backoff →](/concepts/retry-backoff/) — retries transient provider failures without hammering them

@@ -692,3 +692,15 @@ Address storage lifecycle optimization (hot/warm/cold tiers with S3 Standard →
 - [Twitter Feed](/hld/TwitterFeed) - fan-out patterns and timeline caching
 - [Notification System](/hld/NotificationSystem) - push delivery for likes and follows
 - [Chat System](/hld/ChatSystem) - real-time messaging infrastructure
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [CDN →](/concepts/cdn/) — delivers photos and videos from edge locations near the user
+- [Object Storage →](/concepts/object-storage/) — stores original and transcoded media durably and cheaply
+- [Fan-Out Patterns →](/concepts/fan-out/) — distributes each new post into follower feeds
+- [Caching →](/concepts/caching/) — keeps hot feeds and post metadata fast to read

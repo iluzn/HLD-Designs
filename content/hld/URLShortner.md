@@ -709,3 +709,15 @@ Address multi-region deployment with counter range allocation per region (no cro
 - [Rate Limiter](/hld/RateLimiter) - protecting high-QPS endpoints
 - [Leaderboard](/hld/Leaderboard) - Redis-based caching patterns
 - [Stock Broker](/hld/StockBroker) - idempotency keys for write operations
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Consistent Hashing →](/concepts/consistent-hashing/) — distributes the short-code keyspace across nodes with minimal reshuffling
+- [Caching →](/concepts/caching/) — hot short-URL lookups are served from Redis instead of the database
+- [CDN →](/concepts/cdn/) — edge nodes handle redirects for popular links close to users
+- [Database Sharding →](/concepts/database-sharding/) — partitions the code-to-URL mapping table as it grows to billions of rows

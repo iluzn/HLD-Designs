@@ -578,3 +578,16 @@ Address vector clocks for conflict detection, Merkle trees for anti-entropy repa
 - [Rate Limiter](/hld/RateLimiter) - uses Redis (a KV store) for counters
 - [Leaderboard](/hld/Leaderboard) - Redis sorted sets are a specialized KV structure
 - [URL Shortener](/hld/URLShortner) - simple KV mapping of short code → URL
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Consistent Hashing →](/concepts/consistent-hashing/) — places keys on the ring so adding or removing nodes reshuffles minimal data
+- [CAP Theorem →](/concepts/cap-theorem/) — frames the availability-vs-consistency choice this store makes under partitions
+- [Merkle Trees →](/concepts/merkle-trees/) — power efficient anti-entropy repair between replicas
+- [Vector Clocks →](/concepts/vector-clocks/) — detect and reconcile concurrent writes to the same key
+- [Database Replication →](/concepts/database-replication/) — N-way replication with quorum reads and writes for durability

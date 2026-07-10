@@ -816,3 +816,15 @@ Address the thundering herd problem on hot events by proposing a virtual waiting
 - [Stock Broker (Robinhood)](/hld/StockBroker) - exactly-once processing, order matching
 - [Digital Wallet (PhonePe)](/hld/DigitalWallet) - payment orchestration, saga pattern, idempotency
 - [Job Scheduler](/hld/JobScheduler) - TTL expiry management, delayed triggers
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Distributed Locking →](/concepts/distributed-locking/) — holds seats during checkout so two users can't book the same seat
+- [Saga Pattern →](/concepts/saga-pattern/) — coordinates seat hold, payment, and confirmation with compensating rollbacks
+- [Idempotency →](/concepts/idempotency/) — retried payment callbacks never double-charge a booking
+- [Database Replication →](/concepts/database-replication/) — keeps seat inventory durable and available across nodes

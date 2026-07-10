@@ -784,3 +784,15 @@ Discuss multi-region dispatch, surge pricing zone calculations using H3 hexagons
 - [Notification System](/hld/NotificationSystem) - multi-channel push delivery for ride updates
 - [Job Scheduler](/hld/JobScheduler) - distributed task scheduling for timeout handling
 - [Stock Broker](/hld/StockBroker) - similar distributed locking and exactly-once patterns
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Geospatial Indexing →](/concepts/geospatial/) — how driver-rider matching runs sub-50ms proximity queries with Redis Geo and geohash
+- [Distributed Locking →](/concepts/distributed-locking/) — locks a candidate driver during assignment so two riders never get the same car
+- [WebSockets vs SSE →](/concepts/websockets/) — pushes live driver position to the rider's map during an active ride
+- [Consistent Hashing →](/concepts/consistent-hashing/) — shards driver locations across Redis instances by geohash region (Ringpop-style)

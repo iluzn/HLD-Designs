@@ -419,3 +419,14 @@ Discuss multi-region ID generation with region bits, capacity planning for the 6
 - [URL Shortener](/hld/URLShortner) - uses Base62 ID generation for short links
 - [Pastebin](/hld/Pastebin) - unique ID generation for paste URLs
 - [Key-Value Store](/hld/KeyValueStore) - consistent hashing uses similar partitioning concepts
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Consistent Hashing →](/concepts/consistent-hashing/) — assigns ID ranges or worker nodes so generators never collide
+- [Leader Election →](/concepts/leader-election/) — coordinates the authority that hands out node IDs and epochs
+- [Database Replication →](/concepts/database-replication/) — durably persists allocated ID ranges so restarts don't reissue IDs

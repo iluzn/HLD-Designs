@@ -780,3 +780,14 @@ Address distributed rate limiting across multiple regions with eventual consiste
 - [URL Shortener](/hld/URLShortner) - high-QPS API design
 - [Leaderboard](/hld/Leaderboard) - Redis patterns
 - [Notification System](/hld/NotificationSystem) - protecting downstream services
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Rate Limiting →](/concepts/rate-limiting/) — the core algorithms (token bucket, sliding window) this whole design is built on
+- [Caching →](/concepts/caching/) — Redis holds the per-client counters for sub-millisecond checks
+- [Distributed Locking →](/concepts/distributed-locking/) — atomic check-and-decrement via Lua keeps counts correct across many pods

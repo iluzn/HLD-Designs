@@ -832,3 +832,15 @@ Address multi-tenant fair scheduling (one user's million jobs shouldn't starve o
 - [Delayed Trigger Service](/hld/DelayedTriggerService) - timing wheels and scheduled execution
 - [Notification System](/hld/NotificationSystem) - scheduled notification delivery
 - [Zomato](/hld/Zomato) - dispatch and async workflows
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Leader Election →](/concepts/leader-election/) — one scheduler node owns dispatch so due jobs aren't fired twice
+- [Message Queues →](/concepts/message-queues/) — hand due jobs off to a pool of workers for execution
+- [Distributed Locking →](/concepts/distributed-locking/) — guarantees a given job runs on exactly one worker
+- [Dead Letter Queue →](/concepts/dead-letter-queue/) — captures jobs that exhaust their retries for later triage

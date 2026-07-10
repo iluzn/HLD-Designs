@@ -755,3 +755,15 @@ Address custom CDN economics (Open Connect vs commercial CDN at Netflix scale - 
 - [URL Shortener](/hld/URLShortner) - CDN caching patterns and redirect optimization
 - [Chat System](/hld/ChatSystem) - real-time delivery and session management
 - [Notification System](/hld/NotificationSystem) - push notification infrastructure
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [CDN →](/concepts/cdn/) — streams video segments from edge caches (Open Connect-style) for low startup latency
+- [Object Storage →](/concepts/object-storage/) — holds encoded video assets across every bitrate and resolution
+- [Caching →](/concepts/caching/) — caches manifests and metadata so playback starts fast
+- [Load Balancing →](/concepts/load-balancing/) — spreads playback and API traffic across the fleet

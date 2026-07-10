@@ -580,3 +580,15 @@ Address feed ranking vs chronological ordering trade-offs and the ML pipeline ne
 - [Chat System](/hld/ChatSystem) - real-time message delivery
 - [Notification System](/hld/NotificationSystem) - push to users
 - [Leaderboard](/hld/Leaderboard) - real-time ranking updates
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Fan-Out Patterns →](/concepts/fan-out/) — pushes each new tweet into follower timelines (fan-out-on-write) with a pull path for celebrities
+- [Caching →](/concepts/caching/) — precomputed timelines live in Redis for millisecond reads
+- [Database Sharding →](/concepts/database-sharding/) — partitions tweets and timelines across nodes to handle write volume
+- [CDN →](/concepts/cdn/) — serves attached images and video close to the viewer

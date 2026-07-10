@@ -691,3 +691,15 @@ Address matching engine internals - price-time priority with a TreeMap per side,
 **In simple terms:** Your app's network drops mid-trade. It retries. Without protection, you buy the same stock twice. We need to guarantee that retrying a request never causes double-execution.
 - [Uber / Lyft](/hld/Uber) - real-time matching with distributed locks
 - [BookMyShow](/hld/BookMyShow) - seat reservation concurrency, exactly-once processing
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Event Sourcing & CQRS →](/concepts/event-sourcing/) — order and trade events form the immutable audit log the system replays from
+- [Message Queues →](/concepts/message-queues/) — feeds orders into the matching engine and fans out fills to downstream services
+- [Idempotency →](/concepts/idempotency/) — a retried order submission never executes the same trade twice
+- [WebSockets vs SSE →](/concepts/websockets/) — streams live price ticks and order-status updates to clients

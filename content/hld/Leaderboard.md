@@ -464,3 +464,14 @@ Design the tiered architecture for global live events: regional Redis + Kafka + 
 - [Rate Limiter](/hld/RateLimiter) - Redis patterns, counters, sliding windows
 - [URL Shortener](/hld/URLShortner) - caching and CDN patterns
 - [Twitter Feed](/hld/TwitterFeed) - real-time updates pushed to users
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Caching →](/concepts/caching/) — Redis sorted sets serve real-time rank queries in-memory
+- [Database Sharding →](/concepts/database-sharding/) — partitions scores across segments when a single node can't hold the set
+- [Consistency Models →](/concepts/consistency-models/) — trades exact rank freshness against read latency at scale

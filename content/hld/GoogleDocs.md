@@ -791,3 +791,14 @@ Compare OT vs CRDT trade-offs at scale (OT needs a central server for linear ord
 - [Chat System (WhatsApp)](/hld/ChatSystem) - similar WebSocket fan-out, presence tracking
 - [Notification System](/hld/NotificationSystem) - multi-channel push delivery
 - [Stock Broker (Robinhood)](/hld/StockBroker) - event sourcing, ordered operations
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [WebSockets vs SSE →](/concepts/websockets/) — carry real-time collaborative edits and presence between clients
+- [Consistency Models →](/concepts/consistency-models/) — how concurrent edits eventually converge via OT or CRDT
+- [Event Sourcing & CQRS →](/concepts/event-sourcing/) — the ordered stream of edit operations is the document's source of truth

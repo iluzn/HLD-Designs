@@ -529,3 +529,15 @@ Address breaking news latency (webhook push + velocity detection + emergency re-
 - [Twitter Feed](/hld/TwitterFeed) - fan-out and personalized timeline ranking
 - [Notification System](/hld/NotificationSystem) - multi-channel delivery for breaking news alerts
 - [Instagram](/hld/Instagram) - media-heavy feed with CDN and ranking
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Message Queues →](/concepts/message-queues/) — pipeline crawled articles through fetch, parse, dedupe, and rank stages
+- [Batch vs Stream →](/concepts/batch-vs-stream/) — batch crawling for coverage vs streaming for trending detection
+- [Caching →](/concepts/caching/) — serves hot feeds and ranked stories fast
+- [Bloom Filters →](/concepts/bloom-filters/) — cheaply skip already-seen article URLs during crawling and dedup

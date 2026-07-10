@@ -580,3 +580,15 @@ Address sub-second precision at scale using timing wheels (Kafka-style HashedWhe
 - [Job Scheduler](/hld/JobScheduler) - distributed task scheduling
 - [Digital Wallet](/hld/DigitalWallet) - payment retry workflows
 - [Notification System](/hld/NotificationSystem) - delayed and scheduled delivery
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Message Queues →](/concepts/message-queues/) — hold and dispatch triggers when their fire time arrives
+- [Dead Letter Queue →](/concepts/dead-letter-queue/) — isolates triggers that repeatedly fail to deliver
+- [Circuit Breaker →](/concepts/circuit-breaker/) — stops hammering a downstream that's already unhealthy
+- [Retry & Backoff →](/concepts/retry-backoff/) — re-attempts failed triggers with growing delays

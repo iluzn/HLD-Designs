@@ -591,3 +591,15 @@ Address end-to-end encryption key exchange (Signal protocol double-ratchet), mul
 - [Notification System](/hld/NotificationSystem) - similar multi-channel delivery + WebSocket patterns
 - [Twitter Feed](/hld/TwitterFeed) - fan-out and real-time updates
 - [Stock Broker](/hld/StockBroker) - Kafka event streaming + exactly-once semantics
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [WebSockets vs SSE →](/concepts/websockets/) — persistent connections deliver messages in real time both ways
+- [Message Queues →](/concepts/message-queues/) — buffers and routes messages between senders and recipients
+- [Fan-Out Patterns →](/concepts/fan-out/) — delivers a single group message to every member of the conversation
+- [Consistent Hashing →](/concepts/consistent-hashing/) — maps each user to a connection server so messages find the right socket

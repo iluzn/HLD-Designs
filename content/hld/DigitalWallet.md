@@ -894,3 +894,16 @@ Address distributed ledger consistency across shards (partitioned platform accou
 - [Stock Broker](/hld/StockBroker) - financial transactions + exactly-once semantics
 - [Zomato](/hld/Zomato) - end-to-end order lifecycle
 - [Delayed Trigger Service](/hld/DelayedTriggerService) - scheduled payment retries
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Idempotency →](/concepts/idempotency/) — retried payment requests never double-debit a wallet
+- [Saga Pattern →](/concepts/saga-pattern/) — coordinates multi-step transfers with compensating rollbacks on failure
+- [Distributed Locking →](/concepts/distributed-locking/) — serializes concurrent debits against the same balance
+- [Event Sourcing & CQRS →](/concepts/event-sourcing/) — an append-only ledger is the source of truth for every balance
+- [Database Replication →](/concepts/database-replication/) — keeps the ledger durable and available across nodes

@@ -467,3 +467,15 @@ Address abuse prevention (rate limiting per IP, content scanning for malware/spa
 - [URL Shortener](/hld/URLShortner) - same ID generation pattern, simpler storage
 - [Rate Limiter](/hld/RateLimiter) - protecting the paste API from abuse
 - [Instagram](/hld/Instagram) - object storage patterns for media
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Object Storage →](/concepts/object-storage/) — stores large paste blobs cheaply instead of bloating the database
+- [CDN →](/concepts/cdn/) — serves popular pastes from the edge to cut read latency
+- [Caching →](/concepts/caching/) — keeps hot paste content and metadata in memory
+- [Database Sharding →](/concepts/database-sharding/) — partitions the paste metadata store as volume grows

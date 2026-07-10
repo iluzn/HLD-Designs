@@ -789,3 +789,15 @@ Address dispatch workflow durability (Temporal/Cadence), fencing tokens for prev
 - [Job Scheduler](/hld/JobScheduler) - distributed task processing
 - [Notification System](/hld/NotificationSystem) - multi-channel push delivery
 - [Digital Wallet](/hld/DigitalWallet) - payment processing + idempotency
+
+
+---
+
+## Related Concepts
+
+Understand the building blocks used in this design:
+
+- [Geospatial Indexing →](/concepts/geospatial/) — finds nearby restaurants and available delivery partners for a customer's location
+- [WebSockets vs SSE →](/concepts/websockets/) — streams live order status and delivery-partner tracking to the customer
+- [Message Queues →](/concepts/message-queues/) — decouples order placement from restaurant acceptance and delivery dispatch
+- [Caching →](/concepts/caching/) — serves hot restaurant menus and listing pages without hitting the primary store
