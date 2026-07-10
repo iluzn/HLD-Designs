@@ -440,6 +440,7 @@
                     var td = document.createElement('td'); td.style.textAlign = 'center';
                     var cb = document.createElement('input'); cb.type = 'checkbox'; cb.style.cssText = 'cursor:pointer;width:16px;height:16px;accent-color:var(--accent);';
                     cb.disabled = true; cb.style.opacity = '0.35'; cb.style.cursor = 'default';
+                    cb.dataset.problem = problemName;
                     if (saved[problemName]) cb.checked = true;
                     cb.addEventListener('change', function() { saved[problemName] = cb.checked; if (!cb.checked) delete saved[problemName]; localStorage.setItem(pageKey, JSON.stringify(saved)); updateProgressBar(); if (window.saveProgressToFirestore) window.saveProgressToFirestore(window.location.pathname, JSON.parse(localStorage.getItem(pageKey) || '{}')); });
                     td.appendChild(cb); row.insertBefore(td, row.firstChild);

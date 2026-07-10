@@ -204,12 +204,19 @@ function restoreProgressFromFirestore() {
             if (checkboxes.length > 0 || attempts > 20) {
                 clearInterval(restoreInterval);
                 checkboxes.forEach(function(cb) {
-                    var row = cb.closest('tr');
-                    if (!row) return;
-                    var problemCell = row.querySelectorAll('td')[1];
-                    if (!problemCell) return;
-                    var problemName = problemCell.textContent.trim().substring(0, 60);
-                    if (pageProgress[problemName]) cb.checked = true;
+                    // Match on the data-problem attribute set at build time so we
+                    // don't depend on column position (the checkbox column shifts indices).
+                    var problemName = cb.dataset.problem;
+                    if (!problemName) {
+                        // Fallback for any checkbox built before data-problem existed
+                        var row = cb.closest('tr');
+                        if (row) {
+                            var cells = row.querySelectorAll('td');
+                            var nameCell = cells[2] || cells[1];
+                            if (nameCell) problemName = nameCell.textContent.trim().substring(0, 60);
+                        }
+                    }
+                    if (problemName && pageProgress[problemName]) cb.checked = true;
                 });
                 // Only update progress bar on DSA pages (table-based checkboxes)
                 // Skip on HLD/LLD pages which have their own card-based progress
