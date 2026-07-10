@@ -13,34 +13,100 @@ Everything you need to know before tackling specific HLD problems. These are the
 
 ---
 
-## Quick Navigation — Deep Dive Pages
+## System Design Concepts — Learning Tracker
+
+Track your progress through all 42 fundamentals. Sign in to save across devices.
 
 ### Core Infrastructure
-- [Scalability →](/concepts/scalability/) | [Load Balancing →](/concepts/load-balancing/) | [CDN →](/concepts/cdn/) | [Proxy →](/concepts/proxy/) | [API Gateway →](/concepts/api-gateway/) | [Connection Pooling →](/concepts/connection-pooling/)
 
-### Data & Storage  
-- [Database Indexing →](/concepts/database-indexing/) | [Database Sharding →](/concepts/database-sharding/) | [Database Replication →](/concepts/database-replication/) | [DB Query Complexity →](/concepts/db-query-complexity/) | [Object Storage →](/concepts/object-storage/) | [Write-Ahead Log →](/concepts/write-ahead-log/)
+| # | Concept | Deep Dive |
+|---|---|---|
+| 1 | Scalability (Vertical vs Horizontal) | [Read →](/concepts/scalability/) |
+| 2 | Load Balancing (Round Robin, L4 vs L7) | [Read →](/concepts/load-balancing/) |
+| 3 | CDN (Pull vs Push, Cache Invalidation) | [Read →](/concepts/cdn/) |
+| 4 | Proxy (Forward vs Reverse) | [Read →](/concepts/proxy/) |
+| 5 | API Gateway (Routing, Auth, Rate Limiting) | [Read →](/concepts/api-gateway/) |
+| 6 | Connection Pooling (HikariCP, PgBouncer) | [Read →](/concepts/connection-pooling/) |
+
+### Data & Storage
+
+| # | Concept | Deep Dive |
+|---|---|---|
+| 7 | Database Indexing (B-Tree, Composite) | [Read →](/concepts/database-indexing/) |
+| 8 | Database Sharding (Hash, Range, Geo) | [Read →](/concepts/database-sharding/) |
+| 9 | Database Replication (Primary-Replica, Quorum) | [Read →](/concepts/database-replication/) |
+| 10 | DB Query Complexity (Postgres, DynamoDB, Redis) | [Read →](/concepts/db-query-complexity/) |
+| 11 | Object Storage (S3, Presigned URLs) | [Read →](/concepts/object-storage/) |
+| 12 | Write-Ahead Log (Crash Recovery, Kafka) | [Read →](/concepts/write-ahead-log/) |
 
 ### Caching & Performance
-- [Caching →](/concepts/caching/) | [Rate Limiting →](/concepts/rate-limiting/) | [Bloom Filters →](/concepts/bloom-filters/)
+
+| # | Concept | Deep Dive |
+|---|---|---|
+| 13 | Caching (Cache-Aside, Stampede, Eviction) | [Read →](/concepts/caching/) |
+| 14 | Rate Limiting (Token Bucket, Sliding Window) | [Read →](/concepts/rate-limiting/) |
+| 15 | Bloom Filters (Probabilistic, False Positives) | [Read →](/concepts/bloom-filters/) |
 
 ### Communication & Messaging
-- [Message Queues →](/concepts/message-queues/) | [WebSocket vs SSE →](/concepts/websockets/) | [Fan-Out Patterns →](/concepts/fan-out/) | [Dead Letter Queue →](/concepts/dead-letter-queue/)
+
+| # | Concept | Deep Dive |
+|---|---|---|
+| 16 | Message Queues (Kafka vs SQS vs RabbitMQ) | [Read →](/concepts/message-queues/) |
+| 17 | WebSocket vs SSE vs Polling | [Read →](/concepts/websockets/) |
+| 18 | Fan-Out Patterns (On Write vs On Read) | [Read →](/concepts/fan-out/) |
+| 19 | Dead Letter Queue (Poison Messages, Retry) | [Read →](/concepts/dead-letter-queue/) |
 
 ### Distributed Systems
-- [CAP Theorem →](/concepts/cap-theorem/) | [Consistency Models →](/concepts/consistency-models/) | [Consistent Hashing →](/concepts/consistent-hashing/) | [Leader Election →](/concepts/leader-election/) | [Vector Clocks →](/concepts/vector-clocks/) | [Merkle Trees →](/concepts/merkle-trees/) | [Fencing Tokens →](/concepts/fencing-tokens/)
+
+| # | Concept | Deep Dive |
+|---|---|---|
+| 20 | CAP Theorem (CP vs AP, PACELC) | [Read →](/concepts/cap-theorem/) |
+| 21 | Consistency Models (Strong, Eventual, Causal) | [Read →](/concepts/consistency-models/) |
+| 22 | Consistent Hashing (Hash Ring, Virtual Nodes) | [Read →](/concepts/consistent-hashing/) |
+| 23 | Leader Election (Raft, ZooKeeper, Split-Brain) | [Read →](/concepts/leader-election/) |
+| 24 | Vector Clocks (Causality, Conflict Detection) | [Read →](/concepts/vector-clocks/) |
+| 25 | Merkle Trees (Data Integrity, Anti-Entropy) | [Read →](/concepts/merkle-trees/) |
+| 26 | Fencing Tokens (Stale Lock Prevention) | [Read →](/concepts/fencing-tokens/) |
 
 ### Patterns & Architecture
-- [Event Sourcing & CQRS →](/concepts/event-sourcing/) | [Saga Pattern →](/concepts/saga-pattern/) | [Outbox Pattern →](/concepts/outbox-pattern/) | [Circuit Breaker →](/concepts/circuit-breaker/) | [Idempotency →](/concepts/idempotency/) | [Retry & Backoff →](/concepts/retry-backoff/) | [Durable Execution →](/concepts/durable-execution/)
+
+| # | Concept | Deep Dive |
+|---|---|---|
+| 27 | Event Sourcing & CQRS | [Read →](/concepts/event-sourcing/) |
+| 28 | Saga Pattern (Choreography vs Orchestration) | [Read →](/concepts/saga-pattern/) |
+| 29 | Outbox Pattern (Reliable Event Publishing) | [Read →](/concepts/outbox-pattern/) |
+| 30 | Circuit Breaker (Fail Fast, Fallback) | [Read →](/concepts/circuit-breaker/) |
+| 31 | Idempotency (Keys, Duplicate Prevention) | [Read →](/concepts/idempotency/) |
+| 32 | Retry & Exponential Backoff (Jitter) | [Read →](/concepts/retry-backoff/) |
+| 33 | Durable Execution (Temporal, Step Functions) | [Read →](/concepts/durable-execution/) |
 
 ### Architecture Decisions
-- [Microservices vs Monolith →](/concepts/microservices/) | [Batch vs Stream →](/concepts/batch-vs-stream/) | [API Design →](/concepts/api-design/) | [Service Discovery →](/concepts/service-discovery/)
+
+| # | Concept | Deep Dive |
+|---|---|---|
+| 34 | Microservices vs Monolith | [Read →](/concepts/microservices/) |
+| 35 | Batch vs Stream Processing | [Read →](/concepts/batch-vs-stream/) |
+| 36 | API Design (REST, GraphQL, gRPC) | [Read →](/concepts/api-design/) |
+| 37 | Service Discovery (DNS, Consul, K8s) | [Read →](/concepts/service-discovery/) |
 
 ### Security & Auth
-- [Authentication →](/concepts/authentication/)
 
-### Interview Prep
-- [Back-of-Envelope →](/concepts/back-of-envelope/) | [Heartbeat & Health →](/concepts/heartbeat/) | [Geospatial →](/concepts/geospatial/) | [Distributed Locking →](/concepts/distributed-locking/)
+| # | Concept | Deep Dive |
+|---|---|---|
+| 38 | Authentication (JWT, Sessions, OAuth 2.0) | [Read →](/concepts/authentication/) |
+
+### Other Essentials
+
+| # | Concept | Deep Dive |
+|---|---|---|
+| 39 | Back-of-Envelope Estimation | [Read →](/concepts/back-of-envelope/) |
+| 40 | Heartbeat & Health Checks (Liveness, Readiness) | [Read →](/concepts/heartbeat/) |
+| 41 | Geospatial Indexing (Geohash, H3, Redis Geo) | [Read →](/concepts/geospatial/) |
+| 42 | Distributed Locking (Redis, DynamoDB, ZK) | [Read →](/concepts/distributed-locking/) |
+
+---
+
+> The summaries below serve as a quick reference. Click "Read →" on any topic above for the full deep dive with diagrams, code, and interview questions.
 
 ---
 
