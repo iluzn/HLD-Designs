@@ -13,3 +13,12 @@ permalink: pretty
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
+
+# Folders that are infra/source only — keep them out of the built site and sitemap
+exclude:
+  - og-worker/
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+  - node_modules/
