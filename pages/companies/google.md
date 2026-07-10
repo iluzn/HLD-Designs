@@ -216,6 +216,50 @@ These are custom/variant problems reported from actual Google interviews:
 
 ---
 
+## More Real Questions from Interview Experiences (2023-2026)
+
+Additional specific problems reported by candidates across LeetCode, GeeksforGeeks, and interview blogs. These are the exact variants Google asked (paraphrased):
+
+| # | Problem Description | Pattern | Round |
+|---|---|---|---|
+| 21 | Find where to cut a rectangular cake so both halves have equal area (return distance as double) | Binary Search on Answer / Geometry | Onsite |
+| 22 | Assign patients (arrival + duration) to N rooms, return room that served the most patients | Heap / Interval Scheduling | Onsite Hard |
+| 23 | Symbolic algebra: simplify `c-(b-(d+e))` with nested parens and sign flips | Stack Parsing | Onsite |
+| 24 | N CPUs, M task durations — find minimum makespan; follow-up: fewest CPUs to still hit it | Heap / Binary Search on Answer | DSA |
+| 25 | N×M grid — count unlock-pattern paths of length ≥ L (8 directions, no jumping visited) | Backtracking / DFS | DSA |
+| 26 | Sum of distances from each tree node to all others — optimize O(n²) to O(n) | Tree DP (Rerooting) | Onsite |
+| 27 | Graph where vertices own intervals, edges connect overlapping ones — count spanning trees | Union-Find / Matrix-Tree | Onsite |
+| 28 | Shortest path avoiding a set of forbidden/restricted nodes | Graph / BFS | Onsite |
+| 29 | Undirected graph forming one ring — print every ring traversal from each node | Graph / Cycle DFS | Onsite |
+| 30 | Water pours from each grid cell — find where it settles (DFS + memo) | Grid DP / Memoized DFS | Onsite |
+| 31 | Power propagation through a 3D lattice/cube graph from source nodes to targets | Multi-source BFS (3D) | Onsite |
+| 32 | IP-range-to-location file — answer which city a query IP belongs to; batch follow-up | Binary Search / Interval | Coding |
+| 33 | Stream of timestamped messages — keep only last 10 time units using a deque | Sliding Window / Deque | Coding |
+| 34 | Row of L/R pieces that slide without jumping — can config A transform to target B? | Two Pointers / Greedy | Coding |
+| 35 | 12 cards from 108-card deck — can they split into 4 winning groups of 3? | Backtracking / Partition | Coding |
+| 36 | Binary tree with 0/1 node values — count connected islands of 1-nodes | Tree DFS | New Grad |
+| 37 | Two strings — is there a common cut so prefix(A) + suffix(B) is a palindrome? | String / Palindrome | Phone Screen |
+| 38 | Boolean stream data structure: setTrue(i), setFalse(i), setAllTrue(), getIndex(i) optimally | Design / Lazy Propagation | Onsite |
+| 39 | Leaderboard: updateEntry(name), getEntryFromRank(rank) efficiently | Design / Order-Statistics Tree | Onsite |
+| 40 | Lexicographically smallest subsequence of length exactly k | Greedy / Monotonic Stack | Onsite |
+| 41 | Grid of people + bikes — find nearest bike for each person, handle ties | BFS / Grid / Matching | Onsite |
+| 42 | Infinite chessboard — min knight moves to (x,y); follow-up adds forbidden cells | Bidirectional BFS | Onsite |
+| 43 | Invertible mapping F(x,y)=z and inverse F(z)=(x,y) | Math / Cantor Pairing | Onsite |
+| 44 | 1M numbers, many (left,right) queries — max within each range | Sparse Table / Segment Tree | Onsite |
+| 45 | Thief crosses room avoiding circular sensors — is a clear path possible? | Union-Find / Geometry | Onsite |
+| 46 | Bench of n seats — each arrival picks seat maximizing distance to nearest occupant | Heap / Greedy | Onsite |
+| 47 | 0/1 string — min splits so each part is binary of a power of 5 (no leading zeros) | DP (String Partition) | Onsite |
+| 48 | I/D pattern — smallest number with non-repeating digits 1-9 following it | Greedy / Stack | Phone Screen |
+| 49 | Tree with edge weights, k leaves — min-weight edge deletion so no two leaves connected | Tree DP / Min-Cut | DSA |
+| 50 | Flights (src, dst, arrival, departure) — shortest route arriving before deadline | Graph / Dijkstra (time-constrained) | DSA |
+| 51 | Ship with fuel K — travel (K-1) or rest (K+1), H mandatory holidays, maximize distance | DP (3D State) | DSA |
+| 52 | Read strings from n files — max count of elements shared by at least two files | Hashing / Counting | Coding |
+| 53 | Longest substring that appears more than once (longest repeated substring) | Suffix Array / Rolling Hash | Coding |
+| 54 | Decode nested encoded string like `3[a2[c]]` into expanded form | Stack / Recursion | Coding |
+| 55 | Tree stored as array + indices to erase — remove nodes + descendants in-place | Array / Tree Compaction | Coding |
+
+---
+
 ## Google's Favorite Patterns (Ranked by Frequency)
 
 | Rank | Pattern | Frequency | Example Problems |
