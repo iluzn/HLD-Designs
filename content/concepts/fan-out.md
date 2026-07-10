@@ -119,32 +119,25 @@ Detailed flow:
 
 Combine both: use fan-out-on-write for regular users, fan-out-on-read for celebrities.
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    HYBRID FAN-OUT                            │
-│                                                             │
-│  User posts a tweet:                                        │
-│  ┌─────────────────────────────────────────────┐            │
-│  │ Is user a "celebrity" (> 10K followers)?     │            │
-│  │                                             │            │
-│  │  NO  → Fan-out on write (push to follower   │            │
-│  │         timelines normally)                  │            │
-│  │                                             │            │
-│  │  YES → Store in celebrity posts only         │            │
-│  │         (do NOT fan-out to followers)         │            │
-│  └─────────────────────────────────────────────┘            │
-│                                                             │
-│  User reads their feed:                                     │
-│  ┌─────────────────────────────────────────────┐            │
-│  │ 1. Fetch pre-computed timeline (from cache)  │            │
-│  │    (contains posts from regular followings)  │            │
-│  │                                             │            │
-│  │ 2. Fetch posts from celebrities they follow  │            │
-│  │    (fan-out on read, but only for few users) │            │
-│  │                                             │            │
-│  │ 3. Merge both sets, rank, return top N       │            │
-│  └─────────────────────────────────────────────┘            │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A[User Posts a Tweet] --> B{Celebrity? > 10K followers}
+    B -->|NO| C[Fan-out on Write]
+    C --> D[Push to all follower timelines]
+    B -->|YES| E[Store in Celebrity Posts Only]
+    E --> F[Do NOT fan-out to followers]
+
+    G[User Reads Feed] --> H[1. Fetch pre-computed timeline from cache]
+    H --> I[2. Fetch celebrity posts they follow]
+    I --> J[3. Merge + Rank + Return Top N]
+
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    classDef decision fill:#818cf8,stroke:#4338ca,color:#fff
+    class B decision
+    class C,D service
+    class E,F data
+    class H,I,J service
 ```
 
 ```
