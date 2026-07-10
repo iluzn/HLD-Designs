@@ -881,6 +881,322 @@ function dispatchOrder(orderId) {
 
 ---
 
+## Rate Limiting
+
+Controls how many requests a client can make in a given time window. Used to protect APIs from abuse, prevent DDoS, and enforce fair usage.
+
+### Algorithms
+
+| Algorithm | How it works | Pros | Cons |
+|---|---|---|---|
+| **Token Bucket** | Bucket fills at fixed rate. Each request removes a token. If empty, reject. | Allows bursts, smooth rate | Slight complexity |
+| **Leaky Bucket** | Requests enter a queue that processes at fixed rate. | Perfectly smooth output | No burst tolerance |
+| **Fixed Window** | Count requests in fixed time windows (e.g., per minute). | Simple | Burst at window edges (2x in 1 sec) |
+| **Sliding Window Log** | Store timestamp of each request. Count within last N seconds. | Exact | Memory-heavy (stores every timestamp) |
+| **Sliding Window Counter** | Combine current + previous window with time-weighted average. | Low memory, ~99% accurate | Approximate |
+
+**Token Bucket (most common in interviews):**
+```
+Bucket capacity: 10 tokens
+Refill rate: 1 token/second
+
+Request arrives:
+  - tokens > 0? → allow, tokens -= 1
+  - tokens == 0? → reject (429 Too Many Requests)
+
+After 10 seconds of no requests → bucket is full again (10 tokens)
+```
+
+**Where to place rate limiter:**
+- API Gateway level (per-user limits)
+- Load balancer (per-IP)
+- Application level (per-endpoint)
+
+**Distributed rate limiting:** Use Redis with Lua scripts for atomic check-and-decrement across multiple server instances.
+
+> ⚠️ **Interview tip:** Always mention WHERE the rate limiter sits (edge/gateway, not inside each microservice) and that it's stateful (needs shared store like Redis for distributed deployments).
+
+---
+
+## Distributed Locking
+
+When multiple services/instances need to coordinate access to a shared resource (e.g., only one worker should process a job, only one transfer should debit a wallet).
+
+### Approaches
+
+| Method | How | Pros | Cons |
+|---|---|---|---|
+| **Redis SETNX** | `SET lock_key "owner" NX EX 30` | Simple, fast | Single point of failure |
+| **Redlock** | Acquire lock on majority of Redis nodes (3/5) | Tolerates node failures | Complex, debated |
+| **DB row lock** | `SELECT FOR UPDATE` or conditional write | ACID, no extra infra | Slow, DB becomes bottleneck |
+| **DynamoDB conditional write** | `PutItem` with condition `attribute_not_exists(lockKey)` | Serverless-friendly | Eventually consistent reads |
+| **ZooKeeper / etcd** | Ephemeral nodes with watches | Battle-tested, auto-cleanup | Heavy infra, complex |
+
+**Redis distributed lock pattern:**
+```
+# Acquire
+SET "lock:order_123" "worker_A" NX EX 30
+# NX = only if not exists
+# EX 30 = auto-expire in 30 seconds (prevents dead locks if holder crashes)
+
+# Release (only if you're the owner)
+if GET "lock:order_123" == "worker_A":
+    DEL "lock:order_123"
+```
+
+**Key problems solved:**
+- **Deadlock:** TTL ensures lock auto-releases if holder crashes
+- **Split-brain:** Fencing tokens ensure stale lock holders can't make writes
+- **Race condition:** Atomic SETNX prevents two holders
+
+> ⚠️ **Interview tip:** When you say "distributed lock", always mention the TTL/expiry. Without it, a crashed holder keeps the lock forever. Also mention fencing tokens if discussing writes to storage — a lock alone doesn't prevent stale operations.
+
+---
+
+## Circuit Breaker Pattern
+
+Prevents cascading failures when a downstream service is down. Instead of endlessly retrying and timing out, "break the circuit" and fail fast.
+
+**States:**
+```
+CLOSED (normal) → requests flow through
+    ↓ (failures exceed threshold)
+OPEN (broken) → all requests fail immediately, no calls to downstream
+    ↓ (after timeout period)
+HALF-OPEN (testing) → allow one request through
+    ↓ success → back to CLOSED
+    ↓ failure → back to OPEN
+```
+
+**When to use:** Any call to an external service (payment provider, third-party API, downstream microservice) that might be slow or down.
+
+**Configuration:**
+- Failure threshold: 5 failures in 60 seconds → OPEN
+- Timeout: 30 seconds → try HALF-OPEN
+- Fallback: return cached data, default response, or graceful error
+
+**Real-world:** Netflix Hystrix (deprecated), Resilience4j (Java), Polly (.NET)
+
+> ⚠️ **Interview tip:** Mention circuit breaker when designing payment gateways or any multi-service architecture. Shows you think about failure modes, not just the happy path.
+
+---
+
+## Retry and Exponential Backoff
+
+When a request fails due to a transient error (network blip, 503, timeout), don't immediately retry at full speed — you'll overwhelm the recovering service.
+
+**Exponential backoff:**
+```
+Attempt 1: wait 1 second
+Attempt 2: wait 2 seconds
+Attempt 3: wait 4 seconds
+Attempt 4: wait 8 seconds
+(give up after max retries)
+```
+
+**With jitter (add randomness):**
+```
+wait = base_delay * 2^attempt + random(0, 1000ms)
+```
+Jitter prevents thundering herd — 1000 clients all retrying at exactly the same time.
+
+**What to retry vs what NOT to retry:**
+
+| Retriable | NOT retriable |
+|---|---|
+| 500 (server error) | 400 (bad request — your fault) |
+| 503 (service unavailable) | 401 (unauthorized) |
+| Timeout | 404 (not found) |
+| Connection refused | 409 (conflict — duplicate) |
+
+> ⚠️ **Interview tip:** When you mention retries in HLD, always pair it with idempotency. Retrying a non-idempotent operation (like payment charge) without idempotency keys = double-charging the user.
+
+---
+
+## Dead Letter Queue (DLQ)
+
+When a message in a queue fails processing after multiple retries, instead of losing it or blocking the queue, move it to a separate "dead letter queue" for investigation.
+
+```
+Main Queue → Consumer tries to process
+    ↓ (fails 3 times)
+Dead Letter Queue → message sits here for manual review or auto-retry later
+    ↓
+Alert fires → engineer investigates
+```
+
+**Why you need it:**
+- A single "poison message" (malformed data, edge case) would block the entire queue without DLQ
+- Provides audit trail of failures
+- Enables retry after fixing the bug
+
+**Real-world:** SQS DLQ, Kafka `.DLT` topics, RabbitMQ dead-letter exchange
+
+> ⚠️ **Interview tip:** Always mention DLQ when designing async pipelines (notification system, payment processing, ETL). Shows you handle failure gracefully instead of silently dropping messages.
+
+---
+
+## Service Discovery
+
+In a microservices architecture with many services scaling up/down, how does Service A know the IP/port of Service B?
+
+**Approaches:**
+
+| Method | How | Example |
+|---|---|---|
+| **DNS-based** | Services register with DNS. Clients resolve hostname. | AWS Route 53, Cloud Map |
+| **Registry-based** | Central registry (services register on start, deregister on stop). Clients query registry. | Consul, Eureka, ZooKeeper |
+| **Sidecar/Mesh** | Each service has a proxy that handles routing. | Istio, Envoy, Linkerd |
+| **Load Balancer** | All services sit behind LB. Clients talk to LB. | AWS ALB, Nginx |
+
+**In practice (most common in interviews):** "Service A calls Service B through an internal load balancer or API gateway. Service discovery is handled by the platform (Kubernetes DNS, AWS Cloud Map)." — Don't over-explain unless asked.
+
+---
+
+## API Gateway
+
+A single entry point for all client requests. Routes to the right microservice, handles cross-cutting concerns.
+
+**What it does:**
+- Request routing (path-based: /users → User Service, /orders → Order Service)
+- Authentication/Authorization (validate JWT before forwarding)
+- Rate limiting
+- Request/response transformation
+- Load balancing
+- SSL termination
+- Caching
+- Logging & monitoring
+
+```
+Client → API Gateway → User Service
+                     → Order Service
+                     → Payment Service
+```
+
+**Why not let clients call services directly?**
+- Client would need to know addresses of 20+ services
+- No central auth check
+- No rate limiting
+- CORS issues
+- Can't do request aggregation (one client call → fan out to 3 services)
+
+**Real-world:** Kong, AWS API Gateway, Nginx, Envoy
+
+---
+
+## Proxy: Forward vs Reverse
+
+| | Forward Proxy | Reverse Proxy |
+|---|---|---|
+| Sits between | Client and internet | Internet and server |
+| Client knows? | Yes (configured) | No (transparent) |
+| Purpose | Privacy, filtering, caching for clients | Load balancing, SSL, caching for servers |
+| Example | VPN, corporate proxy | Nginx, CDN, API Gateway |
+
+**Reverse proxy in HLD (what you'll use):**
+```
+Internet → Reverse Proxy (Nginx) → Server 1
+                                  → Server 2
+                                  → Server 3
+```
+It's basically what a load balancer does + SSL termination + static file caching.
+
+---
+
+## Microservices vs Monolith
+
+| | Monolith | Microservices |
+|---|---|---|
+| Deployment | One big deployment | Each service deploys independently |
+| Scaling | Scale everything together | Scale only what's needed |
+| Complexity | Simple to start | Complex (networking, debugging, consistency) |
+| Data | Shared database | Each service owns its data |
+| Failure | One bug takes down everything | Isolated failures (with circuit breakers) |
+| Team | Works for small teams (< 10) | Enables large teams to work independently |
+| When to use | MVP, early stage, small team | Large teams, independent scaling needs |
+
+**What to say in interview:** "I'd start with a modular monolith and extract services only when a specific module needs independent scaling or a different team owns it." Shows maturity.
+
+---
+
+## Batch vs Stream Processing
+
+| | Batch | Stream |
+|---|---|---|
+| When | Process accumulated data at intervals | Process each event as it arrives |
+| Latency | Minutes to hours | Milliseconds to seconds |
+| Example | Nightly analytics, monthly reports | Real-time fraud detection, live dashboards |
+| Tools | Spark, Hadoop, AWS Glue | Kafka Streams, Flink, Spark Streaming |
+| Complexity | Lower | Higher (ordering, exactly-once) |
+
+**When to use which:**
+- User needs to see result immediately → Stream
+- Result can be delayed (analytics, recommendations) → Batch
+- Both → Lambda architecture (batch for accuracy + stream for speed)
+
+**Common interview pattern:**
+```
+Events → Kafka (stream) → Real-time consumer (live alerts)
+                        → Batch consumer (nightly aggregation to data warehouse)
+```
+
+---
+
+## Connection Pooling
+
+Creating a new database connection is expensive (~50-100ms for TCP + TLS + auth). Instead, maintain a pool of pre-created connections and reuse them.
+
+```
+Without pooling:
+  Request 1: create connection → query → close
+  Request 2: create connection → query → close (50ms wasted each time)
+
+With pooling:
+  Startup: create 20 connections, keep them alive
+  Request 1: borrow connection → query → return to pool
+  Request 2: borrow connection → query → return to pool (0ms overhead)
+```
+
+**Configuration:**
+- Min pool size: connections kept alive even when idle (e.g., 5)
+- Max pool size: maximum concurrent connections (e.g., 50)
+- Connection timeout: how long to wait if pool is full (e.g., 5s)
+
+**Why it matters in HLD:** If your service has 100 instances each with max 50 connections, that's 5000 connections to the DB. Most databases cap at ~5000-10000. This is why you need connection pooling + potentially a connection proxy (PgBouncer for Postgres).
+
+---
+
+## Object Storage (S3 Design Principles)
+
+For storing large files (images, videos, backups, logs) — not rows of data.
+
+**Key properties:**
+- Flat namespace (no folders — "folders" are just key prefixes)
+- Immutable objects (overwrite = new version)
+- Virtually unlimited storage
+- Eventual consistency for overwrites (strong consistency for new objects in AWS S3)
+- Cheap storage, expensive retrieval for cold tiers
+
+**Access patterns:**
+| Operation | Latency | Cost |
+|---|---|---|
+| PUT (upload) | ~100ms | Low |
+| GET (download) | ~50-100ms | Low |
+| LIST (list all objects) | Slow for large buckets | Expensive |
+| DELETE | Fast | Free |
+
+**When to use in HLD:**
+- User-uploaded media (profile pics, videos) → S3 + CDN
+- System backups → S3 Glacier (cold storage)
+- Log archival → S3 with lifecycle rules
+- Large file exports (XLSX, PDF) → generate → upload to S3 → return presigned URL
+
+**Presigned URLs:** Generate a time-limited URL that lets a client upload/download directly to S3 without going through your server. Reduces server load for large files.
+
+> ⚠️ **Interview tip:** When your design involves file uploads, say "Client uploads directly to S3 via a presigned URL to avoid bottlenecking our API servers." Then S3 triggers an event (via SNS/SQS) for post-processing (thumbnail generation, virus scan, etc).
+
+---
+
 ## Numbers Every Engineer Should Know
 
 Quick reference for capacity planning:
