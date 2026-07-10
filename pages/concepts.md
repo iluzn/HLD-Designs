@@ -427,6 +427,110 @@ Without an index, finding a user by email means scanning every row. With 10M use
 
 ---
 
+## Database Query Complexity (What Interviewers Actually Ask)
+
+In HLD interviews, you'll be asked "how will you query this data?" Here's what operations cost in the two most common databases.
+
+### Postgres (SQL) — Query Time Complexity
+
+| Operation | Without Index | With B-Tree Index | Example |
+|---|---|---|---|
+| Find by primary key | O(n) | **O(log n)** | `WHERE id = 123` |
+| Find by any column | O(n) full scan | **O(log n)** if indexed | `WHERE email = 'x@y.com'` |
+| Range query | O(n) | **O(log n + k)** (k = results) | `WHERE age BETWEEN 20 AND 30` |
+| Sort (ORDER BY) | O(n log n) | **O(n)** if index matches sort | `ORDER BY created_at DESC` |
+| Filter + Sort | O(n log n) | **O(log n + k)** with composite index | `WHERE status='active' ORDER BY date` |
+| COUNT(*) | O(n) | O(n) even with index | `SELECT COUNT(*) FROM users` |
+| JOIN | O(n x m) nested loop | **O(n + m)** with indexes on join keys | `users JOIN orders ON user_id` |
+| LIKE 'abc%' | O(n) | **O(log n)** prefix uses index | `WHERE name LIKE 'Sha%'` |
+| LIKE '%abc%' | O(n) | O(n) can't use index | `WHERE name LIKE '%kumar%'` |
+
+**How B-Tree works (mental model):**
+```
+Without index: flip through every page to find "Kumar" → O(n)
+With B-Tree: sorted tree → jump to "K" section → O(log n)
+
+         [M]
+        /   \
+     [D,H]   [R,W]
+    / | \    / | \
+  [A-C][E-G][I-L][N-Q][S-V][X-Z]
+
+Lookup: O(log n) — traverse tree depth
+Range: O(log n) to find start, then scan leaves sequentially
+```
+
+**Composite Index Rule:**
+
+Index on `(status, created_at)` helps queries on:
+- `WHERE status = 'X'` ✓
+- `WHERE status = 'X' ORDER BY created_at` ✓
+- `WHERE created_at > '2025-01-01'` ✗ (wrong column order, falls back to scan)
+
+Rule: composite index works left-to-right only.
+
+### DynamoDB (NoSQL) — Query Time Complexity
+
+| Operation | Complexity | Example |
+|---|---|---|
+| GetItem (PK + SK) | **O(1)** | `PK=user_123, SK=order_456` |
+| Query (PK + sort key range) | **O(1) + O(k)** | `PK=user_123, SK between '2025-01' and '2025-06'` |
+| Query with filter expression | O(all items in partition) | `PK=user_123, filter: status='active'` (reads all, filters after) |
+| Scan (full table) | **O(N)** entire table | Avoid in production |
+| Query on GSI | **O(1) + O(k)** | GSI PK=status, SK=created_at |
+
+**Key concept:** DynamoDB partition key = O(1) hash lookup to find the right partition. Sort key = sequential scan within that partition.
+
+**What DynamoDB can NOT do efficiently:**
+
+| You want | Problem | Solution |
+|---|---|---|
+| Filter by non-key attribute | Scans entire partition | Add a GSI |
+| Sort by non-sort-key column | Not possible | GSI with desired sort key |
+| Query across all users | Full table scan O(N) | GSI with that column as PK |
+| JOINs | Not supported | Denormalize or app-side |
+| Aggregation (SUM, COUNT) | Not supported | Streams → Lambda → aggregate |
+| Full-text search | Not supported | Sync to Elasticsearch |
+
+**GSI (Global Secondary Index):**
+
+```
+Base table: PK = userId, SK = orderId
+GSI:        PK = status, SK = createdAt
+
+Query: "All PENDING orders sorted by date"
+  Without GSI → Scan entire table O(N)
+  With GSI → Query PK='PENDING' → O(1) + O(k)
+```
+
+### Redis — Time Complexity
+
+| Operation | Complexity | Use Case |
+|---|---|---|
+| GET / SET | **O(1)** | Cache lookup |
+| HGET / HSET | **O(1)** | Hash field access |
+| ZADD / ZRANGEBYSCORE | **O(log n)** | Leaderboards, rate limiting |
+| LPUSH / RPOP | **O(1)** | Queue |
+| LINDEX (access by index) | **O(n)** | Avoid for large lists |
+| SMEMBERS | **O(n)** | Get all set members |
+| GEORADIUS | **O(n + log n)** | Nearby search |
+
+### Quick Decision Framework (What to Say in Interview)
+
+| Access Pattern | Best DB | Why |
+|---|---|---|
+| "Get user by ID" | Any (PK lookup) | O(1) DynamoDB, O(log n) Postgres |
+| "Get all orders for a user, sorted by date" | DynamoDB (PK=userId, SK=date) or Postgres (indexed) | Both efficient |
+| "Find all active users" | Postgres (indexed) or DynamoDB GSI | Needs index either way |
+| "Search by name substring" | Elasticsearch | Neither Postgres nor DDB handles this well |
+| "Top 100 by score" | Redis Sorted Set | O(log n) insert, O(log n + k) range |
+| "Count of orders per day" | Postgres | DDB can't aggregate natively |
+| "Real-time leaderboard" | Redis ZSET | O(log n) updates, O(log n + k) reads |
+
+> ⚠️ **Interview tip:** When interviewer asks "how will you query X?" — first identify if it's a key-based lookup or a filter/sort. Key lookups are cheap everywhere. Filters on non-indexed columns are always O(n). The answer is almost always: "add an index" (Postgres) or "create a GSI" (DynamoDB).
+
+---
+
 ## Real-Time Communication (WebSocket vs SSE vs Polling)
 
 When your system needs to push data to clients (chat messages, live tracking, notifications), you have three options:
