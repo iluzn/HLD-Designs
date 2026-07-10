@@ -36,33 +36,19 @@ With cache:
 
 ## Where Caches Live (Cache Layers)
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  Layer 1: Browser Cache (client-side)                            │
-│  - HTTP headers: Cache-Control, ETag, Last-Modified              │
-│  - Stores static assets (CSS, JS, images)                        │
-│  - Latency: 0ms (already on user's device)                       │
-├─────────────────────────────────────────────────────────────────┤
-│  Layer 2: CDN Cache (edge servers worldwide)                     │
-│  - Cloudflare, CloudFront, Fastly                                │
-│  - Stores static content + sometimes API responses               │
-│  - Latency: 5-20ms (nearest edge server)                         │
-├─────────────────────────────────────────────────────────────────┤
-│  Layer 3: Application Cache (in-memory, per server)              │
-│  - Local HashMap, Guava Cache, Caffeine                          │
-│  - Fast but not shared across servers                            │
-│  - Latency: <1ms                                                 │
-├─────────────────────────────────────────────────────────────────┤
-│  Layer 4: Distributed Cache (shared across servers)              │
-│  - Redis, Memcached                                              │
-│  - Shared state, survives server restarts                        │
-│  - Latency: 1-5ms (network hop)                                  │
-├─────────────────────────────────────────────────────────────────┤
-│  Layer 5: Database Cache (query cache, buffer pool)              │
-│  - Built into Postgres/MySQL                                     │
-│  - Caches recently accessed pages in RAM                         │
-│  - Latency: varies                                               │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A[Browser Cache<br/>Cache-Control - ETag - Last-Modified<br/>Latency: 0ms] --> B[CDN Cache<br/>Cloudflare - CloudFront - Fastly<br/>Latency: 5-20ms]
+    B --> C[Application Cache<br/>HashMap - Guava - Caffeine<br/>Latency: less than 1ms]
+    C --> D[Distributed Cache<br/>Redis - Memcached<br/>Latency: 1-5ms]
+    D --> E[Database Cache<br/>Query cache - Buffer pool<br/>Latency: varies]
+
+    classDef client fill:#f97316,stroke:#c2410c,color:#fff
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    class A client
+    class B,C,D service
+    class E data
 ```
 
 **In HLD interviews, you'll mostly discuss Layer 4 (Redis/Memcached).**

@@ -43,18 +43,22 @@ Subsequent requests (cache HIT):
   Origin server not contacted at all
 ```
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                                                              │
-│   User (Mumbai)                                             │
-│       ↓                                                     │
-│   CDN Edge (Mumbai) ← cache HIT? → return immediately      │
-│       ↓ (cache MISS)                                        │
-│   Origin Server (US-East) → returns content                 │
-│       ↓                                                     │
-│   CDN Edge caches it → future requests served locally       │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A[User in Mumbai] --> B{CDN Edge in Mumbai}
+    B -->|Cache HIT| C[Return immediately]
+    B -->|Cache MISS| D[Origin Server US-East]
+    D --> E[Returns content]
+    E --> F[CDN Edge caches it]
+    F --> G[Future requests served locally]
+
+    classDef client fill:#f97316,stroke:#c2410c,color:#fff
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    class A client
+    class B,F service
+    class D data
+    class C,E,G service
 ```
 
 ---

@@ -36,98 +36,79 @@ Now you know: optimize for reads, use cache heavily, consider fan-out-on-write.
 
 ### Latency Numbers
 
+```mermaid
+flowchart TD
+    subgraph Latency["LATENCY NUMBERS EVERY ENGINEER SHOULD KNOW"]
+        L1["L1 cache: 0.5 ns"]
+        L2["L2 cache: 7 ns"]
+        RAM["RAM: 100 ns"]
+        RAMR["Read 1 MB from RAM: 0.25 ms"]
+        SSD["SSD random read: 150 us"]
+        SSDR["Read 1 MB from SSD: 1 ms"]
+        HDD["HDD seek: 10 ms"]
+        HDDR["Read 1 MB from HDD: 20 ms"]
+        DC["Same DC packet: 0.5 ms"]
+        REDIS["Redis GET: 1 ms"]
+        DBQ["DB query indexed: 1-5 ms"]
+        DBS["DB query full scan: 50-500 ms"]
+        CC["Cross-continent: 150 ms"]
+        TLS["TLS handshake: 50-100 ms"]
+    end
+
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    class L1,L2,RAM,RAMR,SSD,SSDR,HDD,HDDR,DC,REDIS,DBQ,DBS,CC,TLS data
 ```
-┌────────────────────────────────────────────────────────────┐
-│  LATENCY NUMBERS EVERY ENGINEER SHOULD KNOW                │
-│                                                            │
-│  L1 cache reference ................... 0.5 ns             │
-│  L2 cache reference ................... 7 ns               │
-│  RAM reference ........................ 100 ns             │
-│  Read 1 MB from RAM .................. 250 us (0.25 ms)   │
-│  SSD random read ..................... 150 us             │
-│  Read 1 MB from SSD .................. 1 ms               │
-│  HDD seek ............................ 10 ms              │
-│  Read 1 MB from HDD .................. 20 ms              │
-│  Send packet within same DC .......... 0.5 ms             │
-│  Redis GET (network + lookup) ......... 1 ms              │
-│  Database query (indexed) ............. 1-5 ms            │
-│  Database query (full scan) ........... 50-500 ms         │
-│  Send packet cross-continent .......... 150 ms            │
-│  TLS handshake ........................ 50-100 ms          │
-│                                                            │
-│  TAKEAWAYS:                                               │
-│  - Memory is 1000x faster than SSD                        │
-│  - SSD is 10x faster than HDD                            │
-│  - Network within DC is ~0.5ms                           │
-│  - Cross-continent adds 150ms                            │
-│  - Avoid disk I/O and network hops where possible        │
-└────────────────────────────────────────────────────────────┘
-```
+
+**Takeaways:**
+- Memory is 1000x faster than SSD
+- SSD is 10x faster than HDD
+- Network within DC is ~0.5ms
+- Cross-continent adds 150ms
+- Avoid disk I/O and network hops where possible
 
 ### Powers of 2
 
-```
-┌───────────────────────────────────────────────┐
-│  2^10  = 1 Thousand     = 1 KB                │
-│  2^20  = 1 Million      = 1 MB                │
-│  2^30  = 1 Billion      = 1 GB                │
-│  2^40  = 1 Trillion     = 1 TB                │
-│  2^50  = 1 Quadrillion  = 1 PB                │
-│                                               │
-│  Quick conversions:                           │
-│  1 KB = 1,000 bytes (use 10^3)               │
-│  1 MB = 1,000 KB = 10^6 bytes               │
-│  1 GB = 1,000 MB = 10^9 bytes               │
-│  1 TB = 1,000 GB = 10^12 bytes              │
-└───────────────────────────────────────────────┘
-```
+| Power | Value | Storage |
+|---|---|---|
+| 2^10 | 1 Thousand | 1 KB |
+| 2^20 | 1 Million | 1 MB |
+| 2^30 | 1 Billion | 1 GB |
+| 2^40 | 1 Trillion | 1 TB |
+| 2^50 | 1 Quadrillion | 1 PB |
+
+Quick conversions: 1 KB = 1,000 bytes (10^3), 1 MB = 10^6 bytes, 1 GB = 10^9 bytes, 1 TB = 10^12 bytes.
 
 ### Time Conversions
 
-```
-┌──────────────────────────────────────────┐
-│  1 day    = 86,400 seconds  ≈ 100K sec   │
-│  1 month  = 2.5 million seconds          │
-│  1 year   = 30 million seconds           │
-│                                          │
-│  Shortcut: 1 day ≈ 10^5 seconds         │
-│                                          │
-│  QPS from daily count:                   │
-│  daily_count / 100,000 = average QPS     │
-│  Peak QPS ≈ 2-3x average QPS            │
-└──────────────────────────────────────────┘
-```
+| Conversion | Value |
+|---|---|
+| 1 day | 86,400 seconds ≈ 100K sec |
+| 1 month | 2.5 million seconds |
+| 1 year | 30 million seconds |
+
+**Shortcut:** 1 day ≈ 10^5 seconds. QPS from daily count: `daily_count / 100,000 = average QPS`. Peak QPS ≈ 2-3x average QPS.
 
 ### Common Data Sizes
 
-```
-┌──────────────────────────────────────────────────────────┐
-│  Text:                                                   │
-│  - 1 character (ASCII) .............. 1 byte             │
-│  - 1 character (UTF-8 avg) ......... 2-3 bytes          │
-│  - Tweet (280 chars) ................ ~560 bytes         │
-│  - Average JSON API response ........ 1-5 KB            │
-│  - Average web page ................. 2-5 MB            │
-│                                                          │
-│  Media:                                                  │
-│  - Profile picture (compressed) ..... 50-200 KB         │
-│  - High-res photo ................... 2-5 MB            │
-│  - 1 min video (720p) .............. 50-100 MB          │
-│  - 1 min video (1080p) ............. 100-200 MB         │
-│  - 1 hour video (1080p, compressed).. 1-3 GB            │
-│                                                          │
-│  Database:                                               │
-│  - User record (text fields) ........ 1-2 KB            │
-│  - Order record ..................... 2-5 KB             │
-│  - Database row (average) ........... 1 KB              │
-│  - 1 billion rows at 1 KB each ...... 1 TB              │
-│                                                          │
-│  Network:                                                │
-│  - HTTP request overhead ............ 1-2 KB            │
-│  - WebSocket frame overhead ......... 2-14 bytes        │
-│  - Average API call payload ......... 1-10 KB           │
-└──────────────────────────────────────────────────────────┘
-```
+| Category | Item | Size |
+|---|---|---|
+| **Text** | 1 character (ASCII) | 1 byte |
+| | 1 character (UTF-8 avg) | 2-3 bytes |
+| | Tweet (280 chars) | ~560 bytes |
+| | Average JSON API response | 1-5 KB |
+| | Average web page | 2-5 MB |
+| **Media** | Profile picture (compressed) | 50-200 KB |
+| | High-res photo | 2-5 MB |
+| | 1 min video (720p) | 50-100 MB |
+| | 1 min video (1080p) | 100-200 MB |
+| | 1 hour video (1080p, compressed) | 1-3 GB |
+| **Database** | User record (text fields) | 1-2 KB |
+| | Order record | 2-5 KB |
+| | Database row (average) | 1 KB |
+| | 1 billion rows at 1 KB each | 1 TB |
+| **Network** | HTTP request overhead | 1-2 KB |
+| | WebSocket frame overhead | 2-14 bytes |
+| | Average API call payload | 1-10 KB |
 
 ---
 

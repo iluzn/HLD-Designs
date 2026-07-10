@@ -38,54 +38,52 @@ Event Sourced:
 
 **CQRS (Command Query Responsibility Segregation)** means separating the write path (commands) from the read path (queries) into different models, often different databases.
 
-```
-Traditional:
-  ┌──────────────────────────┐
-  │     Same Database         │
-  │  (reads AND writes)       │
-  │  Same schema for both     │
-  └──────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph Traditional
+        A[Same Database<br/>reads AND writes<br/>Same schema]
+    end
 
-CQRS:
-  ┌─────────────────┐       ┌─────────────────┐
-  │  Write Model     │       │  Read Model      │
-  │  (commands)      │──────▶│  (queries)       │
-  │  Normalized      │ event │  Denormalized    │
-  │  Append-only     │  sync │  Pre-computed    │
-  └─────────────────┘       └─────────────────┘
+    subgraph CQRS
+        B[Write Model<br/>Commands<br/>Normalized<br/>Append-only] -->|"event sync"| C[Read Model<br/>Queries<br/>Denormalized<br/>Pre-computed]
+    end
+
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    class A data
+    class B service
+    class C data
 ```
 
 ---
 
 ## How Event Sourcing + CQRS Work Together
 
-```
-┌────────────────────────────────────────────────────────────────────┐
-│                         WRITE SIDE                                  │
-│                                                                    │
-│  Command ──▶ Validate ──▶ Produce Event ──▶ Append to Event Store  │
-│  "Transfer $100"         "MoneyTransferred"      (immutable log)   │
-└─────────────────────────────────────────┬──────────────────────────┘
-                                          │
-                                          │ Events published
-                                          ▼
-┌────────────────────────────────────────────────────────────────────┐
-│                        EVENT STORE                                  │
-│                                                                    │
-│  [ Event 1 ] [ Event 2 ] [ Event 3 ] ... [ Event N ]              │
-│  (Kafka topic / EventStoreDB / DynamoDB append-only table)         │
-└─────────────────────────────────────────┬──────────────────────────┘
-                                          │
-                                          │ Consumers read events
-                                          ▼
-┌────────────────────────────────────────────────────────────────────┐
-│                         READ SIDE                                   │
-│                                                                    │
-│  Projection 1: User Balance (Redis)                                │
-│  Projection 2: Transaction History (Postgres)                      │
-│  Projection 3: Analytics Dashboard (ClickHouse)                    │
-│  Projection 4: Search Index (Elasticsearch)                        │
-└────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Write["WRITE SIDE"]
+        A[Command] --> B[Validate]
+        B --> C[Produce Event]
+        C --> D[Append to Event Store]
+    end
+    
+    subgraph Store["EVENT STORE"]
+        D --> E["Event 1 - Event 2 - Event 3 ... Event N<br/>Kafka topic or EventStoreDB or DynamoDB"]
+    end
+
+    subgraph Read["READ SIDE"]
+        E --> F["Projection 1: User Balance - Redis"]
+        E --> G["Projection 2: Transaction History - Postgres"]
+        E --> H["Projection 3: Analytics - ClickHouse"]
+        E --> I["Projection 4: Search Index - Elasticsearch"]
+    end
+
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    classDef async fill:#818cf8,stroke:#4338ca,color:#fff
+    class A,B,C service
+    class D,E data
+    class F,G,H,I async
 ```
 
 ---
@@ -150,26 +148,24 @@ Since all events are stored, you can:
 
 Kafka is commonly used as the event store because:
 
+```mermaid
+flowchart TD
+    subgraph Topic["Kafka Topic: wallet-events"]
+        P0["Partition 0 user_id mod N = 0<br/>ev1 - ev2 - ev5 - ev8..."]
+        P1["Partition 1 user_id mod N = 1<br/>ev3 - ev4 - ev6 - ev9..."]
+        P2["Partition 2 user_id mod N = 2<br/>ev7 - ev10 - ev11..."]
+    end
+
+    classDef async fill:#818cf8,stroke:#4338ca,color:#fff
+    class P0,P1,P2 async
 ```
-┌─────────────────────────────────────────────────────────┐
-│  Kafka Topic: "wallet-events"                           │
-│                                                         │
-│  Partition 0 (user_id % N = 0):                        │
-│  [ev1][ev2][ev5][ev8]...                               │
-│                                                         │
-│  Partition 1 (user_id % N = 1):                        │
-│  [ev3][ev4][ev6][ev9]...                               │
-│                                                         │
-│  Partition 2 (user_id % N = 2):                        │
-│  [ev7][ev10][ev11]...                                  │
-│                                                         │
-│  Properties:                                            │
-│  - Append-only (immutable)                              │
-│  - Ordered within partition                             │
-│  - Configurable retention (forever if needed)           │
-│  - Multiple consumer groups (multiple projections)      │
-│  - High throughput (millions of events/sec)             │
-└─────────────────────────────────────────────────────────┘
+
+**Properties:**
+- Append-only (immutable)
+- Ordered within partition
+- Configurable retention (forever if needed)
+- Multiple consumer groups (multiple projections)
+- High throughput (millions of events/sec)
 ```
 
 ---

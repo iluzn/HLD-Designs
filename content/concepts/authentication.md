@@ -20,16 +20,20 @@ Authentication (AuthN) is verifying **who you are**. Authorization (AuthZ) is ve
 - **Authentication:** Showing your ID at an airport security checkpoint (proving you are who you claim to be).
 - **Authorization:** Your boarding pass determines which gate and seat you can access (what you're allowed to do).
 
+```mermaid
+flowchart LR
+    A[Client] --> B[AuthN<br/>Prove identity]
+    B --> C[AuthZ<br/>Check permissions]
+
+    classDef client fill:#f97316,stroke:#c2410c,color:#fff
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    class A client
+    class B,C service
+```
+
 ```
 Authentication: "Are you really Bob?"     → identity verification
 Authorization:  "Can Bob delete this?"    → permission check
-
-┌─────────┐       ┌──────────┐       ┌──────────────┐
-│  Client  │──────▶│  AuthN    │──────▶│   AuthZ       │
-│  "I'm Bob│       │  "Prove it│       │  "Bob can     │
-│   here's │       │   ...OK,  │       │   read, but   │
-│   my pwd"│       │   verified│       │   not delete" │
-└─────────┘       └──────────┘       └──────────────┘
 ```
 
 ---
@@ -38,33 +42,21 @@ Authorization:  "Can Bob delete this?"    → permission check
 
 Server creates a session and stores it server-side. Client gets a session ID cookie.
 
-```
-┌──────────┐                    ┌──────────┐                ┌─────────┐
-│  Browser  │                    │  Server   │                │  Store   │
-│           │                    │           │                │ (Redis)  │
-└─────┬────┘                    └─────┬────┘                └────┬────┘
-      │                               │                          │
-      │ POST /login                   │                          │
-      │ {email, password}             │                          │
-      │──────────────────────────────▶│                          │
-      │                               │ Validate credentials     │
-      │                               │                          │
-      │                               │ Create session           │
-      │                               │ SET session:abc123       │
-      │                               │──────────────────────────▶
-      │                               │         OK               │
-      │  Set-Cookie: session=abc123   │◀──────────────────────────
-      │◀──────────────────────────────│                          │
-      │                               │                          │
-      │ GET /profile                  │                          │
-      │ Cookie: session=abc123        │                          │
-      │──────────────────────────────▶│                          │
-      │                               │ GET session:abc123       │
-      │                               │──────────────────────────▶
-      │                               │ {userId: 42, role: admin}│
-      │                               │◀──────────────────────────
-      │  200 OK {profile data}        │                          │
-      │◀──────────────────────────────│                          │
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant Server
+    participant Redis as Store Redis
+
+    Browser->>Server: POST /login {email, password}
+    Server->>Server: Validate credentials
+    Server->>Redis: SET session:abc123
+    Redis-->>Server: OK
+    Server-->>Browser: Set-Cookie: session=abc123
+    Browser->>Server: GET /profile Cookie: session=abc123
+    Server->>Redis: GET session:abc123
+    Redis-->>Server: {userId: 42, role: admin}
+    Server-->>Browser: 200 OK {profile data}
 ```
 
 **Session store:** Redis (fast, shared across servers) or database.
@@ -75,28 +67,19 @@ Server creates a session and stores it server-side. Client gets a session ID coo
 
 Server generates a signed token containing user info. Client stores and sends it. Server validates the signature — no server-side storage needed.
 
-```
-┌──────────┐                    ┌──────────┐
-│  Client   │                    │  Server   │
-└─────┬────┘                    └─────┬────┘
-      │                               │
-      │ POST /login                   │
-      │ {email, password}             │
-      │──────────────────────────────▶│
-      │                               │ Validate credentials
-      │                               │ Generate JWT (sign with secret)
-      │                               │
-      │  { token: "eyJhbG..." }       │
-      │◀──────────────────────────────│
-      │                               │
-      │ GET /profile                  │
-      │ Authorization: Bearer eyJhbG..│
-      │──────────────────────────────▶│
-      │                               │ Verify signature (no DB lookup!)
-      │                               │ Decode payload → userId, role
-      │                               │
-      │  200 OK {profile data}        │
-      │◀──────────────────────────────│
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+
+    Client->>Server: POST /login {email, password}
+    Server->>Server: Validate credentials
+    Server->>Server: Generate JWT sign with secret
+    Server-->>Client: { token: "eyJhbG..." }
+    Client->>Server: GET /profile Authorization: Bearer eyJhbG..
+    Server->>Server: Verify signature - no DB lookup
+    Server->>Server: Decode payload - userId and role
+    Server-->>Client: 200 OK {profile data}
 ```
 
 ---
@@ -145,29 +128,21 @@ SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
 
 Access tokens are short-lived (15 min). Refresh tokens are long-lived (7-30 days). This limits damage from stolen access tokens.
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                    TOKEN LIFECYCLE                             │
-│                                                              │
-│  Login:                                                      │
-│    → access_token  (15 min expiry, stored in memory)         │
-│    → refresh_token (30 day expiry, stored in httpOnly cookie)│
-│                                                              │
-│  API calls:                                                  │
-│    → Send access_token in Authorization header               │
-│    → If expired (401) → use refresh_token to get new pair    │
-│                                                              │
-│  Refresh:                                                    │
-│    POST /auth/refresh                                        │
-│    Cookie: refresh_token=xyz                                 │
-│    → New access_token + new refresh_token                    │
-│    → Old refresh_token invalidated (rotation)                │
-│                                                              │
-│  Logout:                                                     │
-│    → Delete refresh_token from DB/Redis                      │
-│    → Access token remains valid until it expires (15 min)    │
-│    → For immediate revocation: maintain a denylist           │
-└──────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Lifecycle["TOKEN LIFECYCLE"]
+        A["Login:<br/>access_token 15 min - in memory<br/>refresh_token 30 day - httpOnly cookie"]
+        B["API calls:<br/>Send access_token in header<br/>If 401 expired - use refresh_token"]
+        C["Refresh: POST /auth/refresh<br/>New access + new refresh token<br/>Old refresh_token invalidated"]
+        D["Logout:<br/>Delete refresh_token from DB/Redis<br/>Access token valid until expiry 15 min"]
+    end
+    A --> B
+    B --> C
+    C --> B
+    B --> D
+
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    class A,B,C,D service
 ```
 
 ---
@@ -176,44 +151,23 @@ Access tokens are short-lived (15 min). Refresh tokens are long-lived (7-30 days
 
 Allows users to log in with Google/GitHub/Facebook without sharing their password with your app.
 
-```
-Authorization Code Flow (most secure):
+```mermaid
+sequenceDiagram
+    participant User as User Browser
+    participant App as Your App Backend
+    participant Google as Google AuthZ Server
+    participant Info as Google UserInfo
 
-┌────────┐     ┌─────────┐     ┌────────────────┐     ┌────────┐
-│  User   │     │ Your App │     │ Google (AuthZ)  │     │ Google  │
-│ Browser │     │ Backend  │     │   Server        │     │ UserInfo│
-└───┬────┘     └────┬────┘     └───────┬────────┘     └───┬────┘
-    │                │                   │                   │
-    │ Click "Login   │                   │                   │
-    │ with Google"   │                   │                   │
-    │───────────────▶│                   │                   │
-    │                │                   │                   │
-    │  Redirect to Google               │                   │
-    │◀───────────────│                   │                   │
-    │                                    │                   │
-    │  "Allow MyApp to access profile?" │                   │
-    │───────────────────────────────────▶│                   │
-    │                                    │                   │
-    │  Redirect back with auth_code     │                   │
-    │◀───────────────────────────────────│                   │
-    │                                    │                   │
-    │  code=abc123   │                   │                   │
-    │───────────────▶│                   │                   │
-    │                │                   │                   │
-    │                │ Exchange code for │                   │
-    │                │ access_token      │                   │
-    │                │──────────────────▶│                   │
-    │                │  access_token     │                   │
-    │                │◀──────────────────│                   │
-    │                │                                       │
-    │                │  GET /userinfo (token)                │
-    │                │──────────────────────────────────────▶│
-    │                │  {name, email, avatar}                │
-    │                │◀──────────────────────────────────────│
-    │                │                                       │
-    │  Set session/  │                                       │
-    │  issue JWT     │                                       │
-    │◀───────────────│                                       │
+    User->>App: Click Login with Google
+    App-->>User: Redirect to Google
+    User->>Google: Allow MyApp to access profile?
+    Google-->>User: Redirect back with auth_code
+    User->>App: code=abc123
+    App->>Google: Exchange code for access_token
+    Google-->>App: access_token
+    App->>Info: GET /userinfo with token
+    Info-->>App: {name, email, avatar}
+    App-->>User: Set session or issue JWT
 ```
 
 ---

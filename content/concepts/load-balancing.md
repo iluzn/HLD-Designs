@@ -41,22 +41,27 @@ With LB:
 
 ## Where Load Balancers Sit
 
-```
-Internet → DNS Load Balancing (Route 53)
-              ↓
-         Edge / CDN (CloudFlare)
-              ↓
-         Layer 4/7 Load Balancer (ALB/NLB)
-              ↓
-         ┌─────────┬─────────┬─────────┐
-         │Server 1 │Server 2 │Server 3 │
-         └─────────┴─────────┴─────────┘
-              ↓
-         Internal LB (between microservices)
-              ↓
-         ┌─────────┬─────────┐
-         │DB Primary│DB Replica│
-         └─────────┴─────────┘
+```mermaid
+flowchart TD
+    A[Internet] --> B[DNS Load Balancing<br/>Route 53]
+    B --> C[Edge and CDN<br/>CloudFlare]
+    C --> D[L4 or L7 Load Balancer<br/>ALB or NLB]
+    D --> E[Server 1]
+    D --> F[Server 2]
+    D --> G[Server 3]
+    E --> H[Internal LB]
+    F --> H
+    G --> H
+    H --> I[DB Primary]
+    H --> J[DB Replica]
+
+    classDef client fill:#f97316,stroke:#c2410c,color:#fff
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    class A client
+    class B,C,D,H service
+    class E,F,G service
+    class I,J data
 ```
 
 You can have LBs at every layer — external (user-facing), internal (service-to-service), and even DB-level (read replicas).

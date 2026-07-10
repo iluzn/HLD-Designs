@@ -33,12 +33,19 @@ Fan-out on read: do nothing now, compute when each follower opens app
 
 When a user publishes content, immediately write it to every follower's feed/inbox.
 
-```
-┌───────────┐     ┌─────────────────┐     ┌──────────────────────┐
-│ User posts │────▶│  Fan-Out Service │────▶│ Write to N follower  │
-│ a tweet    │     │                 │     │ timelines (cache/DB)  │
-└───────────┘     └─────────────────┘     └──────────────────────┘
+```mermaid
+flowchart LR
+    A[User posts<br/>a tweet] --> B[Fan-Out Service] --> C[Write to N follower<br/>timelines cache/DB]
 
+    classDef client fill:#f97316,stroke:#c2410c,color:#fff
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    class A client
+    class B service
+    class C data
+```
+
+```
 Detailed flow:
   1. User A (1000 followers) posts "Hello World"
   2. Fan-out worker fetches follower list: [B, C, D, ... 1000 users]
@@ -51,15 +58,13 @@ Detailed flow:
      Redis: ZREVRANGE timeline:B 0 49  → instant! Already computed.
 
 Timeline storage (Redis Sorted Set per user):
-┌─────────────────────────────────────────┐
-│  timeline:userB                          │
-│  Score (timestamp)  │  Value (tweet_id)  │
-│  1709123456         │  tweet_001         │
-│  1709123400         │  tweet_002         │
-│  1709123300         │  tweet_003         │
-│  ...                │  ...               │
-│  (keep last 800 tweets, trim rest)       │
-└─────────────────────────────────────────┘
+  timeline:userB
+  Score (timestamp)  |  Value (tweet_id)
+  1709123456         |  tweet_001
+  1709123400         |  tweet_002
+  1709123300         |  tweet_003
+  ...
+  (keep last 800 tweets, trim rest)
 ```
 
 **Pros:**
@@ -79,12 +84,17 @@ Timeline storage (Redis Sorted Set per user):
 
 Do nothing at write time. When a user opens their feed, fetch and merge posts from everyone they follow.
 
-```
-┌───────────┐     ┌──────────────────┐     ┌────────────────────┐
-│ User opens │────▶│  Feed Service     │────▶│ Fetch posts from   │
-│ their feed │     │                  │     │ all N following     │
-└───────────┘     └──────────────────┘     └────────────────────┘
+```mermaid
+flowchart LR
+    A[User opens<br/>their feed] --> B[Feed Service] --> C[Fetch posts from<br/>all N following]
 
+    classDef client fill:#f97316,stroke:#c2410c,color:#fff
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    class A client
+    class B,C service
+```
+
+```
 Detailed flow:
   1. User B opens app, requests feed
   2. Feed service fetches B's following list: [A, X, Y, Z, ... 500 users]
@@ -203,51 +213,36 @@ Celebrity (50 million followers):
 
 ## Architecture for News Feed (Complete)
 
-```
-WRITE PATH:
-┌────────┐    ┌─────────┐    ┌──────────────┐    ┌────────────┐
-│ Client  │───▶│ API GW   │───▶│ Post Service  │───▶│ Post DB    │
-└────────┘    └─────────┘    └──────┬───────┘    └────────────┘
-                                    │
-                                    │ publish event
-                                    ▼
-                            ┌──────────────┐
-                            │ Message Queue │
-                            │ (Kafka)       │
-                            └──────┬───────┘
-                                    │
-                         ┌──────────┴──────────┐
-                         ▼                     ▼
-                  ┌──────────────┐     ┌──────────────┐
-                  │ Fan-Out Worker│     │ Fan-Out Worker│
-                  │ (regular)    │     │ (regular)    │
-                  └──────┬───────┘     └──────────────┘
-                         │
-                         │ Write to follower timelines
-                         ▼
-                  ┌──────────────┐
-                  │ Timeline Cache│
-                  │ (Redis)       │
-                  └──────────────┘
+```mermaid
+flowchart TD
+    subgraph WritePath["WRITE PATH"]
+        A[Client] --> B[API GW]
+        B --> C[Post Service]
+        C --> D[Post DB]
+        C --> E[Kafka]
+        E --> F[Fan-Out Worker 1]
+        E --> G[Fan-Out Worker 2]
+        F --> H[Timeline Cache<br/>Redis]
+        G --> H
+    end
 
-READ PATH:
-┌────────┐    ┌─────────┐    ┌──────────────┐
-│ Client  │───▶│ API GW   │───▶│ Feed Service  │
-└────────┘    └─────────┘    └──────┬───────┘
-                                    │
-                         ┌──────────┴──────────┐
-                         ▼                     ▼
-                  ┌──────────────┐     ┌──────────────┐
-                  │ Timeline Cache│     │ Celebrity     │
-                  │ (pre-computed)│     │ Posts (pull)  │
-                  └──────┬───────┘     └──────┬───────┘
-                         │                     │
-                         └──────────┬──────────┘
-                                    ▼
-                            ┌──────────────┐
-                            │ Merge + Rank  │
-                            │ + Return      │
-                            └──────────────┘
+    subgraph ReadPath["READ PATH"]
+        I[Client] --> J[API GW]
+        J --> K[Feed Service]
+        K --> L[Timeline Cache<br/>pre-computed]
+        K --> M[Celebrity Posts<br/>pull]
+        L --> N[Merge + Rank + Return]
+        M --> N
+    end
+
+    classDef client fill:#f97316,stroke:#c2410c,color:#fff
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    classDef async fill:#818cf8,stroke:#4338ca,color:#fff
+    class A,I client
+    class B,C,F,G,J,K,N service
+    class D,H,L,M data
+    class E async
 ```
 
 ---

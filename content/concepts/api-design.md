@@ -222,15 +222,19 @@ With idempotency key:
   Result: User charged $100 (correct!)
 ```
 
-```
-Implementation:
-┌────────────────────────────────────────────────────┐
-│ 1. Client sends request with Idempotency-Key header│
-│ 2. Server checks Redis/DB: key exists?             │
-│    - YES → return stored response                  │
-│    - NO  → process request, store result with key  │
-│ 3. Key expires after 24h (configurable)            │
-└────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A[1. Client sends request<br/>with Idempotency-Key header] --> B{2. Key exists in Redis/DB?}
+    B -->|YES| C[Return stored response]
+    B -->|NO| D[Process request<br/>Store result with key]
+    D --> E[3. Key expires after 24h]
+
+    classDef client fill:#f97316,stroke:#c2410c,color:#fff
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    class A client
+    class B,D,E service
+    class C data
 ```
 
 ---

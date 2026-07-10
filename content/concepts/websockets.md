@@ -175,26 +175,26 @@ How does Server A forward to Server B?
 
 ### Solution: Pub/Sub Layer
 
-```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   Server A    │     │   Server B    │     │   Server C    │
-│  Users: 1,3,5 │     │  Users: 2,4,6 │     │  Users: 7,8,9 │
-└──────┬───────┘     └──────┬───────┘     └──────┬───────┘
-       │                     │                     │
-       └─────────────────────┼─────────────────────┘
-                             │
-                    ┌────────▼────────┐
-                    │  Redis Pub/Sub   │
-                    │  or Kafka        │
-                    │  or NATS         │
-                    └─────────────────┘
+```mermaid
+flowchart TD
+    A["Server A<br/>Users: 1 3 5"] --> D["Redis Pub/Sub<br/>or Kafka or NATS"]
+    B["Server B<br/>Users: 2 4 6"] --> D
+    C["Server C<br/>Users: 7 8 9"] --> D
+    D --> A
+    D --> B
+    D --> C
 
-Flow:
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef async fill:#818cf8,stroke:#4338ca,color:#fff
+    class A,B,C service
+    class D async
+```
+
+**Flow:**
 1. User 1 sends msg to User 2 via WebSocket on Server A
 2. Server A publishes to Redis channel "user:2"
 3. Server B (subscribed to "user:2") receives it
 4. Server B pushes to User 2's WebSocket
-```
 
 ### Connection Management
 

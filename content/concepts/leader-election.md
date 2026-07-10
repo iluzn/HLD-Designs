@@ -52,26 +52,22 @@ With leader:
 
 ### The Lifecycle
 
+```mermaid
+flowchart TD
+    A[Follower] -->|"election timeout"| B[Candidate]
+    B -->|"lost vote"| A
+    B -->|"won majority"| C[Leader - active]
+    C -->|"leader dies"| A
+    
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef async fill:#818cf8,stroke:#4338ca,color:#fff
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    class A service
+    class B async
+    class C data
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Leader Election Lifecycle                  │
-│                                                             │
-│  ┌──────────┐    election     ┌──────────┐                 │
-│  │ Follower  │──────────────▶│  Candidate │                 │
-│  │           │◀──────────────│            │                 │
-│  └──────────┘   lost vote    └─────┬──────┘                │
-│       ▲                            │                        │
-│       │                            │ won majority           │
-│       │ leader dies                ▼                        │
-│       │                      ┌──────────┐                   │
-│       └──────────────────────│  Leader   │                  │
-│                              │ (active)  │                  │
-│                              └──────────┘                   │
-│                                                             │
-│  Leader maintains position via heartbeats                   │
-│  If heartbeats stop → followers trigger new election        │
-└─────────────────────────────────────────────────────────────┘
-```
+
+Leader maintains position via heartbeats. If heartbeats stop → followers trigger new election.
 
 ---
 
@@ -110,20 +106,20 @@ Timeline:
 Leader elected by majority vote. Uses terms (epochs) and randomized timeouts to prevent conflicts.
 
 ```
-Raft Election Process:
-┌─────────────────────────────────────────────────────────────────┐
-│                                                                 │
-│  1. Election timeout expires on a follower (random 150-300ms)   │
-│  2. Follower becomes CANDIDATE                                  │
-│  3. Candidate increments term, votes for itself                 │
-│  4. Candidate requests votes from all other nodes               │
-│  5. Other nodes vote YES if:                                    │
-│     - They haven't voted in this term                           │
-│     - Candidate's log is at least as up-to-date as theirs      │
-│  6. If candidate gets majority votes → becomes LEADER           │
-│  7. Leader sends heartbeats to maintain authority                │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A["1. Election timeout expires<br/>random 150-300ms"] --> B["2. Follower becomes CANDIDATE"]
+    B --> C["3. Increments term - votes for itself"]
+    C --> D["4. Requests votes from all nodes"]
+    D --> E{"5. Nodes vote YES if<br/>not voted in term AND<br/>log is up-to-date"}
+    E -->|"Majority"| F["6. Becomes LEADER"]
+    F --> G["7. Sends heartbeats"]
+
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef async fill:#818cf8,stroke:#4338ca,color:#fff
+    class A,B,C,D,F,G service
+    class E async
+```
 
 Example with 5 nodes:
   Term 1: N1 is leader, sending heartbeats
@@ -192,21 +188,27 @@ Server A crashes:
 
 The most dangerous failure in leader election: **two nodes both think they're leader**.
 
-```
-Network Partition:
-┌───────────────────────────┐    ┌───────────────────────────┐
-│  Partition A               │    │  Partition B               │
-│                           │    │                           │
-│  N1 (leader)              │    │  N3, N4, N5               │
-│  N2                       │    │  "N1 is dead!"            │
-│                           │    │  "Elect N3 as leader"     │
-│  N1 thinks it's leader    │    │  N3 thinks it's leader    │
-│  (it still is, in its     │    │                           │
-│   partition)              │    │                           │
-└───────────────────────────┘    └───────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph PartA["Partition A"]
+        N1["N1 - leader<br/>thinks its still leader"]
+        N2["N2"]
+    end
+    subgraph PartB["Partition B"]
+        N3["N3 - elected as new leader"]
+        N4["N4"]
+        N5["N5"]
+    end
 
-DANGER: Two leaders accepting writes → data corruption!
+    PartA -.->|"NETWORK PARTITION<br/>no communication"| PartB
+
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef async fill:#818cf8,stroke:#4338ca,color:#fff
+    class N1,N3 async
+    class N2,N4,N5 service
 ```
+
+**DANGER:** Two leaders accepting writes → data corruption!
 
 ### Solutions to Split-Brain
 

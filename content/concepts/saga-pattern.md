@@ -41,20 +41,15 @@ Distributed (microservices, no shared DB):
 
 In a monolith, ACID transactions are easy. In microservices, each service has its own database. You can't use a single transaction across services.
 
-```
-┌────────────────────────────────────────────────────────────┐
-│  Why 2PC (Two-Phase Commit) doesn't work at scale:        │
-│                                                            │
-│  1. Coordinator is a single point of failure               │
-│  2. All participants are BLOCKED during prepare phase      │
-│  3. Latency: 2 network round trips minimum                │
-│  4. Any participant failure = entire transaction blocked   │
-│  5. Doesn't work across different DB vendors               │
-│  6. Not supported by most message queues or HTTP services  │
-│                                                            │
-│  Saga is the alternative for microservices.                │
-└────────────────────────────────────────────────────────────┘
-```
+**Why 2PC (Two-Phase Commit) doesn't work at scale:**
+1. Coordinator is a single point of failure
+2. All participants are BLOCKED during prepare phase
+3. Latency: 2 network round trips minimum
+4. Any participant failure = entire transaction blocked
+5. Doesn't work across different DB vendors
+6. Not supported by most message queues or HTTP services
+
+**Saga is the alternative for microservices.**
 
 ---
 
@@ -94,24 +89,17 @@ Result: System is back to consistent state. No money lost.
 
 Each service listens for events and decides what to do next. No central coordinator.
 
-```
-┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
-│  Order    │     │ Payment   │     │ Inventory │     │ Shipping  │
-│  Service  │     │ Service   │     │ Service   │     │ Service   │
-└────┬─────┘     └────┬─────┘     └────┬─────┘     └────┬─────┘
-     │                 │                 │                 │
-     │ OrderCreated    │                 │                 │
-     │────────────────▶│                 │                 │
-     │                 │                 │                 │
-     │                 │ PaymentCharged  │                 │
-     │                 │────────────────▶│                 │
-     │                 │                 │                 │
-     │                 │                 │ ItemsReserved   │
-     │                 │                 │────────────────▶│
-     │                 │                 │                 │
-     │                 │                 │                 │ ShipScheduled
-     │◀────────────────│─────────────────│─────────────────│
-     │ OrderConfirmed  │                 │                 │
+```mermaid
+sequenceDiagram
+    participant Order as Order Service
+    participant Payment as Payment Service
+    participant Inventory as Inventory Service
+    participant Shipping as Shipping Service
+
+    Order->>Payment: OrderCreated
+    Payment->>Inventory: PaymentCharged
+    Inventory->>Shipping: ItemsReserved
+    Shipping-->>Order: ShipScheduled - OrderConfirmed
 ```
 
 **Each service:**
@@ -136,24 +124,17 @@ Order hears "PaymentRefunded" → cancels order → publishes "OrderCancelled"
 
 A central **Saga Orchestrator** tells each service what to do and handles failures.
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                    SAGA ORCHESTRATOR                           │
-│                                                              │
-│  Saga Definition:                                            │
-│  Step 1: OrderService.create()      Compensate: .cancel()    │
-│  Step 2: PaymentService.charge()    Compensate: .refund()    │
-│  Step 3: InventoryService.reserve() Compensate: .release()   │
-│  Step 4: ShippingService.schedule() Compensate: .cancel()    │
-└─────────────────────────┬────────────────────────────────────┘
-                          │
-         ┌────────────────┼────────────────┐
-         │                │                │
-         ▼                ▼                ▼
-  ┌──────────┐    ┌──────────┐    ┌──────────┐
-  │  Payment  │    │ Inventory │    │ Shipping  │
-  │  Service  │    │ Service   │    │ Service   │
-  └──────────┘    └──────────┘    └──────────┘
+```mermaid
+flowchart TD
+    A["Saga Orchestrator"] --> B["Step 1: OrderService.create<br/>Compensate: .cancel"]
+    A --> C["Step 2: PaymentService.charge<br/>Compensate: .refund"]
+    A --> D["Step 3: InventoryService.reserve<br/>Compensate: .release"]
+    A --> E["Step 4: ShippingService.schedule<br/>Compensate: .cancel"]
+
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef async fill:#818cf8,stroke:#4338ca,color:#fff
+    class A async
+    class B,C,D,E service
 ```
 
 ```
@@ -210,16 +191,20 @@ The "undo" operation for each step. Not always a simple reverse:
 
 ### Saga States
 
-```
-┌─────────┐     ┌────────────┐     ┌───────────┐
-│ STARTED  │────▶│ PROCESSING  │────▶│ COMPLETED  │
-└─────────┘     └──────┬─────┘     └───────────┘
-                       │
-                       │ failure
-                       ▼
-                ┌──────────────┐     ┌───────────┐
-                │ COMPENSATING  │────▶│  FAILED    │
-                └──────────────┘     └───────────┘
+```mermaid
+flowchart LR
+    A[STARTED] --> B[PROCESSING]
+    B --> C[COMPLETED]
+    B -->|"failure"| D[COMPENSATING]
+    D --> E[FAILED]
+
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    classDef async fill:#818cf8,stroke:#4338ca,color:#fff
+    class A,B service
+    class C data
+    class D async
+    class E async
 ```
 
 ---

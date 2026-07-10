@@ -39,21 +39,21 @@ The most common index type. A balanced tree structure where:
 - Leaf nodes point to actual table rows
 - Tree stays balanced (all leaves at same depth)
 
-```
-B-Tree Index on 'age' column:
-                    ┌───────────────────┐
-                    │   [30, 60]         │  ← Root node
-                    └───┬───────┬───────┘
-                        │       │       │
-         ┌──────────────┘       │       └──────────────┐
-         ▼                      ▼                      ▼
-┌─────────────┐      ┌─────────────┐       ┌─────────────┐
-│ [10, 20, 25] │      │ [35, 42, 55]│       │ [65, 78, 90]│  ← Internal
-└──┬──┬──┬──┬─┘      └──┬──┬──┬──┬┘       └──┬──┬──┬──┬─┘
-   │  │  │  │            │  │  │  │            │  │  │  │
-   ▼  ▼  ▼  ▼            ▼  ▼  ▼  ▼            ▼  ▼  ▼  ▼
-  Leaf nodes: contain actual data pointers (row IDs)
+```mermaid
+flowchart TD
+    A["Root: 30 - 60"] --> B["10 - 20 - 25"]
+    A --> C["35 - 42 - 55"]
+    A --> D["65 - 78 - 90"]
+    C --> E["Leaf: data pointers"]
 
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    class A service
+    class B,C,D service
+    class E data
+```
+
+```
 Query: WHERE age = 42
   Root: 42 > 30, 42 < 60 → go middle child
   Internal: 42 > 35, 42 = 42 → found!
@@ -187,31 +187,17 @@ CREATE INDEX idx_covering ON users (age, name, email);
 
 Indexes are **not free.** Every index has costs:
 
-```
-┌────────────────────────────────────────────────────────────┐
-│                    INDEX COSTS                              │
-│                                                            │
-│  1. WRITE OVERHEAD                                         │
-│     Every INSERT: must update table + all indexes          │
-│     Every UPDATE: must update affected indexes             │
-│     Every DELETE: must update all indexes                  │
-│                                                            │
-│     Table with 5 indexes → 6 writes per INSERT!           │
-│                                                            │
-│  2. STORAGE                                                │
-│     Indexes consume disk space                             │
-│     A table with many indexes can have indexes larger      │
-│     than the table itself                                  │
-│                                                            │
-│  3. MEMORY                                                 │
-│     Indexes should fit in RAM for performance              │
-│     More indexes = more RAM needed                         │
-│                                                            │
-│  4. MAINTENANCE                                            │
-│     Indexes can become fragmented (need REINDEX)           │
-│     Schema migrations take longer with many indexes        │
-│                                                            │
-└────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Costs["INDEX COSTS"]
+        W["1. WRITE OVERHEAD<br/>Every INSERT updates table + all indexes<br/>Table with 5 indexes = 6 writes per INSERT"]
+        S["2. STORAGE<br/>Indexes consume disk space<br/>Many indexes can be larger than the table"]
+        M["3. MEMORY<br/>Indexes should fit in RAM<br/>More indexes = more RAM needed"]
+        MT["4. MAINTENANCE<br/>Indexes can fragment - need REINDEX<br/>Schema migrations take longer"]
+    end
+
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    class W,S,M,MT data
 ```
 
 ### When NOT to Index

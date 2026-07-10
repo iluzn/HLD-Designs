@@ -36,26 +36,19 @@ NOT Idempotent:
 
 In distributed systems, requests can be retried due to:
 
-```
-┌─────────┐         ┌─────────┐         ┌─────────┐
-│  Client  │────────▶│  Server  │────────▶│   DB     │
-└─────────┘         └─────────┘         └─────────┘
-     │                    │                    │
-     │  POST /pay $100    │                    │
-     │───────────────────▶│                    │
-     │                    │  INSERT payment    │
-     │                    │───────────────────▶│
-     │                    │         OK ◀───────│
-     │                    │                    │
-     │  ╳ Network timeout │                    │
-     │  (no response)     │                    │
-     │                    │                    │
-     │  Client retries!   │                    │
-     │  POST /pay $100    │                    │
-     │───────────────────▶│                    │
-     │                    │  INSERT payment    │  ← DUPLICATE!
-     │                    │───────────────────▶│    User charged
-     │                    │                    │    $200 instead of $100!
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+    participant DB
+
+    Client->>Server: POST /pay $100
+    Server->>DB: INSERT payment
+    DB-->>Server: OK
+    Note over Client,Server: Network timeout - no response
+    Client->>Server: POST /pay $100 (retry!)
+    Server->>DB: INSERT payment (DUPLICATE!)
+    Note over DB: User charged $200 instead of $100!
 ```
 
 **Without idempotency:** Network failures, timeouts, load balancer retries, and message queue redelivery all cause duplicate processing.
@@ -105,24 +98,22 @@ Retry (network timeout on first attempt):
 
 ## Implementation with Redis
 
-```
-┌────────────────────────────────────────────────────────────────┐
-│                   Idempotency Flow                              │
-│                                                                │
-│  1. Request arrives with Idempotency-Key header                │
-│  2. Check Redis: GET idempotency:{key}                         │
-│     ┌─────────────────────────────────────────────┐            │
-│     │ Key exists?                                  │            │
-│     │  YES → Return stored response (skip logic)  │            │
-│     │  NO  → Continue to step 3                   │            │
-│     └─────────────────────────────────────────────┘            │
-│  3. Acquire lock: SET idempotency:{key}:lock NX EX 30          │
-│     (prevents concurrent duplicate requests)                    │
-│  4. Process the request (business logic)                       │
-│  5. Store result: SET idempotency:{key} {response} EX 86400    │
-│  6. Release lock                                               │
-│  7. Return response                                            │
-└────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A[1. Request with Idempotency-Key] --> B{Key exists in Redis?}
+    B -->|YES| C[Return stored response - skip logic]
+    B -->|NO| D[3. Acquire lock SET NX EX 30]
+    D --> E[4. Process request - business logic]
+    E --> F[5. Store result SET key response EX 86400]
+    F --> G[6. Release lock]
+    G --> H[7. Return response]
+
+    classDef client fill:#f97316,stroke:#c2410c,color:#fff
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    classDef data fill:#fbbf24,stroke:#92400e,color:#000
+    class A client
+    class B,D,E,G,H service
+    class C,F data
 ```
 
 ```python
@@ -213,15 +204,23 @@ The trick:
   Net effect: exactly-once processing.
 ```
 
+```mermaid
+flowchart LR
+    A[Producer] --> B[Queue<br/>retries]
+    B --> C[Consumer - idempotent]
+
+    classDef client fill:#f97316,stroke:#c2410c,color:#fff
+    classDef async fill:#818cf8,stroke:#4338ca,color:#fff
+    classDef service fill:#10b981,stroke:#065f46,color:#fff
+    class A client
+    class B async
+    class C service
 ```
-┌──────────┐     ┌──────────┐     ┌──────────────────────────┐
-│  Producer │────▶│  Queue    │────▶│  Consumer (idempotent)    │
-│           │     │ (retries) │     │                          │
-│           │     │           │     │  if msg_id seen:         │
-│           │     │  msg_id:  │     │    skip (already done)   │
-│           │     │  "abc123" │     │  else:                   │
-│           │     │           │     │    process + store msg_id│
-└──────────┘     └──────────┘     └──────────────────────────┘
+
+```
+Consumer logic:
+  if msg_id seen → skip (already done)
+  else → process + store msg_id
 ```
 
 ---

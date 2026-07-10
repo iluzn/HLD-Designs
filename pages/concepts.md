@@ -13,6 +13,37 @@ Everything you need to know before tackling specific HLD problems. These are the
 
 ---
 
+## Quick Navigation — Deep Dive Pages
+
+### Core Infrastructure
+- [Scalability →](/concepts/scalability/) | [Load Balancing →](/concepts/load-balancing/) | [CDN →](/concepts/cdn/) | [Proxy →](/concepts/proxy/) | [API Gateway →](/concepts/api-gateway/) | [Connection Pooling →](/concepts/connection-pooling/)
+
+### Data & Storage  
+- [Database Indexing →](/concepts/database-indexing/) | [Database Sharding →](/concepts/database-sharding/) | [Database Replication →](/concepts/database-replication/) | [DB Query Complexity →](/concepts/db-query-complexity/) | [Object Storage →](/concepts/object-storage/) | [Write-Ahead Log →](/concepts/write-ahead-log/)
+
+### Caching & Performance
+- [Caching →](/concepts/caching/) | [Rate Limiting →](/concepts/rate-limiting/) | [Bloom Filters →](/concepts/bloom-filters/)
+
+### Communication & Messaging
+- [Message Queues →](/concepts/message-queues/) | [WebSocket vs SSE →](/concepts/websockets/) | [Fan-Out Patterns →](/concepts/fan-out/) | [Dead Letter Queue →](/concepts/dead-letter-queue/)
+
+### Distributed Systems
+- [CAP Theorem →](/concepts/cap-theorem/) | [Consistency Models →](/concepts/consistency-models/) | [Consistent Hashing →](/concepts/consistent-hashing/) | [Leader Election →](/concepts/leader-election/) | [Vector Clocks →](/concepts/vector-clocks/) | [Merkle Trees →](/concepts/merkle-trees/) | [Fencing Tokens →](/concepts/fencing-tokens/)
+
+### Patterns & Architecture
+- [Event Sourcing & CQRS →](/concepts/event-sourcing/) | [Saga Pattern →](/concepts/saga-pattern/) | [Outbox Pattern →](/concepts/outbox-pattern/) | [Circuit Breaker →](/concepts/circuit-breaker/) | [Idempotency →](/concepts/idempotency/) | [Retry & Backoff →](/concepts/retry-backoff/) | [Durable Execution →](/concepts/durable-execution/)
+
+### Architecture Decisions
+- [Microservices vs Monolith →](/concepts/microservices/) | [Batch vs Stream →](/concepts/batch-vs-stream/) | [API Design →](/concepts/api-design/) | [Service Discovery →](/concepts/service-discovery/)
+
+### Security & Auth
+- [Authentication →](/concepts/authentication/)
+
+### Interview Prep
+- [Back-of-Envelope →](/concepts/back-of-envelope/) | [Heartbeat & Health →](/concepts/heartbeat/) | [Geospatial →](/concepts/geospatial/) | [Distributed Locking →](/concepts/distributed-locking/)
+
+---
+
 ## Scalability
 
 **Vertical scaling (scale up):** Add more CPU/RAM to one machine. Simple but has a ceiling.
