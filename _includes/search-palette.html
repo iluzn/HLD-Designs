@@ -13,7 +13,9 @@
 #sc-search-input::placeholder { color: var(--text-dim); opacity: 0.9; }
 .sc-search-esc { font-size: 0.6rem; font-weight: 600; color: var(--text-dim); border: 1px solid var(--border); border-radius: 6px; padding: 0.15rem 0.4rem; letter-spacing: 0.05em; }
 .sc-search-results { max-height: 58vh; overflow-y: auto; padding: 0.4rem; scroll-behavior: smooth; }
-.sc-section-label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); padding: 0.6rem 0.8rem 0.3rem; }
+.sc-section-label { display: flex; align-items: center; justify-content: space-between; font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); padding: 0.7rem 0.8rem 0.35rem; }
+.sc-section-label .sc-clear { cursor: pointer; text-transform: none; letter-spacing: 0; font-weight: 600; color: var(--text-dim); }
+.sc-section-label .sc-clear:hover { color: var(--accent); }
 .sc-result { display: flex; align-items: center; gap: 0.75rem; padding: 0.62rem 0.8rem; border-radius: 11px; cursor: pointer; text-decoration: none; position: relative; border: 1px solid transparent; }
 .sc-result.active { background: rgba(129,140,248,0.14); border-color: rgba(129,140,248,0.25); }
 .sc-result-cat { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.18rem 0.45rem; border-radius: 6px; flex-shrink: 0; min-width: 50px; text-align: center; border: 1px solid transparent; }
@@ -39,14 +41,13 @@
 .sc-search-empty svg { opacity: 0.4; margin-bottom: 0.6rem; }
 .sc-search-foot { display: flex; gap: 1.1rem; padding: 0.6rem 1rem; border-top: 1px solid var(--border); font-size: 0.68rem; color: var(--text-dim); }
 .sc-search-foot .sc-key { display:inline-flex; align-items:center; justify-content:center; min-width:16px; height:16px; padding:0 4px; border:1px solid var(--border); border-radius:4px; color: var(--text-muted); font-weight:600; margin-right:0.25rem; }
-.sc-search-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 0.3rem 0.65rem; border-radius: 8px; margin: 0 0.3rem 0 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; transition: all 0.2s; }
+.sc-search-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 0.34rem 0.7rem; border-radius: 8px; margin: 0 0.25rem 0 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; transition: all 0.2s; }
 .sc-search-btn:hover { color: var(--text); border-color: var(--accent); background: rgba(129,140,248,0.06); }
-.sc-search-btn .sc-btn-label { color: var(--text-dim); font-weight: 500; padding-right: 0.4rem; }
+.sc-search-btn .sc-btn-label { color: var(--text-dim); font-weight: 500; }
 .sc-search-btn:hover .sc-btn-label { color: var(--text-muted); }
-.sc-search-btn .sc-kbd { font-size: 0.62rem; border: 1px solid var(--border); border-radius: 4px; padding: 0.02rem 0.3rem; color: var(--text-dim); }
-@media (max-width: 600px) {
-    .sc-search-btn { padding: 0.35rem; border-radius: 50%; margin: 0 0.35rem; }
-    .sc-search-btn .sc-kbd, .sc-search-btn .sc-btn-label { display: none; }
+@media (max-width: 640px) {
+    .sc-search-btn { padding: 0.35rem; border-radius: 50%; margin: 0 0.3rem; }
+    .sc-search-btn .sc-btn-label { display: none; }
     .sc-search-foot { display: none; }
     #sc-search-overlay { padding-top: 8vh; }
     .sc-search-box { border-radius: 14px; }
@@ -72,8 +73,10 @@
     var results = document.getElementById('sc-search-results');
     if (!overlay || !input || !results) return;
 
-    var index = null, filtered = [], active = 0, loaded = false;
+    var index = null, loaded = false, active = 0;
     var isMac = /Mac|iPhone|iPad/.test(navigator.platform);
+    var RECENT_KEY = 'sc-recent-v1';
+    var POPULAR = ['/hld/Uber/', '/hld/Zomato/', '/hld/DigitalWallet/', '/hld/NotificationSystem/', '/the-150/', '/concepts/'];
 
     function esc(s) { return String(s).replace(/[&<>"]/g, function(c) { return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]; }); }
 
@@ -86,8 +89,18 @@
         if (url.indexOf('guide') !== -1 || url.indexOf('approach') !== -1) return { key: 'guide', label: 'Guide' };
         return { key: 'guide', label: 'Page' };
     }
-
     function cleanTitle(t) { return (t || '').replace(/\s*[\|\-–—]\s.*$/, '').trim(); }
+
+    function getRecent() { try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch (e) { return []; } }
+    function saveRecent(it) {
+        try {
+            var r = getRecent().filter(function(x) { return x.url !== it.url; });
+            r.unshift({ title: it._t || cleanTitle(it.title), url: it.url, desc: it.desc || '' });
+            localStorage.setItem(RECENT_KEY, JSON.stringify(r.slice(0, 5)));
+        } catch (e) {}
+    }
+    function clearRecent() { try { localStorage.removeItem(RECENT_KEY); } catch (e) {} render(); }
+    window._scClearRecent = clearRecent;
 
     function loadIndex() {
         if (loaded) return Promise.resolve();
@@ -99,47 +112,34 @@
             loaded = true;
         }).catch(function() { index = []; loaded = true; });
     }
+    function byUrl(url) { for (var i = 0; i < index.length; i++) if (index[i].url === url) return index[i]; return null; }
 
-    // Fuzzy subsequence scorer: chars of q must appear in order in text.
-    // Rewards consecutive matches and word-boundary starts.
     function fuzzy(text, q) {
-        if (!q) return { score: 0, pos: [] };
-        var ti = 0, score = 0, pos = [], run = 0, prev = -2;
+        if (!q) return { score: 0 };
+        var ti = 0, score = 0, run = 0, prev = -2;
         for (var i = 0; i < q.length; i++) {
             var idx = text.indexOf(q[i], ti);
             if (idx === -1) return null;
             var boundary = idx === 0 || /[^a-z0-9]/.test(text[idx - 1]);
             if (idx === prev + 1) { run++; score += 6 + run * 4; } else { run = 0; score += 1; }
             if (boundary) score += 10;
-            pos.push(idx); prev = idx; ti = idx + 1;
+            prev = idx; ti = idx + 1;
         }
         score += Math.max(0, 12 - (text.length - q.length) * 0.15);
-        return { score: score, pos: pos };
+        return { score: score };
     }
-
-    // Score an item against a (possibly multi-word) query.
     function scoreItem(it, q) {
-        var terms = q.split(/\s+/).filter(Boolean);
-        var total = 0;
+        var terms = q.split(/\s+/).filter(Boolean), total = 0;
         for (var i = 0; i < terms.length; i++) {
             var t = terms[i];
-            var inTitle = it._tl.indexOf(t) !== -1;
-            var inDesc = it._dl.indexOf(t) !== -1;
-            if (inTitle) { total += 60 + (it._tl.indexOf(t) === 0 ? 30 : 0); }
-            else if (inDesc) { total += 25; }
-            else {
-                var f = fuzzy(it._tl, t);
-                if (f) total += f.score;
-                else { var fd = fuzzy(it._dl, t); if (fd) total += fd.score * 0.4; else return -1; }
-            }
+            if (it._tl.indexOf(t) !== -1) { total += 60 + (it._tl.indexOf(t) === 0 ? 30 : 0); }
+            else if (it._dl.indexOf(t) !== -1) { total += 25; }
+            else { var f = fuzzy(it._tl, t); if (f) total += f.score; else { var fd = fuzzy(it._dl, t); if (fd) total += fd.score * 0.4; else return -1; } }
         }
-        if (it._tl.indexOf(q) === 0) total += 40;
-        else if (it._tl.indexOf(q) !== -1) total += 20;
-        total -= it._t.length * 0.05; // slight preference for tighter titles
+        if (it._tl.indexOf(q) === 0) total += 40; else if (it._tl.indexOf(q) !== -1) total += 20;
+        total -= it._t.length * 0.05;
         return total;
     }
-
-    // Highlight subsequence of the collapsed query within the display title.
     function highlight(title, q) {
         var cq = q.replace(/\s+/g, '').toLowerCase();
         if (!cq) return esc(title);
@@ -151,38 +151,61 @@
         return qi === cq.length ? out : esc(title);
     }
 
+    function rowHtml(it, q) {
+        var cat = catFor(it.url);
+        return '<a class="sc-result" href="' + esc(it.url) + '">' +
+            '<span class="sc-result-cat ' + cat.key + '">' + cat.label + '</span>' +
+            '<span class="sc-result-body"><span class="sc-result-title">' + highlight(it._t || cleanTitle(it.title), q || '') + '</span>' +
+            '<span class="sc-result-desc">' + esc(it.desc || it.url) + '</span></span>' +
+            '<span class="sc-result-go">↵</span></a>';
+    }
+
     function render() {
         var q = input.value.trim().toLowerCase();
         if (!index) { results.innerHTML = '<div class="sc-search-empty">Loading…</div>'; return; }
-        var label;
+        var html = '';
+
         if (!q) {
-            filtered = index.slice(0, 8);
-            label = 'Jump to';
+            var recents = getRecent().map(function(r) { return byUrl(r.url) || r; });
+            if (recents.length) {
+                html += '<div class="sc-section-label"><span>Recent</span><span class="sc-clear" onclick="window._scClearRecent()">Clear</span></div>';
+                recents.forEach(function(it) { html += rowHtml(it, ''); });
+            }
+            var pop = POPULAR.map(byUrl).filter(Boolean).filter(function(it) {
+                return !recents.some(function(r) { return r.url === it.url; });
+            });
+            if (pop.length) {
+                html += '<div class="sc-section-label"><span>Popular</span></div>';
+                pop.forEach(function(it) { html += rowHtml(it, ''); });
+            }
         } else {
-            filtered = index.map(function(it) { return { it: it, s: scoreItem(it, q) }; })
+            var scored = index.map(function(it) { return { it: it, s: scoreItem(it, q) }; })
                 .filter(function(x) { return x.s > 0; })
                 .sort(function(a, b) { return b.s - a.s; })
-                .slice(0, 14)
-                .map(function(x) { return x.it; });
-            label = filtered.length + ' result' + (filtered.length === 1 ? '' : 's');
+                .slice(0, 16);
+            if (!scored.length) {
+                results.innerHTML = '<div class="sc-search-empty"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><div>No matches for "' + esc(q) + '"</div></div>';
+                return;
+            }
+            // Group by category, ordered by the best score within each group.
+            var groups = {}, order = [];
+            scored.forEach(function(x) {
+                var k = catFor(x.it.url).label;
+                if (!groups[k]) { groups[k] = []; order.push(k); }
+                groups[k].push(x.it);
+            });
+            order.forEach(function(k) {
+                html += '<div class="sc-section-label"><span>' + esc(k) + '</span></div>';
+                groups[k].forEach(function(it) { html += rowHtml(it, q); });
+            });
         }
-        active = 0;
-        if (!filtered.length) {
-            results.innerHTML = '<div class="sc-search-empty"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><div>No matches for "' + esc(q) + '"</div></div>';
-            return;
-        }
-        var html = '<div class="sc-section-label">' + label + '</div>';
-        filtered.forEach(function(it, i) {
-            var cat = catFor(it.url);
-            html += '<a class="sc-result' + (i === 0 ? ' active' : '') + '" href="' + esc(it.url) + '" data-i="' + i + '">' +
-                '<span class="sc-result-cat ' + cat.key + '">' + cat.label + '</span>' +
-                '<span class="sc-result-body"><span class="sc-result-title">' + highlight(it._t, q) + '</span>' +
-                '<span class="sc-result-desc">' + esc(it.desc || it.url) + '</span></span>' +
-                '<span class="sc-result-go">↵</span></a>';
-        });
         results.innerHTML = html;
-        results.querySelectorAll('.sc-result').forEach(function(el) {
-            el.addEventListener('mouseenter', function() { setActive(parseInt(el.dataset.i, 10)); });
+        active = 0;
+        var els = results.querySelectorAll('.sc-result');
+        if (els[0]) els[0].classList.add('active');
+        els.forEach(function(el, i) {
+            el.addEventListener('mouseenter', function() { setActive(i); });
+            el.addEventListener('click', function() { var it = byUrl(el.getAttribute('href')); if (it) saveRecent(it); });
         });
     }
 
@@ -200,11 +223,7 @@
         loadIndex().then(render);
         setTimeout(function() { input.focus(); }, 30);
     }
-    function close() {
-        overlay.classList.remove('open');
-        document.body.style.overflow = '';
-        input.value = '';
-    }
+    function close() { overlay.classList.remove('open'); document.body.style.overflow = ''; input.value = ''; }
     window.openSearch = open;
 
     input.addEventListener('input', render);
@@ -214,7 +233,7 @@
         else if (e.key === 'Enter') {
             e.preventDefault();
             var els = results.querySelectorAll('.sc-result');
-            if (els[active]) window.location.href = els[active].href;
+            if (els[active]) { var it = byUrl(els[active].getAttribute('href')); if (it) saveRecent(it); window.location.href = els[active].getAttribute('href'); }
         } else if (e.key === 'Escape') { close(); }
     });
     overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
@@ -230,7 +249,7 @@
         var btn = document.createElement('button');
         btn.className = 'sc-search-btn';
         btn.setAttribute('aria-label', 'Search');
-        btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="sc-btn-label">Search…</span><span class="sc-kbd">' + (isMac ? '⌘K' : 'Ctrl K') + '</span>';
+        btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="sc-btn-label">Search</span>';
         btn.addEventListener('click', open);
         var themeBtn = document.getElementById('theme-btn');
         if (themeBtn) nav.insertBefore(btn, themeBtn); else nav.insertBefore(btn, nav.firstChild);
