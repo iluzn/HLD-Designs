@@ -10,18 +10,29 @@
 .sc-search-top { display: flex; align-items: center; gap: 0.7rem; padding: 1rem 1.15rem; border-bottom: 1px solid var(--border); }
 .sc-search-top > svg { color: var(--accent); flex-shrink: 0; }
 #sc-search-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-family: inherit; font-size: 1.05rem; }
-#sc-search-input::placeholder { color: var(--text-dim); }
+#sc-search-input::placeholder { color: var(--text-dim); opacity: 0.9; }
 .sc-search-esc { font-size: 0.6rem; font-weight: 600; color: var(--text-dim); border: 1px solid var(--border); border-radius: 6px; padding: 0.15rem 0.4rem; letter-spacing: 0.05em; }
 .sc-search-results { max-height: 58vh; overflow-y: auto; padding: 0.4rem; scroll-behavior: smooth; }
 .sc-section-label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); padding: 0.6rem 0.8rem 0.3rem; }
 .sc-result { display: flex; align-items: center; gap: 0.75rem; padding: 0.62rem 0.8rem; border-radius: 11px; cursor: pointer; text-decoration: none; position: relative; border: 1px solid transparent; }
 .sc-result.active { background: rgba(129,140,248,0.14); border-color: rgba(129,140,248,0.25); }
-.sc-result-cat { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #0b0b12; padding: 0.16rem 0.45rem; border-radius: 6px; flex-shrink: 0; min-width: 48px; text-align: center; }
-.sc-result-cat.hld { background: #4ade80; } .sc-result-cat.lld { background: #fbbf24; } .sc-result-cat.dsa { background: #f472b6; } .sc-result-cat.concept { background: #818cf8; color:#fff; } .sc-result-cat.company { background: #60a5fa; } .sc-result-cat.guide { background: #a78bfa; color:#fff; }
-.sc-result-body { min-width: 0; flex: 1; }
-.sc-result-title { font-size: 0.9rem; color: var(--text); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-result-cat { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.18rem 0.45rem; border-radius: 6px; flex-shrink: 0; min-width: 50px; text-align: center; border: 1px solid transparent; }
+.sc-result-cat.hld { background: rgba(74,222,128,0.14); color: #4ade80; border-color: rgba(74,222,128,0.22); }
+.sc-result-cat.lld { background: rgba(251,191,36,0.14); color: #fbbf24; border-color: rgba(251,191,36,0.22); }
+.sc-result-cat.dsa { background: rgba(244,114,182,0.14); color: #f472b6; border-color: rgba(244,114,182,0.22); }
+.sc-result-cat.concept { background: rgba(129,140,248,0.16); color: #a5b0fb; border-color: rgba(129,140,248,0.28); }
+.sc-result-cat.company { background: rgba(96,165,250,0.14); color: #60a5fa; border-color: rgba(96,165,250,0.22); }
+.sc-result-cat.guide { background: rgba(167,139,250,0.14); color: #b6a2fb; border-color: rgba(167,139,250,0.22); }
+[data-theme="light"] .sc-result-cat.hld { color: #15803d; background: rgba(22,163,74,0.1); border-color: rgba(22,163,74,0.2); }
+[data-theme="light"] .sc-result-cat.lld { color: #b45309; background: rgba(217,119,6,0.1); border-color: rgba(217,119,6,0.2); }
+[data-theme="light"] .sc-result-cat.dsa { color: #be185d; background: rgba(219,39,119,0.1); border-color: rgba(219,39,119,0.2); }
+[data-theme="light"] .sc-result-cat.concept { color: #4f46e5; background: rgba(79,70,229,0.1); border-color: rgba(79,70,229,0.2); }
+[data-theme="light"] .sc-result-cat.company { color: #1d4ed8; background: rgba(37,99,235,0.1); border-color: rgba(37,99,235,0.2); }
+[data-theme="light"] .sc-result-cat.guide { color: #6d28d9; background: rgba(109,40,217,0.1); border-color: rgba(109,40,217,0.2); }
+.sc-result-body { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 0.2rem; }
+.sc-result-title { display: block; font-size: 0.9rem; color: var(--text); font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sc-result-title mark { background: transparent; color: var(--accent); font-weight: 800; }
-.sc-result-desc { font-size: 0.74rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.1rem; }
+.sc-result-desc { display: block; font-size: 0.74rem; color: var(--text-dim); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sc-result-go { margin-left: auto; flex-shrink: 0; font-size: 0.78rem; color: var(--accent); opacity: 0; transition: opacity 0.15s; }
 .sc-result.active .sc-result-go { opacity: 1; }
 .sc-search-empty { padding: 2.4rem 1rem; text-align: center; color: var(--text-dim); font-size: 0.86rem; }
@@ -44,7 +55,7 @@
   <div class="sc-search-box" role="dialog" aria-label="Search">
     <div class="sc-search-top">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="sc-search-input" type="text" placeholder="Search designs, concepts, DSA, companies…" autocomplete="off" spellcheck="false">
+      <input id="sc-search-input" type="text" placeholder="Search system designs, concepts, DSA problems, companies…" autocomplete="off" spellcheck="false">
       <span class="sc-search-esc">ESC</span>
     </div>
     <div class="sc-search-results" id="sc-search-results"></div>
