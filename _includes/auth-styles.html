@@ -40,6 +40,12 @@
 .notif-item-time { font-size: 0.66rem; color: var(--text-dim); margin-top: 0.2rem; }
 .notif-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; align-self: center; }
 
+/* On small screens, pin the dropdown to the viewport so it can't overflow. */
+@media (max-width: 600px) {
+    .notif-dropdown { position: fixed; top: 56px; left: 10px; right: 10px; width: auto; max-width: none; }
+    .notif-list { max-height: 65vh; }
+}
+
 /* @mention autocomplete */
 .mention-dropdown { position: absolute; z-index: 500; background: var(--header-bg, var(--bg-header, #ffffff)); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); overflow: hidden; min-width: 180px; }
 .mention-option { display: flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.7rem; cursor: pointer; transition: background 0.12s; }
