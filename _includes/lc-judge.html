@@ -1,0 +1,217 @@
+<script>
+(function () {
+  var P = window.SC_LC;
+  if (!P) return;
+
+  var ENDPOINT = window.SC_RUNNER_ENDPOINT || 'https://systemcraft-og.shaswat-kumar03.workers.dev';
+  var CM_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16';
+  var STORAGE = 'sc-lc-' + P.id;
+
+  // language meta: display name, piston language, CodeMirror mode, filename
+  var META = {
+    python: { name: 'Python3', piston: 'python', mode: 'python', file: 'main.py' },
+    javascript: { name: 'JavaScript', piston: 'javascript', mode: 'javascript', file: 'main.js' },
+    cpp: { name: 'C++', piston: 'c++', mode: 'text/x-c++src', file: 'main.cpp' },
+    java: { name: 'Java', piston: 'java', mode: 'text/x-java', file: 'Main.java' },
+  };
+  var LANG_KEYS = Object.keys(P.langs).filter(function (k) { return META[k]; });
+
+  // DOM refs (bound on boot)
+  var langSel, editorHost, runBtn, submitBtn, resetBtn, statusEl, consoleBody, consoleTabs;
+  var cm, curTab = 'cases', activeCase = 0, lastResults = null;
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function normalize(s) {
+    return String(s == null ? '' : s).replace(/\r\n/g, '\n').split('\n')
+      .map(function (l) { return l.replace(/\s+$/, ''); }).join('\n').replace(/\n+$/, '').trim();
+  }
+  function saved() { try { return JSON.parse(localStorage.getItem(STORAGE) || '{}'); } catch (e) { return {}; } }
+  function persist(lang, code) { var s = saved(); s[lang] = code; try { localStorage.setItem(STORAGE, JSON.stringify(s)); } catch (e) {} }
+  function curLang() { return langSel.value; }
+  function stubFor(lang) { var s = saved(); return (s[lang] != null) ? s[lang] : (P.langs[lang].stub || ''); }
+
+  // ---- asset loading ----
+  function loadCss(h) { return new Promise(function (r) { if (document.querySelector('link[href="' + h + '"]')) return r(); var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = h; l.onload = r; l.onerror = r; document.head.appendChild(l); }); }
+  function loadJs(s) { return new Promise(function (res, rej) { if (document.querySelector('script[src="' + s + '"]')) return res(); var e = document.createElement('script'); e.src = s; e.onload = res; e.onerror = rej; document.head.appendChild(e); }); }
+  function loadCM() {
+    return Promise.all([
+      loadCss(CM_BASE + '/codemirror.min.css'),
+      loadCss(CM_BASE + '/theme/material-darker.min.css'),
+      loadCss(CM_BASE + '/theme/eclipse.min.css'),
+    ]).then(function () { return loadJs(CM_BASE + '/codemirror.min.js'); })
+      .then(function () {
+        return Promise.all([
+          loadJs(CM_BASE + '/mode/clike/clike.min.js'),
+          loadJs(CM_BASE + '/mode/python/python.min.js'),
+          loadJs(CM_BASE + '/mode/javascript/javascript.min.js'),
+          loadJs(CM_BASE + '/addon/edit/closebrackets.min.js'),
+          loadJs(CM_BASE + '/addon/edit/matchbrackets.min.js'),
+        ]);
+      });
+  }
+  function themeName() { return document.documentElement.getAttribute('data-theme') === 'light' ? 'eclipse' : 'material-darker'; }
+
+  // ---- execution ----
+  function execute(lang, source, stdin) {
+    var m = META[lang];
+    return fetch(ENDPOINT + '/execute', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ language: m.piston, version: '*', files: [{ name: m.file, content: source }], stdin: stdin || '', run_timeout: 8000 }),
+    }).then(function (r) {
+      if (r.status === 429) return new Promise(function (x) { setTimeout(x, 1200); }).then(function () { return execute(lang, source, stdin); });
+      return r.json();
+    });
+  }
+
+  var busy = false;
+  function runCases(cases, isSubmit) {
+    if (busy || !cm) return;
+    busy = true; runBtn.disabled = true; submitBtn.disabled = true;
+    statusEl.textContent = isSubmit ? 'Judging…' : 'Running…';
+    curTab = 'result'; syncTabs();
+    consoleBody.innerHTML = '<div class="lc-verdict run">' + (isSubmit ? 'Judging ' : 'Running ') + cases.length + ' case' + (cases.length > 1 ? 's' : '') + '…</div>';
+
+    var lang = curLang();
+    var source = cm.getValue() + '\n\n' + (P.langs[lang].harness || '');
+    var results = new Array(cases.length);
+    var firstFail = -1, compileErr = null;
+    var chain = Promise.resolve();
+    cases.forEach(function (tc, i) {
+      chain = chain.then(function () {
+        if (compileErr) { results[i] = { skipped: true }; return; }
+        return execute(lang, source, tc.stdin).then(function (d) {
+          if (d.compile && d.compile.code !== 0 && d.compile.stderr) { compileErr = d.compile.stderr; results[i] = { compileErr: compileErr }; return; }
+          var run = d.run || {};
+          var out = run.stdout || '';
+          var timedOut = run.signal === 'SIGKILL';
+          var ok = !timedOut && !run.stderr && normalize(out) === normalize(tc.expected);
+          results[i] = { pass: ok, out: out, stderr: run.stderr || '', timedOut: timedOut };
+          if (!ok && firstFail === -1) firstFail = i;
+        }).catch(function () { results[i] = { error: true }; if (firstFail === -1) firstFail = i; });
+      });
+    });
+    chain.then(function () {
+      lastResults = { cases: cases, results: results, isSubmit: isSubmit, compileErr: compileErr, firstFail: firstFail };
+      renderResult();
+      busy = false; runBtn.disabled = false; submitBtn.disabled = false; statusEl.textContent = '';
+    });
+  }
+
+  // ---- rendering ----
+  function syncTabs() {
+    consoleTabs.forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-tab') === curTab); });
+    if (curTab === 'cases') renderCases(); else renderResult();
+  }
+
+  function renderCases() {
+    var sample = P.cases.slice(0, P.sampleCount || P.cases.length);
+    var tabs = sample.map(function (c, i) {
+      var res = lastResults && lastResults.results[i];
+      var dot = res ? (res.pass ? ' pass' : ' fail') : '';
+      return '<button class="lc-case-tab' + (i === activeCase ? ' active' : '') + '" data-i="' + i + '"><span class="lc-case-dot' + dot + '"></span>Case ' + (i + 1) + '</button>';
+    }).join('');
+    var c = sample[activeCase] || sample[0];
+    var body = '';
+    if (c) {
+      var inputStr = c.display ? Object.keys(c.display).map(function (k) { return k + ' = ' + c.display[k]; }).join('\n') : c.stdin;
+      body += '<div class="lc-io-label">Input</div><div class="lc-io-box">' + esc(inputStr) + '</div>';
+      body += '<div class="lc-io-label">Expected</div><div class="lc-io-box">' + esc(c.expected) + '</div>';
+      var res = lastResults && lastResults.results[activeCase];
+      if (res && !res.skipped) {
+        var gotTxt = res.error ? '(backend unavailable)' : (res.timedOut ? '(time limit exceeded)' : (res.stderr ? res.out + '\n' + res.stderr : (res.out || '(no output)')));
+        body += '<div class="lc-io-label">Your Output</div><div class="lc-io-box' + (res.pass ? '' : ' bad') + '">' + esc(gotTxt) + '</div>';
+      }
+    }
+    consoleBody.innerHTML = '<div class="lc-case-tabs">' + tabs + '</div>' + body;
+    consoleBody.querySelectorAll('.lc-case-tab').forEach(function (t) {
+      t.addEventListener('click', function () { activeCase = parseInt(t.getAttribute('data-i'), 10); renderCases(); });
+    });
+  }
+
+  function renderResult() {
+    if (!lastResults) { consoleBody.innerHTML = '<div class="lc-verdict run">Run your code to see results.</div>'; return; }
+    var r = lastResults;
+    if (r.compileErr) {
+      consoleBody.innerHTML = '<div class="lc-verdict wa">Compilation Error</div><div class="lc-io-box bad">' + esc(r.compileErr) + '</div>';
+      return;
+    }
+    var passed = r.results.filter(function (x) { return x && x.pass; }).length;
+    var all = passed === r.cases.length;
+    var html;
+    if (all) {
+      html = '<div class="lc-verdict ac">Accepted <small>' + passed + ' / ' + r.cases.length + ' passed</small></div>';
+    } else {
+      var f = r.results[r.firstFail] || {};
+      var label = f.error ? 'Backend Unavailable' : (f.timedOut ? 'Time Limit Exceeded' : (f.stderr ? 'Runtime Error' : 'Wrong Answer'));
+      html = '<div class="lc-verdict wa">' + label + ' <small>' + passed + ' / ' + r.cases.length + ' passed · case ' + (r.firstFail + 1) + '</small></div>';
+      var f2 = r.results[r.firstFail] || {};
+      var tc = r.cases[r.firstFail] || {};
+      var hidden = r.isSubmit && r.firstFail >= (P.sampleCount || 0);
+      if (f.error) {
+        html += '<div class="lc-io-box bad">Could not reach the execution service.</div>';
+      } else {
+        html += '<div class="lc-io-label">Input</div><div class="lc-io-box">' + esc(hidden ? 'hidden' : (tc.display ? Object.keys(tc.display).map(function (k) { return k + ' = ' + tc.display[k]; }).join('\n') : tc.stdin)) + '</div>';
+        html += '<div class="lc-io-label">Expected</div><div class="lc-io-box">' + esc(hidden ? 'hidden' : tc.expected) + '</div>';
+        var got = f2.timedOut ? '(time limit exceeded)' : (f2.stderr ? (f2.out + '\n' + f2.stderr) : (f2.out || '(no output)'));
+        html += '<div class="lc-io-label">Your Output</div><div class="lc-io-box bad">' + esc(got) + '</div>';
+      }
+    }
+    consoleBody.innerHTML = html;
+  }
+
+  // ---- boot ----
+  function initEditor() {
+    var lang = curLang();
+    cm = CodeMirror(editorHost, {
+      value: stubFor(lang), mode: META[lang].mode, theme: themeName(),
+      lineNumbers: true, indentUnit: 4, tabSize: 4, autoCloseBrackets: true, matchBrackets: true,
+    });
+    cm.setSize('100%', '100%');
+    cm.on('change', function () { persist(curLang(), cm.getValue()); });
+    new MutationObserver(function () { cm.setOption('theme', themeName()); })
+      .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    cm.setOption('extraKeys', { 'Cmd-Enter': function () { runBtn.click(); }, 'Ctrl-Enter': function () { runBtn.click(); } });
+    runBtn.disabled = false; submitBtn.disabled = false;
+  }
+
+  function boot() {
+    langSel = $('lc-lang'); editorHost = $('lc-editor'); runBtn = $('lc-run'); submitBtn = $('lc-submit');
+    resetBtn = $('lc-reset'); statusEl = $('lc-status'); consoleBody = $('lc-console-body');
+    consoleTabs = Array.prototype.slice.call(document.querySelectorAll('.lc-console-tab'));
+    if (!langSel || !editorHost) return;
+
+    LANG_KEYS.forEach(function (k) {
+      var o = document.createElement('option'); o.value = k; o.textContent = META[k].name; langSel.appendChild(o);
+    });
+
+    consoleTabs.forEach(function (t) { t.addEventListener('click', function () { curTab = t.getAttribute('data-tab'); syncTabs(); }); });
+    renderCases();
+
+    loadCM().then(function () {
+      initEditor();
+      langSel.addEventListener('change', function () { cm.setOption('mode', META[curLang()].mode); cm.setValue(stubFor(curLang())); });
+      resetBtn.addEventListener('click', function () { cm.setValue(P.langs[curLang()].stub || ''); persist(curLang(), cm.getValue()); });
+      runBtn.addEventListener('click', function () { activeCase = 0; runCases(P.cases.slice(0, P.sampleCount || P.cases.length), false); });
+      submitBtn.addEventListener('click', function () { runCases(P.cases, true); });
+    }).catch(function () { statusEl.textContent = 'Editor failed to load'; });
+
+    // resizable divider (desktop)
+    var divider = $('lc-divider'); var left = document.querySelector('.lc-left'); var shell = document.querySelector('.lc-shell');
+    if (divider && left) {
+      var dragging = false;
+      divider.addEventListener('mousedown', function () { dragging = true; document.body.style.userSelect = 'none'; });
+      window.addEventListener('mouseup', function () { dragging = false; document.body.style.userSelect = ''; if (cm) cm.refresh(); });
+      window.addEventListener('mousemove', function (e) {
+        if (!dragging) return;
+        var rect = shell.getBoundingClientRect();
+        var pct = ((e.clientX - rect.left) / rect.width) * 100;
+        if (pct > 22 && pct < 68) left.style.width = pct + '%';
+      });
+    }
+  }
+
+  if (document.readyState !== 'loading') boot();
+  else document.addEventListener('DOMContentLoaded', boot);
+})();
+</script>

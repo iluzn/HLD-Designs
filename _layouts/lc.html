@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <script>(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+    <style>html{background:#111118;color:#e8edf3;}html[data-theme="light"]{background:#fafbff;color:#0f172a;}</style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YJL7ECBWD0"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YJL7ECBWD0');</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }} - SystemCraft</title>
+    <meta name="description" content="{{ page.description }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="canonical" href="https://systemcraft.in{{ page.url }}">
+    <meta property="og:title" content="{{ page.title }}">
+    <meta property="og:description" content="{{ page.description }}">
+    <meta property="og:url" content="https://systemcraft.in{{ page.url }}">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://systemcraft.in/og-default.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    {% include auth-styles.html %}
+    <style>
+    :root {
+        --bg: #111118; --bg-card: rgba(25,25,35,0.6); --header-bg: rgba(17,17,24,0.92);
+        --text: #e8edf3; --text-muted: #9ba3b0; --text-dim: #6b7280;
+        --accent: #818cf8; --accent-light: #c4b5fd;
+        --border: rgba(255,255,255,0.09); --code-bg: rgba(20,20,30,0.9);
+        --tag-bg: rgba(129,140,248,0.08); --tag-border: rgba(129,140,248,0.18);
+        --panel: #16161f; --panel-2: #1c1c28;
+    }
+    [data-theme="light"] {
+        --bg: #f9fafb; --bg-card: #ffffff; --header-bg: rgba(249,250,251,0.98);
+        --text: #0f172a; --text-muted: #374151; --text-dim: #6b7280;
+        --accent: #4f46e5; --accent-light: #4338ca;
+        --border: rgba(0,0,0,0.1); --code-bg: #f1f5f9;
+        --tag-bg: rgba(79,70,229,0.06); --tag-border: rgba(79,70,229,0.15);
+        --panel: #ffffff; --panel-2: #f4f5fa;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+
+    header { position: sticky; top: 0; z-index: 100; padding: 0.55rem 0; background: var(--header-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .header-inner { max-width: 100%; margin: 0 auto; padding: 0 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 1.1rem; font-weight: 800; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 0.4rem; letter-spacing: -0.03em; }
+    .logo .logo-text span { background: linear-gradient(135deg, var(--accent), #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    nav { display: flex; align-items: center; gap: 0.15rem; position: relative; }
+    nav a { color: var(--text-muted); text-decoration: none; padding: 0.35rem 0.7rem; font-size: 0.82rem; font-weight: 500; border-radius: 6px; transition: all 0.2s; }
+    nav a:hover { color: var(--text); background: rgba(129,140,248,0.06); }
+    .theme-toggle { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; padding: 0.3rem 0.5rem; border-radius: 6px; margin-left: 0.4rem; }
+    .hamburger { display: none; }
+    .nav-links { display: flex; align-items: center; gap: 0.15rem; }
+    @media (max-width: 820px) { .nav-links { display: none; } }
+    </style>
+    <style>
+    /* ---- IDE shell ---- */
+    .lc-shell { display: flex; height: calc(100vh - 49px); width: 100%; }
+    .lc-left { width: 42%; min-width: 260px; overflow-y: auto; padding: 1.4rem 1.6rem 4rem; background: var(--bg); }
+    .lc-divider { width: 6px; cursor: col-resize; background: var(--border); flex-shrink: 0; transition: background 0.15s; }
+    .lc-divider:hover { background: var(--accent); }
+    .lc-right { flex: 1; min-width: 320px; display: flex; flex-direction: column; background: var(--panel); border-left: 1px solid var(--border); }
+
+    /* ---- Problem description (left) ---- */
+    .lc-left h1 { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.6rem; letter-spacing: -0.02em; }
+    .lc-left h2 { font-size: 1.02rem; font-weight: 700; margin: 1.4rem 0 0.6rem; }
+    .lc-left p { color: var(--text-muted); line-height: 1.7; margin-bottom: 0.8rem; font-size: 0.9rem; }
+    .lc-left ul { margin: 0 0 0.9rem 1.2rem; color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; }
+    .lc-left code { background: var(--code-bg); padding: 0.1rem 0.4rem; border-radius: 5px; font-family: 'JetBrains Mono', monospace; font-size: 0.82em; }
+    .lc-left pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem 1rem; overflow-x: auto; margin-bottom: 0.9rem; }
+    .lc-left pre code { background: none; padding: 0; font-size: 0.82rem; line-height: 1.6; }
+    .lc-left strong { color: var(--text); }
+    .lc-diff { display: inline-block; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 1rem; }
+    .lc-diff.easy { background: rgba(34,197,94,0.14); color: #22c55e; }
+    .lc-diff.medium { background: rgba(234,179,8,0.14); color: #eab308; }
+    .lc-diff.hard { background: rgba(239,68,68,0.14); color: #ef4444; }
+    .lc-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.4rem 0 1.2rem; }
+    .lc-tag { font-size: 0.7rem; color: var(--accent-light); background: var(--tag-bg); border: 1px solid var(--tag-border); padding: 3px 9px; border-radius: 20px; }
+
+    /* ---- Editor pane (right top) ---- */
+    .lc-editor-bar { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.8rem; background: var(--panel-2); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .lc-editor-bar .lc-lang { font-family: inherit; font-size: 0.78rem; font-weight: 600; color: var(--text); background: var(--bg-card); border: 1px solid var(--border); border-radius: 7px; padding: 0.3rem 0.5rem; cursor: pointer; outline: none; }
+    .lc-editor-bar .lc-spacer { margin-left: auto; }
+    .lc-reset { font-size: 0.72rem; color: var(--text-muted); background: none; border: 1px solid var(--border); border-radius: 7px; padding: 0.3rem 0.6rem; cursor: pointer; }
+    .lc-reset:hover { color: var(--text); border-color: var(--accent); }
+    .lc-editor-wrap { flex: 1; min-height: 0; position: relative; }
+    .lc-editor-wrap .CodeMirror { height: 100%; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+
+    /* ---- Console (right bottom) ---- */
+    .lc-console { border-top: 1px solid var(--border); background: var(--panel); display: flex; flex-direction: column; max-height: 46%; }
+    .lc-console-tabs { display: flex; gap: 0.3rem; padding: 0.4rem 0.8rem 0; border-bottom: 1px solid var(--border); }
+    .lc-console-tab { font-size: 0.76rem; font-weight: 600; color: var(--text-muted); background: none; border: none; border-bottom: 2px solid transparent; padding: 0.4rem 0.5rem 0.5rem; cursor: pointer; }
+    .lc-console-tab.active { color: var(--text); border-bottom-color: var(--accent); }
+    .lc-console-body { overflow-y: auto; padding: 0.7rem 0.9rem; min-height: 90px; }
+    .lc-case-tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.7rem; }
+    .lc-case-tab { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); background: var(--panel-2); border: 1px solid var(--border); border-radius: 7px; padding: 0.3rem 0.7rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; }
+    .lc-case-tab.active { color: var(--text); border-color: var(--accent); }
+    .lc-case-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-dim); }
+    .lc-case-dot.pass { background: #22c55e; } .lc-case-dot.fail { background: #ef4444; }
+    .lc-io-label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin: 0.6rem 0 0.25rem; }
+    .lc-io-box { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.7rem; white-space: pre-wrap; word-break: break-word; color: var(--text); }
+    .lc-io-box.bad { border-color: rgba(239,68,68,0.4); color: #f87171; }
+    .lc-verdict { font-size: 1rem; font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.6rem; }
+    .lc-verdict.ac { color: #22c55e; } .lc-verdict.wa { color: #ef4444; } .lc-verdict.run { color: var(--text-muted); font-weight: 600; }
+    .lc-verdict small { font-size: 0.74rem; font-weight: 600; color: var(--text-muted); }
+
+    /* ---- Action bar ---- */
+    .lc-actions { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.9rem; border-top: 1px solid var(--border); background: var(--panel-2); }
+    .lc-actions .lc-spacer { margin-left: auto; }
+    .lc-btn { font-family: inherit; font-size: 0.8rem; font-weight: 700; border-radius: 8px; padding: 0.45rem 1.1rem; cursor: pointer; border: 1px solid transparent; transition: transform 0.12s, opacity 0.12s; }
+    .lc-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .lc-run { color: var(--text); background: var(--bg-card); border-color: var(--border); }
+    .lc-run:hover:not(:disabled) { border-color: var(--accent); }
+    .lc-submit { color: #fff; background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .lc-submit:hover:not(:disabled) { transform: translateY(-1px); }
+    .lc-status { font-size: 0.74rem; color: var(--text-dim); }
+
+    /* ---- Mobile: stack panes ---- */
+    @media (max-width: 820px) {
+        body { overflow: auto; }
+        .lc-shell { flex-direction: column; height: auto; }
+        .lc-left { width: 100%; }
+        .lc-divider { display: none; }
+        .lc-right { min-height: 80vh; border-left: none; border-top: 1px solid var(--border); }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="/" class="logo"><svg class="logo-icon" width="22" height="22" viewBox="0 0 64 64" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c4b5fd"/></linearGradient></defs><rect width="64" height="64" rx="14" fill="url(#lg)"/><line x1="22" y1="20" x2="42" y2="20" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="42" y1="20" x2="32" y2="40" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="22" y1="20" x2="32" y2="40" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="22" cy="20" r="5" fill="#fff"/><circle cx="42" cy="20" r="5" fill="#fff"/><circle cx="32" cy="40" r="5" fill="#fff"/></svg><span class="logo-text">System<span>Craft</span></span></a>
+            <nav>
+                <button class="theme-toggle" id="theme-btn" title="Toggle theme">🌙</button>
+                <div class="nav-links" id="nav-links">
+                    <a href="/judge/">← All Problems</a>
+                    <a href="/dsa">DSA</a>
+                    <a href="/hld">HLD</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="lc-shell">
+        <div class="lc-left">{{ content }}</div>
+        <div class="lc-divider" id="lc-divider"></div>
+        <div class="lc-right">
+            <div class="lc-editor-bar">
+                <select class="lc-lang" id="lc-lang" aria-label="Language"></select>
+                <span class="lc-spacer"></span>
+                <button class="lc-reset" id="lc-reset" type="button">Reset</button>
+            </div>
+            <div class="lc-editor-wrap" id="lc-editor"></div>
+            <div class="lc-console">
+                <div class="lc-console-tabs">
+                    <button class="lc-console-tab active" data-tab="cases" type="button">Testcases</button>
+                    <button class="lc-console-tab" data-tab="result" type="button">Result</button>
+                </div>
+                <div class="lc-console-body" id="lc-console-body"></div>
+            </div>
+            <div class="lc-actions">
+                <span class="lc-status" id="lc-status"></span>
+                <span class="lc-spacer"></span>
+                <button class="lc-btn lc-run" id="lc-run" type="button" disabled>Run</button>
+                <button class="lc-btn lc-submit" id="lc-submit" type="button" disabled>Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function(){var b=document.getElementById('theme-btn');function set(t){document.documentElement.setAttribute('data-theme',t);localStorage.setItem('theme',t);b.textContent=t==='dark'?'☀️':'🌙';}var cur=localStorage.getItem('theme')||'dark';b.textContent=cur==='dark'?'☀️':'🌙';b.addEventListener('click',function(){set(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');});})();
+    </script>
+    {% include lc-judge.html %}
+</body>
+</html>
