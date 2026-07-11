@@ -305,8 +305,13 @@ function updateCommentUI() {
     var prompt = document.getElementById('comment-signin-prompt');
     if (!form || !prompt) return;
     if (window._firebaseUser) {
-        form.style.display = 'block';
+        form.style.display = 'flex';
         prompt.style.display = 'none';
+        var avatar = document.getElementById('composer-avatar');
+        if (avatar && window._firebaseUser.photoURL) {
+            avatar.src = window._firebaseUser.photoURL;
+            avatar.referrerPolicy = 'no-referrer';
+        }
     } else {
         form.style.display = 'none';
         prompt.style.display = 'flex';
@@ -324,7 +329,10 @@ function renderComments(items) {
     if (!items.length) {
         var empty = document.createElement('div');
         empty.className = 'comment-empty';
-        empty.textContent = 'No comments yet. Be the first to start the discussion.';
+        empty.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.6;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+        var txt = document.createElement('span');
+        txt.textContent = 'No comments yet. Be the first to start the discussion.';
+        empty.appendChild(txt);
         listEl.appendChild(empty);
         return;
     }
