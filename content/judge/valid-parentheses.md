@@ -1,97 +1,117 @@
 ---
-layout: default
+layout: lc
 title: "Valid Parentheses — Online Judge"
-description: "Solve Valid Parentheses in the browser. Write code in Python, Java, or C++, run against test cases, and get an instant verdict."
+description: "Solve Valid Parentheses like LeetCode. Implement the function in Python, Java, C++, or JavaScript, run against test cases, and get an instant verdict."
 permalink: /judge/valid-parentheses
 ---
 
 # Valid Parentheses
 
-⚡ **Difficulty:** Easy 🏷️ **Topic:** Stack
+<span class="lc-diff easy">Easy</span>
+<div class="lc-tags"><span class="lc-tag">String</span><span class="lc-tag">Stack</span></div>
 
-Given a string containing only the characters `()[]{}`, determine if the brackets are balanced and correctly nested.
+Given a string `s` containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['` and `']'`, determine if the input string is valid.
 
-## Input
-- A single line: the bracket string `s` (may be empty).
+An input string is valid if open brackets are closed by the same type of brackets, and open brackets are closed in the correct order.
 
-## Output
-- `true` if the string is valid, otherwise `false` (lowercase).
-
-## Example
+## Example 1
 ```text
-Input:
-{[]}
-
-Output:
-true
+Input:  s = "()[]{}"
+Output: true
 ```
 
----
+## Example 2
+```text
+Input:  s = "([)]"
+Output: false
+```
+
+## Constraints
+- `1 <= s.length <= 10^4`
+- `s` consists of parentheses only `()[]{}`.
 
 <script>
-window.SC_PROBLEM = {
+window.SC_LC = {
   id: "valid-parentheses",
-  timeLimitMs: 5000,
-  starter: {
-    python: [
-      "import sys",
-      "",
-      "def is_valid(s):",
-      "    # TODO: return True if brackets are balanced, else False",
-      "    pass",
-      "",
-      "s = sys.stdin.readline().rstrip('\\n')",
-      "print('true' if is_valid(s) else 'false')"
-    ].join("\n"),
-    java: [
-      "import java.util.*;",
-      "",
-      "public class Main {",
-      "    static boolean isValid(String s) {",
-      "        // TODO: return true if brackets are balanced",
-      "        return false;",
-      "    }",
-      "",
-      "    public static void main(String[] args) {",
-      "        Scanner sc = new Scanner(System.in);",
-      "        String s = sc.hasNextLine() ? sc.nextLine() : \"\";",
-      "        System.out.println(isValid(s) ? \"true\" : \"false\");",
-      "    }",
-      "}"
-    ].join("\n"),
-    cpp: [
-      "#include <bits/stdc++.h>",
-      "using namespace std;",
-      "",
-      "bool isValid(string s) {",
-      "    // TODO: return true if brackets are balanced",
-      "    return false;",
-      "}",
-      "",
-      "int main() {",
-      "    string s;",
-      "    getline(cin, s);",
-      "    cout << (isValid(s) ? \"true\" : \"false\") << endl;",
-      "}"
-    ].join("\n")
+  functionName: "isValid",
+  sampleCount: 3,
+  langs: {
+    python: {
+      stub: [
+        "class Solution:",
+        "    def isValid(self, s):",
+        "        # Write your code here",
+        "        pass"
+      ].join("\n"),
+      harness: [
+        "import sys",
+        "_s = sys.stdin.readline().rstrip('\\n')",
+        "print('true' if Solution().isValid(_s) else 'false')"
+      ].join("\n")
+    },
+    javascript: {
+      stub: [
+        "/**",
+        " * @param {string} s",
+        " * @return {boolean}",
+        " */",
+        "var isValid = function(s) {",
+        "    // Write your code here",
+        "};"
+      ].join("\n"),
+      harness: [
+        "const _s = require('fs').readFileSync(0, 'utf8').replace(/\\n$/, '');",
+        "console.log(isValid(_s) ? 'true' : 'false');"
+      ].join("\n")
+    },
+    cpp: {
+      stub: [
+        "#include <bits/stdc++.h>",
+        "using namespace std;",
+        "",
+        "class Solution {",
+        "public:",
+        "    bool isValid(string s) {",
+        "        // Write your code here",
+        "    }",
+        "};"
+      ].join("\n"),
+      harness: [
+        "int main() {",
+        "    string s;",
+        "    getline(cin, s);",
+        "    cout << (Solution().isValid(s) ? \"true\" : \"false\") << endl;",
+        "}"
+      ].join("\n")
+    },
+    java: {
+      stub: [
+        "import java.util.*;",
+        "",
+        "class Solution {",
+        "    public boolean isValid(String s) {",
+        "        // Write your code here",
+        "        return false;",
+        "    }",
+        "}"
+      ].join("\n"),
+      harness: [
+        "public class Main {",
+        "    public static void main(String[] args) {",
+        "        Scanner sc = new Scanner(System.in);",
+        "        String s = sc.hasNextLine() ? sc.nextLine() : \"\";",
+        "        System.out.println(new Solution().isValid(s) ? \"true\" : \"false\");",
+        "    }",
+        "}"
+      ].join("\n")
+    }
   },
-  samples: [
-    { input: "()[]{}", output: "true" },
-    { input: "(]", output: "false" }
-  ],
-  tests: [
-    { input: "()[]{}", output: "true" },
-    { input: "(]", output: "false" },
-    { input: "{[]}", output: "true" },
-    { input: "([)]", output: "false" },
-    { input: "(((", output: "false" },
-    { input: "", output: "true" }
+  cases: [
+    { stdin: "()[]{}", expected: "true", display: { s: "()[]{}" } },
+    { stdin: "(]", expected: "false", display: { s: "(]" } },
+    { stdin: "{[]}", expected: "true", display: { s: "{[]}" } },
+    { stdin: "([)]", expected: "false", display: { s: "([)]" } },
+    { stdin: "(((", expected: "false", display: { s: "(((" } }
   ]
 };
 </script>
-
-{% include judge.html %}
-
----
-
-Want the approach? Read the [Valid Parentheses solution](/dsa/valid-parentheses) or browse [all problems](/judge/).
