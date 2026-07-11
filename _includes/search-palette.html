@@ -41,10 +41,12 @@
 .sc-search-foot .sc-key { display:inline-flex; align-items:center; justify-content:center; min-width:16px; height:16px; padding:0 4px; border:1px solid var(--border); border-radius:4px; color: var(--text-muted); font-weight:600; margin-right:0.25rem; }
 .sc-search-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 0.3rem 0.65rem; border-radius: 8px; margin: 0 0.3rem 0 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; transition: all 0.2s; }
 .sc-search-btn:hover { color: var(--text); border-color: var(--accent); background: rgba(129,140,248,0.06); }
+.sc-search-btn .sc-btn-label { color: var(--text-dim); font-weight: 500; padding-right: 0.4rem; }
+.sc-search-btn:hover .sc-btn-label { color: var(--text-muted); }
 .sc-search-btn .sc-kbd { font-size: 0.62rem; border: 1px solid var(--border); border-radius: 4px; padding: 0.02rem 0.3rem; color: var(--text-dim); }
 @media (max-width: 600px) {
     .sc-search-btn { padding: 0.35rem; border-radius: 50%; margin: 0 0.35rem; }
-    .sc-search-btn .sc-kbd { display: none; }
+    .sc-search-btn .sc-kbd, .sc-search-btn .sc-btn-label { display: none; }
     .sc-search-foot { display: none; }
     #sc-search-overlay { padding-top: 8vh; }
     .sc-search-box { border-radius: 14px; }
@@ -228,7 +230,7 @@
         var btn = document.createElement('button');
         btn.className = 'sc-search-btn';
         btn.setAttribute('aria-label', 'Search');
-        btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="sc-kbd">' + (isMac ? '⌘K' : 'Ctrl K') + '</span>';
+        btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="sc-btn-label">Search…</span><span class="sc-kbd">' + (isMac ? '⌘K' : 'Ctrl K') + '</span>';
         btn.addEventListener('click', open);
         var themeBtn = document.getElementById('theme-btn');
         if (themeBtn) nav.insertBefore(btn, themeBtn); else nav.insertBefore(btn, nav.firstChild);
