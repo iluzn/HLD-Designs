@@ -10,8 +10,8 @@ function stdinOf(type, args) {
   switch (type) {
     case 'ARR_INT': case 'ARR_BOOL': case 'ARR_ARR': return args[0].length + '\n' + args[0].join(' ');
     case 'ARR_TGT_INT': case 'ARR_TGT_ARR': return args[0].length + '\n' + args[0].join(' ') + '\n' + args[1];
-    case 'INT_INT': return '' + args[0];
-    case 'STR_BOOL': return args[0];
+    case 'INT_INT': case 'INT_BOOL': return '' + args[0];
+    case 'STR_BOOL': case 'STR_INT': return args[0];
     case 'STR_STR_BOOL': return args[0] + '\n' + args[1];
     default: return '';
   }
@@ -20,8 +20,8 @@ function displayOf(type, args) {
   switch (type) {
     case 'ARR_INT': case 'ARR_BOOL': case 'ARR_ARR': return { nums: arrStr(args[0]) };
     case 'ARR_TGT_INT': case 'ARR_TGT_ARR': return { nums: arrStr(args[0]), target: '' + args[1] };
-    case 'INT_INT': return { n: '' + args[0] };
-    case 'STR_BOOL': return { s: '"' + args[0] + '"' };
+    case 'INT_INT': case 'INT_BOOL': return { n: '' + args[0] };
+    case 'STR_BOOL': case 'STR_INT': return { s: '"' + args[0] + '"' };
     case 'STR_STR_BOOL': return { s: '"' + args[0] + '"', t: '"' + args[1] + '"' };
     default: return {};
   }
