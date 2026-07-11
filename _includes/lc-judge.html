@@ -82,23 +82,38 @@
     var source = code + '\n\n' + (P.langs[lang].harness || '');
     var results = new Array(cases.length);
     var firstFail = -1, compileErr = null;
-    var chain = Promise.resolve();
-    cases.forEach(function (tc, i) {
-      chain = chain.then(function () {
-        if (compileErr) { results[i] = { skipped: true }; return; }
-        return execute(lang, source, tc.stdin).then(function (d) {
-          if (d.compile && d.compile.code !== 0 && d.compile.stderr) { compileErr = d.compile.stderr; results[i] = { compileErr: compileErr }; return; }
-          var run = d.run || {};
-          var out = run.stdout || '';
-          var timedOut = run.signal === 'SIGKILL';
-          var ok = !timedOut && !run.stderr && normalize(out) === normalize(tc.expected);
-          results[i] = { pass: ok, out: out, stderr: run.stderr || '', timedOut: timedOut, error: false };
-          if (!ok && firstFail === -1) firstFail = i;
-        }).catch(function () { results[i] = { error: true }; if (firstFail === -1) firstFail = i; });
+    var CONC = 5, idx = 0;
+
+    function runOne(i) {
+      var tc = cases[i];
+      return execute(lang, source, tc.stdin).then(function (d) {
+        if (d.compile && d.compile.code !== 0 && d.compile.stderr) { compileErr = d.compile.stderr; results[i] = { compileErr: true }; return; }
+        var run = d.run || {};
+        var out = run.stdout || '';
+        var timedOut = run.signal === 'SIGKILL';
+        var ok = !timedOut && !run.stderr && normalize(out) === normalize(tc.expected);
+        results[i] = { pass: ok, out: out, stderr: run.stderr || '', timedOut: timedOut, error: false };
+      }).catch(function () { results[i] = { error: true }; });
+    }
+
+    function earliestFail() { for (var i = 0; i < cases.length; i++) { if (results[i] && (results[i].pass === false || results[i].error || results[i].timedOut)) return i; } return -1; }
+
+    function nextBatch() {
+      if (compileErr || idx >= cases.length) return Promise.resolve();
+      var batch = [];
+      for (var b = 0; b < CONC && idx < cases.length; b++, idx++) batch.push(runOne(idx));
+      statusEl.textContent = (isSubmit ? 'Judging ' : 'Running ') + Math.min(idx, cases.length) + '/' + cases.length + '…';
+      return Promise.all(batch).then(function () {
+        if (compileErr) return;
+        var f = earliestFail();
+        if (f !== -1) { firstFail = f; return; } // early exit on first failure
+        return nextBatch();
       });
-    });
-    chain.then(function () {
-      var passed = results.filter(function (x) { return x && x.pass; }).length;
+    }
+
+    nextBatch().then(function () {
+      if (firstFail === -1 && !compileErr) { var g = earliestFail(); if (g !== -1) firstFail = g; }
+      var passed = compileErr ? 0 : (firstFail === -1 ? cases.length : firstFail);
       lastResults = { cases: cases, results: results, isSubmit: isSubmit, compileErr: compileErr, firstFail: firstFail, passed: passed };
       if (isSubmit) {
         var status = compileErr ? 'Compile Error'
