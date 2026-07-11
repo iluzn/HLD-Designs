@@ -5,7 +5,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getAuth, signInWithPopup, signInWithRedirect, signInWithCredential, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, deleteDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, deleteDoc, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBRZYsCxcjkug4EVGmMuhAgKM4moRH_ewA",
@@ -134,6 +134,9 @@ onAuthStateChanged(auth, async function(user) {
         updateCommentUI();
         loadComments();
 
+        // Notifications
+        startNotifications(user.uid);
+
     } else {
         window._firebaseUser = null;
         window._userProgress = null;
@@ -159,6 +162,9 @@ onAuthStateChanged(auth, async function(user) {
         // Comments (still readable when signed out)
         updateCommentUI();
         loadComments();
+
+        // Notifications
+        stopNotifications();
     }
 });
 
@@ -506,6 +512,8 @@ window.postComment = async function(text, parentId) {
             parentId: parentId || null,
             createdAt: Date.now()
         });
+        // Notify the parent comment's author (if replying to someone else).
+        if (parentId) notifyReply(parentId, text);
         await window.loadComments();
         return true;
     } catch (err) { console.error('Comment post error:', err); alert('Could not post comment. Please try again.'); return false; }
@@ -520,4 +528,124 @@ window.deleteComment = async function(id) {
 
 // Initial load for signed-out visitors (auth listener also triggers this).
 window.addEventListener('load', function() { if (window.loadComments) window.loadComments(); });
+
+/* ---------------- Notifications (in-app) ---------------- */
+
+var _notifUnsub = null;
+var _notifItems = [];
+
+// Write a notification to the author of the comment being replied to.
+async function notifyReply(parentId, text) {
+    try {
+        var pd = await getDoc(doc(db, 'comments', parentId));
+        if (!pd.exists()) return;
+        var p = pd.data();
+        if (!p.uid || p.uid === window._firebaseUser.uid) return; // don't notify yourself
+        await addDoc(collection(db, 'notifications'), {
+            recipientUid: p.uid,
+            fromUid: window._firebaseUser.uid,
+            fromName: window._firebaseUser.displayName || 'Someone',
+            fromPhoto: window._firebaseUser.photoURL || '',
+            type: 'reply',
+            page: window.location.pathname,
+            snippet: (text || '').substring(0, 120),
+            read: false,
+            createdAt: Date.now()
+        });
+    } catch (err) { console.error('notifyReply error:', err); }
+}
+
+function startNotifications(uid) {
+    var wrap = document.getElementById('notif-wrap');
+    if (wrap) wrap.style.display = 'inline-flex';
+    if (_notifUnsub) { _notifUnsub(); _notifUnsub = null; }
+    try {
+        var q = query(collection(db, 'notifications'), where('recipientUid', '==', uid));
+        _notifUnsub = onSnapshot(q, function(snap) {
+            var arr = [];
+            snap.forEach(function(d) { var n = d.data(); n._id = d.id; arr.push(n); });
+            arr.sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+            _notifItems = arr.slice(0, 30);
+            renderNotifications(_notifItems);
+        }, function(err) { console.error('Notification listener error:', err); });
+    } catch (err) { console.error('startNotifications error:', err); }
+}
+
+function stopNotifications() {
+    if (_notifUnsub) { _notifUnsub(); _notifUnsub = null; }
+    _notifItems = [];
+    var wrap = document.getElementById('notif-wrap');
+    if (wrap) wrap.style.display = 'none';
+    var dd = document.getElementById('notif-dropdown');
+    if (dd) dd.classList.remove('open');
+    var badge = document.getElementById('notif-badge');
+    if (badge) badge.style.display = 'none';
+}
+
+function renderNotifications(items) {
+    var badge = document.getElementById('notif-badge');
+    var list = document.getElementById('notif-list');
+    var unread = items.filter(function(n) { return !n.read; }).length;
+    if (badge) {
+        if (unread > 0) { badge.style.display = 'block'; badge.textContent = unread > 9 ? '9+' : String(unread); }
+        else badge.style.display = 'none';
+    }
+    if (!list) return;
+    list.innerHTML = '';
+    if (!items.length) {
+        var e = document.createElement('div'); e.className = 'notif-empty'; e.textContent = 'No notifications yet.';
+        list.appendChild(e); return;
+    }
+    items.forEach(function(n) {
+        var it = document.createElement('div');
+        it.className = 'notif-item' + (n.read ? '' : ' unread');
+        var img = document.createElement('img');
+        img.src = n.fromPhoto || '/favicon-48x48.png';
+        img.alt = n.fromName || ''; img.referrerPolicy = 'no-referrer';
+        var body = document.createElement('div'); body.className = 'notif-item-body';
+        var txt = document.createElement('div'); txt.className = 'notif-item-text';
+        var strong = document.createElement('strong'); strong.textContent = n.fromName || 'Someone';
+        txt.appendChild(strong); txt.appendChild(document.createTextNode(' replied to your comment'));
+        var snip = document.createElement('div'); snip.className = 'notif-item-snippet'; snip.textContent = n.snippet || '';
+        var time = document.createElement('div'); time.className = 'notif-item-time'; time.textContent = timeAgo(n.createdAt);
+        body.appendChild(txt); body.appendChild(snip); body.appendChild(time);
+        it.appendChild(img); it.appendChild(body);
+        if (!n.read) { var dot = document.createElement('div'); dot.className = 'notif-dot'; it.appendChild(dot); }
+        it.addEventListener('click', function() { openNotification(n); });
+        list.appendChild(it);
+    });
+}
+
+async function openNotification(n) {
+    try { if (!n.read) await updateDoc(doc(db, 'notifications', n._id), { read: true }); } catch (err) {}
+    var target = (n.page || '/');
+    if (window.location.pathname === target) {
+        var el = document.getElementById('comments-section');
+        if (el) { el.scrollIntoView({ behavior: 'smooth' }); }
+        var dd = document.getElementById('notif-dropdown'); if (dd) dd.classList.remove('open');
+    } else {
+        window.location.href = target + '#comments-section';
+    }
+}
+
+window.markAllNotificationsRead = async function() {
+    var unread = _notifItems.filter(function(n) { return !n.read; });
+    for (var i = 0; i < unread.length; i++) {
+        try { await updateDoc(doc(db, 'notifications', unread[i]._id), { read: true }); } catch (err) {}
+    }
+};
+
+// Wire the bell toggle, outside-click close, and mark-all button once.
+window.addEventListener('load', function() {
+    var bell = document.getElementById('notif-btn');
+    var dd = document.getElementById('notif-dropdown');
+    var markall = document.getElementById('notif-markall');
+    if (bell && dd) {
+        bell.addEventListener('click', function(e) { e.stopPropagation(); dd.classList.toggle('open'); });
+        document.addEventListener('click', function(e) {
+            if (!dd.contains(e.target) && !bell.contains(e.target)) dd.classList.remove('open');
+        });
+    }
+    if (markall) markall.addEventListener('click', function(e) { e.stopPropagation(); window.markAllNotificationsRead(); });
+});
 </script>
