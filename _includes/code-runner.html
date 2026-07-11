@@ -135,27 +135,18 @@
     return cmReady;
   }
 
-  // Fetch Piston runtimes once; resolve each major language to a live version.
-  var runtimesReady = null;
-  function loadRuntimes() {
-    if (runtimesReady) return runtimesReady;
-    runtimesReady = fetch(PISTON + '/runtimes')
-      .then(function (r) { return r.json(); })
-      .then(function (rt) {
-        return LANGS.map(function (L) {
-          var match = null;
-          for (var i = 0; i < rt.length && !match; i++) {
-            var r = rt[i];
-            var names = [r.language].concat(r.aliases || []);
-            for (var k = 0; k < L.ids.length; k++) {
-              if (names.indexOf(L.ids[k]) !== -1) { match = r; break; }
-            }
-          }
-          return match ? Object.assign({}, L, { pistonLang: match.language, version: match.version }) : null;
-        }).filter(Boolean);
-      })
-      .catch(function () { return []; });
-    return runtimesReady;
+  // Refine Piston versions in the background; the dropdown never waits on it.
+  function refineRuntimes(available) {
+    fetch(PISTON + '/runtimes').then(function (r) { return r.json(); }).then(function (rt) {
+      if (!Array.isArray(rt)) return;
+      available.forEach(function (L) {
+        for (var i = 0; i < rt.length; i++) {
+          var names = [rt[i].language].concat(rt[i].aliases || []);
+          for (var k = 0; k < L.ids.length; k++)
+            if (names.indexOf(L.ids[k]) !== -1) { L.pistonLang = rt[i].language; L.version = rt[i].version; return; }
+        }
+      });
+    }).catch(function () {});
   }
 
   function themeName() {
@@ -310,14 +301,18 @@
   function boot() {
     var roots = document.querySelectorAll('.sc-runner');
     if (!roots.length) return;
-    Promise.all([loadCodeMirror(), loadRuntimes()]).then(function (r) {
-      var available = r[1];
+    // Known languages default to version "*"; refined once runtimes load.
+    var available = LANGS.map(function (L) {
+      return Object.assign({}, L, { pistonLang: L.ids[0], version: '*' });
+    });
+    loadCodeMirror().then(function () {
       roots.forEach(function (root) {
         if (root.getAttribute('data-inited')) return;
         root.setAttribute('data-inited', '1');
         initRunner(root, available);
       });
-    });
+      refineRuntimes(available);
+    }).catch(function () {});
   }
 
   if (document.readyState !== 'loading') boot();
