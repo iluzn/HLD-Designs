@@ -22,11 +22,11 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 
 | # | Problem | Approach | Time | Space |
 |---|---|---|---|---|
-| 1 | [Two Sum](https://leetcode.com/problems/two-sum/) | HashMap: store complement, lookup on each element | O(n) | O(n) |
-| 2 | [Best Time to Buy/Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) | Track min price so far, compute profit at each step | O(n) | O(1) |
-| 3 | [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) | HashSet - add and check | O(n) | O(n) |
-| 4 | [Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/) | Left-pass prefix product + right-pass suffix product | O(n) | O(1)* |
-| 5 | [Maximum Subarray (Kadane)](https://leetcode.com/problems/maximum-subarray/) | Track `currentMax = max(num, currentMax + num)` | O(n) | O(1) |
+| 1 | [Two Sum](/dsa/problem/two-sum) | HashMap: store complement, lookup on each element | O(n) | O(n) |
+| 2 | [Best Time to Buy/Sell Stock](/dsa/problem/best-time-to-buy-and-sell-stock) | Track min price so far, compute profit at each step | O(n) | O(1) |
+| 3 | [Contains Duplicate](/dsa/problem/contains-duplicate) | HashSet - add and check | O(n) | O(n) |
+| 4 | [Product of Array Except Self](/dsa/problem/product-of-array-except-self) | Left-pass prefix product + right-pass suffix product | O(n) | O(1)* |
+| 5 | [Maximum Subarray (Kadane)](/dsa/problem/maximum-subarray) | Track `currentMax = max(num, currentMax + num)` | O(n) | O(1) |
 | 6 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | Sort each word → use as HashMap key | O(n·k log k) | O(n·k) |
 | 7 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | HashMap count + min-heap of size K (or bucket sort) | O(n log k) | O(n) |
 | 8 | [Encode/Decode Strings](https://leetcode.com/problems/encode-and-decode-strings/) | Length-prefix each string: `"4#word"` | O(n) | O(1) |
@@ -35,16 +35,16 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 
 | # | Problem | Approach | Time | Space |
 |---|---|---|---|---|
-| 9 | [Valid Palindrome](https://leetcode.com/problems/valid-palindrome/) | Left/right pointers, skip non-alphanumeric, compare | O(n) | O(1) |
+| 9 | [Valid Palindrome](/dsa/problem/valid-palindrome) | Left/right pointers, skip non-alphanumeric, compare | O(n) | O(1) |
 | 10 | [3Sum](https://leetcode.com/problems/3sum/) | Sort + fix one, two-pointer on rest. Skip duplicates. | O(n²) | O(1) |
-| 11 | [Container With Most Water](https://leetcode.com/problems/container-with-most-water/) | Left/right, move the shorter side inward | O(n) | O(1) |
-| 12 | [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) | Two pointers with `leftMax`/`rightMax` tracking | O(n) | O(1) |
+| 11 | [Container With Most Water](/dsa/problem/container-with-most-water) | Left/right, move the shorter side inward | O(n) | O(1) |
+| 12 | [Trapping Rain Water](/dsa/problem/trapping-rain-water) | Two pointers with `leftMax`/`rightMax` tracking | O(n) | O(1) |
 
 ## Sliding Window
 
 | # | Problem | Approach | Time | Space |
 |---|---|---|---|---|
-| 13 | [Longest Substring Without Repeating](https://leetcode.com/problems/longest-substring-without-repeating-characters/) | Window + HashMap (last seen index), jump left on conflict | O(n) | O(128) |
+| 13 | [Longest Substring Without Repeating](/dsa/problem/longest-substring-without-repeating-characters) | Window + HashMap (last seen index), jump left on conflict | O(n) | O(128) |
 | 14 | [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) | Expand right until valid, shrink left to minimize | O(n) | O(128) |
 | 15 | [Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) | Window where `len - maxFreq <= k` | O(n) | O(26) |
 | 16 | [Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/) | Monotonic decreasing deque | O(n) | O(k) |
@@ -53,7 +53,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 
 | # | Problem | Approach | Time | Space |
 |---|---|---|---|---|
-| 17 | [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) | Push open, pop on close, check match | O(n) | O(n) |
+| 17 | [Valid Parentheses](/dsa/problem/valid-parentheses) | Push open, pop on close, check match | O(n) | O(n) |
 | 18 | [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) | Monotonic stack: pop when current > top | O(n) | O(n) |
 | 19 | [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) | Monotonic stack for next-smaller on both sides | O(n) | O(n) |
 | 20 | [Min Stack](https://leetcode.com/problems/min-stack/) | Two stacks: values + running minimum | O(1) all ops | O(n) |
@@ -101,11 +101,11 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 
 | # | Problem | Approach | Time | Space |
 |---|---|---|---|---|
-| 40 | [Climbing Stairs](https://leetcode.com/problems/climbing-stairs/) | `dp[i] = dp[i-1] + dp[i-2]` (Fibonacci) | O(n) | O(1) |
-| 41 | [Coin Change](https://leetcode.com/problems/coin-change/) | `dp[i] = min(dp[i-coin]+1)` for each coin | O(amount×coins) | O(amount) |
-| 42 | [Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/) | DP: O(n²) or patience sort with binary search: O(n log n) | O(n log n) | O(n) |
+| 40 | [Climbing Stairs](/dsa/problem/climbing-stairs) | `dp[i] = dp[i-1] + dp[i-2]` (Fibonacci) | O(n) | O(1) |
+| 41 | [Coin Change](/dsa/problem/coin-change) | `dp[i] = min(dp[i-coin]+1)` for each coin | O(amount×coins) | O(amount) |
+| 42 | [Longest Increasing Subsequence](/dsa/problem/longest-increasing-subsequence) | DP: O(n²) or patience sort with binary search: O(n log n) | O(n log n) | O(n) |
 | 43 | [Word Break](https://leetcode.com/problems/word-break/) | `dp[i] = any dp[j] && s[j:i] in dict` | O(n²·L) | O(n) |
-| 44 | [House Robber](https://leetcode.com/problems/house-robber/) | `dp[i] = max(dp[i-1], dp[i-2] + nums[i])` | O(n) | O(1) |
+| 44 | [House Robber](/dsa/problem/house-robber) | `dp[i] = max(dp[i-1], dp[i-2] + nums[i])` | O(n) | O(1) |
 | 45 | [Edit Distance](https://leetcode.com/problems/edit-distance/) | 2D DP: insert/delete/replace at each (i,j) | O(m×n) | O(m×n) |
 
 ## Greedy / Intervals
@@ -114,7 +114,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 |---|---|---|---|---|
 | 46 | [Merge Intervals](https://leetcode.com/problems/merge-intervals/) | Sort by start, extend end if overlapping | O(n log n) | O(n) |
 | 47 | [Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/) | Sort starts + ends separately, sweep with counter | O(n log n) | O(n) |
-| 48 | [Jump Game](https://leetcode.com/problems/jump-game/) | Track farthest reachable index | O(n) | O(1) |
+| 48 | [Jump Game](/dsa/problem/jump-game) | Track farthest reachable index | O(n) | O(1) |
 | 49 | [Non-Overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/) | Sort by end, greedily keep earliest-ending | O(n log n) | O(1) |
 | 50 | [Task Scheduler](https://leetcode.com/problems/task-scheduler/) | Count max-freq task, compute idle slots | O(n) | O(26) |
 
@@ -162,16 +162,16 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 
 If you only have 3 days, solve these - they cover the most patterns with the least problems:
 
-1. [Two Sum](https://leetcode.com/problems/two-sum/) (HashMap)
-2. [Best Time to Buy/Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) (Greedy/Kadane)
-3. [Longest Substring Without Repeating](https://leetcode.com/problems/longest-substring-without-repeating-characters/) (Sliding Window)
+1. [Two Sum](/dsa/problem/two-sum) (HashMap)
+2. [Best Time to Buy/Sell Stock](/dsa/problem/best-time-to-buy-and-sell-stock) (Greedy/Kadane)
+3. [Longest Substring Without Repeating](/dsa/problem/longest-substring-without-repeating-characters) (Sliding Window)
 4. [3Sum](https://leetcode.com/problems/3sum/) (Two Pointers + Sort)
 5. [Merge Intervals](https://leetcode.com/problems/merge-intervals/) (Sort + Sweep)
 6. [Number of Islands](https://leetcode.com/problems/number-of-islands/) (BFS/DFS)
-7. [Coin Change](https://leetcode.com/problems/coin-change/) (DP)
+7. [Coin Change](/dsa/problem/coin-change) (DP)
 8. [LRU Cache](https://leetcode.com/problems/lru-cache/) (HashMap + DLL)
 9. [Course Schedule](https://leetcode.com/problems/course-schedule/) (Topological Sort)
-10. [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) (Stack)
+10. [Valid Parentheses](/dsa/problem/valid-parentheses) (Stack)
 
 ---
 

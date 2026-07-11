@@ -111,4 +111,32 @@ T.STR_STR_BOOL = function (fn) {
   };
 };
 
+// (string s) -> int   (line-based: T then T lines)
+T.STR_INT = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, s):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', "_l=sys.stdin.read().split('\\n')", '_T=int(_l[0]);_o=[]', 'for _i in range(_T):', '    _s=_l[1+_i] if 1+_i<len(_l) else ""', '    _o.append(str(Solution().' + fn + '(_s)))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {string} s', ' * @return {number}', ' */', 'var ' + fn + ' = function(s) {', '    // Write your code here', '};'),
+      harness: ln("const _l=require('fs').readFileSync(0,'utf8').split('\\n');const _T=+_l[0];const _o=[];", "for(let _i=0;_i<_T;_i++){const _s=(_l[1+_i]||'').replace(/\\r$/,'');_o.push(String(" + fn + "(_s)));}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    int ' + fn + '(string s) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){string l;getline(cin,l);int T=stoi(l);string s;for(int i=0;i<T;i++){if(!getline(cin,s))s="";cout<<Solution().' + fn + '(s)<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public int ' + fn + '(String s) {', '        // Write your code here', '        return 0;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=Integer.parseInt(sc.nextLine().trim());StringBuilder sb=new StringBuilder();for(int i=0;i<T;i++){String s=sc.hasNextLine()?sc.nextLine():"";sb.append(new Solution().' + fn + '(s)).append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (int n) -> boolean
+T.INT_BOOL = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, n):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _n=int(_d[_p]);_p+=1', "    _o.append('true' if Solution()." + fn + "(_n) else 'false')", "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number} n', ' * @return {boolean}', ' */', 'var ' + fn + ' = function(n) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _n=+_d[_p++];_o.push(" + fn + "(_n)?'true':'false');}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    bool ' + fn + '(int n) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){long long n;cin>>n;cout<<(Solution().' + fn + '((int)n)?"true":"false")<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public boolean ' + fn + '(int n) {', '        // Write your code here', '        return false;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int n=sc.nextInt();sb.append(new Solution().' + fn + '(n)?"true":"false").append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
 module.exports = { T, randInt, randArr, arrStr, ln };

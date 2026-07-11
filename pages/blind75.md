@@ -22,12 +22,12 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 1 | [Two Sum](https://leetcode.com/problems/two-sum/) | HashMap | Store complement → lookup | O(n) |
-| 2 | [Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) | Greedy | Track min price, compute profit at each step | O(n) |
-| 3 | [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) | HashSet | Add to set, check existence | O(n) |
-| 4 | [Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/) | Prefix/Suffix | Left-pass × right-pass | O(n) |
-| 5 | [Maximum Subarray](https://leetcode.com/problems/maximum-subarray/) | Kadane | `curMax = max(num, curMax + num)` | O(n) |
-| 6 | [Maximum Product Subarray](https://leetcode.com/problems/maximum-product-subarray/) | DP | Track both maxProd and minProd (negatives flip) | O(n) |
+| 1 | [Two Sum](/dsa/problem/two-sum) | HashMap | Store complement → lookup | O(n) |
+| 2 | [Best Time to Buy and Sell Stock](/dsa/problem/best-time-to-buy-and-sell-stock) | Greedy | Track min price, compute profit at each step | O(n) |
+| 3 | [Contains Duplicate](/dsa/problem/contains-duplicate) | HashSet | Add to set, check existence | O(n) |
+| 4 | [Product of Array Except Self](/dsa/problem/product-of-array-except-self) | Prefix/Suffix | Left-pass × right-pass | O(n) |
+| 5 | [Maximum Subarray](/dsa/problem/maximum-subarray) | Kadane | `curMax = max(num, curMax + num)` | O(n) |
+| 6 | [Maximum Product Subarray](/dsa/problem/maximum-product-subarray) | DP | Track both maxProd and minProd (negatives flip) | O(n) |
 | 7 | [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Binary Search | Shrink toward unsorted half | O(log n) |
 | 8 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Binary Search | Check which half is sorted, decide direction | O(log n) |
 | 9 | [3Sum](https://leetcode.com/problems/3sum/) | Two Pointers | Sort + fix one + two-pointer. Skip dupes. | O(n²) |
@@ -36,15 +36,15 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 10 | [Container With Most Water](https://leetcode.com/problems/container-with-most-water/) | Two Pointers | Left/right, move shorter side inward | O(n) |
-| 11 | [Valid Palindrome](https://leetcode.com/problems/valid-palindrome/) | Two Pointers | Skip non-alphanumeric, compare inward | O(n) |
+| 10 | [Container With Most Water](/dsa/problem/container-with-most-water) | Two Pointers | Left/right, move shorter side inward | O(n) |
+| 11 | [Valid Palindrome](/dsa/problem/valid-palindrome) | Two Pointers | Skip non-alphanumeric, compare inward | O(n) |
 | 12 | [Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring/) | Expand from Center | Try each index as center, expand both sides | O(n²) |
 
 ## Sliding Window (4)
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 13 | [Longest Substring Without Repeating](https://leetcode.com/problems/longest-substring-without-repeating-characters/) | Sliding Window | HashMap for last-seen index, jump left on conflict | O(n) |
+| 13 | [Longest Substring Without Repeating](/dsa/problem/longest-substring-without-repeating-characters) | Sliding Window | HashMap for last-seen index, jump left on conflict | O(n) |
 | 14 | [Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) | Sliding Window | Window valid while `len - maxFreq <= k` | O(n) |
 | 15 | [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) | Sliding Window | Expand until valid, shrink to minimize | O(n) |
 | 16 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | HashMap | Sorted string as key | O(n·k log k) |
@@ -53,7 +53,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 17 | [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) | Stack | Push opens, pop on close, check match | O(n) |
+| 17 | [Valid Parentheses](/dsa/problem/valid-parentheses) | Stack | Push opens, pop on close, check match | O(n) |
 
 ## Binary Search (2)
 
@@ -129,15 +129,15 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 53 | [Climbing Stairs](https://leetcode.com/problems/climbing-stairs/) | DP (Fibonacci) | `dp[i] = dp[i-1] + dp[i-2]` | O(n) |
-| 54 | [House Robber](https://leetcode.com/problems/house-robber/) | DP | `dp[i] = max(dp[i-1], dp[i-2] + nums[i])` | O(n) |
-| 55 | [House Robber II](https://leetcode.com/problems/house-robber-ii/) | DP (circular) | Run House Robber on `[0..n-2]` and `[1..n-1]`, take max | O(n) |
-| 56 | [Coin Change](https://leetcode.com/problems/coin-change/) | DP | `dp[i] = min(dp[i-coin]+1)` for each coin | O(amount×coins) |
-| 57 | [Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/) | DP / Patience | DP O(n²) or patience sort + binary search O(n log n) | O(n log n) |
+| 53 | [Climbing Stairs](/dsa/problem/climbing-stairs) | DP (Fibonacci) | `dp[i] = dp[i-1] + dp[i-2]` | O(n) |
+| 54 | [House Robber](/dsa/problem/house-robber) | DP | `dp[i] = max(dp[i-1], dp[i-2] + nums[i])` | O(n) |
+| 55 | [House Robber II](/dsa/problem/house-robber-ii) | DP (circular) | Run House Robber on `[0..n-2]` and `[1..n-1]`, take max | O(n) |
+| 56 | [Coin Change](/dsa/problem/coin-change) | DP | `dp[i] = min(dp[i-coin]+1)` for each coin | O(amount×coins) |
+| 57 | [Longest Increasing Subsequence](/dsa/problem/longest-increasing-subsequence) | DP / Patience | DP O(n²) or patience sort + binary search O(n log n) | O(n log n) |
 | 58 | [Word Break](https://leetcode.com/problems/word-break/) | DP | `dp[i] = any dp[j] && s[j:i] in dict` | O(n²·L) |
 | 59 | [Decode Ways](https://leetcode.com/problems/decode-ways/) | DP | `dp[i]` based on 1-digit and 2-digit valid decodings | O(n) |
 | 60 | [Unique Paths](https://leetcode.com/problems/unique-paths/) | DP (2D) | `dp[i][j] = dp[i-1][j] + dp[i][j-1]` | O(m×n) |
-| 61 | [Jump Game](https://leetcode.com/problems/jump-game/) | Greedy | Track farthest reachable | O(n) |
+| 61 | [Jump Game](/dsa/problem/jump-game) | Greedy | Track farthest reachable | O(n) |
 | 62 | [Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) | DP (2D) | `if match: dp[i][j] = dp[i-1][j-1]+1` else `max(left, up)` | O(m×n) |
 | 63 | [Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/) | DP (0/1 Knapsack) | Can we make sum/2 with a subset? Boolean dp. | O(n×sum) |
 
@@ -155,8 +155,8 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 69 | [Maximum Subarray](https://leetcode.com/problems/maximum-subarray/) | Kadane | (duplicate - see #5) | O(n) |
-| 70 | [Jump Game](https://leetcode.com/problems/jump-game/) | Greedy | (duplicate - see #61) | O(n) |
+| 69 | [Maximum Subarray](/dsa/problem/maximum-subarray) | Kadane | (duplicate - see #5) | O(n) |
+| 70 | [Jump Game](/dsa/problem/jump-game) | Greedy | (duplicate - see #61) | O(n) |
 
 ## Bit Manipulation (5)
 
@@ -165,7 +165,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 | 71 | [Number of 1 Bits](https://leetcode.com/problems/number-of-1-bits/) | Bit Counting | `n & (n-1)` removes lowest set bit; count iterations | O(32) |
 | 72 | [Counting Bits](https://leetcode.com/problems/counting-bits/) | DP + Bits | `dp[i] = dp[i >> 1] + (i & 1)` | O(n) |
 | 73 | [Reverse Bits](https://leetcode.com/problems/reverse-bits/) | Bit Manipulation | Shift result left, OR with `n & 1`, shift n right | O(32) |
-| 74 | [Missing Number](https://leetcode.com/problems/missing-number/) | XOR | XOR all indices + all values → missing remains | O(n) |
+| 74 | [Missing Number](/dsa/problem/missing-number) | XOR | XOR all indices + all values → missing remains | O(n) |
 | 75 | [Sum of Two Integers (no +/-)](https://leetcode.com/problems/sum-of-two-integers/) | Bit Manipulation | `carry = (a & b) << 1; sum = a ^ b;` repeat until no carry | O(32) |
 
 ---

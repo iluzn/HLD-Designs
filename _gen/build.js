@@ -126,6 +126,9 @@ P.push({ slug: 'search-insert-position', title: 'Search Insert Position', diffic
   },
   ref: function (a) { var n = a[0], t = a[1], lo = 0, hi = n.length; while (lo < hi) { var mid = (lo + hi) >> 1; if (n[mid] < t) lo = mid + 1; else hi = mid; } return lo; } });
 
+// Additional problems (with editorials) from problems2.js
+require('./problems2.js').MORE.forEach(function (p) { P.push(p); });
+
 // ---------- write ----------
 var indexRows = [];
 P.forEach(function (p) {
@@ -165,4 +168,10 @@ var idx = '---\nlayout: default\ntitle: "Problemset - Practice Coding Problems"\
   '<script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\\"color:#22c55e;font-weight:700\\">\\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>\n';
 fs.writeFileSync(path.join(__dirname, '..', 'content', 'problemset.md'), idx);
 
-console.log('Generated ' + P.length + ' problems + problemset index.');
+// Catalog: slug -> { title, difficulty } for the profile difficulty breakdown.
+var catalog = {};
+indexRows.forEach(function (r) { catalog[r.slug] = { title: r.title, difficulty: r.difficulty }; });
+fs.writeFileSync(path.join(__dirname, '..', '_includes', 'sc-catalog.html'),
+  '<script>window.SC_CATALOG = ' + JSON.stringify(catalog) + ';</script>\n');
+
+console.log('Generated ' + P.length + ' problems + problemset index + catalog.');
