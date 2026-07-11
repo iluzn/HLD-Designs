@@ -5,47 +5,52 @@
 
   var ENDPOINT = window.SC_RUNNER_ENDPOINT || 'https://systemcraft-og.shaswat-kumar03.workers.dev';
   var CM_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16';
-  var STORAGE = 'sc-lc-' + P.id;
+  var CODE_KEY = 'sc-lc-' + P.id;         // per-problem code, keyed by lang
+  var LANG_KEY = 'sc-lc-lang';            // global preferred language
+  var SOLVED_KEY = 'sc-lc-solved';        // array of solved slugs
+  var SUBS_KEY = 'sc-lc-subs-' + P.id;    // submission history for this problem
+  var DISCUSS_KEY = 'sc-lc-discuss-' + P.id;
 
-  // language meta: display name, piston language, CodeMirror mode, filename
   var META = {
-    python: { name: 'Python3', piston: 'python', mode: 'python', file: 'main.py' },
-    javascript: { name: 'JavaScript', piston: 'javascript', mode: 'javascript', file: 'main.js' },
-    cpp: { name: 'C++', piston: 'c++', mode: 'text/x-c++src', file: 'main.cpp' },
     java: { name: 'Java', piston: 'java', mode: 'text/x-java', file: 'Main.java' },
+    python: { name: 'Python3', piston: 'python', mode: 'python', file: 'main.py' },
+    cpp: { name: 'C++', piston: 'c++', mode: 'text/x-c++src', file: 'main.cpp' },
+    javascript: { name: 'JavaScript', piston: 'javascript', mode: 'javascript', file: 'main.js' },
   };
-  var LANG_KEYS = Object.keys(P.langs).filter(function (k) { return META[k]; });
+  // Order: Java first (default), then others that the problem provides.
+  var LANG_KEYS = ['java', 'python', 'cpp', 'javascript'].filter(function (k) { return P.langs[k] && META[k]; });
 
-  // DOM refs (bound on boot)
-  var langSel, editorHost, runBtn, submitBtn, resetBtn, statusEl, consoleBody, consoleTabs;
-  var cm, curTab = 'cases', activeCase = 0, lastResults = null;
+  var SAMPLE = 3; // number of visible sample cases that "Run" executes
+  var langSel, editorHost, runBtn, submitBtn, resetBtn, statusEl, consoleBody, consoleTabs, leftBody, leftTabs;
+  var cm, curTab = 'cases', activeCase = 0, lastResults = null, descHtml = '';
 
-  function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
-  function normalize(s) {
-    return String(s == null ? '' : s).replace(/\r\n/g, '\n').split('\n')
-      .map(function (l) { return l.replace(/\s+$/, ''); }).join('\n').replace(/\n+$/, '').trim();
-  }
-  function saved() { try { return JSON.parse(localStorage.getItem(STORAGE) || '{}'); } catch (e) { return {}; } }
-  function persist(lang, code) { var s = saved(); s[lang] = code; try { localStorage.setItem(STORAGE, JSON.stringify(s)); } catch (e) {} }
+  function normalize(s) { return String(s == null ? '' : s).replace(/\r\n/g, '\n').split('\n').map(function (l) { return l.replace(/\s+$/, ''); }).join('\n').replace(/\n+$/, '').trim(); }
+  function lsGet(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+  function savedCode() { return lsGet(CODE_KEY, {}); }
+  function persistCode(lang, code) { var s = savedCode(); s[lang] = code; lsSet(CODE_KEY, s); }
+  function stubFor(lang) { var s = savedCode(); return (s[lang] != null) ? s[lang] : (P.langs[lang].stub || ''); }
+  function prefLang() { var l = lsGet(LANG_KEY, 'java'); return LANG_KEYS.indexOf(l) !== -1 ? l : LANG_KEYS[0]; }
   function curLang() { return langSel.value; }
-  function stubFor(lang) { var s = saved(); return (s[lang] != null) ? s[lang] : (P.langs[lang].stub || ''); }
+
+  function isSolved() { return lsGet(SOLVED_KEY, []).indexOf(P.id) !== -1; }
+  function markSolved() { var s = lsGet(SOLVED_KEY, []); if (s.indexOf(P.id) === -1) { s.push(P.id); lsSet(SOLVED_KEY, s); } }
+  function subs() { return lsGet(SUBS_KEY, []); }
+  function addSub(rec) { var a = subs(); a.unshift(rec); if (a.length > 30) a = a.slice(0, 30); lsSet(SUBS_KEY, a); }
 
   // ---- asset loading ----
   function loadCss(h) { return new Promise(function (r) { if (document.querySelector('link[href="' + h + '"]')) return r(); var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = h; l.onload = r; l.onerror = r; document.head.appendChild(l); }); }
   function loadJs(s) { return new Promise(function (res, rej) { if (document.querySelector('script[src="' + s + '"]')) return res(); var e = document.createElement('script'); e.src = s; e.onload = res; e.onerror = rej; document.head.appendChild(e); }); }
   function loadCM() {
     return Promise.all([
-      loadCss(CM_BASE + '/codemirror.min.css'),
-      loadCss(CM_BASE + '/theme/material-darker.min.css'),
-      loadCss(CM_BASE + '/theme/eclipse.min.css'),
+      loadCss(CM_BASE + '/codemirror.min.css'), loadCss(CM_BASE + '/theme/material-darker.min.css'), loadCss(CM_BASE + '/theme/eclipse.min.css'),
     ]).then(function () { return loadJs(CM_BASE + '/codemirror.min.js'); })
       .then(function () {
         return Promise.all([
-          loadJs(CM_BASE + '/mode/clike/clike.min.js'),
-          loadJs(CM_BASE + '/mode/python/python.min.js'),
-          loadJs(CM_BASE + '/mode/javascript/javascript.min.js'),
-          loadJs(CM_BASE + '/addon/edit/closebrackets.min.js'),
+          loadJs(CM_BASE + '/mode/clike/clike.min.js'), loadJs(CM_BASE + '/mode/python/python.min.js'),
+          loadJs(CM_BASE + '/mode/javascript/javascript.min.js'), loadJs(CM_BASE + '/addon/edit/closebrackets.min.js'),
           loadJs(CM_BASE + '/addon/edit/matchbrackets.min.js'),
         ]);
       });
@@ -57,7 +62,7 @@
     var m = META[lang];
     return fetch(ENDPOINT + '/execute', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ language: m.piston, version: '*', files: [{ name: m.file, content: source }], stdin: stdin || '', run_timeout: 8000 }),
+      body: JSON.stringify({ language: m.piston, version: '*', files: [{ name: m.file, content: source }], stdin: stdin || '' }),
     }).then(function (r) {
       if (r.status === 429) return new Promise(function (x) { setTimeout(x, 1200); }).then(function () { return execute(lang, source, stdin); });
       return r.json();
@@ -69,11 +74,12 @@
     if (busy || !cm) return;
     busy = true; runBtn.disabled = true; submitBtn.disabled = true;
     statusEl.textContent = isSubmit ? 'Judging…' : 'Running…';
-    curTab = 'result'; syncTabs();
+    curTab = 'result'; syncConsoleTabs();
     consoleBody.innerHTML = '<div class="lc-verdict run">' + (isSubmit ? 'Judging ' : 'Running ') + cases.length + ' case' + (cases.length > 1 ? 's' : '') + '…</div>';
 
     var lang = curLang();
-    var source = cm.getValue() + '\n\n' + (P.langs[lang].harness || '');
+    var code = cm.getValue();
+    var source = code + '\n\n' + (P.langs[lang].harness || '');
     var results = new Array(cases.length);
     var firstFail = -1, compileErr = null;
     var chain = Promise.resolve();
@@ -86,128 +92,184 @@
           var out = run.stdout || '';
           var timedOut = run.signal === 'SIGKILL';
           var ok = !timedOut && !run.stderr && normalize(out) === normalize(tc.expected);
-          results[i] = { pass: ok, out: out, stderr: run.stderr || '', timedOut: timedOut };
+          results[i] = { pass: ok, out: out, stderr: run.stderr || '', timedOut: timedOut, error: false };
           if (!ok && firstFail === -1) firstFail = i;
         }).catch(function () { results[i] = { error: true }; if (firstFail === -1) firstFail = i; });
       });
     });
     chain.then(function () {
-      lastResults = { cases: cases, results: results, isSubmit: isSubmit, compileErr: compileErr, firstFail: firstFail };
+      var passed = results.filter(function (x) { return x && x.pass; }).length;
+      lastResults = { cases: cases, results: results, isSubmit: isSubmit, compileErr: compileErr, firstFail: firstFail, passed: passed };
+      if (isSubmit) {
+        var status = compileErr ? 'Compile Error'
+          : (passed === cases.length ? 'Accepted'
+          : ((results[firstFail] || {}).timedOut ? 'Time Limit Exceeded'
+          : ((results[firstFail] || {}).error ? 'Runtime Error'
+          : ((results[firstFail] || {}).stderr ? 'Runtime Error' : 'Wrong Answer'))));
+        addSub({ ts: Date.now(), lang: lang, langName: META[lang].name, status: status, passed: passed, total: cases.length, code: code });
+        if (status === 'Accepted') { markSolved(); paintSolved(); }
+      }
       renderResult();
       busy = false; runBtn.disabled = false; submitBtn.disabled = false; statusEl.textContent = '';
     });
   }
 
-  // ---- rendering ----
-  function syncTabs() {
-    consoleTabs.forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-tab') === curTab); });
-    if (curTab === 'cases') renderCases(); else renderResult();
-  }
+  // ---- console (bottom-right) rendering ----
+  function syncConsoleTabs() { consoleTabs.forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-tab') === curTab); }); if (curTab === 'cases') renderCases(); else renderResult(); }
+
+  function caseInputStr(c) { return c.display ? Object.keys(c.display).map(function (k) { return k + ' = ' + c.display[k]; }).join('\n') : c.stdin; }
 
   function renderCases() {
-    var sample = P.cases.slice(0, P.sampleCount || P.cases.length);
-    var tabs = sample.map(function (c, i) {
+    var cs = P.cases.slice(0, SAMPLE);
+    var tabs = cs.map(function (c, i) {
       var res = lastResults && lastResults.results[i];
       var dot = res ? (res.pass ? ' pass' : ' fail') : '';
       return '<button class="lc-case-tab' + (i === activeCase ? ' active' : '') + '" data-i="' + i + '"><span class="lc-case-dot' + dot + '"></span>Case ' + (i + 1) + '</button>';
     }).join('');
-    var c = sample[activeCase] || sample[0];
-    var body = '';
+    var c = cs[activeCase] || cs[0]; var body = '';
     if (c) {
-      var inputStr = c.display ? Object.keys(c.display).map(function (k) { return k + ' = ' + c.display[k]; }).join('\n') : c.stdin;
-      body += '<div class="lc-io-label">Input</div><div class="lc-io-box">' + esc(inputStr) + '</div>';
+      body += '<div class="lc-io-label">Input</div><div class="lc-io-box">' + esc(caseInputStr(c)) + '</div>';
       body += '<div class="lc-io-label">Expected</div><div class="lc-io-box">' + esc(c.expected) + '</div>';
       var res = lastResults && lastResults.results[activeCase];
       if (res && !res.skipped) {
-        var gotTxt = res.error ? '(backend unavailable)' : (res.timedOut ? '(time limit exceeded)' : (res.stderr ? res.out + '\n' + res.stderr : (res.out || '(no output)')));
-        body += '<div class="lc-io-label">Your Output</div><div class="lc-io-box' + (res.pass ? '' : ' bad') + '">' + esc(gotTxt) + '</div>';
+        var g = res.error ? '(backend unavailable)' : (res.timedOut ? '(time limit exceeded)' : (res.stderr ? res.out + '\n' + res.stderr : (res.out || '(no output)')));
+        body += '<div class="lc-io-label">Your Output</div><div class="lc-io-box' + (res.pass ? '' : ' bad') + '">' + esc(g) + '</div>';
       }
     }
     consoleBody.innerHTML = '<div class="lc-case-tabs">' + tabs + '</div>' + body;
-    consoleBody.querySelectorAll('.lc-case-tab').forEach(function (t) {
-      t.addEventListener('click', function () { activeCase = parseInt(t.getAttribute('data-i'), 10); renderCases(); });
-    });
+    consoleBody.querySelectorAll('.lc-case-tab').forEach(function (t) { t.addEventListener('click', function () { activeCase = parseInt(t.getAttribute('data-i'), 10); renderCases(); }); });
   }
 
   function renderResult() {
     if (!lastResults) { consoleBody.innerHTML = '<div class="lc-verdict run">Run your code to see results.</div>'; return; }
     var r = lastResults;
-    if (r.compileErr) {
-      consoleBody.innerHTML = '<div class="lc-verdict wa">Compilation Error</div><div class="lc-io-box bad">' + esc(r.compileErr) + '</div>';
-      return;
-    }
-    var passed = r.results.filter(function (x) { return x && x.pass; }).length;
-    var all = passed === r.cases.length;
-    var html;
-    if (all) {
-      html = '<div class="lc-verdict ac">Accepted <small>' + passed + ' / ' + r.cases.length + ' passed</small></div>';
-    } else {
-      var f = r.results[r.firstFail] || {};
+    if (r.compileErr) { consoleBody.innerHTML = '<div class="lc-verdict wa">Compilation Error</div><div class="lc-io-box bad">' + esc(r.compileErr) + '</div>'; return; }
+    var all = r.passed === r.cases.length; var html;
+    if (all) { html = '<div class="lc-verdict ac">Accepted <small>' + r.passed + ' / ' + r.cases.length + ' passed</small></div>'; }
+    else {
+      var f = r.results[r.firstFail] || {}, tc = r.cases[r.firstFail] || {};
       var label = f.error ? 'Backend Unavailable' : (f.timedOut ? 'Time Limit Exceeded' : (f.stderr ? 'Runtime Error' : 'Wrong Answer'));
-      html = '<div class="lc-verdict wa">' + label + ' <small>' + passed + ' / ' + r.cases.length + ' passed · case ' + (r.firstFail + 1) + '</small></div>';
-      var f2 = r.results[r.firstFail] || {};
-      var tc = r.cases[r.firstFail] || {};
-      var hidden = r.isSubmit && r.firstFail >= (P.sampleCount || 0);
-      if (f.error) {
-        html += '<div class="lc-io-box bad">Could not reach the execution service.</div>';
-      } else {
-        html += '<div class="lc-io-label">Input</div><div class="lc-io-box">' + esc(hidden ? 'hidden' : (tc.display ? Object.keys(tc.display).map(function (k) { return k + ' = ' + tc.display[k]; }).join('\n') : tc.stdin)) + '</div>';
-        html += '<div class="lc-io-label">Expected</div><div class="lc-io-box">' + esc(hidden ? 'hidden' : tc.expected) + '</div>';
-        var got = f2.timedOut ? '(time limit exceeded)' : (f2.stderr ? (f2.out + '\n' + f2.stderr) : (f2.out || '(no output)'));
-        html += '<div class="lc-io-label">Your Output</div><div class="lc-io-box bad">' + esc(got) + '</div>';
+      html = '<div class="lc-verdict wa">' + label + ' <small>' + r.passed + ' / ' + r.cases.length + ' passed · case ' + (r.firstFail + 1) + '</small></div>';
+      if (f.error) { html += '<div class="lc-io-box bad">Could not reach the execution service.</div>'; }
+      else {
+        html += '<div class="lc-io-label">Input</div><div class="lc-io-box">' + esc(caseInputStr(tc)) + '</div>';
+        html += '<div class="lc-io-label">Expected</div><div class="lc-io-box">' + esc(tc.expected) + '</div>';
+        var g = f.timedOut ? '(time limit exceeded)' : (f.stderr ? (f.out + '\n' + f.stderr) : (f.out || '(no output)'));
+        html += '<div class="lc-io-label">Your Output</div><div class="lc-io-box bad">' + esc(g) + '</div>';
       }
     }
     consoleBody.innerHTML = html;
   }
 
+  // ---- left pane tabs ----
+  function paintSolved() {
+    if (!isSolved()) return;
+    if (leftBody.querySelector('.lc-solved-badge')) return;
+    var h1 = leftBody.querySelector('h1');
+    if (h1 && !h1.querySelector('.lc-solved-badge')) {
+      var b = document.createElement('span'); b.className = 'lc-solved-badge'; b.innerHTML = '✓ Solved'; h1.appendChild(b);
+    }
+  }
+
+  function timeAgo(ts) {
+    var s = Math.floor((Date.now() - ts) / 1000);
+    if (s < 60) return s + 's ago';
+    if (s < 3600) return Math.floor(s / 60) + 'm ago';
+    if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+    return new Date(ts).toLocaleDateString();
+  }
+
+  function showLeftTab(tab) {
+    leftTabs.forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-ltab') === tab); });
+    if (tab === 'description') { leftBody.innerHTML = descHtml; paintSolved(); return; }
+    if (tab === 'editorial') {
+      leftBody.innerHTML = P.editorial ? '<div class="lc-editorial">' + P.editorial + '</div>' : '<div class="lc-empty">Editorial coming soon.</div>';
+      return;
+    }
+    if (tab === 'submissions') {
+      var a = subs();
+      if (!a.length) { leftBody.innerHTML = '<div class="lc-empty">No submissions yet. Solve it and hit Submit.</div>'; return; }
+      leftBody.innerHTML = a.map(function (s, i) {
+        var cls = s.status === 'Accepted' ? 'ac' : 'wa';
+        return '<div class="lc-sub-row" data-i="' + i + '"><span class="lc-sub-status ' + cls + '">' + esc(s.status) + '</span>' +
+          '<span class="lc-sub-meta">' + esc(s.langName || s.lang) + ' · ' + s.passed + '/' + s.total + ' · ' + timeAgo(s.ts) + '</span></div>' +
+          '<div class="lc-sub-code" id="lc-subcode-' + i + '" hidden>' + esc(s.code) + '</div>';
+      }).join('');
+      leftBody.querySelectorAll('.lc-sub-row').forEach(function (row) {
+        row.addEventListener('click', function () { var c = document.getElementById('lc-subcode-' + row.getAttribute('data-i')); if (c) c.hidden = !c.hidden; });
+      });
+      return;
+    }
+    if (tab === 'discuss') {
+      var posts = lsGet(DISCUSS_KEY, []);
+      var form = '<div class="lc-discuss-form"><input id="lc-dname" placeholder="Name (optional)" maxlength="40"><textarea id="lc-dtext" placeholder="Share your approach, ask a question…"></textarea><button class="lc-discuss-post" id="lc-dpost" type="button">Post</button></div>';
+      var list = posts.length ? posts.map(function (p) {
+        return '<div class="lc-discuss-item"><span class="who">' + esc(p.name || 'Anonymous') + '</span><span class="when">' + timeAgo(p.ts) + '</span><div class="txt">' + esc(p.text) + '</div></div>';
+      }).join('') : '<div class="lc-empty">No discussion yet. Start the conversation.</div>';
+      leftBody.innerHTML = form + '<div style="margin-top:1rem">' + list + '</div>';
+      var post = document.getElementById('lc-dpost');
+      post.addEventListener('click', function () {
+        var t = document.getElementById('lc-dtext').value.trim(); if (!t) return;
+        var n = document.getElementById('lc-dname').value.trim();
+        var arr = lsGet(DISCUSS_KEY, []); arr.unshift({ name: n, text: t, ts: Date.now() }); lsSet(DISCUSS_KEY, arr);
+        showLeftTab('discuss');
+      });
+      return;
+    }
+  }
+
   // ---- boot ----
   function initEditor() {
     var lang = curLang();
-    cm = CodeMirror(editorHost, {
-      value: stubFor(lang), mode: META[lang].mode, theme: themeName(),
-      lineNumbers: true, indentUnit: 4, tabSize: 4, autoCloseBrackets: true, matchBrackets: true,
-    });
+    cm = CodeMirror(editorHost, { value: stubFor(lang), mode: META[lang].mode, theme: themeName(), lineNumbers: true, indentUnit: 4, tabSize: 4, autoCloseBrackets: true, matchBrackets: true });
     cm.setSize('100%', '100%');
-    cm.on('change', function () { persist(curLang(), cm.getValue()); });
-    new MutationObserver(function () { cm.setOption('theme', themeName()); })
-      .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    cm.setOption('extraKeys', { 'Cmd-Enter': function () { runBtn.click(); }, 'Ctrl-Enter': function () { runBtn.click(); } });
+    cm.on('change', function () { persistCode(curLang(), cm.getValue()); });
+    new MutationObserver(function () { cm.setOption('theme', themeName()); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    cm.setOption('extraKeys', {
+      'Cmd-Enter': function () { runBtn.click(); }, 'Ctrl-Enter': function () { runBtn.click(); },
+      'Shift-Cmd-Enter': function () { submitBtn.click(); }, 'Shift-Ctrl-Enter': function () { submitBtn.click(); },
+    });
     runBtn.disabled = false; submitBtn.disabled = false;
   }
 
   function boot() {
-    langSel = $('lc-lang'); editorHost = $('lc-editor'); runBtn = $('lc-run'); submitBtn = $('lc-submit');
-    resetBtn = $('lc-reset'); statusEl = $('lc-status'); consoleBody = $('lc-console-body');
+    langSel = document.getElementById('lc-lang'); editorHost = document.getElementById('lc-editor');
+    runBtn = document.getElementById('lc-run'); submitBtn = document.getElementById('lc-submit');
+    resetBtn = document.getElementById('lc-reset'); statusEl = document.getElementById('lc-status');
+    consoleBody = document.getElementById('lc-console-body');
     consoleTabs = Array.prototype.slice.call(document.querySelectorAll('.lc-console-tab'));
-    if (!langSel || !editorHost) return;
+    leftBody = document.getElementById('lc-left-body');
+    leftTabs = Array.prototype.slice.call(document.querySelectorAll('.lc-ltab'));
+    if (!langSel || !editorHost || !leftBody) return;
 
-    LANG_KEYS.forEach(function (k) {
-      var o = document.createElement('option'); o.value = k; o.textContent = META[k].name; langSel.appendChild(o);
-    });
+    descHtml = leftBody.innerHTML;
+    paintSolved();
 
-    consoleTabs.forEach(function (t) { t.addEventListener('click', function () { curTab = t.getAttribute('data-tab'); syncTabs(); }); });
+    LANG_KEYS.forEach(function (k) { var o = document.createElement('option'); o.value = k; o.textContent = META[k].name; langSel.appendChild(o); });
+    langSel.value = prefLang();
+
+    runBtn.title = 'Ctrl/Cmd + Enter'; submitBtn.title = 'Ctrl/Cmd + Shift + Enter';
+    consoleTabs.forEach(function (t) { t.addEventListener('click', function () { curTab = t.getAttribute('data-tab'); syncConsoleTabs(); }); });
+    leftTabs.forEach(function (t) { t.addEventListener('click', function () { showLeftTab(t.getAttribute('data-ltab')); }); });
     renderCases();
 
     loadCM().then(function () {
       initEditor();
-      langSel.addEventListener('change', function () { cm.setOption('mode', META[curLang()].mode); cm.setValue(stubFor(curLang())); });
-      resetBtn.addEventListener('click', function () { cm.setValue(P.langs[curLang()].stub || ''); persist(curLang(), cm.getValue()); });
-      runBtn.addEventListener('click', function () { activeCase = 0; runCases(P.cases.slice(0, P.sampleCount || P.cases.length), false); });
+      langSel.addEventListener('change', function () { lsSet(LANG_KEY, curLang()); cm.setOption('mode', META[curLang()].mode); cm.setValue(stubFor(curLang())); });
+      resetBtn.addEventListener('click', function () { cm.setValue(P.langs[curLang()].stub || ''); persistCode(curLang(), cm.getValue()); });
+      runBtn.addEventListener('click', function () { activeCase = 0; runCases(P.cases.slice(0, SAMPLE), false); });
       submitBtn.addEventListener('click', function () { runCases(P.cases, true); });
+      document.addEventListener('keydown', function (e) {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); if (e.shiftKey) submitBtn.click(); else runBtn.click(); }
+      });
     }).catch(function () { statusEl.textContent = 'Editor failed to load'; });
 
-    // resizable divider (desktop)
-    var divider = $('lc-divider'); var left = document.querySelector('.lc-left'); var shell = document.querySelector('.lc-shell');
+    var divider = document.getElementById('lc-divider'), left = document.querySelector('.lc-left'), shell = document.querySelector('.lc-shell');
     if (divider && left) {
       var dragging = false;
       divider.addEventListener('mousedown', function () { dragging = true; document.body.style.userSelect = 'none'; });
       window.addEventListener('mouseup', function () { dragging = false; document.body.style.userSelect = ''; if (cm) cm.refresh(); });
-      window.addEventListener('mousemove', function (e) {
-        if (!dragging) return;
-        var rect = shell.getBoundingClientRect();
-        var pct = ((e.clientX - rect.left) / rect.width) * 100;
-        if (pct > 22 && pct < 68) left.style.width = pct + '%';
-      });
+      window.addEventListener('mousemove', function (e) { if (!dragging) return; var rect = shell.getBoundingClientRect(); var pct = ((e.clientX - rect.left) / rect.width) * 100; if (pct > 22 && pct < 68) left.style.width = pct + '%'; });
     }
   }
 

@@ -109,6 +109,12 @@ async function handleExecute(request, env) {
 async function execViaGlot(env, payload, files) {
   const raw = (payload.language || '').toLowerCase();
   const lang = GLOT_LANG[raw] || raw;
+  // Abort the wait early so infinite loops surface as TLE in ~12s instead of
+  // hanging on glot's ~30s server-side limit.
+  const controller = new AbortController();
+  const TLE_MS = 12000;
+  const timer = setTimeout(() => controller.abort(), TLE_MS);
+  const tle = () => jsonResponse({ run: { stdout: '', stderr: 'Time Limit Exceeded', code: 1, signal: 'SIGKILL' }, compile: null });
   try {
     const res = await fetch('https://glot.io/api/run/' + encodeURIComponent(lang) + '/latest', {
       method: 'POST',
@@ -117,18 +123,27 @@ async function execViaGlot(env, payload, files) {
         files: files.map((f) => ({ name: f.name, content: f.content })),
         stdin: payload.stdin || '',
       }),
+      signal: controller.signal,
     });
+    clearTimeout(timer);
     if (!res.ok) {
+      let body = '';
+      try { body = await res.text(); } catch (e) {}
+      // glot answers 400 when it kills a run that exceeds its own time limit.
+      if (res.status === 400 || /time\s*limit|timeout|timed out/i.test(body)) return tle();
       return jsonResponse({ run: { stdout: '', stderr: 'Execution service error (' + res.status + ')', code: 1, signal: null }, compile: null });
     }
     const g = await res.json();
-    const timedOut = g.error && /timeout/i.test(g.error);
+    const timedOut = g.error && /timeout|time limit/i.test(g.error);
+    if (timedOut) return tle();
     const stderr = [g.stderr, g.error && g.error !== '' ? g.error : ''].filter(Boolean).join('\n');
     return jsonResponse({
-      run: { stdout: g.stdout || '', stderr: stderr, code: stderr || timedOut ? 1 : 0, signal: timedOut ? 'SIGKILL' : null },
+      run: { stdout: g.stdout || '', stderr: stderr, code: stderr ? 1 : 0, signal: null },
       compile: null,
     });
   } catch (e) {
+    clearTimeout(timer);
+    if (e && e.name === 'AbortError') return tle();
     return jsonResponse({ error: 'Execution service unreachable' }, 502);
   }
 }
