@@ -79,6 +79,8 @@ PhonePe is one of India's most competitive fintech companies. The interview proc
 
 ## DSA Problems Asked at PhonePe (Complete List)
 
+> 💡 **Every problem below is solved with clean Java, approach, and complexity here → [PhonePe DSA Solutions](/dsa/phonepe-solutions)**
+
 ### Trees + DP (PhonePe's Favorite Category)
 
 | # | Problem | Pattern | Difficulty | Link |

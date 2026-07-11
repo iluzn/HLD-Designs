@@ -106,6 +106,14 @@ HashMap works (O(n) time, O(n) space) but Two Pointers is O(n) time with **O(1) 
 
 ---
 
+## Try It Yourself
+
+Write your solution and run it live in C++, Java, Python, Go, Rust, and more — right here in the browser.
+
+{% include code-runner.html %}
+
+---
+
 ## Key Insight
 
 > When the array is sorted and you need to find a pair, Two Pointers from both ends gives you O(1) space. The sorted property guarantees that moving `left` right increases the sum, and moving `right` left decreases it - so you always make progress.

@@ -1,0 +1,322 @@
+<!-- In-browser multi-language code runner (CodeMirror 5 + Piston public API) -->
+<!-- Usage: drop {% include code-runner.html %} into any content page. -->
+<style>
+.sc-runner { border: 1px solid var(--glass-border); border-radius: 12px; background: var(--code-bg); backdrop-filter: blur(8px); margin: 1.5rem 0; overflow: hidden; }
+.sc-runner-bar { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.8rem; background: rgba(0,0,0,0.18); border-bottom: 1px solid var(--glass-border); flex-wrap: wrap; }
+[data-theme="light"] .sc-runner-bar { background: rgba(0,0,0,0.03); }
+.sc-runner-bar .sc-run-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); margin-right: auto; }
+.sc-runner select { font-family: inherit; font-size: 0.78rem; font-weight: 600; color: var(--text); background: var(--glass); border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.35rem 0.55rem; cursor: pointer; outline: none; }
+.sc-runner select:focus { border-color: var(--accent); }
+.sc-run-btn { display: inline-flex; align-items: center; gap: 0.4rem; font-family: inherit; font-size: 0.78rem; font-weight: 700; color: #fff; background: linear-gradient(135deg, var(--accent), #a78bfa); border: none; border-radius: 8px; padding: 0.38rem 0.9rem; cursor: pointer; transition: transform 0.15s, opacity 0.15s; }
+.sc-run-btn:hover { transform: translateY(-1px); }
+.sc-run-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+.sc-reset-btn { font-family: inherit; font-size: 0.72rem; font-weight: 600; color: var(--text-muted); background: var(--glass); border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.35rem 0.6rem; cursor: pointer; }
+.sc-reset-btn:hover { color: var(--text); border-color: var(--accent); }
+.sc-runner .CodeMirror { height: auto; min-height: 180px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+.sc-runner .CodeMirror-scroll { min-height: 180px; }
+.sc-runner-io { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--glass-border); }
+@media (max-width: 640px) { .sc-runner-io { grid-template-columns: 1fr; } }
+.sc-io-col { display: flex; flex-direction: column; min-width: 0; }
+.sc-io-col + .sc-io-col { border-left: 1px solid var(--glass-border); }
+@media (max-width: 640px) { .sc-io-col + .sc-io-col { border-left: none; border-top: 1px solid var(--glass-border); } }
+.sc-io-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); padding: 0.5rem 0.8rem 0.3rem; }
+.sc-stdin { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text); background: transparent; border: none; outline: none; resize: vertical; min-height: 90px; padding: 0 0.8rem 0.8rem; line-height: 1.6; }
+.sc-stdin::placeholder { color: var(--text-dim); }
+.sc-output { flex: 1; margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; white-space: pre-wrap; word-break: break-word; color: var(--text-muted); padding: 0 0.8rem 0.8rem; min-height: 90px; overflow-x: auto; line-height: 1.6; }
+.sc-output .sc-ok { color: #4ade80; }
+.sc-output .sc-err { color: #f87171; }
+.sc-output .sc-dim { color: var(--text-dim); }
+.sc-run-status { font-size: 0.7rem; color: var(--text-dim); }
+</style>
+
+<div class="sc-runner" data-default-lang="python">
+  <div class="sc-runner-bar">
+    <span class="sc-run-title">▶ Try it live</span>
+    <span class="sc-run-status"></span>
+    <select class="sc-lang-select" aria-label="Language"><option>Loading…</option></select>
+    <button class="sc-reset-btn" type="button">Reset</button>
+    <button class="sc-run-btn" type="button" disabled>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      Run
+    </button>
+  </div>
+  <div class="sc-editor"></div>
+  <div class="sc-runner-io">
+    <div class="sc-io-col">
+      <div class="sc-io-label">stdin</div>
+      <textarea class="sc-stdin" placeholder="Optional input passed to your program…" spellcheck="false"></textarea>
+    </div>
+    <div class="sc-io-col">
+      <div class="sc-io-label">Output</div>
+      <pre class="sc-output"><span class="sc-dim">Run your code to see output here.</span></pre>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---- Config -------------------------------------------------------------
+  // Swap this one URL to your own self-hosted Piston later (free-tier box) —
+  // no other code changes needed. Public endpoint is free, ~5 req/s global.
+  var PISTON = 'https://emkc.org/api/v2/piston';
+  var CM_VER = '5.65.16';
+  var CM_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/' + CM_VER;
+
+  // Major languages -> Piston id (+ aliases), CodeMirror mode, file name, starter.
+  var LANGS = [
+    { name: 'Python',     ids: ['python', 'python3'], mode: 'python', file: 'main.py',
+      starter: 'nums = [2, 7, 11, 15]\ntarget = 9\n\nfor i in range(len(nums)):\n    for j in range(i + 1, len(nums)):\n        if nums[i] + nums[j] == target:\n            print(i, j)\n' },
+    { name: 'JavaScript', ids: ['javascript', 'node', 'js'], mode: 'javascript', file: 'main.js',
+      starter: 'const nums = [2, 7, 11, 15];\nconst target = 9;\nfor (let i = 0; i < nums.length; i++)\n  for (let j = i + 1; j < nums.length; j++)\n    if (nums[i] + nums[j] === target) console.log(i, j);\n' },
+    { name: 'TypeScript', ids: ['typescript', 'ts'], mode: { name: 'javascript', typescript: true }, file: 'main.ts',
+      starter: 'const nums: number[] = [2, 7, 11, 15];\nconst target = 9;\nfor (let i = 0; i < nums.length; i++)\n  for (let j = i + 1; j < nums.length; j++)\n    if (nums[i] + nums[j] === target) console.log(i, j);\n' },
+    { name: 'Java',       ids: ['java'], mode: 'text/x-java', file: 'Main.java',
+      starter: 'public class Main {\n    public static void main(String[] args) {\n        int[] nums = {2, 7, 11, 15};\n        int target = 9;\n        for (int i = 0; i < nums.length; i++)\n            for (int j = i + 1; j < nums.length; j++)\n                if (nums[i] + nums[j] == target)\n                    System.out.println(i + " " + j);\n    }\n}\n' },
+    { name: 'C++',        ids: ['c++', 'cpp'], mode: 'text/x-c++src', file: 'main.cpp',
+      starter: '#include <bits/stdc++.h>\nusing namespace std;\nint main() {\n    vector<int> nums = {2, 7, 11, 15};\n    int target = 9;\n    for (int i = 0; i < nums.size(); i++)\n        for (int j = i + 1; j < nums.size(); j++)\n            if (nums[i] + nums[j] == target)\n                cout << i << " " << j << "\\n";\n}\n' },
+    { name: 'C',          ids: ['c'], mode: 'text/x-csrc', file: 'main.c',
+      starter: '#include <stdio.h>\nint main() {\n    int nums[] = {2, 7, 11, 15}, target = 9, n = 4;\n    for (int i = 0; i < n; i++)\n        for (int j = i + 1; j < n; j++)\n            if (nums[i] + nums[j] == target)\n                printf("%d %d\\n", i, j);\n}\n' },
+    { name: 'C#',         ids: ['csharp', 'csharp.net', 'c#'], mode: 'text/x-csharp', file: 'main.cs',
+      starter: 'using System;\nclass Program {\n    static void Main() {\n        int[] nums = {2, 7, 11, 15};\n        int target = 9;\n        for (int i = 0; i < nums.Length; i++)\n            for (int j = i + 1; j < nums.Length; j++)\n                if (nums[i] + nums[j] == target)\n                    Console.WriteLine(i + " " + j);\n    }\n}\n' },
+    { name: 'Go',         ids: ['go'], mode: 'go', file: 'main.go',
+      starter: 'package main\n\nimport "fmt"\n\nfunc main() {\n    nums := []int{2, 7, 11, 15}\n    target := 9\n    for i := 0; i < len(nums); i++ {\n        for j := i + 1; j < len(nums); j++ {\n            if nums[i]+nums[j] == target {\n                fmt.Println(i, j)\n            }\n        }\n    }\n}\n' },
+    { name: 'Rust',       ids: ['rust'], mode: 'rust', file: 'main.rs',
+      starter: 'fn main() {\n    let nums = [2, 7, 11, 15];\n    let target = 9;\n    for i in 0..nums.len() {\n        for j in (i + 1)..nums.len() {\n            if nums[i] + nums[j] == target {\n                println!("{} {}", i, j);\n            }\n        }\n    }\n}\n' },
+    { name: 'Kotlin',     ids: ['kotlin'], mode: 'text/x-kotlin', file: 'main.kt',
+      starter: 'fun main() {\n    val nums = intArrayOf(2, 7, 11, 15)\n    val target = 9\n    for (i in nums.indices)\n        for (j in i + 1 until nums.size)\n            if (nums[i] + nums[j] == target)\n                println("$i $j")\n}\n' },
+    { name: 'Ruby',       ids: ['ruby'], mode: 'ruby', file: 'main.rb',
+      starter: 'nums = [2, 7, 11, 15]\ntarget = 9\nnums.each_with_index do |a, i|\n  ((i + 1)...nums.length).each do |j|\n    puts "#{i} #{j}" if a + nums[j] == target\n  end\nend\n' }
+  ];
+
+  // ---- Asset loading (once) -----------------------------------------------
+  function loadCss(href) {
+    return new Promise(function (res) {
+      if (document.querySelector('link[href="' + href + '"]')) return res();
+      var l = document.createElement('link');
+      l.rel = 'stylesheet'; l.href = href; l.onload = res; l.onerror = res;
+      document.head.appendChild(l);
+    });
+  }
+  function loadJs(src) {
+    return new Promise(function (res, rej) {
+      if (document.querySelector('script[src="' + src + '"]')) return res();
+      var s = document.createElement('script');
+      s.src = src; s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  var cmReady = null;
+  function loadCodeMirror() {
+    if (cmReady) return cmReady;
+    cmReady = Promise.all([
+      loadCss(CM_BASE + '/codemirror.min.css'),
+      loadCss(CM_BASE + '/theme/material-darker.min.css'),
+      loadCss(CM_BASE + '/theme/eclipse.min.css')
+    ]).then(function () {
+      return loadJs(CM_BASE + '/codemirror.min.js');
+    }).then(function () {
+      // Modes + edit addons (depend on core).
+      return Promise.all([
+        loadJs(CM_BASE + '/mode/clike/clike.min.js'),
+        loadJs(CM_BASE + '/mode/python/python.min.js'),
+        loadJs(CM_BASE + '/mode/javascript/javascript.min.js'),
+        loadJs(CM_BASE + '/mode/go/go.min.js'),
+        loadJs(CM_BASE + '/mode/rust/rust.min.js'),
+        loadJs(CM_BASE + '/mode/ruby/ruby.min.js'),
+        loadJs(CM_BASE + '/addon/edit/closebrackets.min.js'),
+        loadJs(CM_BASE + '/addon/edit/matchbrackets.min.js')
+      ]);
+    });
+    return cmReady;
+  }
+
+  // Fetch Piston runtimes once; resolve each major language to a live version.
+  var runtimesReady = null;
+  function loadRuntimes() {
+    if (runtimesReady) return runtimesReady;
+    runtimesReady = fetch(PISTON + '/runtimes')
+      .then(function (r) { return r.json(); })
+      .then(function (rt) {
+        return LANGS.map(function (L) {
+          var match = null;
+          for (var i = 0; i < rt.length && !match; i++) {
+            var r = rt[i];
+            var names = [r.language].concat(r.aliases || []);
+            for (var k = 0; k < L.ids.length; k++) {
+              if (names.indexOf(L.ids[k]) !== -1) { match = r; break; }
+            }
+          }
+          return match ? Object.assign({}, L, { pistonLang: match.language, version: match.version }) : null;
+        }).filter(Boolean);
+      })
+      .catch(function () { return []; });
+    return runtimesReady;
+  }
+
+  function themeName() {
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'eclipse' : 'material-darker';
+  }
+
+  // ---- Per-widget wiring --------------------------------------------------
+  function initRunner(root, available) {
+    var select = root.querySelector('.sc-lang-select');
+    var runBtn = root.querySelector('.sc-run-btn');
+    var resetBtn = root.querySelector('.sc-reset-btn');
+    var status = root.querySelector('.sc-run-status');
+    var stdinEl = root.querySelector('.sc-stdin');
+    var outEl = root.querySelector('.sc-output');
+    var host = root.querySelector('.sc-editor');
+
+    if (!available.length) {
+      select.innerHTML = '<option>Unavailable</option>';
+      status.textContent = 'Runtime list unavailable';
+      return;
+    }
+
+    // Build language dropdown from resolved runtimes.
+    select.innerHTML = '';
+    available.forEach(function (L, i) {
+      var o = document.createElement('option');
+      o.value = String(i); o.textContent = L.name;
+      select.appendChild(o);
+    });
+
+    var wanted = (root.getAttribute('data-default-lang') || '').toLowerCase();
+    var startIdx = 0;
+    available.forEach(function (L, i) {
+      if (L.ids.indexOf(wanted) !== -1 || L.name.toLowerCase() === wanted) startIdx = i;
+    });
+    select.value = String(startIdx);
+
+    var cm = CodeMirror(host, {
+      value: available[startIdx].starter,
+      mode: available[startIdx].mode,
+      theme: themeName(),
+      lineNumbers: true,
+      indentUnit: 4,
+      tabSize: 4,
+      autoCloseBrackets: true,
+      matchBrackets: true,
+      viewportMargin: Infinity
+    });
+
+    var edited = false;
+    cm.on('change', function () { edited = true; });
+
+    function currentLang() { return available[parseInt(select.value, 10)]; }
+
+    function applyLang(resetCode) {
+      var L = currentLang();
+      cm.setOption('mode', L.mode);
+      if (resetCode) { cm.setValue(L.starter); edited = false; }
+    }
+
+    select.addEventListener('change', function () {
+      // Only overwrite code with the new starter if the user hasn't edited.
+      applyLang(!edited);
+    });
+
+    resetBtn.addEventListener('click', function () {
+      cm.setValue(currentLang().starter);
+      edited = false;
+      outEl.innerHTML = '<span class="sc-dim">Run your code to see output here.</span>';
+    });
+
+    // Keep editor theme in sync with the site's light/dark toggle.
+    new MutationObserver(function () { cm.setOption('theme', themeName()); })
+      .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c];
+      });
+    }
+
+    // POST to Piston with a single retry on 429 (global rate limit).
+    function execute(payload) {
+      function once() {
+        return fetch(PISTON + '/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
+      return once().then(function (res) {
+        if (res.status === 429) {
+          status.textContent = 'Busy, retrying…';
+          return new Promise(function (r) { setTimeout(r, 1200); }).then(once);
+        }
+        return res;
+      });
+    }
+
+    var running = false;
+    function run() {
+      if (running) return;              // debounce: block concurrent runs
+      running = true;
+      runBtn.disabled = true;
+      status.textContent = 'Running…';
+      outEl.innerHTML = '<span class="sc-dim">Executing…</span>';
+
+      var L = currentLang();
+      execute({
+        language: L.pistonLang,
+        version: L.version,
+        files: [{ name: L.file, content: cm.getValue() }],
+        stdin: stdinEl.value || ''
+      }).then(function (res) {
+        if (res.status === 429) throw new Error('Rate limited. Try again in a moment.');
+        if (!res.ok) throw new Error('Execution service error (' + res.status + ').');
+        return res.json();
+      }).then(function (data) {
+        var html = '';
+        if (data.compile && data.compile.code !== 0 && data.compile.stderr) {
+          html += '<span class="sc-err">' + esc(data.compile.stderr) + '</span>';
+        }
+        var run = data.run || {};
+        if (run.stdout) html += esc(run.stdout);
+        if (run.stderr) html += '<span class="sc-err">' + esc(run.stderr) + '</span>';
+        if (!html) html = '<span class="sc-dim">(no output)</span>';
+        outEl.innerHTML = html;
+        var code = run.code;
+        status.innerHTML = code === 0
+          ? '<span class="sc-ok">✓ exit 0</span>'
+          : '<span class="sc-err">exit ' + esc(code) + '</span>';
+      }).catch(function (err) {
+        outEl.innerHTML = '<span class="sc-err">' + esc(err.message || 'Something went wrong.') + '</span>';
+        status.textContent = '';
+      }).then(function () {
+        running = false;
+        runBtn.disabled = false;
+      });
+    }
+
+    runBtn.addEventListener('click', run);
+    // Ctrl/Cmd + Enter to run from inside the editor.
+    cm.setOption('extraKeys', {
+      'Cmd-Enter': run,
+      'Ctrl-Enter': run
+    });
+
+    runBtn.disabled = false;
+    status.textContent = '';
+  }
+
+  function boot() {
+    var roots = document.querySelectorAll('.sc-runner');
+    if (!roots.length) return;
+    Promise.all([loadCodeMirror(), loadRuntimes()]).then(function (r) {
+      var available = r[1];
+      roots.forEach(function (root) {
+        if (root.getAttribute('data-inited')) return;
+        root.setAttribute('data-inited', '1');
+        initRunner(root, available);
+      });
+    });
+  }
+
+  if (document.readyState !== 'loading') boot();
+  else document.addEventListener('DOMContentLoaded', boot);
+})();
+</script>
