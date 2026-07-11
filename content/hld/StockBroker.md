@@ -1,7 +1,7 @@
 ---
 layout: default
-title: "Design Robinhood / Zerodha - Stock Broker System Design Interview"
-description: "System design for a stock broker like Robinhood or Zerodha with order matching, transaction history, notifications, and delivery semantics. Event-driven architecture with Kafka."
+title: "Zerodha / Robinhood System Design (HLD) - Stock Broker"
+description: "Stock broker system design (Zerodha, Robinhood, Groww): order matching engine, CQRS event sourcing, Kafka, and exactly-once execution. Full HLD with diagrams."
 permalink: /hld/StockBroker/
 ---
 

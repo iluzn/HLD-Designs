@@ -1,8 +1,8 @@
 ---
 permalink: /hld/Zomato/
 layout: default
-title: "Design Zomato / Uber Eats - Food Delivery System Design Interview"
-description: "System design for Designing a Food Delivery Service Like Zomato, Uber Eats, or DoorDash - architecture, deep dives, and trade-offs"
+title: "Zomato / Uber Eats System Design (HLD) - Food Delivery"
+description: "Food delivery system design (Zomato, Uber Eats, DoorDash): restaurant search, order dispatch, live tracking with Redis Geo, Elasticsearch and WebSockets. Full HLD."
 ---
 
 # Designing a Food Delivery Service Like Zomato / Uber Eats / DoorDash

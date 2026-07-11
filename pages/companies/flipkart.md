@@ -1,7 +1,7 @@
 ---
 layout: default
-title: "Flipkart Interview Prep - System Design, DSA & Machine Coding"
-description: "Curated HLD, DSA, and LLD problems asked at Flipkart. Twitter Feed, Merge K Sorted Lists, Coin Change, Parking Lot, Splitwise."
+title: "Flipkart Interview Prep - DSA, System Design & Machine Coding"
+description: "Curated DSA, HLD, and LLD questions asked at Flipkart and Flipkart GRiD: Twitter Feed, Merge K Sorted Lists, Coin Change, Parking Lot, Splitwise."
 permalink: /companies/flipkart
 ---
 

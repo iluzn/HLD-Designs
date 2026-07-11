@@ -1,8 +1,8 @@
 ---
 permalink: /hld/NotificationSystem/
 layout: default
-title: "Design a Notification System - System Design Interview"
-description: "System design for Notification System - HLD - architecture, deep dives, and trade-offs"
+title: "Notification System Design (HLD) | System Design Interview"
+description: "Notification system design (HLD): multi-channel push, email and SMS, Kafka fan-out, rate limiting, and 11 deep dives with architecture diagrams and trade-offs."
 ---
 
 # Notification System - HLD
