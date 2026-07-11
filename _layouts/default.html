@@ -306,34 +306,55 @@
         </aside>
     </div>
 
-    <!-- Comments (Giscus) -->
+    <!-- Comments (Firestore-backed) -->
     <div id="comments-section" style="max-width:900px;margin:0 auto;padding:0 1.5rem 3rem;position:relative;z-index:1;">
-        <h3 style="color:var(--text);font-size:1.05rem;margin-bottom:1rem;padding-top:1.5rem;border-top:1px solid var(--glass-border);">💬 Comments</h3>
-        <script src="https://giscus.app/client.js"
-            data-repo="iluzn/systemcraft-discussions"
-            data-repo-id="R_kgDOTFXBoQ"
-            data-category="General"
-            data-category-id="DIC_kwDOTFXBoc4C_5PE"
-            data-mapping="pathname"
-            data-strict="0"
-            data-reactions-enabled="1"
-            data-emit-metadata="0"
-            data-input-position="top"
-            data-theme="transparent_dark"
-            data-lang="en"
-            data-loading="lazy"
-            crossorigin="anonymous"
-            async>
-        </script>
-        <script>
-            function setGiscusTheme(theme) {
-                var iframe = document.querySelector('iframe.giscus-frame');
-                if (iframe) { iframe.contentWindow.postMessage({ giscus: { setConfig: { theme: theme === 'light' ? 'light' : 'transparent_dark' } } }, 'https://giscus.app'); }
-            }
-            setTimeout(function() { setGiscusTheme(document.documentElement.getAttribute('data-theme') || 'dark'); }, 2000);
-            new MutationObserver(function(m) { m.forEach(function(mut) { if (mut.attributeName === 'data-theme') setGiscusTheme(document.documentElement.getAttribute('data-theme')); }); }).observe(document.documentElement, { attributes: true });
-        </script>
+        <h3 style="color:var(--text);font-size:1.05rem;margin-bottom:1rem;padding-top:1.5rem;border-top:1px solid var(--glass-border);">💬 Comments <span id="comment-count" style="color:var(--text-dim);font-weight:400;font-size:0.85rem;"></span></h3>
+
+        <!-- Sign-in prompt (shown when signed out) -->
+        <div id="comment-signin-prompt" style="display:none;align-items:center;justify-content:space-between;gap:0.8rem;flex-wrap:wrap;background:var(--glass);border:1px solid var(--glass-border);border-radius:10px;padding:0.8rem 1rem;margin-bottom:1.2rem;">
+            <span style="font-size:0.85rem;color:var(--text-muted);">Sign in to join the discussion.</span>
+            <button onclick="document.getElementById('auth-btn').click()" style="background:var(--accent);color:#fff;border:none;padding:0.4rem 0.9rem;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;">Sign in with Google</button>
+        </div>
+
+        <!-- Post form (shown when signed in) -->
+        <div id="comment-form" style="display:none;margin-bottom:1.5rem;">
+            <textarea id="comment-input" maxlength="2000" placeholder="Share your thoughts, ask a question, or add a correction…" style="width:100%;box-sizing:border-box;background:var(--glass);color:var(--text);border:1px solid var(--glass-border);border-radius:10px;padding:0.8rem 1rem;font-family:inherit;font-size:0.9rem;line-height:1.5;resize:vertical;min-height:80px;"></textarea>
+            <div style="display:flex;justify-content:flex-end;margin-top:0.6rem;">
+                <button id="comment-submit" style="background:var(--accent);color:#fff;border:none;padding:0.45rem 1.2rem;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;">Post comment</button>
+            </div>
+        </div>
+
+        <div id="comments-list"></div>
     </div>
+
+    <style>
+        #comments-list .comment-item { display:flex; gap:0.8rem; padding:1rem 0; border-bottom:1px solid var(--glass-border); }
+        #comments-list .comment-avatar { width:36px; height:36px; border-radius:50%; flex-shrink:0; object-fit:cover; }
+        #comments-list .comment-body { flex:1; min-width:0; }
+        #comments-list .comment-head { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem; }
+        #comments-list .comment-name { font-size:0.85rem; font-weight:600; color:var(--text); }
+        #comments-list .comment-time { font-size:0.72rem; color:var(--text-dim); }
+        #comments-list .comment-delete { margin-left:auto; background:none; border:none; color:var(--text-dim); font-size:0.72rem; cursor:pointer; padding:0.1rem 0.3rem; border-radius:4px; }
+        #comments-list .comment-delete:hover { color:#ef4444; }
+        #comments-list .comment-text { font-size:0.88rem; color:var(--text-muted); line-height:1.55; white-space:pre-wrap; word-wrap:break-word; }
+        #comments-list .comment-empty { font-size:0.85rem; color:var(--text-dim); padding:1rem 0; }
+    </style>
+    <script>
+        (function() {
+            var submit = document.getElementById('comment-submit');
+            var input = document.getElementById('comment-input');
+            if (submit && input) {
+                submit.addEventListener('click', async function() {
+                    var text = input.value;
+                    if (!text.trim() || !window.postComment) return;
+                    submit.disabled = true;
+                    var ok = await window.postComment(text);
+                    if (ok) input.value = '';
+                    submit.disabled = false;
+                });
+            }
+        })();
+    </script>
 
     <footer>
         <p>&copy; 2026 SystemCraft &middot; <a href="/">Home</a> &middot; <a href="/hld">HLD</a> &middot; <a href="/lld">LLD</a> &middot; <a href="/dsa">DSA</a> &middot; <a href="/system-design-interview-guide">Guide</a> &middot; <a href="/cheatsheet">Cheatsheet</a> &middot; <a href="/companies/amazon">Companies</a> &middot; <a href="/about">About</a> &middot; <a href="/privacy">Privacy</a></p>

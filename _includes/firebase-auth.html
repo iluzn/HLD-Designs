@@ -5,7 +5,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getAuth, signInWithPopup, signInWithRedirect, signInWithCredential, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, deleteDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBRZYsCxcjkug4EVGmMuhAgKM4moRH_ewA",
@@ -130,6 +130,10 @@ onAuthStateChanged(auth, async function(user) {
         var progressStrip = document.getElementById('progress-strip');
         if (progressStrip) progressStrip.style.opacity = '1';
 
+        // Comments
+        updateCommentUI();
+        loadComments();
+
     } else {
         window._firebaseUser = null;
         window._userProgress = null;
@@ -151,6 +155,10 @@ onAuthStateChanged(auth, async function(user) {
         // Dim HLD/LLD progress strip
         var progressStrip = document.getElementById('progress-strip');
         if (progressStrip) progressStrip.style.opacity = '0.5';
+
+        // Comments (still readable when signed out)
+        updateCommentUI();
+        loadComments();
     }
 });
 
@@ -277,4 +285,135 @@ window.saveDesignReadToFirestore = async function(designPath) {
         }
     } catch (err) { console.error('Firestore design-read write error:', err); }
 };
+
+/* ---------------- Comments (Firestore-backed) ---------------- */
+
+function timeAgo(ts) {
+    if (!ts) return '';
+    var s = Math.floor((Date.now() - ts) / 1000);
+    if (s < 60) return 'just now';
+    var m = Math.floor(s / 60); if (m < 60) return m + 'm ago';
+    var h = Math.floor(m / 60); if (h < 24) return h + 'h ago';
+    var d = Math.floor(h / 24); if (d < 30) return d + 'd ago';
+    var mo = Math.floor(d / 30); if (mo < 12) return mo + 'mo ago';
+    return Math.floor(mo / 12) + 'y ago';
+}
+
+// Toggle the post form vs the sign-in prompt based on auth state.
+function updateCommentUI() {
+    var form = document.getElementById('comment-form');
+    var prompt = document.getElementById('comment-signin-prompt');
+    if (!form || !prompt) return;
+    if (window._firebaseUser) {
+        form.style.display = 'block';
+        prompt.style.display = 'none';
+    } else {
+        form.style.display = 'none';
+        prompt.style.display = 'flex';
+    }
+}
+window.updateCommentUI = updateCommentUI;
+
+// Render a list of comment objects into #comments-list (XSS-safe via DOM).
+function renderComments(items) {
+    var listEl = document.getElementById('comments-list');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+    var countEl = document.getElementById('comment-count');
+    if (countEl) countEl.textContent = items.length ? '(' + items.length + ')' : '';
+    if (!items.length) {
+        var empty = document.createElement('div');
+        empty.className = 'comment-empty';
+        empty.textContent = 'No comments yet. Be the first to start the discussion.';
+        listEl.appendChild(empty);
+        return;
+    }
+    var myUid = window._firebaseUser ? window._firebaseUser.uid : null;
+    items.forEach(function(c) {
+        var item = document.createElement('div');
+        item.className = 'comment-item';
+
+        var avatar = document.createElement('img');
+        avatar.className = 'comment-avatar';
+        avatar.src = c.photo || '/favicon-48x48.png';
+        avatar.alt = c.name || 'User';
+        avatar.referrerPolicy = 'no-referrer';
+        item.appendChild(avatar);
+
+        var body = document.createElement('div');
+        body.className = 'comment-body';
+
+        var head = document.createElement('div');
+        head.className = 'comment-head';
+        var nameEl = document.createElement('span');
+        nameEl.className = 'comment-name';
+        nameEl.textContent = c.name || 'Anonymous';
+        var timeEl = document.createElement('span');
+        timeEl.className = 'comment-time';
+        timeEl.textContent = timeAgo(c.createdAt);
+        head.appendChild(nameEl);
+        head.appendChild(timeEl);
+
+        if (myUid && c.uid === myUid) {
+            var del = document.createElement('button');
+            del.className = 'comment-delete';
+            del.textContent = 'Delete';
+            del.addEventListener('click', function() {
+                if (confirm('Delete this comment?')) window.deleteComment(c._id);
+            });
+            head.appendChild(del);
+        }
+        body.appendChild(head);
+
+        var textEl = document.createElement('div');
+        textEl.className = 'comment-text';
+        textEl.textContent = c.text || '';
+        body.appendChild(textEl);
+
+        item.appendChild(body);
+        listEl.appendChild(item);
+    });
+}
+
+window.loadComments = async function() {
+    var listEl = document.getElementById('comments-list');
+    if (!listEl) return;
+    try {
+        var q = query(collection(db, 'comments'), where('page', '==', window.location.pathname));
+        var snap = await getDocs(q);
+        var items = [];
+        snap.forEach(function(d) { var c = d.data(); c._id = d.id; items.push(c); });
+        items.sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+        renderComments(items);
+    } catch (err) { console.error('Comment load error:', err); }
+};
+
+window.postComment = async function(text) {
+    if (!window._firebaseUser) return false;
+    text = (text || '').trim();
+    if (!text) return false;
+    if (text.length > 2000) { alert('Comment is too long (max 2000 characters).'); return false; }
+    try {
+        await addDoc(collection(db, 'comments'), {
+            page: window.location.pathname,
+            uid: window._firebaseUser.uid,
+            name: window._firebaseUser.displayName || 'Anonymous',
+            photo: window._firebaseUser.photoURL || '',
+            text: text,
+            createdAt: Date.now()
+        });
+        await window.loadComments();
+        return true;
+    } catch (err) { console.error('Comment post error:', err); alert('Could not post comment. Please try again.'); return false; }
+};
+
+window.deleteComment = async function(id) {
+    try {
+        await deleteDoc(doc(db, 'comments', id));
+        await window.loadComments();
+    } catch (err) { console.error('Comment delete error:', err); }
+};
+
+// Initial load for signed-out visitors (auth listener also triggers this).
+window.addEventListener('load', function() { if (window.loadComments) window.loadComments(); });
 </script>
