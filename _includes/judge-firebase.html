@@ -1,0 +1,68 @@
+<!-- Per-user judge progress (solved + submissions) stored in Firestore under
+     users/{uid}.judge, so it is tied to the signed-in account and synced
+     across devices. Falls back to a local "anonymous" bucket when signed out.
+     Exposes: window._scUser, window._scJudge, window._scJudgeReady,
+     window.scJudgeMarkSolved(slug), window.scJudgeAddSub(slug, sub). -->
+<script type="module">
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBRZYsCxcjkug4EVGmMuhAgKM4moRH_ewA",
+  authDomain: "systemcraft-in.firebaseapp.com",
+  projectId: "systemcraft-in",
+  storageBucket: "systemcraft-in.firebasestorage.app",
+  messagingSenderId: "57513541148",
+  appId: "1:57513541148:web:f929b383e79a7bf97869d9"
+};
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const ANON_KEY = 'sc-lc-anon';
+function loadAnon() { try { return JSON.parse(localStorage.getItem(ANON_KEY) || '{"solved":[],"subs":{}}'); } catch (e) { return { solved: [], subs: {} }; } }
+
+window._scUser = null;
+window._scJudgeReady = false;
+window._scJudge = loadAnon();
+
+function emitReady() { window._scJudgeReady = true; document.dispatchEvent(new CustomEvent('sc-judge-ready')); }
+
+onAuthStateChanged(auth, async function (user) {
+  if (user) {
+    window._scUser = { uid: user.uid, email: user.email, name: user.displayName, photo: user.photoURL };
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      const j = (snap.exists() && snap.data().judge) ? snap.data().judge : { solved: [], subs: {} };
+      window._scJudge = { solved: j.solved || [], subs: j.subs || {} };
+    } catch (e) { /* keep whatever we have */ }
+  } else {
+    window._scUser = null;
+    window._scJudge = loadAnon();
+  }
+  emitReady();
+});
+
+async function persist() {
+  if (window._scUser) {
+    try { await setDoc(doc(db, 'users', window._scUser.uid), { judge: window._scJudge }, { merge: true }); } catch (e) { console.error('judge save failed', e); }
+  } else {
+    try { localStorage.setItem(ANON_KEY, JSON.stringify(window._scJudge)); } catch (e) {}
+  }
+}
+
+window.scJudgeMarkSolved = function (slug) {
+  if (!window._scJudge.solved) window._scJudge.solved = [];
+  if (window._scJudge.solved.indexOf(slug) === -1) { window._scJudge.solved.push(slug); persist(); }
+};
+window.scJudgeAddSub = function (slug, sub) {
+  if (sub && sub.code && sub.code.length > 10000) sub.code = sub.code.slice(0, 10000);
+  if (!window._scJudge.subs) window._scJudge.subs = {};
+  var s = window._scJudge.subs[slug] || [];
+  s.unshift(sub);
+  if (s.length > 20) s = s.slice(0, 20);
+  window._scJudge.subs[slug] = s;
+  persist();
+};
+</script>

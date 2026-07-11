@@ -35,10 +35,14 @@
   function prefLang() { var l = lsGet(LANG_KEY, 'java'); return LANG_KEYS.indexOf(l) !== -1 ? l : LANG_KEYS[0]; }
   function curLang() { return langSel.value; }
 
-  function isSolved() { return lsGet(SOLVED_KEY, []).indexOf(P.id) !== -1; }
-  function markSolved() { var s = lsGet(SOLVED_KEY, []); if (s.indexOf(P.id) === -1) { s.push(P.id); lsSet(SOLVED_KEY, s); } }
-  function subs() { return lsGet(SUBS_KEY, []); }
-  function addSub(rec) { var a = subs(); a.unshift(rec); if (a.length > 30) a = a.slice(0, 30); lsSet(SUBS_KEY, a); }
+  // Solved + submissions live in the signed-in user's Firestore doc (via
+  // judge-firebase.html), so they are per-account and synced. Falls back to a
+  // local anonymous bucket when signed out.
+  function judgeData() { return window._scJudge || { solved: [], subs: {} }; }
+  function isSolved() { var d = judgeData(); return !!(d.solved && d.solved.indexOf(P.id) !== -1); }
+  function markSolved() { if (window.scJudgeMarkSolved) window.scJudgeMarkSolved(P.id); }
+  function subs() { var d = judgeData(); return (d.subs && d.subs[P.id]) || []; }
+  function addSub(rec) { if (window.scJudgeAddSub) window.scJudgeAddSub(P.id, rec); }
 
   // ---- asset loading ----
   function loadCss(h) { return new Promise(function (r) { if (document.querySelector('link[href="' + h + '"]')) return r(); var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = h; l.onload = r; l.onerror = r; document.head.appendChild(l); }); }
@@ -178,12 +182,13 @@
 
   // ---- left pane tabs ----
   function paintSolved() {
-    if (!isSolved()) return;
-    if (leftBody.querySelector('.lc-solved-badge')) return;
+    if (!leftBody) return;
     var h1 = leftBody.querySelector('h1');
-    if (h1 && !h1.querySelector('.lc-solved-badge')) {
-      var b = document.createElement('span'); b.className = 'lc-solved-badge'; b.innerHTML = '✓ Solved'; h1.appendChild(b);
-    }
+    if (!h1) return;
+    var existing = h1.querySelector('.lc-solved-badge');
+    if (isSolved()) {
+      if (!existing) { var b = document.createElement('span'); b.className = 'lc-solved-badge'; b.innerHTML = '✓ Solved'; h1.appendChild(b); }
+    } else if (existing) { existing.remove(); }
   }
 
   function timeAgo(ts) {
@@ -259,6 +264,12 @@
 
     descHtml = leftBody.innerHTML;
     paintSolved();
+    // Progress loads async once auth resolves; re-paint when it's ready or changes.
+    document.addEventListener('sc-judge-ready', function () {
+      paintSolved();
+      var active = document.querySelector('.lc-ltab.active');
+      if (active && active.getAttribute('data-ltab') === 'submissions') showLeftTab('submissions');
+    });
 
     LANG_KEYS.forEach(function (k) { var o = document.createElement('option'); o.value = k; o.textContent = META[k].name; langSel.appendChild(o); });
     langSel.value = prefLang();

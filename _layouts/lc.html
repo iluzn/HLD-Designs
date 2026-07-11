@@ -216,6 +216,7 @@
     <script>
     (function(){var b=document.getElementById('theme-btn');function set(t){document.documentElement.setAttribute('data-theme',t);localStorage.setItem('theme',t);b.textContent=t==='dark'?'☀️':'🌙';}var cur=localStorage.getItem('theme')||'dark';b.textContent=cur==='dark'?'☀️':'🌙';b.addEventListener('click',function(){set(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');});})();
     </script>
+    {% include judge-firebase.html %}
     {% include lc-judge.html %}
 </body>
 </html>

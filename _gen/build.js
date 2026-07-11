@@ -161,7 +161,8 @@ var rows = indexRows.map(function (r, i) {
 var idx = '---\nlayout: default\ntitle: "Problemset - Practice Coding Problems"\ndescription: "SystemCraft Problemset. Solve LeetCode-style problems in Python, Java, C++, or JavaScript with an in-browser judge, test cases, and instant verdicts."\npermalink: /problemset\n---\n\n' +
   '# Problemset\n\nSolve problems in your browser — pick a language, implement the function, and Submit for an instant verdict. Your solved problems are tracked automatically.\n\n' +
   '| # | Problem | Difficulty | Topics |\n|---|---|---|---|\n' + rows + '\n\n' +
-  '<script>(function(){try{var solved=JSON.parse(localStorage.getItem("sc-lc-solved")||"[]");document.querySelectorAll("a[data-slug]").forEach(function(a){if(solved.indexOf(a.getAttribute("data-slug"))!==-1){a.insertAdjacentHTML("beforebegin","<span style=\\"color:#22c55e;font-weight:700\\">\\u2713</span> ");}});}catch(e){}})();</script>\n';
+  '{% include judge-firebase.html %}\n' +
+  '<script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\\"color:#22c55e;font-weight:700\\">\\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>\n';
 fs.writeFileSync(path.join(__dirname, '..', 'content', 'problemset.md'), idx);
 
 console.log('Generated ' + P.length + ' problems + problemset index.');

@@ -27,4 +27,5 @@ Solve problems in your browser — pick a language, implement the function, and 
 | 14 | [Binary Search](/dsa/problem/binary-search){:data-slug="binary-search"} | 🟢 Easy | Array, Binary Search |
 | 15 | [Search Insert Position](/dsa/problem/search-insert-position){:data-slug="search-insert-position"} | 🟢 Easy | Array, Binary Search |
 
-<script>(function(){try{var solved=JSON.parse(localStorage.getItem("sc-lc-solved")||"[]");document.querySelectorAll("a[data-slug]").forEach(function(a){if(solved.indexOf(a.getAttribute("data-slug"))!==-1){a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}})();</script>
+{% include judge-firebase.html %}
+<script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>
