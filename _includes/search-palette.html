@@ -1,42 +1,47 @@
 <!-- Command palette (⌘K / Ctrl-K) -->
 <style>
-#sc-search-overlay { position: fixed; inset: 0; z-index: 3000; display: none; align-items: flex-start; justify-content: center; padding-top: 12vh; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
-#sc-search-overlay.open { display: flex; animation: scFade 0.15s ease; }
-[data-theme="light"] #sc-search-overlay { background: rgba(15,23,42,0.35); }
-@keyframes scFade { from { opacity: 0; } to { opacity: 1; } }
-.sc-search-box { width: 92%; max-width: 560px; background: var(--header-bg, var(--bg-header, #fff)); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 24px 64px rgba(0,0,0,0.45); overflow: hidden; animation: scPop 0.16s cubic-bezier(0.34,1.56,0.64,1); }
-@keyframes scPop { from { opacity: 0; transform: translateY(-8px) scale(0.98); } to { opacity: 1; transform: none; } }
-.sc-search-top { display: flex; align-items: center; gap: 0.6rem; padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--border); }
-.sc-search-top svg { color: var(--text-dim); flex-shrink: 0; }
-#sc-search-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-family: inherit; font-size: 1rem; }
+#sc-search-overlay { position: fixed; inset: 0; z-index: 3000; display: none; align-items: flex-start; justify-content: center; padding: 14vh 1rem 1rem; background: rgba(8,8,14,0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); opacity: 0; transition: opacity 0.18s ease; }
+#sc-search-overlay.open { display: flex; opacity: 1; }
+[data-theme="light"] #sc-search-overlay { background: rgba(15,23,42,0.32); }
+.sc-search-box { width: 100%; max-width: 580px; background: var(--header-bg, var(--bg-header, #fff)); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(129,140,248,0.08); overflow: hidden; transform: translateY(12px) scale(0.97); opacity: 0; transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), opacity 0.18s ease; }
+#sc-search-overlay.open .sc-search-box { transform: none; opacity: 1; }
+.sc-search-box::before { content: ''; display: block; height: 3px; background: linear-gradient(90deg, var(--accent), #a78bfa, #f472b6); }
+.sc-search-top { display: flex; align-items: center; gap: 0.7rem; padding: 1rem 1.15rem; border-bottom: 1px solid var(--border); }
+.sc-search-top > svg { color: var(--accent); flex-shrink: 0; }
+#sc-search-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-family: inherit; font-size: 1.05rem; }
 #sc-search-input::placeholder { color: var(--text-dim); }
-.sc-search-esc { font-size: 0.62rem; color: var(--text-dim); border: 1px solid var(--border); border-radius: 5px; padding: 0.1rem 0.35rem; }
-.sc-search-results { max-height: 56vh; overflow-y: auto; padding: 0.4rem; }
-.sc-result { display: flex; align-items: center; gap: 0.7rem; padding: 0.6rem 0.8rem; border-radius: 10px; cursor: pointer; text-decoration: none; }
-.sc-result.active, .sc-result:hover { background: rgba(129,140,248,0.12); }
-.sc-result-cat { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #fff; background: var(--accent); padding: 0.12rem 0.4rem; border-radius: 5px; flex-shrink: 0; min-width: 44px; text-align: center; }
-.sc-result-cat.hld { background: #4ade80; } .sc-result-cat.lld { background: #fbbf24; } .sc-result-cat.dsa { background: #f472b6; } .sc-result-cat.concept { background: #818cf8; } .sc-result-cat.company { background: #60a5fa; } .sc-result-cat.guide { background: #a78bfa; }
-.sc-result-body { min-width: 0; }
-.sc-result-title { font-size: 0.88rem; color: var(--text); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sc-result-desc { font-size: 0.74rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sc-search-empty { padding: 2rem 1rem; text-align: center; color: var(--text-dim); font-size: 0.85rem; }
-.sc-search-foot { display: flex; gap: 1rem; padding: 0.55rem 1rem; border-top: 1px solid var(--border); font-size: 0.68rem; color: var(--text-dim); }
-.sc-search-foot b { color: var(--text-muted); font-weight: 600; }
-.sc-search-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 0.3rem 0.6rem; border-radius: 8px; margin-left: 0.15rem; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; transition: all 0.2s; }
-.sc-search-btn:hover { color: var(--text); border-color: var(--accent); }
-.sc-search-btn .sc-kbd { font-size: 0.62rem; border: 1px solid var(--border); border-radius: 4px; padding: 0.02rem 0.28rem; color: var(--text-dim); }
-@media (max-width: 600px) { .sc-search-btn .sc-kbd { display: none; } }
+.sc-search-esc { font-size: 0.6rem; font-weight: 600; color: var(--text-dim); border: 1px solid var(--border); border-radius: 6px; padding: 0.15rem 0.4rem; letter-spacing: 0.05em; }
+.sc-search-results { max-height: 58vh; overflow-y: auto; padding: 0.4rem; scroll-behavior: smooth; }
+.sc-section-label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); padding: 0.6rem 0.8rem 0.3rem; }
+.sc-result { display: flex; align-items: center; gap: 0.75rem; padding: 0.62rem 0.8rem; border-radius: 11px; cursor: pointer; text-decoration: none; position: relative; border: 1px solid transparent; }
+.sc-result.active { background: rgba(129,140,248,0.14); border-color: rgba(129,140,248,0.25); }
+.sc-result-cat { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #0b0b12; padding: 0.16rem 0.45rem; border-radius: 6px; flex-shrink: 0; min-width: 48px; text-align: center; }
+.sc-result-cat.hld { background: #4ade80; } .sc-result-cat.lld { background: #fbbf24; } .sc-result-cat.dsa { background: #f472b6; } .sc-result-cat.concept { background: #818cf8; color:#fff; } .sc-result-cat.company { background: #60a5fa; } .sc-result-cat.guide { background: #a78bfa; color:#fff; }
+.sc-result-body { min-width: 0; flex: 1; }
+.sc-result-title { font-size: 0.9rem; color: var(--text); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-result-title mark { background: transparent; color: var(--accent); font-weight: 800; }
+.sc-result-desc { font-size: 0.74rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.1rem; }
+.sc-result-go { margin-left: auto; flex-shrink: 0; font-size: 0.78rem; color: var(--accent); opacity: 0; transition: opacity 0.15s; }
+.sc-result.active .sc-result-go { opacity: 1; }
+.sc-search-empty { padding: 2.4rem 1rem; text-align: center; color: var(--text-dim); font-size: 0.86rem; }
+.sc-search-empty svg { opacity: 0.4; margin-bottom: 0.6rem; }
+.sc-search-foot { display: flex; gap: 1.1rem; padding: 0.6rem 1rem; border-top: 1px solid var(--border); font-size: 0.68rem; color: var(--text-dim); }
+.sc-search-foot .sc-key { display:inline-flex; align-items:center; justify-content:center; min-width:16px; height:16px; padding:0 4px; border:1px solid var(--border); border-radius:4px; color: var(--text-muted); font-weight:600; margin-right:0.25rem; }
+.sc-search-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 0.3rem 0.6rem; border-radius: 8px; margin-left: 0.15rem; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; transition: all 0.2s; }
+.sc-search-btn:hover { color: var(--text); border-color: var(--accent); background: rgba(129,140,248,0.06); }
+.sc-search-btn .sc-kbd { font-size: 0.62rem; border: 1px solid var(--border); border-radius: 4px; padding: 0.02rem 0.3rem; color: var(--text-dim); }
+@media (max-width: 600px) { .sc-search-btn .sc-kbd { display: none; } .sc-search-foot { display: none; } #sc-search-overlay { padding-top: 8vh; } }
 </style>
 
 <div id="sc-search-overlay">
   <div class="sc-search-box" role="dialog" aria-label="Search">
     <div class="sc-search-top">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
       <input id="sc-search-input" type="text" placeholder="Search designs, concepts, DSA, companies…" autocomplete="off" spellcheck="false">
       <span class="sc-search-esc">ESC</span>
     </div>
     <div class="sc-search-results" id="sc-search-results"></div>
-    <div class="sc-search-foot"><span><b>↑↓</b> navigate</span><span><b>↵</b> open</span><span><b>esc</b> close</span></div>
+    <div class="sc-search-foot"><span><span class="sc-key">↑</span><span class="sc-key">↓</span>navigate</span><span><span class="sc-key">↵</span>open</span><span><span class="sc-key">esc</span>close</span></div>
   </div>
 </div>
 
@@ -50,6 +55,8 @@
     var index = null, filtered = [], active = 0, loaded = false;
     var isMac = /Mac|iPhone|iPad/.test(navigator.platform);
 
+    function esc(s) { return String(s).replace(/[&<>"]/g, function(c) { return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]; }); }
+
     function catFor(url) {
         if (url.indexOf('/hld/') === 0 || url === '/hld') return { key: 'hld', label: 'HLD' };
         if (url.indexOf('/lld/') === 0 || url === '/lld') return { key: 'lld', label: 'LLD' };
@@ -60,50 +67,102 @@
         return { key: 'guide', label: 'Page' };
     }
 
+    function cleanTitle(t) { return (t || '').replace(/\s*[\|\-–—]\s.*$/, '').trim(); }
+
     function loadIndex() {
         if (loaded) return Promise.resolve();
         return fetch('/search.json').then(function(r) { return r.json(); }).then(function(data) {
-            index = data.filter(function(p) { return p.title && p.url; });
+            index = data.filter(function(p) { return p.title && p.url; }).map(function(p) {
+                p._t = cleanTitle(p.title); p._tl = p._t.toLowerCase(); p._dl = (p.desc || '').toLowerCase();
+                return p;
+            });
             loaded = true;
         }).catch(function() { index = []; loaded = true; });
     }
 
-    function score(item, q) {
-        var t = (item.title || '').toLowerCase();
-        var d = (item.desc || '').toLowerCase();
-        if (t === q) return 100;
-        if (t.indexOf(q) === 0) return 90;
-        if (t.indexOf(q) !== -1) return 70;
-        if (d.indexOf(q) !== -1) return 40;
-        return 0;
+    // Fuzzy subsequence scorer: chars of q must appear in order in text.
+    // Rewards consecutive matches and word-boundary starts.
+    function fuzzy(text, q) {
+        if (!q) return { score: 0, pos: [] };
+        var ti = 0, score = 0, pos = [], run = 0, prev = -2;
+        for (var i = 0; i < q.length; i++) {
+            var idx = text.indexOf(q[i], ti);
+            if (idx === -1) return null;
+            var boundary = idx === 0 || /[^a-z0-9]/.test(text[idx - 1]);
+            if (idx === prev + 1) { run++; score += 6 + run * 4; } else { run = 0; score += 1; }
+            if (boundary) score += 10;
+            pos.push(idx); prev = idx; ti = idx + 1;
+        }
+        score += Math.max(0, 12 - (text.length - q.length) * 0.15);
+        return { score: score, pos: pos };
+    }
+
+    // Score an item against a (possibly multi-word) query.
+    function scoreItem(it, q) {
+        var terms = q.split(/\s+/).filter(Boolean);
+        var total = 0;
+        for (var i = 0; i < terms.length; i++) {
+            var t = terms[i];
+            var inTitle = it._tl.indexOf(t) !== -1;
+            var inDesc = it._dl.indexOf(t) !== -1;
+            if (inTitle) { total += 60 + (it._tl.indexOf(t) === 0 ? 30 : 0); }
+            else if (inDesc) { total += 25; }
+            else {
+                var f = fuzzy(it._tl, t);
+                if (f) total += f.score;
+                else { var fd = fuzzy(it._dl, t); if (fd) total += fd.score * 0.4; else return -1; }
+            }
+        }
+        if (it._tl.indexOf(q) === 0) total += 40;
+        else if (it._tl.indexOf(q) !== -1) total += 20;
+        total -= it._t.length * 0.05; // slight preference for tighter titles
+        return total;
+    }
+
+    // Highlight subsequence of the collapsed query within the display title.
+    function highlight(title, q) {
+        var cq = q.replace(/\s+/g, '').toLowerCase();
+        if (!cq) return esc(title);
+        var lower = title.toLowerCase(), out = '', qi = 0;
+        for (var i = 0; i < title.length; i++) {
+            if (qi < cq.length && lower[i] === cq[qi]) { out += '<mark>' + esc(title[i]) + '</mark>'; qi++; }
+            else out += esc(title[i]);
+        }
+        return qi === cq.length ? out : esc(title);
     }
 
     function render() {
         var q = input.value.trim().toLowerCase();
         if (!index) { results.innerHTML = '<div class="sc-search-empty">Loading…</div>'; return; }
+        var label;
         if (!q) {
             filtered = index.slice(0, 8);
+            label = 'Jump to';
         } else {
-            filtered = index.map(function(it) { return { it: it, s: score(it, q) }; })
+            filtered = index.map(function(it) { return { it: it, s: scoreItem(it, q) }; })
                 .filter(function(x) { return x.s > 0; })
                 .sort(function(a, b) { return b.s - a.s; })
-                .slice(0, 12)
+                .slice(0, 14)
                 .map(function(x) { return x.it; });
+            label = filtered.length + ' result' + (filtered.length === 1 ? '' : 's');
         }
         active = 0;
-        if (!filtered.length) { results.innerHTML = '<div class="sc-search-empty">No matches for "' + q.replace(/</g,'') + '"</div>'; return; }
-        results.innerHTML = '';
+        if (!filtered.length) {
+            results.innerHTML = '<div class="sc-search-empty"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><div>No matches for "' + esc(q) + '"</div></div>';
+            return;
+        }
+        var html = '<div class="sc-section-label">' + label + '</div>';
         filtered.forEach(function(it, i) {
             var cat = catFor(it.url);
-            var a = document.createElement('a');
-            a.className = 'sc-result' + (i === 0 ? ' active' : '');
-            a.href = it.url;
-            a.innerHTML = '<span class="sc-result-cat ' + cat.key + '">' + cat.label + '</span>' +
-                '<span class="sc-result-body"><span class="sc-result-title"></span><span class="sc-result-desc"></span></span>';
-            a.querySelector('.sc-result-title').textContent = it.title.replace(/ [\|\-–].*$/, '');
-            a.querySelector('.sc-result-desc').textContent = it.desc || it.url;
-            a.addEventListener('mouseenter', function() { setActive(i); });
-            results.appendChild(a);
+            html += '<a class="sc-result' + (i === 0 ? ' active' : '') + '" href="' + esc(it.url) + '" data-i="' + i + '">' +
+                '<span class="sc-result-cat ' + cat.key + '">' + cat.label + '</span>' +
+                '<span class="sc-result-body"><span class="sc-result-title">' + highlight(it._t, q) + '</span>' +
+                '<span class="sc-result-desc">' + esc(it.desc || it.url) + '</span></span>' +
+                '<span class="sc-result-go">↵</span></a>';
+        });
+        results.innerHTML = html;
+        results.querySelectorAll('.sc-result').forEach(function(el) {
+            el.addEventListener('mouseenter', function() { setActive(parseInt(el.dataset.i, 10)); });
         });
     }
 
@@ -119,7 +178,7 @@
         overlay.classList.add('open');
         document.body.style.overflow = 'hidden';
         loadIndex().then(render);
-        setTimeout(function() { input.focus(); }, 20);
+        setTimeout(function() { input.focus(); }, 30);
     }
     function close() {
         overlay.classList.remove('open');
@@ -140,13 +199,11 @@
     });
     overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
 
-    // Global shortcut: Cmd/Ctrl+K, and "/" when not typing.
     document.addEventListener('keydown', function(e) {
         if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); overlay.classList.contains('open') ? close() : open(); }
         else if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !document.activeElement.isContentEditable) { e.preventDefault(); open(); }
     });
 
-    // Inject a search button into the nav on every page.
     function injectButton() {
         var nav = document.querySelector('nav');
         if (!nav || document.querySelector('.sc-search-btn')) return;
