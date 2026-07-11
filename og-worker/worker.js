@@ -36,12 +36,11 @@ export default {
   },
 };
 
-// ---- Code execution proxy (Piston) --------------------------------------
-
-function pistonBase(env) {
-  // Trailing slashes stripped so we can append /execute etc.
-  return (env && env.PISTON_URL ? env.PISTON_URL : '').replace(/\/+$/, '');
-}
+// ---- Code execution proxy ------------------------------------------------
+// Two backends are supported. If GLOT_TOKEN is set, code runs on glot.io
+// (free, no credit card). Otherwise, if PISTON_URL is set, it runs on a
+// self-hosted Piston. Both are adapted to the same Piston-shaped response
+// the frontend expects: { run: { stdout, stderr, code, signal }, compile }.
 
 function jsonResponse(obj, status = 200) {
   return new Response(JSON.stringify(obj), {
@@ -50,28 +49,47 @@ function jsonResponse(obj, status = 200) {
   });
 }
 
+function pistonBase(env) {
+  return (env && env.PISTON_URL ? env.PISTON_URL : '').replace(/\/+$/, '');
+}
+
+// Frontend language tokens -> glot.io language identifiers.
+const GLOT_LANG = {
+  python: 'python', python3: 'python', py: 'python',
+  java: 'java',
+  'c++': 'cpp', cpp: 'cpp',
+  c: 'c',
+  javascript: 'javascript', node: 'javascript', js: 'javascript',
+  typescript: 'typescript', ts: 'typescript',
+  go: 'go', golang: 'go',
+  rust: 'rust',
+  ruby: 'ruby',
+  csharp: 'csharp', 'c#': 'csharp',
+  kotlin: 'kotlin',
+};
+
 async function handleRuntimes(env) {
-  const base = pistonBase(env);
-  if (!base) return jsonResponse({ error: 'PISTON_URL not configured' }, 503);
-  try {
-    const res = await fetch(base + '/runtimes', {
-      headers: { 'Accept': 'application/json' },
-      cf: { cacheTtl: 300, cacheEverything: true },
-    });
-    const body = await res.text();
-    return new Response(body, {
-      status: res.status,
-      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300', ...CORS },
-    });
-  } catch (e) {
-    return jsonResponse({ error: 'Runtime list unavailable' }, 502);
+  if (pistonBase(env)) {
+    try {
+      const res = await fetch(pistonBase(env) + '/runtimes', { headers: { Accept: 'application/json' } });
+      const body = await res.text();
+      return new Response(body, {
+        status: res.status,
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300', ...CORS },
+      });
+    } catch (e) {
+      return jsonResponse({ error: 'Runtime list unavailable' }, 502);
+    }
   }
+  // glot / default: advertise a static set (versions are always "latest").
+  return jsonResponse([
+    { language: 'python', version: 'latest', aliases: ['python3', 'py'] },
+    { language: 'java', version: 'latest', aliases: [] },
+    { language: 'cpp', version: 'latest', aliases: ['c++'] },
+  ]);
 }
 
 async function handleExecute(request, env) {
-  const base = pistonBase(env);
-  if (!base) return jsonResponse({ error: 'Execution backend not configured' }, 503);
-
   let payload;
   try {
     payload = await request.json();
@@ -79,14 +97,44 @@ async function handleExecute(request, env) {
     return jsonResponse({ error: 'Invalid JSON body' }, 400);
   }
 
-  // Guardrails: cap source size to avoid abuse of the shared backend.
   const files = Array.isArray(payload.files) ? payload.files : [];
   const totalSize = files.reduce((n, f) => n + (f && f.content ? f.content.length : 0), 0);
-  if (totalSize > 60000) {
-    return jsonResponse({ error: 'Source too large (60KB max)' }, 413);
-  }
+  if (totalSize > 60000) return jsonResponse({ error: 'Source too large (60KB max)' }, 413);
 
-  // Sensible default limits; callers may override.
+  if (env && env.GLOT_TOKEN) return execViaGlot(env, payload, files);
+  if (pistonBase(env)) return execViaPiston(env, payload, files);
+  return jsonResponse({ error: 'Execution backend not configured' }, 503);
+}
+
+async function execViaGlot(env, payload, files) {
+  const raw = (payload.language || '').toLowerCase();
+  const lang = GLOT_LANG[raw] || raw;
+  try {
+    const res = await fetch('https://run.glot.io/languages/' + encodeURIComponent(lang) + '/latest', {
+      method: 'POST',
+      headers: { Authorization: 'Token ' + env.GLOT_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        files: files.map((f) => ({ name: f.name, content: f.content })),
+        stdin: payload.stdin || '',
+      }),
+    });
+    if (!res.ok) {
+      return jsonResponse({ run: { stdout: '', stderr: 'Execution service error (' + res.status + ')', code: 1, signal: null }, compile: null });
+    }
+    const g = await res.json();
+    const timedOut = g.error && /timeout/i.test(g.error);
+    const stderr = [g.stderr, g.error && g.error !== '' ? g.error : ''].filter(Boolean).join('\n');
+    return jsonResponse({
+      run: { stdout: g.stdout || '', stderr: stderr, code: stderr || timedOut ? 1 : 0, signal: timedOut ? 'SIGKILL' : null },
+      compile: null,
+    });
+  } catch (e) {
+    return jsonResponse({ error: 'Execution service unreachable' }, 502);
+  }
+}
+
+async function execViaPiston(env, payload, files) {
+  const base = pistonBase(env);
   const body = {
     language: payload.language,
     version: payload.version || '*',
@@ -96,7 +144,6 @@ async function handleExecute(request, env) {
     run_timeout: payload.run_timeout || 5000,
     run_memory_limit: payload.run_memory_limit || -1,
   };
-
   try {
     const res = await fetch(base + '/execute', {
       method: 'POST',
@@ -104,10 +151,7 @@ async function handleExecute(request, env) {
       body: JSON.stringify(body),
     });
     const text = await res.text();
-    return new Response(text, {
-      status: res.status,
-      headers: { 'Content-Type': 'application/json', ...CORS },
-    });
+    return new Response(text, { status: res.status, headers: { 'Content-Type': 'application/json', ...CORS } });
   } catch (e) {
     return jsonResponse({ error: 'Execution service unreachable' }, 502);
   }

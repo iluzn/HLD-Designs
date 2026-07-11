@@ -4,7 +4,13 @@ compatibility_date = "2024-01-01"
 
 [vars]
 ENVIRONMENT = "production"
-# Base URL of your self-hosted Piston instance (include the /api/v2 suffix).
-# Example: "https://piston.systemcraft.in/api/v2"
-# Leave empty until you have deployed Piston; /execute returns 503 until set.
-PISTON_URL = ""
+
+# Execution backend — set ONE of these as a secret (not here in plaintext):
+#
+#   No credit card (recommended):
+#     wrangler secret put GLOT_TOKEN     # free token from https://glot.io/account/token
+#
+#   Or self-hosted Piston:
+#     wrangler secret put PISTON_URL     # e.g. http://YOUR_VM_IP:2000/api/v2
+#
+# If neither is set, /execute returns HTTP 503.

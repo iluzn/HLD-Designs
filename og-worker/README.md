@@ -7,8 +7,10 @@ This Cloudflare Worker serves two jobs:
    - `GET /runtimes` — list available languages
    - `POST /execute` — run code and return stdout/stderr/exit code
 
-Execution is proxied to a **self-hosted Piston** instance. The public Piston
-API became whitelist-only in 2026, so you must run your own (it's lightweight).
+Execution is proxied to one of two backends — **glot.io** (free, no credit
+card) or a **self-hosted Piston**. Set whichever you use as a Worker secret.
+See **DEPLOY-PISTON.md** for the full step-by-step. The public Piston API
+became whitelist-only in 2026, which is why we proxy to our own backend.
 
 ## Deploy the worker
 
@@ -18,15 +20,17 @@ wrangler login
 wrangler deploy
 ```
 
-Set the Piston backend URL (either edit `PISTON_URL` in `wrangler.toml`, or set
-it as a secret so it isn't committed):
+Set an execution backend as a secret (no card path shown first):
 
 ```bash
-wrangler secret put PISTON_URL
-# then paste e.g. https://piston.systemcraft.in/api/v2
+# Option 1 — glot.io (free, no credit card): token from https://glot.io/account/token
+wrangler secret put GLOT_TOKEN
+
+# Option 2 — self-hosted Piston:
+wrangler secret put PISTON_URL   # e.g. http://YOUR_VM_IP:2000/api/v2
 ```
 
-Until `PISTON_URL` is set, `/execute` and `/runtimes` return HTTP 503.
+Until one is set, `/execute` returns HTTP 503. Full guide: DEPLOY-PISTON.md.
 
 ## Point the site at the worker
 
