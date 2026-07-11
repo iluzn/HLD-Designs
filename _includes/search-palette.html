@@ -254,6 +254,18 @@
         var themeBtn = document.getElementById('theme-btn');
         if (themeBtn) nav.insertBefore(btn, themeBtn); else nav.insertBefore(btn, nav.firstChild);
     }
-    if (document.readyState !== 'loading') injectButton(); else document.addEventListener('DOMContentLoaded', injectButton);
+
+    // Wire the nav "More" dropdown (click to toggle, click-away to close).
+    function initNavMore() {
+        var more = document.querySelector('.nav-more');
+        if (!more) return;
+        var mbtn = more.querySelector('.nav-more-btn');
+        if (!mbtn) return;
+        mbtn.addEventListener('click', function(e) { e.stopPropagation(); more.classList.toggle('open'); });
+        document.addEventListener('click', function(e) { if (!more.contains(e.target)) more.classList.remove('open'); });
+    }
+
+    function initNav() { injectButton(); initNavMore(); }
+    if (document.readyState !== 'loading') initNav(); else document.addEventListener('DOMContentLoaded', initNav);
 })();
 </script>

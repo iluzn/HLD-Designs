@@ -52,4 +52,21 @@
 .mention-option:hover { background: rgba(129,140,248,0.12); }
 .mention-option img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
 .mention-option span { font-size: 0.8rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Nav "More" dropdown */
+.nav-more { position: relative; display: inline-flex; align-items: center; }
+.nav-more-btn { background: none; border: none; color: var(--text-muted); font-family: inherit; font-size: 0.82rem; font-weight: 500; cursor: pointer; padding: 0.35rem 0.7rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.25rem; transition: all 0.2s; }
+.nav-more-btn:hover { color: var(--text); background: rgba(129,140,248,0.06); }
+.nav-more-caret { font-size: 0.6rem; transition: transform 0.2s; }
+.nav-more.open .nav-more-caret { transform: rotate(180deg); }
+.nav-more-menu { position: absolute; top: calc(100% + 0.6rem); right: 0; min-width: 175px; background: var(--header-bg, var(--bg-header, #fff)); border: 1px solid var(--border); border-radius: 10px; padding: 0.35rem; box-shadow: 0 16px 40px rgba(0,0,0,0.35); display: none; flex-direction: column; z-index: 200; animation: authDropIn 0.15s ease; }
+.nav-more.open .nav-more-menu { display: flex; }
+.nav-more-menu a { padding: 0.5rem 0.7rem; border-radius: 7px; font-size: 0.82rem; color: var(--text-muted); text-decoration: none; white-space: nowrap; }
+.nav-more-menu a:hover { background: rgba(129,140,248,0.08); color: var(--text); }
+@media (max-width: 768px) {
+    .nav-more { display: contents; }
+    .nav-more-btn { display: none; }
+    .nav-more-menu { position: static; display: flex; flex-direction: column; box-shadow: none; border: none; padding: 0; min-width: 0; background: none; animation: none; }
+    .nav-more-menu a { margin: 0; padding: 0.6rem 1rem; font-size: 0.88rem; border-radius: 8px; }
+}
 </style>
