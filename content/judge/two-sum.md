@@ -102,7 +102,7 @@ window.SC_PROBLEM = {
     { input: "4\n2 7 11 15\n9", output: "0 1" },
     { input: "3\n3 2 4\n6", output: "1 2" },
     { input: "2\n3 3\n6", output: "0 1" },
-    { input: "5\n1 5 3 8 2\n10", output: "1 3" },
+    { input: "5\n1 5 3 8 2\n10", output: "3 4" },
     { input: "6\n-3 4 3 90 0 -1\n0", output: "0 2" }
   ]
 };
