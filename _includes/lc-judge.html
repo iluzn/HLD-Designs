@@ -241,8 +241,8 @@
     cm.on('change', function () { persistCode(curLang(), cm.getValue()); });
     new MutationObserver(function () { cm.setOption('theme', themeName()); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     cm.setOption('extraKeys', {
-      'Cmd-Enter': function () { runBtn.click(); }, 'Ctrl-Enter': function () { runBtn.click(); },
-      'Shift-Cmd-Enter': function () { submitBtn.click(); }, 'Shift-Ctrl-Enter': function () { submitBtn.click(); },
+      'Cmd-Enter': function () { submitBtn.click(); }, 'Ctrl-Enter': function () { submitBtn.click(); },
+      "Cmd-'": function () { runBtn.click(); }, "Ctrl-'": function () { runBtn.click(); },
     });
     runBtn.disabled = false; submitBtn.disabled = false;
   }
@@ -263,7 +263,18 @@
     LANG_KEYS.forEach(function (k) { var o = document.createElement('option'); o.value = k; o.textContent = META[k].name; langSel.appendChild(o); });
     langSel.value = prefLang();
 
-    runBtn.title = 'Ctrl/Cmd + Enter'; submitBtn.title = 'Ctrl/Cmd + Shift + Enter';
+    runBtn.title = "Run (Ctrl/Cmd + ')"; submitBtn.title = 'Submit (Ctrl/Cmd + Enter)';
+
+    // Timer (counts up; click = pause/resume, double-click = reset)
+    var timerEl = document.getElementById('lc-timer');
+    if (timerEl) {
+      var secs = 0, running = true;
+      var fmtT = function (s) { var m = Math.floor(s / 60), ss = s % 60; return (m < 10 ? '0' : '') + m + ':' + (ss < 10 ? '0' : '') + ss; };
+      timerEl.textContent = fmtT(0);
+      setInterval(function () { if (running) { secs++; timerEl.textContent = fmtT(secs); } }, 1000);
+      timerEl.addEventListener('click', function () { running = !running; timerEl.classList.toggle('paused', !running); });
+      timerEl.addEventListener('dblclick', function () { secs = 0; timerEl.textContent = fmtT(0); running = true; timerEl.classList.remove('paused'); });
+    }
     consoleTabs.forEach(function (t) { t.addEventListener('click', function () { curTab = t.getAttribute('data-tab'); syncConsoleTabs(); }); });
     leftTabs.forEach(function (t) { t.addEventListener('click', function () { showLeftTab(t.getAttribute('data-ltab')); }); });
     renderCases();
@@ -275,7 +286,9 @@
       runBtn.addEventListener('click', function () { activeCase = 0; runCases(P.cases.slice(0, SAMPLE), false); });
       submitBtn.addEventListener('click', function () { runCases(P.cases, true); });
       document.addEventListener('keydown', function (e) {
-        if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); if (e.shiftKey) submitBtn.click(); else runBtn.click(); }
+        if (!(e.metaKey || e.ctrlKey)) return;
+        if (e.key === 'Enter') { e.preventDefault(); submitBtn.click(); }
+        else if (e.key === "'") { e.preventDefault(); runBtn.click(); }
       });
     }).catch(function () { statusEl.textContent = 'Editor failed to load'; });
 

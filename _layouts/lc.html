@@ -113,6 +113,13 @@
     .lc-editor-bar .lc-spacer { margin-left: auto; }
     .lc-reset { font-size: 0.72rem; color: var(--text-muted); background: none; border: 1px solid var(--border); border-radius: 7px; padding: 0.3rem 0.6rem; cursor: pointer; }
     .lc-reset:hover { color: var(--text); border-color: var(--accent); }
+    .lc-timer { font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; font-weight: 600; color: var(--text-muted); background: none; border: 1px solid var(--border); border-radius: 7px; padding: 0.3rem 0.55rem; cursor: pointer; min-width: 54px; }
+    .lc-timer:hover { color: var(--text); border-color: var(--accent); }
+    .lc-timer::before { content: '⏱ '; }
+    .lc-timer.paused { color: var(--text-dim); opacity: 0.65; }
+    .lc-editor-bar .lc-btn { padding: 0.32rem 0.95rem; font-size: 0.77rem; }
+    .lc-kbd { font-size: 0.68rem; color: var(--text-dim); }
+    .lc-kbd b { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text-muted); }
     .lc-editor-wrap { flex: 1; min-height: 0; position: relative; }
     .lc-editor-wrap .CodeMirror { height: 100%; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
 
@@ -185,7 +192,10 @@
             <div class="lc-editor-bar">
                 <select class="lc-lang" id="lc-lang" aria-label="Language"></select>
                 <span class="lc-spacer"></span>
+                <button class="lc-timer" id="lc-timer" type="button" title="Timer — click to pause/resume, double-click to reset">00:00</button>
                 <button class="lc-reset" id="lc-reset" type="button">Reset</button>
+                <button class="lc-btn lc-run" id="lc-run" type="button" disabled>Run</button>
+                <button class="lc-btn lc-submit" id="lc-submit" type="button" disabled>Submit</button>
             </div>
             <div class="lc-editor-wrap" id="lc-editor"></div>
             <div class="lc-console">
@@ -198,8 +208,7 @@
             <div class="lc-actions">
                 <span class="lc-status" id="lc-status"></span>
                 <span class="lc-spacer"></span>
-                <button class="lc-btn lc-run" id="lc-run" type="button" disabled>Run</button>
-                <button class="lc-btn lc-submit" id="lc-submit" type="button" disabled>Submit</button>
+                <span class="lc-kbd">Run <b>⌘'</b> · Submit <b>⌘⏎</b></span>
             </div>
         </div>
     </div>
