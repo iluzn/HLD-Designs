@@ -380,7 +380,23 @@
         #comments-list .comment-delete:hover { color:#ef4444; background:rgba(239,68,68,0.08); }
         #comments-list .comment-text { font-size:0.9rem; color:var(--text-muted); line-height:1.6; white-space:pre-wrap; word-wrap:break-word; }
         #comments-list .comment-empty { display:flex; flex-direction:column; align-items:center; gap:0.6rem; text-align:center; font-size:0.88rem; color:var(--text-dim); padding:2.5rem 1rem; background:var(--glass); border:1px dashed var(--glass-border); border-radius:14px; }
-        @media (max-width:600px) { #comments-list .comment-delete { opacity:1; } }
+
+        /* Actions + reply */
+        #comments-list .comment-actions { margin-top:0.4rem; }
+        #comments-list .comment-reply-btn { background:none; border:none; color:var(--text-dim); font-size:0.75rem; font-weight:600; cursor:pointer; padding:0.15rem 0; transition:color 0.2s; }
+        #comments-list .comment-reply-btn:hover { color:var(--accent); }
+        #comments-list .comment-replies { margin-left:2.4rem; padding-left:1rem; border-left:2px solid var(--glass-border); }
+        #comments-list .comment-reply .comment-avatar { width:30px; height:30px; }
+        #comments-list .reply-form { margin-top:0.7rem; }
+        #comments-list .reply-form textarea { width:100%; box-sizing:border-box; background:var(--card-bg); color:var(--text); border:1px solid var(--glass-border); border-radius:10px; padding:0.6rem 0.8rem; font-family:inherit; font-size:0.86rem; line-height:1.5; resize:none; outline:none; transition:border-color 0.2s, box-shadow 0.2s; }
+        #comments-list .reply-form textarea:focus { border-color:rgba(129,140,248,0.5); box-shadow:0 0 0 3px rgba(129,140,248,0.1); }
+        #comments-list .reply-form-row { display:flex; justify-content:flex-end; gap:0.5rem; margin-top:0.5rem; }
+        #comments-list .reply-cancel { background:none; border:1px solid var(--glass-border); color:var(--text-muted); padding:0.35rem 0.9rem; border-radius:8px; font-size:0.78rem; font-weight:600; cursor:pointer; transition:border-color 0.2s; }
+        #comments-list .reply-cancel:hover { border-color:var(--text-dim); }
+        #comments-list .reply-post { background:linear-gradient(135deg, var(--accent), #a78bfa); color:#fff; border:none; padding:0.35rem 1rem; border-radius:8px; font-size:0.78rem; font-weight:600; cursor:pointer; transition:transform 0.2s, box-shadow 0.2s, opacity 0.2s; }
+        #comments-list .reply-post:hover:not(:disabled) { transform:translateY(-1px); box-shadow:0 6px 16px rgba(129,140,248,0.3); }
+        #comments-list .reply-post:disabled { opacity:0.5; cursor:not-allowed; }
+        @media (max-width:600px) { #comments-list .comment-delete { opacity:1; } #comments-list .comment-replies { margin-left:1rem; padding-left:0.7rem; } }
     </style>
     <script>
         (function() {

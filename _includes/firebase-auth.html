@@ -319,7 +319,112 @@ function updateCommentUI() {
 }
 window.updateCommentUI = updateCommentUI;
 
-// Render a list of comment objects into #comments-list (XSS-safe via DOM).
+// Build a single comment element (top-level or reply). XSS-safe via DOM.
+function buildCommentEl(c, isReply) {
+    var myUid = window._firebaseUser ? window._firebaseUser.uid : null;
+    var item = document.createElement('div');
+    item.className = 'comment-item' + (isReply ? ' comment-reply' : '');
+
+    var avatar = document.createElement('img');
+    avatar.className = 'comment-avatar';
+    avatar.src = c.photo || '/favicon-48x48.png';
+    avatar.alt = c.name || 'User';
+    avatar.referrerPolicy = 'no-referrer';
+    item.appendChild(avatar);
+
+    var body = document.createElement('div');
+    body.className = 'comment-body';
+
+    var head = document.createElement('div');
+    head.className = 'comment-head';
+    var nameEl = document.createElement('span');
+    nameEl.className = 'comment-name';
+    nameEl.textContent = c.name || 'Anonymous';
+    var timeEl = document.createElement('span');
+    timeEl.className = 'comment-time';
+    timeEl.textContent = timeAgo(c.createdAt);
+    head.appendChild(nameEl);
+    head.appendChild(timeEl);
+
+    if (myUid && c.uid === myUid) {
+        var del = document.createElement('button');
+        del.className = 'comment-delete';
+        del.textContent = 'Delete';
+        del.addEventListener('click', function() {
+            if (confirm('Delete this comment?')) window.deleteComment(c._id);
+        });
+        head.appendChild(del);
+    }
+    body.appendChild(head);
+
+    var textEl = document.createElement('div');
+    textEl.className = 'comment-text';
+    textEl.textContent = c.text || '';
+    body.appendChild(textEl);
+
+    // Actions row (Reply)
+    var actions = document.createElement('div');
+    actions.className = 'comment-actions';
+    var replyBtn = document.createElement('button');
+    replyBtn.className = 'comment-reply-btn';
+    replyBtn.textContent = 'Reply';
+    // Replies always attach to the top-level comment (single-level threading).
+    var targetId = c.parentId || c._id;
+    replyBtn.addEventListener('click', function() {
+        if (!window._firebaseUser) { document.getElementById('auth-btn').click(); return; }
+        // Toggle: if a reply form is already open here, close it.
+        var existing = body.querySelector(':scope > .reply-form');
+        if (existing) { existing.remove(); return; }
+        var mention = isReply ? (c.name ? '@' + c.name + ' ' : '') : '';
+        body.appendChild(buildReplyForm(targetId, mention));
+    });
+    actions.appendChild(replyBtn);
+    body.appendChild(actions);
+
+    item.appendChild(body);
+    return item;
+}
+
+// Inline reply composer.
+function buildReplyForm(parentId, mention) {
+    var wrap = document.createElement('div');
+    wrap.className = 'reply-form';
+    var ta = document.createElement('textarea');
+    ta.maxLength = 2000;
+    ta.rows = 1;
+    ta.placeholder = 'Write a reply…';
+    ta.value = mention || '';
+    var row = document.createElement('div');
+    row.className = 'reply-form-row';
+    var cancel = document.createElement('button');
+    cancel.className = 'reply-cancel';
+    cancel.textContent = 'Cancel';
+    cancel.addEventListener('click', function() { wrap.remove(); });
+    var post = document.createElement('button');
+    post.className = 'reply-post';
+    post.textContent = 'Reply';
+    post.addEventListener('click', async function() {
+        if (!ta.value.trim()) return;
+        post.disabled = true; post.textContent = 'Posting…';
+        var ok = await window.postComment(ta.value, parentId);
+        if (!ok) { post.disabled = false; post.textContent = 'Reply'; }
+    });
+    ta.addEventListener('input', function() {
+        ta.style.height = 'auto';
+        ta.style.height = Math.min(ta.scrollHeight, 200) + 'px';
+    });
+    ta.addEventListener('keydown', function(e) {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); post.click(); }
+    });
+    row.appendChild(cancel);
+    row.appendChild(post);
+    wrap.appendChild(ta);
+    wrap.appendChild(row);
+    setTimeout(function() { ta.focus(); }, 0);
+    return wrap;
+}
+
+// Render the full threaded list into #comments-list.
 function renderComments(items) {
     var listEl = document.getElementById('comments-list');
     if (!listEl) return;
@@ -336,50 +441,41 @@ function renderComments(items) {
         listEl.appendChild(empty);
         return;
     }
-    var myUid = window._firebaseUser ? window._firebaseUser.uid : null;
+
+    // Split into top-level comments and replies grouped by parent.
+    var tops = [];
+    var repliesByParent = {};
     items.forEach(function(c) {
-        var item = document.createElement('div');
-        item.className = 'comment-item';
-
-        var avatar = document.createElement('img');
-        avatar.className = 'comment-avatar';
-        avatar.src = c.photo || '/favicon-48x48.png';
-        avatar.alt = c.name || 'User';
-        avatar.referrerPolicy = 'no-referrer';
-        item.appendChild(avatar);
-
-        var body = document.createElement('div');
-        body.className = 'comment-body';
-
-        var head = document.createElement('div');
-        head.className = 'comment-head';
-        var nameEl = document.createElement('span');
-        nameEl.className = 'comment-name';
-        nameEl.textContent = c.name || 'Anonymous';
-        var timeEl = document.createElement('span');
-        timeEl.className = 'comment-time';
-        timeEl.textContent = timeAgo(c.createdAt);
-        head.appendChild(nameEl);
-        head.appendChild(timeEl);
-
-        if (myUid && c.uid === myUid) {
-            var del = document.createElement('button');
-            del.className = 'comment-delete';
-            del.textContent = 'Delete';
-            del.addEventListener('click', function() {
-                if (confirm('Delete this comment?')) window.deleteComment(c._id);
-            });
-            head.appendChild(del);
+        if (c.parentId) {
+            (repliesByParent[c.parentId] = repliesByParent[c.parentId] || []).push(c);
+        } else {
+            tops.push(c);
         }
-        body.appendChild(head);
+    });
+    tops.sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); }); // newest first
+    Object.keys(repliesByParent).forEach(function(k) {
+        repliesByParent[k].sort(function(a, b) { return (a.createdAt || 0) - (b.createdAt || 0); }); // oldest first
+    });
 
-        var textEl = document.createElement('div');
-        textEl.className = 'comment-text';
-        textEl.textContent = c.text || '';
-        body.appendChild(textEl);
+    // Orphaned replies (parent deleted) fall back to top-level so they aren't lost.
+    Object.keys(repliesByParent).forEach(function(pid) {
+        var hasParent = tops.some(function(t) { return t._id === pid; });
+        if (!hasParent) {
+            repliesByParent[pid].forEach(function(r) { tops.push(r); });
+            delete repliesByParent[pid];
+        }
+    });
+    tops.sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
 
-        item.appendChild(body);
-        listEl.appendChild(item);
+    tops.forEach(function(top) {
+        listEl.appendChild(buildCommentEl(top, false));
+        var replies = repliesByParent[top._id];
+        if (replies && replies.length) {
+            var thread = document.createElement('div');
+            thread.className = 'comment-replies';
+            replies.forEach(function(r) { thread.appendChild(buildCommentEl(r, true)); });
+            listEl.appendChild(thread);
+        }
     });
 }
 
@@ -396,7 +492,7 @@ window.loadComments = async function() {
     } catch (err) { console.error('Comment load error:', err); }
 };
 
-window.postComment = async function(text) {
+window.postComment = async function(text, parentId) {
     if (!window._firebaseUser) return false;
     text = (text || '').trim();
     if (!text) return false;
@@ -408,6 +504,7 @@ window.postComment = async function(text) {
             name: window._firebaseUser.displayName || 'Anonymous',
             photo: window._firebaseUser.photoURL || '',
             text: text,
+            parentId: parentId || null,
             createdAt: Date.now()
         });
         await window.loadComments();
