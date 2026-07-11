@@ -56,9 +56,13 @@
 <script>
 (function () {
   // ---- Config -------------------------------------------------------------
-  // Swap this one URL to your own self-hosted Piston later (free-tier box) —
-  // no other code changes needed. Public endpoint is free, ~5 req/s global.
-  var PISTON = 'https://emkc.org/api/v2/piston';
+  // Code runs through the SystemCraft Cloudflare Worker, which proxies to a
+  // self-hosted Piston instance (the public Piston API is whitelist-only as
+  // of 2026). Set window.SC_RUNNER_ENDPOINT before this script loads to
+  // override, otherwise it targets the worker's custom domain.
+  var PISTON = (typeof window !== 'undefined' && window.SC_RUNNER_ENDPOINT)
+    ? window.SC_RUNNER_ENDPOINT
+    : 'https://og.systemcraft.in';
   var CM_VER = '5.65.16';
   var CM_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/' + CM_VER;
 
