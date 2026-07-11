@@ -110,7 +110,7 @@ async function execViaGlot(env, payload, files) {
   const raw = (payload.language || '').toLowerCase();
   const lang = GLOT_LANG[raw] || raw;
   try {
-    const res = await fetch('https://run.glot.io/languages/' + encodeURIComponent(lang) + '/latest', {
+    const res = await fetch('https://glot.io/api/run/' + encodeURIComponent(lang) + '/latest', {
       method: 'POST',
       headers: { Authorization: 'Token ' + env.GLOT_TOKEN, 'Content-Type': 'application/json' },
       body: JSON.stringify({
