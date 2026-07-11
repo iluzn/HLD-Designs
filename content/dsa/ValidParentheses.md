@@ -85,7 +85,7 @@ A map from closing → opening keeps the matching clean.
 <div class="tab-content">
 <pre><code class="language-cpp">bool isValid(string s) {
     stack&lt;char&gt; st;
-    unordered_map&lt;char, char&gt; match = {{')','('}, {']','['}, {'}','{'}};
+    unordered_map&lt;char, char&gt; match = { {')','('}, {']','['}, {'}','{'} };
     for (char c : s) {
         if (match.count(c)) {
             if (st.empty() || st.top() != match[c]) return false;

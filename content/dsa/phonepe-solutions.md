@@ -712,7 +712,7 @@ public int orangesRotting(int[][] grid) {
     if (fresh == 0) return 0;
 
     int minutes = 0;
-    int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+    int[][] dirs = { {1,0},{-1,0},{0,1},{0,-1} };
     while (!q.isEmpty() && fresh > 0) {
         minutes++;
         for (int size = q.size(); size > 0; size--) {
@@ -788,7 +788,7 @@ public int shortestPathBinaryMatrix(int[][] grid) {
     q.add(new int[]{0, 0});
     grid[0][0] = 1; // mark visited
     int path = 1;
-    int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
+    int[][] dirs = { {1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1} };
 
     while (!q.isEmpty()) {
         for (int size = q.size(); size > 0; size--) {

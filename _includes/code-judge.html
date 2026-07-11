@@ -1,0 +1,335 @@
+<!-- LeetCode-style judge: function harness + hidden test cases + verdict. -->
+<!-- Requires the page to define window.SC_PROBLEM before this include. -->
+<!-- One Piston call per Run/Submit (all tests piped via stdin), so it's rate-limit friendly. -->
+<style>
+.sc-judge { border: 1px solid var(--glass-border); border-radius: 12px; background: var(--code-bg); backdrop-filter: blur(8px); margin: 1.5rem 0; overflow: hidden; }
+.sc-judge .sc-jbar { display: flex; align-items: center; gap: 0.55rem; padding: 0.55rem 0.8rem; background: rgba(0,0,0,0.18); border-bottom: 1px solid var(--glass-border); flex-wrap: wrap; }
+[data-theme="light"] .sc-judge .sc-jbar { background: rgba(0,0,0,0.03); }
+.sc-judge .sc-jtitle { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); margin-right: auto; }
+.sc-judge .sc-jstatus { font-size: 0.7rem; color: var(--text-dim); }
+.sc-judge select { font-family: inherit; font-size: 0.78rem; font-weight: 600; color: var(--text); background: var(--glass); border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.35rem 0.55rem; cursor: pointer; outline: none; }
+.sc-judge select:focus { border-color: var(--accent); }
+.sc-judge .sc-reset { font-family: inherit; font-size: 0.72rem; font-weight: 600; color: var(--text-muted); background: var(--glass); border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.35rem 0.6rem; cursor: pointer; }
+.sc-judge .sc-reset:hover { color: var(--text); border-color: var(--accent); }
+.sc-jbtn { display: inline-flex; align-items: center; gap: 0.35rem; font-family: inherit; font-size: 0.78rem; font-weight: 700; border-radius: 8px; padding: 0.38rem 0.85rem; cursor: pointer; border: 1px solid transparent; transition: transform 0.15s, opacity 0.15s; }
+.sc-jbtn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+.sc-jbtn.sc-run { color: var(--text); background: var(--glass); border-color: var(--glass-border); }
+.sc-jbtn.sc-run:hover:not(:disabled) { border-color: var(--accent); }
+.sc-jbtn.sc-submit { color: #fff; background: linear-gradient(135deg, #10b981, #059669); }
+.sc-jbtn.sc-submit:hover:not(:disabled) { transform: translateY(-1px); }
+.sc-judge .CodeMirror { height: auto; min-height: 220px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+.sc-judge .CodeMirror-scroll { min-height: 220px; }
+.sc-verdict { padding: 0.8rem; display: none; }
+.sc-verdict.show { display: block; }
+.sc-verdict .sc-vbadge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; font-weight: 800; padding: 0.35rem 0.8rem; border-radius: 8px; }
+.sc-verdict .sc-vbadge.ok { color: #10b981; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); }
+.sc-verdict .sc-vbadge.fail { color: #f87171; background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.3); }
+.sc-verdict .sc-vsub { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.4rem; }
+.sc-tests { padding: 0 0.8rem 0.9rem; }
+.sc-test { border: 1px solid var(--glass-border); border-radius: 10px; margin-top: 0.6rem; overflow: hidden; }
+.sc-test-head { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; font-size: 0.78rem; font-weight: 600; color: var(--text); background: var(--glass); }
+.sc-test-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.sc-test-dot.pass { background: #10b981; }
+.sc-test-dot.faildot { background: #f87171; }
+.sc-test-tag { margin-left: auto; font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); }
+.sc-test-body { padding: 0.6rem 0.75rem; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: var(--text-muted); display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 0.8rem; }
+.sc-test-body .k { color: var(--text-dim); }
+.sc-test-body .v { white-space: pre-wrap; word-break: break-word; }
+.sc-test-body .v.bad { color: #f87171; }
+.sc-test-body .v.good { color: #4ade80; }
+.sc-hidden-note { font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: var(--text-dim); font-style: italic; }
+</style>
+
+<div class="sc-judge" data-default-lang="python">
+  <div class="sc-jbar">
+    <span class="sc-jtitle">💻 Solve it</span>
+    <span class="sc-jstatus"></span>
+    <select class="sc-lang-select" aria-label="Language"><option>Loading…</option></select>
+    <button class="sc-reset" type="button">Reset</button>
+    <button class="sc-jbtn sc-run" type="button" disabled>▶ Run</button>
+    <button class="sc-jbtn sc-submit" type="button" disabled>✓ Submit</button>
+  </div>
+  <div class="sc-editor"></div>
+  <div class="sc-verdict"></div>
+  <div class="sc-tests"></div>
+</div>
+
+<script>
+(function () {
+  // Swap this URL to your self-hosted Piston later — no other change needed.
+  var PISTON = 'https://emkc.org/api/v2/piston';
+  var CM_VER = '5.65.16';
+  var CM_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/' + CM_VER;
+
+  function loadCss(href) {
+    return new Promise(function (res) {
+      if (document.querySelector('link[href="' + href + '"]')) return res();
+      var l = document.createElement('link');
+      l.rel = 'stylesheet'; l.href = href; l.onload = res; l.onerror = res;
+      document.head.appendChild(l);
+    });
+  }
+  function loadJs(src) {
+    return new Promise(function (res, rej) {
+      if (document.querySelector('script[src="' + src + '"]')) return res();
+      var s = document.createElement('script');
+      s.src = src; s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  var cmReady = null;
+  function loadCodeMirror() {
+    if (cmReady) return cmReady;
+    cmReady = Promise.all([
+      loadCss(CM_BASE + '/codemirror.min.css'),
+      loadCss(CM_BASE + '/theme/material-darker.min.css'),
+      loadCss(CM_BASE + '/theme/eclipse.min.css')
+    ]).then(function () {
+      return loadJs(CM_BASE + '/codemirror.min.js');
+    }).then(function () {
+      return Promise.all([
+        loadJs(CM_BASE + '/mode/clike/clike.min.js'),
+        loadJs(CM_BASE + '/mode/python/python.min.js'),
+        loadJs(CM_BASE + '/mode/javascript/javascript.min.js'),
+        loadJs(CM_BASE + '/addon/edit/closebrackets.min.js'),
+        loadJs(CM_BASE + '/addon/edit/matchbrackets.min.js')
+      ]);
+    });
+    return cmReady;
+  }
+
+  var runtimesReady = null;
+  function loadRuntimes() {
+    if (runtimesReady) return runtimesReady;
+    runtimesReady = fetch(PISTON + '/runtimes')
+      .then(function (r) { return r.json(); })
+      .catch(function () { return []; });
+    return runtimesReady;
+  }
+  // Resolve a language's Piston id/version from its accepted ids.
+  function resolve(runtimes, ids) {
+    for (var i = 0; i < runtimes.length; i++) {
+      var r = runtimes[i];
+      var names = [r.language].concat(r.aliases || []);
+      for (var k = 0; k < ids.length; k++) {
+        if (names.indexOf(ids[k]) !== -1) return { language: r.language, version: r.version };
+      }
+    }
+    return null;
+  }
+  function themeName() {
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'eclipse' : 'material-darker';
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c];
+    });
+  }
+  function norm(s) { return String(s == null ? '' : s).replace(/\r/g, '').replace(/[ \t]+$/gm, '').replace(/\n+$/,''); }
+
+  function execute(payload, status) {
+    function once() {
+      return fetch(PISTON + '/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    }
+    return once().then(function (res) {
+      if (res.status === 429) {
+        if (status) status.textContent = 'Busy, retrying…';
+        return new Promise(function (r) { setTimeout(r, 1200); }).then(once);
+      }
+      return res;
+    });
+  }
+
+  function initJudge(root, problem, runtimes) {
+    var select = root.querySelector('.sc-lang-select');
+    var runBtn = root.querySelector('.sc-run');
+    var submitBtn = root.querySelector('.sc-submit');
+    var resetBtn = root.querySelector('.sc-reset');
+    var status = root.querySelector('.sc-jstatus');
+    var host = root.querySelector('.sc-editor');
+    var verdict = root.querySelector('.sc-verdict');
+    var testsBox = root.querySelector('.sc-tests');
+
+    // Keep only languages that (a) the problem defines a harness for and
+    // (b) Piston currently offers.
+    var langNames = Object.keys(problem.languages);
+    var available = [];
+    langNames.forEach(function (name) {
+      var L = problem.languages[name];
+      var r = resolve(runtimes, L.piston);
+      if (r) available.push(Object.assign({ name: name }, L, r));
+    });
+
+    if (!available.length) {
+      select.innerHTML = '<option>Unavailable</option>';
+      status.textContent = 'No runtimes available';
+      return;
+    }
+
+    select.innerHTML = '';
+    available.forEach(function (L, i) {
+      var o = document.createElement('option');
+      o.value = String(i); o.textContent = L.name;
+      select.appendChild(o);
+    });
+
+    var wanted = (root.getAttribute('data-default-lang') || '').toLowerCase();
+    var startIdx = 0;
+    available.forEach(function (L, i) {
+      if (L.piston.indexOf(wanted) !== -1 || L.name.toLowerCase() === wanted) startIdx = i;
+    });
+    select.value = String(startIdx);
+
+    var cm = CodeMirror(host, {
+      value: available[startIdx].stub,
+      mode: available[startIdx].mode,
+      theme: themeName(),
+      lineNumbers: true, indentUnit: 4, tabSize: 4,
+      autoCloseBrackets: true, matchBrackets: true, viewportMargin: Infinity
+    });
+
+    var edited = false;
+    cm.on('change', function () { edited = true; });
+    function currentLang() { return available[parseInt(select.value, 10)]; }
+
+    select.addEventListener('change', function () {
+      var L = currentLang();
+      cm.setOption('mode', L.mode);
+      if (!edited) { cm.setValue(L.stub); edited = false; }
+    });
+    resetBtn.addEventListener('click', function () {
+      cm.setValue(currentLang().stub); edited = false;
+      verdict.className = 'sc-verdict'; testsBox.innerHTML = '';
+    });
+    new MutationObserver(function () { cm.setOption('theme', themeName()); })
+      .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    // Build the stdin blob + expected list for a set of test cases.
+    // Format: line 1 = count, then each test's stdin block verbatim.
+    function buildInput(tests) {
+      var lines = [String(tests.length)];
+      tests.forEach(function (t) { lines.push(t.stdin); });
+      return lines.join('\n') + '\n';
+    }
+
+    function runTests(tests, mode) {
+      var L = currentLang();
+      var source = L.harness.replace('{{USER_CODE}}', cm.getValue());
+      runBtn.disabled = submitBtn.disabled = true;
+      status.textContent = mode === 'submit' ? 'Judging…' : 'Running…';
+      verdict.className = 'sc-verdict'; testsBox.innerHTML = '';
+
+      return execute({
+        language: L.language, version: L.version,
+        files: [{ name: L.file, content: source }],
+        stdin: buildInput(tests)
+      }, status).then(function (res) {
+        if (res.status === 429) throw new Error('Rate limited. Try again in a moment.');
+        if (!res.ok) throw new Error('Execution service error (' + res.status + ').');
+        return res.json();
+      }).then(function (data) {
+        var compileErr = data.compile && data.compile.code !== 0 ? (data.compile.stderr || data.compile.output) : '';
+        var run = data.run || {};
+        var runtimeErr = run.stderr || '';
+        var outLines = norm(run.stdout).split('\n');
+
+        var results = tests.map(function (t, i) {
+          var got = outLines[i] != null ? outLines[i].replace(/[ \t]+$/,'') : '';
+          var exp = String(t.expected).replace(/[ \t]+$/,'');
+          return { test: t, got: got, exp: exp, pass: !compileErr && got === exp && i < outLines.length };
+        });
+        renderResults(results, { compileErr: compileErr, runtimeErr: runtimeErr, mode: mode });
+      }).catch(function (err) {
+        verdict.className = 'sc-verdict show';
+        verdict.innerHTML = '<span class="sc-vbadge fail">Error</span><div class="sc-vsub">' + esc(err.message) + '</div>';
+      }).then(function () {
+        runBtn.disabled = submitBtn.disabled = false;
+        status.textContent = '';
+      });
+    }
+
+    function renderResults(results, ctx) {
+      var passed = results.filter(function (r) { return r.pass; }).length;
+      var total = results.length;
+      var allPass = passed === total && !ctx.compileErr;
+
+      verdict.className = 'sc-verdict show';
+      if (ctx.compileErr) {
+        verdict.innerHTML = '<span class="sc-vbadge fail">Compilation Error</span>' +
+          '<div class="sc-vsub"><pre style="white-space:pre-wrap;margin:0.4rem 0 0;color:#f87171;font-size:0.76rem;">' + esc(ctx.compileErr) + '</pre></div>';
+        testsBox.innerHTML = '';
+        return;
+      }
+      if (ctx.mode === 'submit') {
+        if (allPass) {
+          verdict.innerHTML = '<span class="sc-vbadge ok">✓ Accepted</span>' +
+            '<div class="sc-vsub">Passed all ' + total + ' test cases.</div>';
+        } else {
+          var firstFail = results.filter(function (r) { return !r.pass; })[0];
+          var idx = results.indexOf(firstFail) + 1;
+          verdict.innerHTML = '<span class="sc-vbadge fail">✗ Wrong Answer</span>' +
+            '<div class="sc-vsub">Passed ' + passed + ' / ' + total + '. Failed on test ' + idx +
+            (firstFail && firstFail.test.hidden ? ' (hidden).' : '.') + '</div>';
+        }
+      } else {
+        verdict.innerHTML = allPass
+          ? '<span class="sc-vbadge ok">✓ Sample tests passed</span>'
+          : '<span class="sc-vbadge fail">✗ ' + passed + ' / ' + total + ' sample tests passed</span>';
+      }
+
+      // On Submit, show only sample (visible) tests in detail; hidden ones stay hidden.
+      var html = '';
+      results.forEach(function (r, i) {
+        var show = ctx.mode === 'run' || !r.test.hidden;
+        html += '<div class="sc-test">';
+        html += '<div class="sc-test-head"><span class="sc-test-dot ' + (r.pass ? 'pass' : 'faildot') + '"></span>' +
+          'Test ' + (i + 1) + (r.test.hidden ? '' : '') +
+          '<span class="sc-test-tag">' + (r.test.hidden ? 'Hidden' : 'Sample') + '</span></div>';
+        if (show) {
+          html += '<div class="sc-test-body">';
+          if (r.test.label) html += '<span class="k">Input</span><span class="v">' + esc(r.test.label) + '</span>';
+          html += '<span class="k">Expected</span><span class="v good">' + esc(r.exp) + '</span>';
+          html += '<span class="k">Got</span><span class="v ' + (r.pass ? 'good' : 'bad') + '">' + esc(r.got || '(no output)') + '</span>';
+          if (!r.pass && ctx.runtimeErr) html += '<span class="k">Stderr</span><span class="v bad">' + esc(ctx.runtimeErr) + '</span>';
+          html += '</div>';
+        } else {
+          html += '<div class="sc-test-body"><span class="k">Input</span><span class="sc-hidden-note">hidden test case</span></div>';
+        }
+        html += '</div>';
+      });
+      testsBox.innerHTML = html;
+    }
+
+    var sampleTests = problem.tests.filter(function (t) { return !t.hidden; });
+    runBtn.addEventListener('click', function () { runTests(sampleTests, 'run'); });
+    submitBtn.addEventListener('click', function () { runTests(problem.tests, 'submit'); });
+    cm.setOption('extraKeys', {
+      'Cmd-Enter': function () { runTests(sampleTests, 'run'); },
+      'Ctrl-Enter': function () { runTests(sampleTests, 'run'); }
+    });
+
+    runBtn.disabled = submitBtn.disabled = false;
+  }
+
+  function boot() {
+    var roots = document.querySelectorAll('.sc-judge');
+    if (!roots.length) return;
+    var problem = window.SC_PROBLEM;
+    if (!problem) { roots.forEach(function (r) { r.querySelector('.sc-jstatus').textContent = 'No problem defined'; }); return; }
+    Promise.all([loadCodeMirror(), loadRuntimes()]).then(function (r) {
+      roots.forEach(function (root) {
+        if (root.getAttribute('data-inited')) return;
+        root.setAttribute('data-inited', '1');
+        initJudge(root, problem, r[1]);
+      });
+    });
+  }
+  if (document.readyState !== 'loading') boot();
+  else document.addEventListener('DOMContentLoaded', boot);
+})();
+</script>
