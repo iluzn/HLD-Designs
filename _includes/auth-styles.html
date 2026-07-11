@@ -39,4 +39,11 @@
 .notif-item-snippet { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .notif-item-time { font-size: 0.66rem; color: var(--text-dim); margin-top: 0.2rem; }
 .notif-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; align-self: center; }
+
+/* @mention autocomplete */
+.mention-dropdown { position: absolute; z-index: 500; background: var(--header-bg, rgba(17,17,24,0.97)); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); overflow: hidden; min-width: 180px; }
+.mention-option { display: flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.7rem; cursor: pointer; transition: background 0.12s; }
+.mention-option:hover { background: rgba(129,140,248,0.12); }
+.mention-option img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
+.mention-option span { font-size: 0.8rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 </style>

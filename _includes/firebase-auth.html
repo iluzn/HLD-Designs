@@ -426,9 +426,62 @@ function buildReplyForm(parentId, mention) {
     row.appendChild(post);
     wrap.appendChild(ta);
     wrap.appendChild(row);
+    attachMentionAutocomplete(ta);
     setTimeout(function() { ta.focus(); }, 0);
     return wrap;
 }
+
+// Lightweight @mention autocomplete driven by the page's commenters.
+function attachMentionAutocomplete(textarea) {
+    if (!textarea || textarea._mentionAttached) return;
+    textarea._mentionAttached = true;
+    var dd = null;
+    function closeDD() { if (dd) { dd.remove(); dd = null; } }
+    function getToken() {
+        var pos = textarea.selectionStart;
+        var before = textarea.value.substring(0, pos);
+        var m = before.match(/@([^@\n]*)$/);
+        if (!m) return null;
+        return { query: m[1], at: pos - m[1].length - 1, caret: pos };
+    }
+    function show() {
+        var info = getToken();
+        if (!info) { closeDD(); return; }
+        var myUid = window._firebaseUser ? window._firebaseUser.uid : null;
+        var q = info.query.toLowerCase();
+        var pool = (window._pageCommenters || []).filter(function(c) {
+            return c.uid !== myUid && c.name && c.name.toLowerCase().indexOf(q) === 0;
+        }).slice(0, 6);
+        if (!pool.length) { closeDD(); return; }
+        if (!dd) { dd = document.createElement('div'); dd.className = 'mention-dropdown'; document.body.appendChild(dd); }
+        dd.innerHTML = '';
+        pool.forEach(function(c) {
+            var it = document.createElement('div'); it.className = 'mention-option';
+            var img = document.createElement('img'); img.src = c.photo || '/favicon-48x48.png'; img.referrerPolicy = 'no-referrer';
+            var nm = document.createElement('span'); nm.textContent = c.name;
+            it.appendChild(img); it.appendChild(nm);
+            it.addEventListener('mousedown', function(e) { e.preventDefault(); pick(c, getToken() || info); });
+            dd.appendChild(it);
+        });
+        var r = textarea.getBoundingClientRect();
+        dd.style.left = (window.scrollX + r.left) + 'px';
+        dd.style.top = (window.scrollY + r.bottom + 4) + 'px';
+        dd.style.width = Math.min(r.width, 260) + 'px';
+    }
+    function pick(c, info) {
+        var val = textarea.value;
+        textarea.value = val.substring(0, info.at) + '@' + c.name + ' ' + val.substring(info.caret);
+        var newPos = info.at + c.name.length + 2;
+        textarea.selectionStart = textarea.selectionEnd = newPos;
+        closeDD();
+        textarea.focus();
+        textarea.dispatchEvent(new Event('input'));
+    }
+    textarea.addEventListener('input', show);
+    textarea.addEventListener('keyup', function(e) { if (e.key === 'Escape') closeDD(); });
+    textarea.addEventListener('blur', function() { setTimeout(closeDD, 150); });
+}
+window.attachMentionAutocomplete = attachMentionAutocomplete;
 
 // Render the full threaded list into #comments-list.
 function renderComments(items) {
@@ -484,6 +537,17 @@ function renderComments(items) {
     roots.forEach(function(root) { listEl.appendChild(renderNode(root, 0)); });
 }
 
+// Unique commenters on this page — the pool of people who can be @mentioned.
+window._pageCommenters = [];
+function updatePageCommenters(items) {
+    var seen = {};
+    var list = [];
+    items.forEach(function(c) {
+        if (c.uid && c.name && !seen[c.uid]) { seen[c.uid] = true; list.push({ uid: c.uid, name: c.name, photo: c.photo || '' }); }
+    });
+    window._pageCommenters = list;
+}
+
 window.loadComments = async function() {
     var listEl = document.getElementById('comments-list');
     if (!listEl) return;
@@ -493,6 +557,7 @@ window.loadComments = async function() {
         var items = [];
         snap.forEach(function(d) { var c = d.data(); c._id = d.id; items.push(c); });
         items.sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+        updatePageCommenters(items);
         renderComments(items);
     } catch (err) { console.error('Comment load error:', err); }
 };
@@ -512,8 +577,11 @@ window.postComment = async function(text, parentId) {
             parentId: parentId || null,
             createdAt: Date.now()
         });
-        // Notify the parent comment's author (if replying to someone else).
-        if (parentId) notifyReply(parentId, text);
+        // Notify the parent author (reply) and anyone @mentioned, avoiding
+        // double-notifying the same person.
+        var notified = [];
+        if (parentId) { var replyUid = await notifyReply(parentId, text); if (replyUid) notified.push(replyUid); }
+        await notifyMentions(text, notified);
         await window.loadComments();
         return true;
     } catch (err) { console.error('Comment post error:', err); alert('Could not post comment. Please try again.'); return false; }
@@ -535,12 +603,13 @@ var _notifUnsub = null;
 var _notifItems = [];
 
 // Write a notification to the author of the comment being replied to.
+// Returns the notified recipient uid (or null) so callers can de-dupe.
 async function notifyReply(parentId, text) {
     try {
         var pd = await getDoc(doc(db, 'comments', parentId));
-        if (!pd.exists()) return;
+        if (!pd.exists()) return null;
         var p = pd.data();
-        if (!p.uid || p.uid === window._firebaseUser.uid) return; // don't notify yourself
+        if (!p.uid || p.uid === window._firebaseUser.uid) return null; // don't notify yourself
         await addDoc(collection(db, 'notifications'), {
             recipientUid: p.uid,
             fromUid: window._firebaseUser.uid,
@@ -552,7 +621,39 @@ async function notifyReply(parentId, text) {
             read: false,
             createdAt: Date.now()
         });
-    } catch (err) { console.error('notifyReply error:', err); }
+        return p.uid;
+    } catch (err) { console.error('notifyReply error:', err); return null; }
+}
+
+// Notify any page commenters whose name is @mentioned in the text.
+async function notifyMentions(text, alreadyNotified) {
+    if (!text || !window._pageCommenters || !window._pageCommenters.length) return;
+    alreadyNotified = alreadyNotified || [];
+    var recipients = {};
+    // Match longer names first so "@Ann Lee" wins over "@Ann".
+    var pool = window._pageCommenters.slice().sort(function(a, b) { return (b.name || '').length - (a.name || '').length; });
+    pool.forEach(function(c) {
+        if (!c.uid || c.uid === window._firebaseUser.uid) return;
+        if (alreadyNotified.indexOf(c.uid) !== -1) return;
+        if (recipients[c.uid]) return;
+        if (c.name && text.indexOf('@' + c.name) !== -1) recipients[c.uid] = c;
+    });
+    var uids = Object.keys(recipients);
+    for (var i = 0; i < uids.length; i++) {
+        try {
+            await addDoc(collection(db, 'notifications'), {
+                recipientUid: uids[i],
+                fromUid: window._firebaseUser.uid,
+                fromName: window._firebaseUser.displayName || 'Someone',
+                fromPhoto: window._firebaseUser.photoURL || '',
+                type: 'mention',
+                page: window.location.pathname,
+                snippet: (text || '').substring(0, 120),
+                read: false,
+                createdAt: Date.now()
+            });
+        } catch (err) { console.error('notifyMentions error:', err); }
+    }
 }
 
 function startNotifications(uid) {
@@ -605,7 +706,8 @@ function renderNotifications(items) {
         var body = document.createElement('div'); body.className = 'notif-item-body';
         var txt = document.createElement('div'); txt.className = 'notif-item-text';
         var strong = document.createElement('strong'); strong.textContent = n.fromName || 'Someone';
-        txt.appendChild(strong); txt.appendChild(document.createTextNode(' replied to your comment'));
+        var action = n.type === 'mention' ? ' mentioned you in a comment' : ' replied to your comment';
+        txt.appendChild(strong); txt.appendChild(document.createTextNode(action));
         var snip = document.createElement('div'); snip.className = 'notif-item-snippet'; snip.textContent = n.snippet || '';
         var time = document.createElement('div'); time.className = 'notif-item-time'; time.textContent = timeAgo(n.createdAt);
         body.appendChild(txt); body.appendChild(snip); body.appendChild(time);
@@ -647,5 +749,9 @@ window.addEventListener('load', function() {
         });
     }
     if (markall) markall.addEventListener('click', function(e) { e.stopPropagation(); window.markAllNotificationsRead(); });
+
+    // Enable @mention autocomplete on the main comment composer.
+    var mainInput = document.getElementById('comment-input');
+    if (mainInput) attachMentionAutocomplete(mainInput);
 });
 </script>
