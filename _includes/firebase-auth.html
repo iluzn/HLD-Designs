@@ -368,8 +368,8 @@ function buildCommentEl(c, isReply) {
     var replyBtn = document.createElement('button');
     replyBtn.className = 'comment-reply-btn';
     replyBtn.textContent = 'Reply';
-    // Replies always attach to the top-level comment (single-level threading).
-    var targetId = c.parentId || c._id;
+    // Reply nests under the actual comment being replied to.
+    var targetId = c._id;
     replyBtn.addEventListener('click', function() {
         if (!window._firebaseUser) { document.getElementById('auth-btn').click(); return; }
         // Toggle: if a reply form is already open here, close it.
@@ -442,41 +442,40 @@ function renderComments(items) {
         return;
     }
 
-    // Split into top-level comments and replies grouped by parent.
-    var tops = [];
-    var repliesByParent = {};
+    // Index comments by id and group children by their parent id.
+    var byId = {};
+    items.forEach(function(c) { byId[c._id] = c; });
+    var childrenOf = {};
+    var roots = [];
     items.forEach(function(c) {
-        if (c.parentId) {
-            (repliesByParent[c.parentId] = repliesByParent[c.parentId] || []).push(c);
+        // A comment is a root if it has no parent, or its parent no longer
+        // exists (parent was deleted) — orphans surface at the top level.
+        if (c.parentId && byId[c.parentId]) {
+            (childrenOf[c.parentId] = childrenOf[c.parentId] || []).push(c);
         } else {
-            tops.push(c);
+            roots.push(c);
         }
     });
-    tops.sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); }); // newest first
-    Object.keys(repliesByParent).forEach(function(k) {
-        repliesByParent[k].sort(function(a, b) { return (a.createdAt || 0) - (b.createdAt || 0); }); // oldest first
-    });
+    roots.sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); }); // newest first
 
-    // Orphaned replies (parent deleted) fall back to top-level so they aren't lost.
-    Object.keys(repliesByParent).forEach(function(pid) {
-        var hasParent = tops.some(function(t) { return t._id === pid; });
-        if (!hasParent) {
-            repliesByParent[pid].forEach(function(r) { tops.push(r); });
-            delete repliesByParent[pid];
-        }
-    });
-    tops.sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
-
-    tops.forEach(function(top) {
-        listEl.appendChild(buildCommentEl(top, false));
-        var replies = repliesByParent[top._id];
-        if (replies && replies.length) {
+    // Recursively render a comment and its nested replies.
+    function renderNode(c, depth) {
+        var frag = document.createDocumentFragment();
+        frag.appendChild(buildCommentEl(c, depth > 0));
+        var kids = childrenOf[c._id];
+        if (kids && kids.length) {
+            kids.sort(function(a, b) { return (a.createdAt || 0) - (b.createdAt || 0); }); // oldest first
             var thread = document.createElement('div');
             thread.className = 'comment-replies';
-            replies.forEach(function(r) { thread.appendChild(buildCommentEl(r, true)); });
-            listEl.appendChild(thread);
+            // Cap the indent so deep threads don't run off-screen.
+            if (depth >= 1) thread.style.marginLeft = '1.1rem';
+            kids.forEach(function(k) { thread.appendChild(renderNode(k, depth + 1)); });
+            frag.appendChild(thread);
         }
-    });
+        return frag;
+    }
+
+    roots.forEach(function(root) { listEl.appendChild(renderNode(root, 0)); });
 }
 
 window.loadComments = async function() {
