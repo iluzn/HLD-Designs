@@ -350,7 +350,9 @@ function buildCommentEl(c, isReply) {
     nameEl.className = 'comment-name';
     nameEl.textContent = c.name || 'Anonymous';
     head.appendChild(nameEl);
-    if (c.role === 'admin') {
+    // Show the Admin badge if the comment is tagged, or if the admin is
+    // viewing their own (older, untagged) comment.
+    if (c.role === 'admin' || (isAdminUser() && myUid && c.uid === myUid)) {
         var badge = document.createElement('span');
         badge.className = 'comment-admin-badge';
         badge.textContent = 'Admin';
@@ -569,8 +571,21 @@ window.loadComments = async function() {
         items.sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
         updatePageCommenters(items);
         renderComments(items);
+        backfillAdminRole(items);
     } catch (err) { console.error('Comment load error:', err); }
 };
+
+// One-time-per-load: tag the admin's older comments with role 'admin' so
+// the badge is visible to all viewers, not just the admin.
+async function backfillAdminRole(items) {
+    if (!isAdminUser()) return;
+    var myUid = window._firebaseUser.uid;
+    var pending = items.filter(function(c) { return c.uid === myUid && c.role !== 'admin'; });
+    if (!pending.length) return;
+    for (var i = 0; i < pending.length; i++) {
+        try { await updateDoc(doc(db, 'comments', pending[i]._id), { role: 'admin' }); } catch (err) {}
+    }
+}
 
 window.postComment = async function(text, parentId) {
     if (!window._firebaseUser) return false;

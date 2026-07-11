@@ -34,8 +34,10 @@ service cloud.firestore {
                     && (resource.data.uid == request.auth.uid
                         || request.auth.token.email == 'systemcraft.in@gmail.com');
 
-      // Comments are immutable once posted.
-      allow update: if false;
+      // Comments are immutable for regular users. The admin may update
+      // (used to backfill the admin role tag on older comments).
+      allow update: if request.auth != null
+                    && request.auth.token.email == 'systemcraft.in@gmail.com';
     }
 
     // In-app notifications. A notification is addressed to a recipient and
