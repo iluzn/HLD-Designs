@@ -262,6 +262,12 @@
 
     LANG_KEYS.forEach(function (k) { var o = document.createElement('option'); o.value = k; o.textContent = META[k].name; langSel.appendChild(o); });
     langSel.value = prefLang();
+    // Persist language choice immediately (even before the editor finishes
+    // loading) so the selection always sticks and defaults to it next time.
+    langSel.addEventListener('change', function () {
+      lsSet(LANG_KEY, curLang());
+      if (cm) { cm.setOption('mode', META[curLang()].mode); cm.setValue(stubFor(curLang())); }
+    });
 
     runBtn.title = "Run (Ctrl/Cmd + ')"; submitBtn.title = 'Submit (Ctrl/Cmd + Enter)';
 
@@ -281,7 +287,6 @@
 
     loadCM().then(function () {
       initEditor();
-      langSel.addEventListener('change', function () { lsSet(LANG_KEY, curLang()); cm.setOption('mode', META[curLang()].mode); cm.setValue(stubFor(curLang())); });
       resetBtn.addEventListener('click', function () { cm.setValue(P.langs[curLang()].stub || ''); persistCode(curLang(), cm.getValue()); });
       runBtn.addEventListener('click', function () { activeCase = 0; runCases(P.cases.slice(0, SAMPLE), false); });
       submitBtn.addEventListener('click', function () { runCases(P.cases, true); });
