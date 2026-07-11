@@ -70,6 +70,8 @@
   }
 
   var busy = false;
+  // All cases run in ONE execution: the harness reads T then loops, printing
+  // one output line per case. We compare stdout line-by-line to expected.
   function runCases(cases, isSubmit) {
     if (busy || !cm) return;
     busy = true; runBtn.disabled = true; submitBtn.disabled = true;
@@ -80,51 +82,49 @@
     var lang = curLang();
     var code = cm.getValue();
     var source = code + '\n\n' + (P.langs[lang].harness || '');
-    var results = new Array(cases.length);
-    var firstFail = -1, compileErr = null;
-    var CONC = 5, idx = 0;
+    var combined = cases.length + '\n' + cases.map(function (c) { return c.stdin; }).join('\n');
 
-    function runOne(i) {
-      var tc = cases[i];
-      return execute(lang, source, tc.stdin).then(function (d) {
-        if (d.compile && d.compile.code !== 0 && d.compile.stderr) { compileErr = d.compile.stderr; results[i] = { compileErr: true }; return; }
+    execute(lang, source, combined).then(function (d) {
+      var results = new Array(cases.length);
+      var compileErr = null, firstFail = -1, tle = false, runtimeErr = null;
+
+      if (d && d.error && !d.run && !d.compile) {
+        for (var i = 0; i < cases.length; i++) results[i] = { error: true };
+        firstFail = 0;
+      } else if (d.compile && d.compile.code !== 0 && d.compile.stderr) {
+        compileErr = d.compile.stderr;
+      } else {
         var run = d.run || {};
-        var out = run.stdout || '';
-        var timedOut = run.signal === 'SIGKILL';
-        var ok = !timedOut && !run.stderr && normalize(out) === normalize(tc.expected);
-        results[i] = { pass: ok, out: out, stderr: run.stderr || '', timedOut: timedOut, error: false };
-      }).catch(function () { results[i] = { error: true }; });
-    }
+        tle = run.signal === 'SIGKILL';
+        runtimeErr = run.stderr || '';
+        var raw = (run.stdout || '').replace(/\r/g, '').split('\n');
+        for (var j = 0; j < cases.length; j++) {
+          var got = j < raw.length ? raw[j] : null;
+          var pass = !tle && got !== null && normalize(got) === normalize(cases[j].expected);
+          results[j] = { pass: pass, out: got === null ? '' : got, timedOut: tle, stderr: '' };
+          if (!pass && firstFail === -1) firstFail = j;
+        }
+        if (tle && firstFail === -1) firstFail = 0;
+        if (firstFail !== -1 && results[firstFail]) results[firstFail].stderr = runtimeErr;
+      }
 
-    function earliestFail() { for (var i = 0; i < cases.length; i++) { if (results[i] && (results[i].pass === false || results[i].error || results[i].timedOut)) return i; } return -1; }
-
-    function nextBatch() {
-      if (compileErr || idx >= cases.length) return Promise.resolve();
-      var batch = [];
-      for (var b = 0; b < CONC && idx < cases.length; b++, idx++) batch.push(runOne(idx));
-      statusEl.textContent = (isSubmit ? 'Judging ' : 'Running ') + Math.min(idx, cases.length) + '/' + cases.length + '…';
-      return Promise.all(batch).then(function () {
-        if (compileErr) return;
-        var f = earliestFail();
-        if (f !== -1) { firstFail = f; return; } // early exit on first failure
-        return nextBatch();
-      });
-    }
-
-    nextBatch().then(function () {
-      if (firstFail === -1 && !compileErr) { var g = earliestFail(); if (g !== -1) firstFail = g; }
       var passed = compileErr ? 0 : (firstFail === -1 ? cases.length : firstFail);
       lastResults = { cases: cases, results: results, isSubmit: isSubmit, compileErr: compileErr, firstFail: firstFail, passed: passed };
+
       if (isSubmit) {
+        var f = results[firstFail] || {};
         var status = compileErr ? 'Compile Error'
           : (passed === cases.length ? 'Accepted'
-          : ((results[firstFail] || {}).timedOut ? 'Time Limit Exceeded'
-          : ((results[firstFail] || {}).error ? 'Runtime Error'
-          : ((results[firstFail] || {}).stderr ? 'Runtime Error' : 'Wrong Answer'))));
+          : (f.error ? 'Runtime Error'
+          : (tle ? 'Time Limit Exceeded'
+          : ((runtimeErr && (f.out === '' || f.out == null)) ? 'Runtime Error' : 'Wrong Answer'))));
         addSub({ ts: Date.now(), lang: lang, langName: META[lang].name, status: status, passed: passed, total: cases.length, code: code });
         if (status === 'Accepted') { markSolved(); paintSolved(); }
       }
       renderResult();
+      busy = false; runBtn.disabled = false; submitBtn.disabled = false; statusEl.textContent = '';
+    }).catch(function () {
+      consoleBody.innerHTML = '<div class="lc-verdict wa">Backend Unavailable <small>Could not reach the execution service.</small></div>';
       busy = false; runBtn.disabled = false; submitBtn.disabled = false; statusEl.textContent = '';
     });
   }
