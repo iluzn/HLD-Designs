@@ -8,7 +8,7 @@ permalink: /concepts/idempotency/
 # Idempotency - Complete Deep Dive
 
 > **Prerequisites:** [API Design](/concepts/api-design/), [Distributed Locking](/concepts/distributed-locking/)
-> **Used in:** [Digital Wallet](/hld/DigitalWallet/), [Payment Gateway](/hld/PaymentGateway/), [Notification System](/hld/NotificationSystem/)
+> **Used in:** [Digital Wallet](/hld/DigitalWallet/), [Stock Broker](/hld/StockBroker/), [Notification System](/hld/NotificationSystem/)
 
 ---
 

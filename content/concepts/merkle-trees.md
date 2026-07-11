@@ -8,7 +8,7 @@ permalink: /concepts/merkle-trees/
 # Merkle Trees in System Design - Complete Deep Dive
 
 > **Prerequisites:** [Database Replication](/concepts/database-replication/), [Consistent Hashing](/concepts/consistent-hashing/)
-> **Used in:** [Key-Value Store](/hld/key-value-store/), [Unique ID Generator](/hld/unique-id-generator/)
+> **Used in:** [Key-Value Store](/hld/KeyValueStore/), [Unique ID Generator](/hld/UniqueIDGenerator/)
 
 ---
 

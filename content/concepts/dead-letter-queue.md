@@ -8,7 +8,7 @@ permalink: /concepts/dead-letter-queue/
 # Dead Letter Queue (DLQ) - Complete Deep Dive
 
 > **Prerequisites:** [Message Queues](/concepts/message-queues/), [Retry and Backoff](/concepts/retry-backoff/)
-> **Used in:** [Notification System](/hld/notification-system/), [Job Scheduler](/hld/job-scheduler/), [Digital Wallet](/hld/digital-wallet/)
+> **Used in:** [Notification System](/hld/NotificationSystem/), [Job Scheduler](/hld/JobScheduler/), [Digital Wallet](/hld/DigitalWallet/)
 
 ---
 

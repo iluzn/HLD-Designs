@@ -8,7 +8,7 @@ permalink: /concepts/microservices/
 # Microservices vs Monolith - Complete Deep Dive
 
 > **Prerequisites:** [Scalability](/concepts/scalability/), [Message Queues](/concepts/message-queues/), [API Design](/concepts/api-design/)
-> **Used in:** [Uber](/hld/uber/), [Netflix](/hld/netflix/), [Zomato](/hld/zomato/), [Instagram](/hld/instagram/)
+> **Used in:** [Uber](/hld/Uber/), [Netflix](/hld/Netflix/), [Zomato](/hld/Zomato/), [Instagram](/hld/Instagram/)
 
 ---
 

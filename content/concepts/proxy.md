@@ -8,7 +8,7 @@ permalink: /concepts/proxy/
 # Proxy in System Design - Complete Deep Dive
 
 > **Prerequisites:** [Load Balancing](/concepts/load-balancing/), [CDN](/concepts/cdn/)
-> **Used in:** [Uber](/hld/uber/), [Netflix](/hld/netflix/), [Instagram](/hld/instagram/)
+> **Used in:** [Uber](/hld/Uber/), [Netflix](/hld/Netflix/), [Instagram](/hld/Instagram/)
 
 ---
 

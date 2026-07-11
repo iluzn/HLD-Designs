@@ -8,7 +8,7 @@ permalink: /concepts/retry-backoff/
 # Retry and Exponential Backoff - Complete Deep Dive
 
 > **Prerequisites:** [Circuit Breaker](/concepts/circuit-breaker/), [Load Balancing](/concepts/load-balancing/)
-> **Used in:** [Notification System](/hld/notification-system/), [Digital Wallet](/hld/digital-wallet/), [Chat System](/hld/chat-system/)
+> **Used in:** [Notification System](/hld/NotificationSystem/), [Digital Wallet](/hld/DigitalWallet/), [Chat System](/hld/ChatSystem/)
 
 ---
 

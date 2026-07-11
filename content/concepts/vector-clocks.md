@@ -8,7 +8,7 @@ permalink: /concepts/vector-clocks/
 # Vector Clocks - Complete Deep Dive
 
 > **Prerequisites:** [Database Replication](/concepts/database-replication/), [Consistency Models](/concepts/consistency-models/)
-> **Used in:** [Key-Value Store](/hld/key-value-store/), [Chat System](/hld/chat-system/)
+> **Used in:** [Key-Value Store](/hld/KeyValueStore/), [Chat System](/hld/ChatSystem/)
 
 ---
 

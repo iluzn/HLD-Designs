@@ -8,7 +8,7 @@ permalink: /concepts/consistency-models/
 # Consistency Models - Complete Deep Dive
 
 > **Prerequisites:** [CAP Theorem](/concepts/cap-theorem/), [Database Replication](/concepts/database-replication/)
-> **Used in:** [Key-Value Store](/hld/key-value-store/), [Digital Wallet](/hld/digital-wallet/), [Chat System](/hld/chat-system/)
+> **Used in:** [Key-Value Store](/hld/KeyValueStore/), [Digital Wallet](/hld/DigitalWallet/), [Chat System](/hld/ChatSystem/)
 
 ---
 

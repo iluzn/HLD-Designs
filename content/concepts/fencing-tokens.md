@@ -8,7 +8,7 @@ permalink: /concepts/fencing-tokens/
 # Fencing Tokens - Complete Deep Dive
 
 > **Prerequisites:** [Distributed Locking](/concepts/distributed-locking/), [Leader Election](/concepts/leader-election/)
-> **Used in:** [Job Scheduler](/hld/job-scheduler/), [Digital Wallet](/hld/digital-wallet/), [Key-Value Store](/hld/key-value-store/)
+> **Used in:** [Job Scheduler](/hld/JobScheduler/), [Digital Wallet](/hld/DigitalWallet/), [Key-Value Store](/hld/KeyValueStore/)
 
 ---
 

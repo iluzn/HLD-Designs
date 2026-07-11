@@ -8,7 +8,7 @@ permalink: /concepts/connection-pooling/
 # Connection Pooling - Complete Deep Dive
 
 > **Prerequisites:** [Scalability](/concepts/scalability/), [Database Indexing](/concepts/database-indexing/)
-> **Used in:** [Digital Wallet](/hld/digital-wallet/), [Uber](/hld/uber/), [Zomato](/hld/zomato/), Any system with a database
+> **Used in:** [Digital Wallet](/hld/DigitalWallet/), [Uber](/hld/Uber/), [Zomato](/hld/Zomato/), Any system with a database
 
 ---
 

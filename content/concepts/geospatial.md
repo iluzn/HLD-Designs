@@ -8,7 +8,7 @@ permalink: /concepts/geospatial/
 # Geospatial Indexing - Complete Deep Dive
 
 > **Prerequisites:** [Database Indexing](/concepts/database-indexing/), [Caching](/concepts/caching/)
-> **Used in:** [Uber](/hld/uber/), [Zomato](/hld/zomato/), [Yelp-like systems](/hld/)
+> **Used in:** [Uber](/hld/Uber/), [Zomato](/hld/Zomato/), [Yelp-like systems](/hld/)
 
 ---
 

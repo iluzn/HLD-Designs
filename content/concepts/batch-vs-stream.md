@@ -8,7 +8,7 @@ permalink: /concepts/batch-vs-stream/
 # Batch vs Stream Processing - Complete Deep Dive
 
 > **Prerequisites:** [Message Queues](/concepts/message-queues/), [Scalability](/concepts/scalability/)
-> **Used in:** [News Aggregator](/hld/news-aggregator/), [Leaderboard](/hld/leaderboard/), [Netflix](/hld/netflix/), [Stock Broker](/hld/stock-broker/)
+> **Used in:** [News Aggregator](/hld/NewsAggregator/), [Leaderboard](/hld/Leaderboard/), [Netflix](/hld/Netflix/), [Stock Broker](/hld/StockBroker/)
 
 ---
 

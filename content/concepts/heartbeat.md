@@ -8,7 +8,7 @@ permalink: /concepts/heartbeat/
 # Heartbeat and Health Checks - Complete Deep Dive
 
 > **Prerequisites:** [Load Balancing](/concepts/load-balancing/), [Service Discovery](/concepts/service-discovery/)
-> **Used in:** [Key-Value Store](/hld/key-value-store/), [Chat System](/hld/chat-system/), [Job Scheduler](/hld/job-scheduler/)
+> **Used in:** [Key-Value Store](/hld/KeyValueStore/), [Chat System](/hld/ChatSystem/), [Job Scheduler](/hld/JobScheduler/)
 
 ---
 

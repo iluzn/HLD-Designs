@@ -8,7 +8,7 @@ permalink: /concepts/bloom-filters/
 # Bloom Filters - Complete Deep Dive
 
 > **Prerequisites:** [Caching](/concepts/caching/), [Database Indexing](/concepts/database-indexing/)
-> **Used in:** [URL Shortener](/hld/url-shortener/), [News Aggregator](/hld/news-aggregator/), [Key-Value Store](/hld/key-value-store/)
+> **Used in:** [URL Shortener](/hld/URLShortner/), [News Aggregator](/hld/NewsAggregator/), [Key-Value Store](/hld/KeyValueStore/)
 
 ---
 

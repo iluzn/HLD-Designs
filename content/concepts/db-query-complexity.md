@@ -8,7 +8,7 @@ permalink: /concepts/db-query-complexity/
 # Database Query Complexity - Complete Deep Dive
 
 > **Prerequisites:** [Database Indexing](/concepts/database-indexing/), [Database Sharding](/concepts/database-sharding/), [Caching](/concepts/caching/)
-> **Used in:** [Leaderboard](/hld/leaderboard/), [Key-Value Store](/hld/key-value-store/), [Instagram](/hld/instagram/)
+> **Used in:** [Leaderboard](/hld/Leaderboard/), [Key-Value Store](/hld/KeyValueStore/), [Instagram](/hld/Instagram/)
 
 ---
 

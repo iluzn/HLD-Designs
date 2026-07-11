@@ -8,7 +8,7 @@ permalink: /concepts/circuit-breaker/
 # Circuit Breaker Pattern - Complete Deep Dive
 
 > **Prerequisites:** [Rate Limiting](/concepts/rate-limiting/), [Load Balancing](/concepts/load-balancing/)
-> **Used in:** [Uber](/hld/uber/), [Zomato](/hld/zomato/), [Netflix](/hld/netflix/), [Notification System](/hld/notification-system/)
+> **Used in:** [Uber](/hld/Uber/), [Zomato](/hld/Zomato/), [Netflix](/hld/Netflix/), [Notification System](/hld/NotificationSystem/)
 
 ---
 

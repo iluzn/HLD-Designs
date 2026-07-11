@@ -8,7 +8,7 @@ permalink: /concepts/database-replication/
 # Database Replication - Complete Deep Dive
 
 > **Prerequisites:** [Database Indexing](/concepts/database-indexing/), [CAP Theorem](/concepts/cap-theorem/)
-> **Used in:** [Key-Value Store](/hld/key-value-store/), [Chat System](/hld/chat-system/), [Digital Wallet](/hld/digital-wallet/)
+> **Used in:** [Key-Value Store](/hld/KeyValueStore/), [Chat System](/hld/ChatSystem/), [Digital Wallet](/hld/DigitalWallet/)
 
 ---
 

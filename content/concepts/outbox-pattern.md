@@ -8,7 +8,7 @@ permalink: /concepts/outbox-pattern/
 # Outbox Pattern - Complete Deep Dive
 
 > **Prerequisites:** [Message Queues](/concepts/message-queues/), [Event Sourcing](/concepts/event-sourcing/), [Database Indexing](/concepts/database-indexing/)
-> **Used in:** [Digital Wallet](/hld/digital-wallet/), [Notification System](/hld/notification-system/), [Stock Broker](/hld/stock-broker/)
+> **Used in:** [Digital Wallet](/hld/DigitalWallet/), [Notification System](/hld/NotificationSystem/), [Stock Broker](/hld/StockBroker/)
 
 ---
 

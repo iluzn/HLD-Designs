@@ -8,7 +8,7 @@ permalink: /concepts/service-discovery/
 # Service Discovery - Complete Deep Dive
 
 > **Prerequisites:** [Load Balancing](/concepts/load-balancing/), [Microservices](/concepts/microservices/)
-> **Used in:** [Uber](/hld/uber/), [Chat System](/hld/chat-system/), [Notification System](/hld/notification-system/)
+> **Used in:** [Uber](/hld/Uber/), [Chat System](/hld/ChatSystem/), [Notification System](/hld/NotificationSystem/)
 
 ---
 

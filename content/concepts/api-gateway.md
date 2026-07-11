@@ -8,7 +8,7 @@ permalink: /concepts/api-gateway/
 # API Gateway Pattern - Complete Deep Dive
 
 > **Prerequisites:** [Load Balancing](/concepts/load-balancing/), [Rate Limiting](/concepts/rate-limiting/), [Service Discovery](/concepts/service-discovery/)
-> **Used in:** [Uber](/hld/uber/), [Instagram](/hld/instagram/), [Zomato](/hld/zomato/)
+> **Used in:** [Uber](/hld/Uber/), [Instagram](/hld/Instagram/), [Zomato](/hld/Zomato/)
 
 ---
 

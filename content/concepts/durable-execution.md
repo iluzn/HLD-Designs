@@ -8,7 +8,7 @@ permalink: /concepts/durable-execution/
 # Durable Execution - Complete Deep Dive
 
 > **Prerequisites:** [Message Queues](/concepts/message-queues/), [Retry and Backoff](/concepts/retry-backoff/), [Saga Pattern](/concepts/saga-pattern/)
-> **Used in:** [Job Scheduler](/hld/job-scheduler/), [Digital Wallet](/hld/digital-wallet/), [Delayed Trigger Service](/hld/delayed-trigger-service/)
+> **Used in:** [Job Scheduler](/hld/JobScheduler/), [Digital Wallet](/hld/DigitalWallet/), [Delayed Trigger Service](/hld/DelayedTriggerService/)
 
 ---
 

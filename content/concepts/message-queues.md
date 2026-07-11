@@ -299,4 +299,4 @@ A: When you need a synchronous response (user is waiting for the result). When l
 
 ---
 
-[← Back to Fundamentals](/concepts) | [← Load Balancing](/concepts/load-balancing/) | [Next: Database Concepts →](/concepts/databases/)
+[← Back to Fundamentals](/concepts) | [← Load Balancing](/concepts/load-balancing/) | [Next: Database Sharding →](/concepts/database-sharding/)

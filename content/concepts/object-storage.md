@@ -8,7 +8,7 @@ permalink: /concepts/object-storage/
 # Object Storage (S3) - Complete Deep Dive
 
 > **Prerequisites:** [CDN](/concepts/cdn/), [API Design](/concepts/api-design/)
-> **Used in:** [Instagram](/hld/instagram/), [Netflix](/hld/netflix/), [Pastebin](/hld/pastebin/), [Google Docs](/hld/google-docs/)
+> **Used in:** [Instagram](/hld/Instagram/), [Netflix](/hld/Netflix/), [Pastebin](/hld/Pastebin/), [Google Docs](/hld/GoogleDocs/)
 
 ---
 

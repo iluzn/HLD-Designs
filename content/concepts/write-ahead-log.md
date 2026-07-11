@@ -8,7 +8,7 @@ permalink: /concepts/write-ahead-log/
 # Write-Ahead Log (WAL) - Complete Deep Dive
 
 > **Prerequisites:** [Database Indexing](/concepts/database-indexing/), [Message Queues](/concepts/message-queues/)
-> **Used in:** [Key-Value Store](/hld/key-value-store/), [Chat System](/hld/chat-system/), All database-backed systems
+> **Used in:** [Key-Value Store](/hld/KeyValueStore/), [Chat System](/hld/ChatSystem/), All database-backed systems
 
 ---
 
