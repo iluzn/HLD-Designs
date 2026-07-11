@@ -106,11 +106,150 @@ HashMap works (O(n) time, O(n) space) but Two Pointers is O(n) time with **O(1) 
 
 ---
 
-## Try It Yourself
+## Solve It
 
-Write your solution and run it live in C++, Java, Python, Go, Rust, and more — right here in the browser.
+Implement the `twoSum` function, hit **Run** to check the sample cases, then **Submit** to run against all hidden test cases for an Accepted / Wrong Answer verdict — LeetCode style, right in the browser. Supports Python, JavaScript, Java, and C++.
 
-{% include code-runner.html %}
+{% raw %}
+<script>
+window.SC_PROBLEM = {
+  // stdin tokens per test: "<target> <n> <a1 a2 ... an>"
+  tests: [
+    { stdin: "9 4 2 7 11 15",            expected: "1 2", hidden: false, label: "numbers = [2, 7, 11, 15], target = 9" },
+    { stdin: "6 3 2 3 4",                expected: "1 3", hidden: false, label: "numbers = [2, 3, 4], target = 6" },
+    { stdin: "-1 2 -1 0",                expected: "1 2", hidden: false, label: "numbers = [-1, 0], target = -1" },
+    { stdin: "8 8 1 2 3 4 4 9 56 90",    expected: "4 5", hidden: true },
+    { stdin: "100 3 5 25 75",            expected: "2 3", hidden: true },
+    { stdin: "16 7 1 3 5 7 9 11 13",     expected: "2 7", hidden: true },
+    { stdin: "2 2 1 1",                   expected: "1 2", hidden: true }
+  ],
+  languages: {
+    "Python": {
+      piston: ["python", "python3"],
+      mode: "python",
+      file: "main.py",
+      stub: [
+        "def twoSum(numbers, target):",
+        "    # numbers is 1-indexed and sorted. Return [i, j] with i < j.",
+        "    pass",
+        ""
+      ].join("\n"),
+      harness: [
+        "{{USER_CODE}}",
+        "",
+        "import sys",
+        "_t = sys.stdin.read().split()",
+        "_p = 0",
+        "_T = int(_t[_p]); _p += 1",
+        "for _ in range(_T):",
+        "    _target = int(_t[_p]); _p += 1",
+        "    _n = int(_t[_p]); _p += 1",
+        "    _nums = [int(_t[_p + _k]) for _k in range(_n)]",
+        "    _p += _n",
+        "    _r = twoSum(_nums, _target)",
+        "    print(_r[0], _r[1])"
+      ].join("\n")
+    },
+    "JavaScript": {
+      piston: ["javascript", "node", "js"],
+      mode: "javascript",
+      file: "main.js",
+      stub: [
+        "function twoSum(numbers, target) {",
+        "    // numbers is 1-indexed and sorted. Return [i, j] with i < j.",
+        "}",
+        ""
+      ].join("\n"),
+      harness: [
+        "{{USER_CODE}}",
+        "",
+        "const _t = require('fs').readFileSync(0, 'utf8').trim().split(' ').map(Number);",
+        "let _p = 0;",
+        "const _T = _t[_p++];",
+        "for (let _i = 0; _i < _T; _i++) {",
+        "  const _target = _t[_p++];",
+        "  const _n = _t[_p++];",
+        "  const _nums = [];",
+        "  for (let _k = 0; _k < _n; _k++) _nums.push(_t[_p++]);",
+        "  const _r = twoSum(_nums, _target);",
+        "  console.log(_r[0] + ' ' + _r[1]);",
+        "}"
+      ].join("\n")
+    },
+    "Java": {
+      piston: ["java"],
+      mode: "text/x-java",
+      file: "Main.java",
+      stub: [
+        "class Solution {",
+        "    public int[] twoSum(int[] numbers, int target) {",
+        "        // numbers is 1-indexed and sorted. Return new int[]{i, j} with i < j.",
+        "        return new int[]{-1, -1};",
+        "    }",
+        "}",
+        ""
+      ].join("\n"),
+      harness: [
+        "import java.util.*;",
+        "{{USER_CODE}}",
+        "public class Main {",
+        "    public static void main(String[] args) {",
+        "        Scanner sc = new Scanner(System.in);",
+        "        int T = sc.nextInt();",
+        "        Solution sol = new Solution();",
+        "        StringBuilder sb = new StringBuilder();",
+        "        for (int t = 0; t < T; t++) {",
+        "            int target = sc.nextInt();",
+        "            int n = sc.nextInt();",
+        "            int[] nums = new int[n];",
+        "            for (int i = 0; i < n; i++) nums[i] = sc.nextInt();",
+        "            int[] r = sol.twoSum(nums, target);",
+        "            sb.append(r[0]).append(' ').append(r[1]).append(System.lineSeparator());",
+        "        }",
+        "        System.out.print(sb);",
+        "    }",
+        "}"
+      ].join("\n")
+    },
+    "C++": {
+      piston: ["c++", "cpp"],
+      mode: "text/x-c++src",
+      file: "main.cpp",
+      stub: [
+        "class Solution {",
+        "public:",
+        "    vector<int> twoSum(vector<int>& numbers, int target) {",
+        "        // numbers is 1-indexed and sorted. Return {i, j} with i < j.",
+        "        return {-1, -1};",
+        "    }",
+        "};",
+        ""
+      ].join("\n"),
+      harness: [
+        "#include <bits/stdc++.h>",
+        "using namespace std;",
+        "{{USER_CODE}}",
+        "int main() {",
+        "    int T;",
+        "    if (!(cin >> T)) return 0;",
+        "    for (int t = 0; t < T; t++) {",
+        "        int target, n;",
+        "        cin >> target >> n;",
+        "        vector<int> nums(n);",
+        "        for (int i = 0; i < n; i++) cin >> nums[i];",
+        "        Solution sol;",
+        "        vector<int> r = sol.twoSum(nums, target);",
+        "        cout << r[0] << ' ' << r[1] << endl;",
+        "    }",
+        "}"
+      ].join("\n")
+    }
+  }
+};
+</script>
+{% endraw %}
+
+{% include code-judge.html %}
 
 ---
 

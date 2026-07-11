@@ -209,12 +209,14 @@
     new MutationObserver(function () { cm.setOption('theme', themeName()); })
       .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-    // Build the stdin blob + expected list for a set of test cases.
-    // Format: line 1 = count, then each test's stdin block verbatim.
+    // Build one flat whitespace-separated token stream for all test cases:
+    //   <count> <test1 tokens> <test2 tokens> ...
+    // Harnesses read tokens with the language's native scanner, so no
+    // delimiter/escaping assumptions are needed across languages.
     function buildInput(tests) {
-      var lines = [String(tests.length)];
-      tests.forEach(function (t) { lines.push(t.stdin); });
-      return lines.join('\n') + '\n';
+      var parts = [String(tests.length)];
+      tests.forEach(function (t) { parts.push(String(t.stdin).trim()); });
+      return parts.join(' ') + '\n';
     }
 
     function runTests(tests, mode) {
