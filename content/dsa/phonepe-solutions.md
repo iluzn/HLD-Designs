@@ -1162,6 +1162,8 @@ public int maxArea(int[] height) {
 
 ### 43. Search in Rotated Sorted Array — [LC 33](https://leetcode.com/problems/search-in-rotated-sorted-array/) · Medium
 
+🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/search-in-rotated-sorted-array)
+
 **Approach:** At each step one half is sorted. Check which half is sorted, decide if the target lies inside it, and discard the other half.
 
 **Complexity:** O(log n) time.
@@ -1203,6 +1205,8 @@ public int findMin(int[] nums) {
 ```
 
 ### 45. Koko Eating Bananas — [LC 875](https://leetcode.com/problems/koko-eating-bananas/) · Medium
+
+🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/koko-eating-bananas)
 
 **Approach:** Binary search on the answer (eating speed). For a candidate speed, compute hours needed; find the smallest speed that finishes within `h`.
 
@@ -1392,6 +1396,8 @@ public int[] nextGreaterElement(int[] nums1, int[] nums2) {
 ## Linked List
 
 ### 53. LRU Cache — [LC 146](https://leetcode.com/problems/lru-cache/) · Medium
+
+🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/lru-cache)
 
 **Approach:** HashMap for O(1) lookup + doubly linked list for O(1) recency updates. Head = most recent, tail = eviction end. (Machine-coding round favorite.)
 
