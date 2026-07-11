@@ -84,17 +84,27 @@ window.SC_PROBLEM = {
     { key: 'cpp',    name: 'C++',    ids: ['c++', 'cpp'],        mode: 'text/x-c++src', file: 'main.cpp' }
   ].filter(function (L) { return P.starter && P.starter[L.key]; });
 
-  var root = document.getElementById('sc-judge');
-  var langSel = root.querySelector('.sc-judge-lang');
-  var runBtn = root.querySelector('.sc-run');
-  var submitBtn = root.querySelector('.sc-submit');
-  var resetBtn = root.querySelector('.sc-reset2');
-  var statusEl = root.querySelector('.sc-judge-status');
-  var editorHost = root.querySelector('.sc-judge-editor');
-  var verdictWrap = root.querySelector('.sc-verdict');
-  var verdictHead = root.querySelector('.sc-verdict-head');
-  var verdictText = root.querySelector('.sc-verdict-text');
-  var casesEl = root.querySelector('.sc-cases');
+  // Bound at boot() time (on DOMContentLoaded), NOT here. Other layout
+  // scripts rewrite `.content` innerHTML after this script runs, which
+  // replaces these DOM nodes — so we must query them after that happens.
+  var root, langSel, runBtn, submitBtn, resetBtn, statusEl, editorHost,
+      verdictWrap, verdictHead, verdictText, casesEl;
+
+  function bindDom() {
+    root = document.getElementById('sc-judge');
+    if (!root) return false;
+    langSel = root.querySelector('.sc-judge-lang');
+    runBtn = root.querySelector('.sc-run');
+    submitBtn = root.querySelector('.sc-submit');
+    resetBtn = root.querySelector('.sc-reset2');
+    statusEl = root.querySelector('.sc-judge-status');
+    editorHost = root.querySelector('.sc-judge-editor');
+    verdictWrap = root.querySelector('.sc-verdict');
+    verdictHead = root.querySelector('.sc-verdict-head');
+    verdictText = root.querySelector('.sc-verdict-text');
+    casesEl = root.querySelector('.sc-cases');
+    return true;
+  }
 
   function loadCss(href) {
     return new Promise(function (res) {
@@ -173,6 +183,7 @@ window.SC_PROBLEM = {
   }
 
   function boot() {
+    if (!bindDom()) return;
     // Languages are known up front, so populate immediately (no network gate).
     available = LANGS.map(function (L) {
       return Object.assign({}, L, { pistonLang: L.ids[0], version: '*' });
