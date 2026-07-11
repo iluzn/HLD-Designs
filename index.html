@@ -55,8 +55,8 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
             --header-bg: rgba(17,17,24,0.92);
         }
 
-        .bg-gradient { position: fixed; top: 0; left: 0; right: 0; height: 600px; background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.12), transparent); pointer-events: none; z-index: 0; }
-        [data-theme="light"] .bg-gradient { opacity: 0.4; }
+        .bg-gradient { position: fixed; top: 0; left: 0; right: 0; height: 640px; background: radial-gradient(var(--dot, rgba(129,140,248,0.09)) 1px, transparent 1.5px) 0 0 / 24px 24px, radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.14), transparent); -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 95%); mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 95%); pointer-events: none; z-index: 0; }
+        [data-theme="light"] .bg-gradient { --dot: rgba(79,70,229,0.07); }
 
         /* Header — premium glass */
         header { position: sticky; top: 0; z-index: 100; padding: 0.7rem 0; background: var(--header-bg); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); border-bottom: none; }
