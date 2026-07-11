@@ -81,7 +81,7 @@
     busy = true; runBtn.disabled = true; submitBtn.disabled = true;
     statusEl.textContent = isSubmit ? 'Judging…' : 'Running…';
     curTab = 'result'; syncConsoleTabs();
-    consoleBody.innerHTML = '<div class="lc-verdict run">' + (isSubmit ? 'Judging ' : 'Running ') + cases.length + ' case' + (cases.length > 1 ? 's' : '') + '…</div>';
+    consoleBody.innerHTML = '<div class="lc-verdict run"><span class="lc-spinner"></span>&nbsp;&nbsp;' + (isSubmit ? 'Judging ' : 'Running ') + cases.length + ' case' + (cases.length > 1 ? 's' : '') + '…</div>';
 
     var lang = curLang();
     var code = cm.getValue();

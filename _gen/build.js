@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { T, randInt, randArr, arrStr, ln } = require('./gen.js');
 const { P, stdinOf, displayOf, fmtExpected, OUT } = require('./problems.js');
+const { EDITORIALS } = require('./editorials.js');
 
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 function pick(arr) { return arr[randInt(0, arr.length - 1)]; }
@@ -143,7 +144,7 @@ P.forEach(function (p) {
     cases.push({ stdin: stdin, expected: fmtExpected(p.ref(args)), display: displayOf(p.type, args) });
   });
 
-  var sc = { id: p.slug, editorial: p.editorial, langs: langs, cases: cases };
+  var sc = { id: p.slug, editorial: EDITORIALS[p.slug] || p.editorial, langs: langs, cases: cases };
   var topics = p.topics.map(function (t) { return '<span class="lc-tag">' + t + '</span>'; }).join('');
   var exs = p.examples.map(function (e, i) { return '<h2>Example ' + (i + 1) + '</h2><pre>Input:  ' + e.in + '\nOutput: ' + e.out + (e.ex ? '\nExplanation: ' + e.ex : '') + '</pre>'; }).join('\n');
   var cons = '<h2>Constraints</h2><ul>' + p.constraints.map(function (c) { return '<li>' + c + '</li>'; }).join('') + '</ul>';

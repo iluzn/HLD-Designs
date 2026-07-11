@@ -139,6 +139,18 @@
     .lc-io-box.bad { border-color: rgba(239,68,68,0.4); color: #f87171; }
     .lc-verdict { font-size: 1rem; font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.6rem; }
     .lc-verdict.ac { color: #22c55e; } .lc-verdict.wa { color: #ef4444; } .lc-verdict.run { color: var(--text-muted); font-weight: 600; }
+    .lc-spinner { display:inline-block; width:15px; height:15px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:lc-spin 0.7s linear infinite; }
+    @keyframes lc-spin { to { transform: rotate(360deg); } }
+    /* Editorial content */
+    .lc-editorial h3 { font-size:0.98rem; font-weight:700; margin:1.3rem 0 0.5rem; color:var(--text); }
+    .lc-editorial h3:first-child { margin-top:0.2rem; }
+    .lc-editorial p { color:var(--text-muted); line-height:1.7; margin-bottom:0.7rem; font-size:0.9rem; }
+    .lc-editorial ol, .lc-editorial ul { margin:0 0 0.9rem 1.2rem; color:var(--text-muted); font-size:0.89rem; line-height:1.7; }
+    .lc-editorial li { margin-bottom:0.3rem; }
+    .lc-editorial pre { background:var(--code-bg); border:1px solid var(--border); border-radius:8px; padding:0.8rem 1rem; overflow-x:auto; margin-bottom:0.9rem; }
+    .lc-editorial pre code { font-size:0.8rem; line-height:1.6; }
+    .lc-editorial code { background:var(--code-bg); padding:0.1rem 0.4rem; border-radius:5px; font-family:'JetBrains Mono',monospace; font-size:0.82em; }
+    .lc-editorial .ed-note { font-size:0.82rem; color:var(--text-dim); border-left:3px solid var(--accent); padding:0.4rem 0.8rem; margin:0.6rem 0; background:var(--tag-bg,rgba(129,140,248,0.06)); border-radius:0 8px 8px 0; }
     .lc-verdict small { font-size: 0.74rem; font-weight: 600; color: var(--text-muted); }
 
     /* ---- Action bar ---- */
