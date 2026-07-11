@@ -21,6 +21,9 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
+const ADMIN_EMAIL = 'systemcraft.in@gmail.com';
+function isAdminUser() { return !!(window._firebaseUser && window._firebaseUser.email === ADMIN_EMAIL); }
+
 const authBtn = document.getElementById('auth-btn');
 const authDropdown = document.getElementById('auth-dropdown');
 const authName = document.getElementById('auth-name');
@@ -346,13 +349,20 @@ function buildCommentEl(c, isReply) {
     var nameEl = document.createElement('span');
     nameEl.className = 'comment-name';
     nameEl.textContent = c.name || 'Anonymous';
+    head.appendChild(nameEl);
+    if (c.role === 'admin') {
+        var badge = document.createElement('span');
+        badge.className = 'comment-admin-badge';
+        badge.textContent = 'Admin';
+        head.appendChild(badge);
+    }
     var timeEl = document.createElement('span');
     timeEl.className = 'comment-time';
     timeEl.textContent = timeAgo(c.createdAt);
-    head.appendChild(nameEl);
     head.appendChild(timeEl);
 
-    if (myUid && c.uid === myUid) {
+    // Author can delete their own comment; admin can delete any comment.
+    if ((myUid && c.uid === myUid) || isAdminUser()) {
         var del = document.createElement('button');
         del.className = 'comment-delete';
         del.textContent = 'Delete';
@@ -568,7 +578,7 @@ window.postComment = async function(text, parentId) {
     if (!text) return false;
     if (text.length > 2000) { alert('Comment is too long (max 2000 characters).'); return false; }
     try {
-        await addDoc(collection(db, 'comments'), {
+        var payload = {
             page: window.location.pathname,
             uid: window._firebaseUser.uid,
             name: window._firebaseUser.displayName || 'Anonymous',
@@ -576,7 +586,9 @@ window.postComment = async function(text, parentId) {
             text: text,
             parentId: parentId || null,
             createdAt: Date.now()
-        });
+        };
+        if (isAdminUser()) payload.role = 'admin';
+        await addDoc(collection(db, 'comments'), payload);
         // Notify the parent author (reply) and anyone @mentioned, avoiding
         // double-notifying the same person.
         var notified = [];

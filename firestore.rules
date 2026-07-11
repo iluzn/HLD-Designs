@@ -22,11 +22,17 @@ service cloud.firestore {
                     && (!('parentId' in request.resource.data.keys())
                         || request.resource.data.parentId == null
                         || (request.resource.data.parentId is string
-                            && request.resource.data.parentId.size() <= 64));
+                            && request.resource.data.parentId.size() <= 64))
+                    // Only the admin account may tag a comment as admin.
+                    && (!('role' in request.resource.data.keys())
+                        || request.resource.data.role == null
+                        || (request.resource.data.role == 'admin'
+                            && request.auth.token.email == 'systemcraft.in@gmail.com'));
 
-      // Users can delete their own comments. Admins moderate via the
-      // Firebase console, which bypasses these rules.
-      allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
+      // Users can delete their own comments; the admin can delete any comment.
+      allow delete: if request.auth != null
+                    && (resource.data.uid == request.auth.uid
+                        || request.auth.token.email == 'systemcraft.in@gmail.com');
 
       // Comments are immutable once posted.
       allow update: if false;
