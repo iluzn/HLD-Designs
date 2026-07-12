@@ -15,6 +15,15 @@ function stdinOf(type, args) {
     case 'STR_STR_BOOL': return args[0] + '\n' + args[1];
     case 'TREE_INT': case 'TREE_BOOL': case 'TREE_ARR':
       return args[0].map(function (x) { return x === null ? 'null' : x; }).join(' ');
+    case 'INT_ARR': return '' + args[0];
+    case 'INT_INT_INT': return args[0] + ' ' + args[1];
+    case 'STR_STR': return args[0];
+    case 'STR_STR_STR': case 'STR_INT_INT': return args[0] + '\n' + args[1];
+    case 'ARR_INT_ARR': return args[0].length + '\n' + args[0].join(' ') + '\n' + args[1];
+    case 'ARR_ARR_INT': return args[0].length + '\n' + args[0].join(' ') + '\n' + args[1].join(' ');
+    case 'STR_ARR': return args[0];
+    case 'ARRSTR_INT': return args[0].length + '\n' + args[0].join(' ');
+    case 'STR_ARRSTR_BOOL': return args[0] + '\n' + args[1].length + '\n' + args[1].join(' ');
     default: return '';
   }
 }
@@ -27,6 +36,15 @@ function displayOf(type, args) {
     case 'STR_STR_BOOL': return { s: '"' + args[0] + '"', t: '"' + args[1] + '"' };
     case 'TREE_INT': case 'TREE_BOOL': case 'TREE_ARR':
       return { root: '[' + args[0].map(function (x) { return x === null ? 'null' : x; }).join(',') + ']' };
+    case 'INT_ARR': return { n: '' + args[0] };
+    case 'INT_INT_INT': return { a: '' + args[0], b: '' + args[1] };
+    case 'STR_STR': case 'STR_ARR': return { s: '"' + args[0] + '"' };
+    case 'STR_STR_STR': return { s: '"' + args[0] + '"', t: '"' + args[1] + '"' };
+    case 'STR_INT_INT': return { s: '"' + args[0] + '"', k: '' + args[1] };
+    case 'ARR_INT_ARR': return { nums: arrStr(args[0]), k: '' + args[1] };
+    case 'ARR_ARR_INT': return { a: arrStr(args[0]), b: arrStr(args[1]) };
+    case 'ARRSTR_INT': return { words: '[' + args[0].map(function (w) { return '"' + w + '"'; }).join(',') + ']' };
+    case 'STR_ARRSTR_BOOL': return { s: '"' + args[0] + '"', wordDict: '[' + args[1].map(function (w) { return '"' + w + '"'; }).join(',') + ']' };
     default: return {};
   }
 }

@@ -131,6 +131,7 @@ P.push({ slug: 'search-insert-position', title: 'Search Insert Position', diffic
 require('./problems2.js').MORE.forEach(function (p) { P.push(p); });
 require('./problems3.js').MORE3.forEach(function (p) { P.push(p); });
 require('./problems4.js').MORE4.forEach(function (p) { P.push(p); });
+require('./problems5.js').MORE5.forEach(function (p) { P.push(p); });
 
 // ---------- write ----------
 var indexRows = [];

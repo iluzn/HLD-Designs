@@ -28,7 +28,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 | 4 | [Product of Array Except Self](/dsa/problem/product-of-array-except-self) | Left-pass prefix product + right-pass suffix product | O(n) | O(1)* |
 | 5 | [Maximum Subarray (Kadane)](/dsa/problem/maximum-subarray) | Track `currentMax = max(num, currentMax + num)` | O(n) | O(1) |
 | 6 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | Sort each word → use as HashMap key | O(n·k log k) | O(n·k) |
-| 7 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | HashMap count + min-heap of size K (or bucket sort) | O(n log k) | O(n) |
+| 7 | [Top K Frequent Elements](/dsa/problem/top-k-frequent-elements) | HashMap count + min-heap of size K (or bucket sort) | O(n log k) | O(n) |
 | 8 | [Encode/Decode Strings](https://leetcode.com/problems/encode-and-decode-strings/) | Length-prefix each string: `"4#word"` | O(n) | O(1) |
 
 ## Two Pointers
@@ -46,8 +46,8 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 |---|---|---|---|---|
 | 13 | [Longest Substring Without Repeating](/dsa/problem/longest-substring-without-repeating-characters) | Window + HashMap (last seen index), jump left on conflict | O(n) | O(128) |
 | 14 | [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) | Expand right until valid, shrink left to minimize | O(n) | O(128) |
-| 15 | [Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) | Window where `len - maxFreq <= k` | O(n) | O(26) |
-| 16 | [Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/) | Monotonic decreasing deque | O(n) | O(k) |
+| 15 | [Longest Repeating Character Replacement](/dsa/problem/longest-repeating-character-replacement) | Window where `len - maxFreq <= k` | O(n) | O(26) |
+| 16 | [Sliding Window Maximum](/dsa/problem/sliding-window-maximum) | Monotonic decreasing deque | O(n) | O(k) |
 
 ## Stack
 
@@ -104,7 +104,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 | 40 | [Climbing Stairs](/dsa/problem/climbing-stairs) | `dp[i] = dp[i-1] + dp[i-2]` (Fibonacci) | O(n) | O(1) |
 | 41 | [Coin Change](/dsa/problem/coin-change) | `dp[i] = min(dp[i-coin]+1)` for each coin | O(amount×coins) | O(amount) |
 | 42 | [Longest Increasing Subsequence](/dsa/problem/longest-increasing-subsequence) | DP: O(n²) or patience sort with binary search: O(n log n) | O(n log n) | O(n) |
-| 43 | [Word Break](https://leetcode.com/problems/word-break/) | `dp[i] = any dp[j] && s[j:i] in dict` | O(n²·L) | O(n) |
+| 43 | [Word Break](/dsa/problem/word-break) | `dp[i] = any dp[j] && s[j:i] in dict` | O(n²·L) | O(n) |
 | 44 | [House Robber](/dsa/problem/house-robber) | `dp[i] = max(dp[i-1], dp[i-2] + nums[i])` | O(n) | O(1) |
 | 45 | [Edit Distance](https://leetcode.com/problems/edit-distance/) | 2D DP: insert/delete/replace at each (i,j) | O(m×n) | O(m×n) |
 

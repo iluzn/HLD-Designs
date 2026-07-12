@@ -26,7 +26,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 2 | [Valid Anagram](/dsa/problem/valid-anagram) | Sort or count[26] | O(n) |
 | 3 | [Two Sum](/dsa/problem/two-sum) | HashMap complement lookup | O(n) |
 | 4 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | Sorted string as HashMap key | O(n·k log k) |
-| 5 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | HashMap + min-heap K or bucket sort | O(n log k) |
+| 5 | [Top K Frequent Elements](/dsa/problem/top-k-frequent-elements) | HashMap + min-heap K or bucket sort | O(n log k) |
 | 6 | [Encode and Decode Strings](https://leetcode.com/problems/encode-and-decode-strings/) | Length-prefix: `"4#word"` | O(n) |
 | 7 | [Product of Array Except Self](/dsa/problem/product-of-array-except-self) | Left prefix × right suffix | O(n) |
 | 8 | [Valid Sudoku](https://leetcode.com/problems/valid-sudoku/) | HashSet per row + col + box | O(81) |
@@ -48,10 +48,10 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 |---|---|---|---|
 | 15 | [Best Time to Buy/Sell Stock](/dsa/problem/best-time-to-buy-and-sell-stock) | Track min, compute profit at each step | O(n) |
 | 16 | [Longest Substring Without Repeating](/dsa/problem/longest-substring-without-repeating-characters) | HashMap last-seen, jump left on conflict | O(n) |
-| 17 | [Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) | `len - maxFreq <= k` window | O(n) |
+| 17 | [Longest Repeating Character Replacement](/dsa/problem/longest-repeating-character-replacement) | `len - maxFreq <= k` window | O(n) |
 | 18 | [Permutation in String](https://leetcode.com/problems/permutation-in-string/) | Fixed window of size len(s1), compare freq counts | O(n) |
 | 19 | [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) | Expand until valid, shrink to minimize | O(n) |
-| 20 | [Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/) | Monotonic decreasing deque | O(n) |
+| 20 | [Sliding Window Maximum](/dsa/problem/sliding-window-maximum) | Monotonic decreasing deque | O(n) |
 
 ## Stack (7)
 
@@ -131,7 +131,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 67 | [Task Scheduler](https://leetcode.com/problems/task-scheduler/) | Count max-freq, compute idle slots | O(n) |
 | 68 | [Design Twitter](https://leetcode.com/problems/design-twitter/) | HashMap + merge K sorted (heap of recent 10) | O(k log k) |
 | 69 | [Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/) | Max-heap left + min-heap right | O(log n) |
-| 70 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | (dup - see #5) | O(n log k) |
+| 70 | [Top K Frequent Elements](/dsa/problem/top-k-frequent-elements) | (dup - see #5) | O(n log k) |
 
 ## Backtracking (9)
 
@@ -185,17 +185,17 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 101 | [House Robber](/dsa/problem/house-robber) | `dp[i] = max(dp[i-1], dp[i-2]+nums[i])` | O(n) |
 | 102 | [House Robber II](/dsa/problem/house-robber-ii) | Run robber on [0..n-2] and [1..n-1] | O(n) |
 | 103 | [Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring/) | Expand from center | O(n²) |
-| 104 | [Palindromic Substrings (count)](https://leetcode.com/problems/palindromic-substrings/) | Expand from each center, count | O(n²) |
-| 105 | [Decode Ways](https://leetcode.com/problems/decode-ways/) | `dp[i]` from 1-digit + 2-digit valid | O(n) |
+| 104 | [Palindromic Substrings (count)](/dsa/problem/palindromic-substrings) | Expand from each center, count | O(n²) |
+| 105 | [Decode Ways](/dsa/problem/decode-ways) | `dp[i]` from 1-digit + 2-digit valid | O(n) |
 | 106 | [Coin Change](/dsa/problem/coin-change) | `dp[i] = min(dp[i-coin]+1)` | O(amount×coins) |
 | 107 | [Maximum Product Subarray](/dsa/problem/maximum-product-subarray) | Track maxProd, minProd (negatives) | O(n) |
-| 108 | [Word Break](https://leetcode.com/problems/word-break/) | `dp[i] = any dp[j] && s[j:i] in dict` | O(n²×L) |
+| 108 | [Word Break](/dsa/problem/word-break) | `dp[i] = any dp[j] && s[j:i] in dict` | O(n²×L) |
 
 ## 2-D Dynamic Programming (11)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 109 | [Unique Paths](https://leetcode.com/problems/unique-paths/) | `dp[i][j] = dp[i-1][j] + dp[i][j-1]` | O(m×n) |
+| 109 | [Unique Paths](/dsa/problem/unique-paths) | `dp[i][j] = dp[i-1][j] + dp[i][j-1]` | O(m×n) |
 | 110 | [Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) | Match→diag+1, else max(left,up) | O(m×n) |
 | 111 | [Best Time Buy/Sell with Cooldown](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/) | States: hold, sold, rest | O(n) |
 | 112 | [Coin Change II (count ways)](https://leetcode.com/problems/coin-change-ii/) | `dp[i] += dp[i-coin]` | O(amount×coins) |
@@ -213,12 +213,12 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 |---|---|---|---|
 | 120 | [Maximum Subarray](/dsa/problem/maximum-subarray) | Kadane's | O(n) |
 | 121 | [Jump Game](/dsa/problem/jump-game) | Track farthest reachable | O(n) |
-| 122 | [Jump Game II](https://leetcode.com/problems/jump-game-ii/) | BFS-style levels (current reach, next reach) | O(n) |
+| 122 | [Jump Game II](/dsa/problem/jump-game-ii) | BFS-style levels (current reach, next reach) | O(n) |
 | 123 | [Gas Station](https://leetcode.com/problems/gas-station/) | If total gas >= total cost, solution exists; find start via running sum | O(n) |
 | 124 | [Hand of Straights](https://leetcode.com/problems/hand-of-straights/) | Sort + greedily form groups with HashMap | O(n log n) |
 | 125 | [Merge Triplets to Form Target](https://leetcode.com/problems/merge-triplets-to-form-target-triplet/) | For each triplet, check if any coordinate matches without exceeding | O(n) |
-| 126 | [Partition Labels](https://leetcode.com/problems/partition-labels/) | Last occurrence of each char; extend end, split when i == end | O(n) |
-| 127 | [Valid Parenthesis String](https://leetcode.com/problems/valid-parenthesis-string/) | Track min/max open count range | O(n) |
+| 126 | [Partition Labels](/dsa/problem/partition-labels) | Last occurrence of each char; extend end, split when i == end | O(n) |
+| 127 | [Valid Parenthesis String](/dsa/problem/valid-parenthesis-string) | Track min/max open count range | O(n) |
 
 ## Intervals (5)
 
@@ -237,10 +237,10 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 133 | [Rotate Image](https://leetcode.com/problems/rotate-image/) | Transpose + reverse each row | O(n²) |
 | 134 | [Spiral Matrix](https://leetcode.com/problems/spiral-matrix/) | Boundary tracking (top/bottom/left/right) | O(m×n) |
 | 135 | [Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes/) | Use first row/col as markers | O(m×n) |
-| 136 | [Happy Number](https://leetcode.com/problems/happy-number/) | Fast/slow (Floyd's) on digit-sum sequence | O(log n) |
+| 136 | [Happy Number](/dsa/problem/happy-number) | Fast/slow (Floyd's) on digit-sum sequence | O(log n) |
 | 137 | [Plus One](/dsa/problem/plus-one) | Add from last digit, handle carry | O(n) |
 | 138 | [Pow(x, n)](https://leetcode.com/problems/powx-n/) | Fast exponentiation (square-and-multiply) | O(log n) |
-| 139 | [Multiply Strings](https://leetcode.com/problems/multiply-strings/) | Grade-school multiplication, digit by digit | O(m×n) |
+| 139 | [Multiply Strings](/dsa/problem/multiply-strings) | Grade-school multiplication, digit by digit | O(m×n) |
 | 140 | [Detect Squares](https://leetcode.com/problems/detect-squares/) | HashMap of points; for each query, find valid rectangles | O(n) |
 
 ## Bit Manipulation (7)
@@ -249,18 +249,18 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 |---|---|---|---|
 | 141 | [Single Number](/dsa/problem/single-number) | XOR all → duplicate cancels, single remains | O(n) |
 | 142 | [Number of 1 Bits](/dsa/problem/number-of-1-bits) | `n & (n-1)` removes LSB; count | O(32) |
-| 143 | [Counting Bits](https://leetcode.com/problems/counting-bits/) | `dp[i] = dp[i>>1] + (i&1)` | O(n) |
+| 143 | [Counting Bits](/dsa/problem/counting-bits) | `dp[i] = dp[i>>1] + (i&1)` | O(n) |
 | 144 | [Reverse Bits](https://leetcode.com/problems/reverse-bits/) | Shift result left + OR with (n&1) + shift n right | O(32) |
 | 145 | [Missing Number](/dsa/problem/missing-number) | XOR all indices + all values | O(n) |
-| 146 | [Sum of Two Integers](https://leetcode.com/problems/sum-of-two-integers/) | `carry = (a&b)<<1; sum = a^b` repeat | O(32) |
-| 147 | [Reverse Integer](https://leetcode.com/problems/reverse-integer/) | Pop digits with %10, push to result, check overflow | O(log n) |
+| 146 | [Sum of Two Integers](/dsa/problem/sum-of-two-integers) | `carry = (a&b)<<1; sum = a^b` repeat | O(32) |
+| 147 | [Reverse Integer](/dsa/problem/reverse-integer) | Pop digits with %10, push to result, check overflow | O(log n) |
 
 ## Bonus (3)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
 | 148 | [Design Add and Search Words](https://leetcode.com/problems/design-add-and-search-words-data-structure/) | Trie + DFS on wildcards | O(26^L) |
-| 149 | [Maximum Product of Word Lengths](https://leetcode.com/problems/maximum-product-of-word-lengths/) | Bitmask per word, compare pairs with no overlap | O(n²) |
+| 149 | [Maximum Product of Word Lengths](/dsa/problem/maximum-product-of-word-lengths) | Bitmask per word, compare pairs with no overlap | O(n²) |
 | 150 | [Longest Increasing Subsequence](/dsa/problem/longest-increasing-subsequence) | Patience sort + binary search | O(n log n) |
 
 ---

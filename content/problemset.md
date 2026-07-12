@@ -62,6 +62,22 @@ Solve problems in your browser — pick a language, implement the function, and 
 | 49 | [Binary Tree Postorder Traversal](/dsa/problem/binary-tree-postorder-traversal){:data-slug="binary-tree-postorder-traversal"} | 🟢 Easy | Tree, DFS, Stack |
 | 50 | [Sum of Left Leaves](/dsa/problem/sum-of-left-leaves){:data-slug="sum-of-left-leaves"} | 🟢 Easy | Tree, DFS |
 | 51 | [Count Complete Tree Nodes](/dsa/problem/count-complete-tree-nodes){:data-slug="count-complete-tree-nodes"} | 🟢 Easy | Tree, DFS, Binary Search |
+| 52 | [Counting Bits](/dsa/problem/counting-bits){:data-slug="counting-bits"} | 🟢 Easy | Dynamic Programming, Bit Manipulation |
+| 53 | [Sum of Two Integers](/dsa/problem/sum-of-two-integers){:data-slug="sum-of-two-integers"} | 🟡 Medium | Math, Bit Manipulation |
+| 54 | [Unique Paths](/dsa/problem/unique-paths){:data-slug="unique-paths"} | 🟡 Medium | Math, Dynamic Programming, Combinatorics |
+| 55 | [Longest Repeating Character Replacement](/dsa/problem/longest-repeating-character-replacement){:data-slug="longest-repeating-character-replacement"} | 🟡 Medium | String, Sliding Window, Hash Table |
+| 56 | [Multiply Strings](/dsa/problem/multiply-strings){:data-slug="multiply-strings"} | 🟡 Medium | String, Math, Simulation |
+| 57 | [Partition Labels](/dsa/problem/partition-labels){:data-slug="partition-labels"} | 🟡 Medium | String, Greedy, Two Pointers, Hash Table |
+| 58 | [Maximum Product of Word Lengths](/dsa/problem/maximum-product-of-word-lengths){:data-slug="maximum-product-of-word-lengths"} | 🟡 Medium | Array, String, Bit Manipulation |
+| 59 | [Word Break](/dsa/problem/word-break){:data-slug="word-break"} | 🟡 Medium | String, Dynamic Programming, Hash Table |
+| 60 | [Sliding Window Maximum](/dsa/problem/sliding-window-maximum){:data-slug="sliding-window-maximum"} | 🔴 Hard | Array, Sliding Window, Heap, Monotonic Queue |
+| 61 | [Jump Game II](/dsa/problem/jump-game-ii){:data-slug="jump-game-ii"} | 🟡 Medium | Array, Greedy, Dynamic Programming |
+| 62 | [Happy Number](/dsa/problem/happy-number){:data-slug="happy-number"} | 🟢 Easy | Math, Hash Table, Two Pointers |
+| 63 | [Reverse Integer](/dsa/problem/reverse-integer){:data-slug="reverse-integer"} | 🟡 Medium | Math |
+| 64 | [Valid Parenthesis String](/dsa/problem/valid-parenthesis-string){:data-slug="valid-parenthesis-string"} | 🟡 Medium | String, Greedy, Dynamic Programming, Stack |
+| 65 | [Decode Ways](/dsa/problem/decode-ways){:data-slug="decode-ways"} | 🟡 Medium | String, Dynamic Programming |
+| 66 | [Palindromic Substrings](/dsa/problem/palindromic-substrings){:data-slug="palindromic-substrings"} | 🟡 Medium | String, Dynamic Programming, Two Pointers |
+| 67 | [Top K Frequent Elements](/dsa/problem/top-k-frequent-elements){:data-slug="top-k-frequent-elements"} | 🟡 Medium | Array, Hash Table, Heap, Bucket Sort |
 
 {% include judge-firebase.html %}
 <script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>
