@@ -65,6 +65,7 @@ hide_toc: true
 .pf-months { display:flex; gap:11px; font-size:0.68rem; color:var(--text-dim); margin-top:6px; width:max-content; }
 .pf-mon { display:inline-block; text-align:left; overflow:visible; white-space:nowrap; flex-shrink:0; }
 .pf-day.fut { background:transparent; }
+.pf-day.blank { background:transparent; }
 
 .pf-bars { display:grid; gap:0.6rem; margin-bottom:1.2rem; }
 .pf-bar-row { display:flex; align-items:center; gap:0.8rem; font-size:0.82rem; }
@@ -159,24 +160,41 @@ hide_toc: true
       '</div>'+
     '</div>';
 
-    // heatmap with month labels + streak line
-    // rolling 1-year window (53 weeks), aligned to week start — LeetCode style
-    var WEEKS=53;
+    // heatmap — LeetCode style: one block per month, columns are that month's
+    // weeks. Day 1 sits at its own weekday row, with blank cells above it, so
+    // every block is a self-contained set of week-columns (Sun..Sat, 7 rows).
     var today=new Date(); today.setHours(0,0,0,0);
-    var start=new Date(today); start.setDate(start.getDate()-((WEEKS-1)*7+today.getDay()));
-    var cur=new Date(start), monthGroups=[], yearSubs=0, activeDays=0;
-    for(var w=0;w<WEEKS;w++){
-      var col=[]; var wkMonth=cur.getMonth();
-      for(var dd=0;dd<7;dd++){ var k2=dayKey(cur); var c=byDay[k2]||0; var future=cur>today; if(!future&&c>0){yearSubs+=c;activeDays++;} var lv=future?'fut':(c===0?'':(c>=8?'l4':c>=4?'l3':c>=2?'l2':'l1')); col.push('<div class="pf-day '+lv+'" title="'+c+' submission'+(c===1?'':'s')+' on '+k2+'"></div>'); cur.setDate(cur.getDate()+1); }
-      var weekHtml='<div class="pf-week">'+col.join('')+'</div>';
-      // group consecutive week-columns by month so each month renders as its
-      // own block with a gap between blocks (LeetCode style)
-      var lastG=monthGroups[monthGroups.length-1];
-      if(lastG && lastG.mon===wkMonth){ lastG.count++; lastG.weeks.push(weekHtml); }
-      else monthGroups.push({mon:wkMonth,count:1,weeks:[weekHtml]});
+    var yearAgo=new Date(today); yearAgo.setDate(yearAgo.getDate()-365);
+    var yearSubs=0, activeDays=0;
+    var mIter=new Date(today.getFullYear(), today.getMonth()-12, 1);
+    var blocks=[], monthLabels=[];
+    while(mIter<=today){
+      var yy=mIter.getFullYear(), mo=mIter.getMonth();
+      var daysInMonth=new Date(yy, mo+1, 0).getDate();
+      var firstDow=new Date(yy, mo, 1).getDay();
+      var cols=[], col=[];
+      for(var b=0;b<firstDow;b++) col.push(null);      // blanks before the 1st
+      for(var d=1; d<=daysInMonth; d++){
+        col.push(new Date(yy, mo, d));
+        if(col.length===7){ cols.push(col); col=[]; }
+      }
+      if(col.length){ while(col.length<7) col.push(null); cols.push(col); }
+      var colHtml=cols.map(function(c){
+        return '<div class="pf-week">'+c.map(function(dt){
+          if(!dt) return '<div class="pf-day blank"></div>';
+          if(dt>today) return '<div class="pf-day fut"></div>';
+          var k2=dayKey(dt), cnt=byDay[k2]||0;
+          if(dt>=yearAgo && cnt>0){ yearSubs+=cnt; activeDays++; }
+          var lv=cnt===0?'':(cnt>=8?'l4':cnt>=4?'l3':cnt>=2?'l2':'l1');
+          return '<div class="pf-day '+lv+'" title="'+cnt+' submission'+(cnt===1?'':'s')+' on '+k2+'"></div>';
+        }).join('')+'</div>';
+      }).join('');
+      blocks.push('<div class="pf-mgroup">'+colHtml+'</div>');
+      monthLabels.push('<span class="pf-mon" style="width:'+(cols.length*15-3)+'px">'+MON[mo]+'</span>');
+      mIter.setMonth(mIter.getMonth()+1);
     }
-    var gridHtml=monthGroups.map(function(g){ return '<div class="pf-mgroup">'+g.weeks.join('')+'</div>'; }).join('');
-    var monthRow=monthGroups.map(function(g,i){ var show=g.count>=2||i===0||i===monthGroups.length-1; return '<span class="pf-mon" style="width:'+(g.count*15-3)+'px">'+(show?MON[g.mon]:'')+'</span>'; }).join('');
+    var gridHtml=blocks.join('');
+    var monthRow=monthLabels.join('');
 
     html+='<div class="pf-sec">🔥 Submission Activity</div>';
     html+='<div class="pf-heat-card">';
