@@ -78,6 +78,13 @@ Solve problems in your browser — pick a language, implement the function, and 
 | 65 | [Decode Ways](/dsa/problem/decode-ways){:data-slug="decode-ways"} | 🟡 Medium | String, Dynamic Programming |
 | 66 | [Palindromic Substrings](/dsa/problem/palindromic-substrings){:data-slug="palindromic-substrings"} | 🟡 Medium | String, Dynamic Programming, Two Pointers |
 | 67 | [Top K Frequent Elements](/dsa/problem/top-k-frequent-elements){:data-slug="top-k-frequent-elements"} | 🟡 Medium | Array, Hash Table, Heap, Bucket Sort |
+| 68 | [Number of Islands](/dsa/problem/number-of-islands){:data-slug="number-of-islands"} | 🟡 Medium | Graph, DFS, BFS, Union Find, Matrix |
+| 69 | [Max Area of Island](/dsa/problem/max-area-of-island){:data-slug="max-area-of-island"} | 🟡 Medium | Graph, DFS, BFS, Matrix |
+| 70 | [Rotting Oranges](/dsa/problem/rotting-oranges){:data-slug="rotting-oranges"} | 🟡 Medium | Graph, BFS, Matrix |
+| 71 | [Spiral Matrix](/dsa/problem/spiral-matrix){:data-slug="spiral-matrix"} | 🟡 Medium | Array, Matrix, Simulation |
+| 72 | [Longest Increasing Path in a Matrix](/dsa/problem/longest-increasing-path-in-a-matrix){:data-slug="longest-increasing-path-in-a-matrix"} | 🔴 Hard | Graph, DFS, Dynamic Programming, Matrix, Memoization |
+| 73 | [Swim in Rising Water](/dsa/problem/swim-in-rising-water){:data-slug="swim-in-rising-water"} | 🔴 Hard | Graph, Binary Search, Heap, Matrix |
+| 74 | [Search a 2D Matrix](/dsa/problem/search-a-2d-matrix){:data-slug="search-a-2d-matrix"} | 🟡 Medium | Array, Binary Search, Matrix |
 
 {% include judge-firebase.html %}
 <script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>

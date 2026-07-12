@@ -70,7 +70,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | # | Problem | Approach | Time |
 |---|---|---|---|
 | 28 | [Binary Search](/dsa/problem/binary-search) | Standard lo/hi with mid | O(log n) |
-| 29 | [Search 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) | Treat as flat sorted array, binary search | O(log(m×n)) |
+| 29 | [Search 2D Matrix](/dsa/problem/search-a-2d-matrix) | Treat as flat sorted array, binary search | O(log(m×n)) |
 | 30 | [Koko Eating Bananas](/dsa/problem/koko-eating-bananas) | Binary search on speed, check feasibility | O(n log m) |
 | 31 | [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | If mid > right, min in right half | O(log n) |
 | 32 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Determine sorted half, check target in it | O(log n) |
@@ -151,11 +151,11 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 80 | [Number of Islands](https://leetcode.com/problems/number-of-islands/) | BFS/DFS flood fill | O(m×n) |
-| 81 | [Max Area of Island](https://leetcode.com/problems/max-area-of-island/) | DFS, count cells per component | O(m×n) |
+| 80 | [Number of Islands](/dsa/problem/number-of-islands) | BFS/DFS flood fill | O(m×n) |
+| 81 | [Max Area of Island](/dsa/problem/max-area-of-island) | DFS, count cells per component | O(m×n) |
 | 82 | [Clone Graph](https://leetcode.com/problems/clone-graph/) | BFS/DFS + HashMap old→new | O(V+E) |
 | 83 | [Walls and Gates](https://leetcode.com/problems/walls-and-gates/) | Multi-source BFS from all gates | O(m×n) |
-| 84 | [Rotting Oranges](https://leetcode.com/problems/rotting-oranges/) | Multi-source BFS from all rotten | O(m×n) |
+| 84 | [Rotting Oranges](/dsa/problem/rotting-oranges) | Multi-source BFS from all rotten | O(m×n) |
 | 85 | [Pacific Atlantic Water Flow](https://leetcode.com/problems/pacific-atlantic-water-flow/) | DFS from each ocean edge, intersect | O(m×n) |
 | 86 | [Surrounded Regions](https://leetcode.com/problems/surrounded-regions/) | DFS from border 'O's, mark safe; flip rest | O(m×n) |
 | 87 | [Course Schedule](https://leetcode.com/problems/course-schedule/) | Topological sort (Kahn's) | O(V+E) |
@@ -172,7 +172,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 93 | [Reconstruct Itinerary](https://leetcode.com/problems/reconstruct-itinerary/) | DFS + sort adjacency (Hierholzer's) | O(E log E) |
 | 94 | [Min Cost to Connect All Points](https://leetcode.com/problems/min-cost-to-connect-all-points/) | Prim's MST with min-heap | O(n² log n) |
 | 95 | [Network Delay Time](https://leetcode.com/problems/network-delay-time/) | Dijkstra from source | O((V+E) log V) |
-| 96 | [Swim in Rising Water](https://leetcode.com/problems/swim-in-rising-water/) | Binary search + BFS or Dijkstra on grid | O(n² log n) |
+| 96 | [Swim in Rising Water](/dsa/problem/swim-in-rising-water) | Binary search + BFS or Dijkstra on grid | O(n² log n) |
 | 97 | [Alien Dictionary](https://leetcode.com/problems/alien-dictionary/) | Build DAG from word order, topo sort | O(C) |
 | 98 | [Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/) | Bellman-Ford K iterations or BFS with layers | O(K×E) |
 
@@ -201,7 +201,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 112 | [Coin Change II (count ways)](https://leetcode.com/problems/coin-change-ii/) | `dp[i] += dp[i-coin]` | O(amount×coins) |
 | 113 | [Target Sum](https://leetcode.com/problems/target-sum/) | 0/1 knapsack on (sum+total)/2 | O(n×sum) |
 | 114 | [Interleaving String](https://leetcode.com/problems/interleaving-string/) | 2D dp[i][j] = can form s3[0..i+j] from s1[0..i] + s2[0..j] | O(m×n) |
-| 115 | [Longest Increasing Path in Matrix](https://leetcode.com/problems/longest-increasing-path-in-a-matrix/) | DFS + memo on grid | O(m×n) |
+| 115 | [Longest Increasing Path in Matrix](/dsa/problem/longest-increasing-path-in-a-matrix) | DFS + memo on grid | O(m×n) |
 | 116 | [Distinct Subsequences](https://leetcode.com/problems/distinct-subsequences/) | `dp[i][j] = dp[i-1][j] + (match ? dp[i-1][j-1] : 0)` | O(m×n) |
 | 117 | [Edit Distance](https://leetcode.com/problems/edit-distance/) | Insert/delete/replace dp table | O(m×n) |
 | 118 | [Burst Balloons](https://leetcode.com/problems/burst-balloons/) | Interval DP: last balloon to burst in range | O(n³) |
@@ -235,7 +235,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | # | Problem | Approach | Time |
 |---|---|---|---|
 | 133 | [Rotate Image](https://leetcode.com/problems/rotate-image/) | Transpose + reverse each row | O(n²) |
-| 134 | [Spiral Matrix](https://leetcode.com/problems/spiral-matrix/) | Boundary tracking (top/bottom/left/right) | O(m×n) |
+| 134 | [Spiral Matrix](/dsa/problem/spiral-matrix) | Boundary tracking (top/bottom/left/right) | O(m×n) |
 | 135 | [Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes/) | Use first row/col as markers | O(m×n) |
 | 136 | [Happy Number](/dsa/problem/happy-number) | Fast/slow (Floyd's) on digit-sum sequence | O(log n) |
 | 137 | [Plus One](/dsa/problem/plus-one) | Add from last digit, handle carry | O(n) |

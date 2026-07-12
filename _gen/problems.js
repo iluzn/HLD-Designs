@@ -24,6 +24,12 @@ function stdinOf(type, args) {
     case 'STR_ARR': return args[0];
     case 'ARRSTR_INT': return args[0].length + '\n' + args[0].join(' ');
     case 'STR_ARRSTR_BOOL': return args[0] + '\n' + args[1].length + '\n' + args[1].join(' ');
+    case 'GRID_INT': case 'GRID_ARR':
+      return args[0].length + ' ' + (args[0][0] ? args[0][0].length : 0) + '\n' + args[0].map(function (r) { return r.join(' '); }).join('\n');
+    case 'GRID_TGT_BOOL':
+      return args[0].length + ' ' + (args[0][0] ? args[0][0].length : 0) + '\n' + args[0].map(function (r) { return r.join(' '); }).join('\n') + '\n' + args[1];
+    case 'CHARGRID_INT':
+      return args[0].length + ' ' + (args[0][0] ? args[0][0].length : 0) + '\n' + args[0].join('\n');
     default: return '';
   }
 }
@@ -45,6 +51,12 @@ function displayOf(type, args) {
     case 'ARR_ARR_INT': return { a: arrStr(args[0]), b: arrStr(args[1]) };
     case 'ARRSTR_INT': return { words: '[' + args[0].map(function (w) { return '"' + w + '"'; }).join(',') + ']' };
     case 'STR_ARRSTR_BOOL': return { s: '"' + args[0] + '"', wordDict: '[' + args[1].map(function (w) { return '"' + w + '"'; }).join(',') + ']' };
+    case 'GRID_INT': case 'GRID_ARR':
+      return { grid: '[' + args[0].map(function (r) { return '[' + r.join(',') + ']'; }).join(',') + ']' };
+    case 'GRID_TGT_BOOL':
+      return { matrix: '[' + args[0].map(function (r) { return '[' + r.join(',') + ']'; }).join(',') + ']', target: '' + args[1] };
+    case 'CHARGRID_INT':
+      return { grid: '[' + args[0].map(function (r) { return '"' + r + '"'; }).join(',') + ']' };
     default: return {};
   }
 }

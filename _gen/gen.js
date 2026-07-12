@@ -293,6 +293,62 @@ T.STR_ARRSTR_BOOL = function (fn) {
   };
 };
 
+// (int[][] grid) -> int   (whitespace: R, C, then R*C ints)
+T.GRID_INT = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, grid):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', 'sys.setrecursionlimit(100000)', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _R=int(_d[_p]);_p+=1', '    _C=int(_d[_p]);_p+=1', '    _g=[]', '    for _r in range(_R):', '        _g.append(list(map(int,_d[_p:_p+_C])));_p+=_C', '    _o.append(str(Solution().' + fn + '(_g)))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number[][]} grid', ' * @return {number}', ' */', 'var ' + fn + ' = function(grid) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", 'for(let _i=0;_i<_T;_i++){const _R=+_d[_p++];const _C=+_d[_p++];const _g=[];for(let _r=0;_r<_R;_r++){_g.push(_d.slice(_p,_p+_C).map(Number));_p+=_C;}_o.push(String(' + fn + '(_g)));}', "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    int ' + fn + '(vector<vector<int>>& grid) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int R,C;cin>>R>>C;vector<vector<int>> g(R,vector<int>(C));for(int i=0;i<R;i++)for(int j=0;j<C;j++)cin>>g[i][j];cout<<Solution().' + fn + '(g)<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public int ' + fn + '(int[][] grid) {', '        // Write your code here', '        return 0;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int R=sc.nextInt();int C=sc.nextInt();int[][] g=new int[R][C];for(int i=0;i<R;i++)for(int j=0;j<C;j++)g[i][j]=sc.nextInt();sb.append(new Solution().' + fn + '(g)).append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (int[][] grid) -> int[]   (whitespace: R, C, then R*C ints; output space-separated)
+T.GRID_ARR = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, matrix):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _R=int(_d[_p]);_p+=1', '    _C=int(_d[_p]);_p+=1', '    _g=[]', '    for _r in range(_R):', '        _g.append(list(map(int,_d[_p:_p+_C])));_p+=_C', "    _o.append(' '.join(map(str,Solution()." + fn + '(_g))))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number[][]} matrix', ' * @return {number[]}', ' */', 'var ' + fn + ' = function(matrix) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _R=+_d[_p++];const _C=+_d[_p++];const _g=[];for(let _r=0;_r<_R;_r++){_g.push(_d.slice(_p,_p+_C).map(Number));_p+=_C;}_o.push(" + fn + "(_g).join(' '));}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    vector<int> ' + fn + '(vector<vector<int>>& matrix) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int R,C;cin>>R>>C;vector<vector<int>> g(R,vector<int>(C));for(int i=0;i<R;i++)for(int j=0;j<C;j++)cin>>g[i][j];vector<int> r=Solution().' + fn + '(g);for(size_t i=0;i<r.size();i++){if(i)cout<<\' \';cout<<r[i];}cout<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public java.util.List<Integer> ' + fn + '(int[][] matrix) {', '        // Write your code here', '        return new ArrayList<>();', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int R=sc.nextInt();int C=sc.nextInt();int[][] g=new int[R][C];for(int i=0;i<R;i++)for(int j=0;j<C;j++)g[i][j]=sc.nextInt();java.util.List<Integer> r=new Solution().' + fn + '(g);for(int j=0;j<r.size();j++){if(j>0)sb.append(\' \');sb.append(r.get(j));}sb.append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (int[][] matrix, int target) -> boolean   (whitespace: R, C, R*C ints, target)
+T.GRID_TGT_BOOL = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, matrix, target):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _R=int(_d[_p]);_p+=1', '    _C=int(_d[_p]);_p+=1', '    _g=[]', '    for _r in range(_R):', '        _g.append(list(map(int,_d[_p:_p+_C])));_p+=_C', '    _t=int(_d[_p]);_p+=1', "    _o.append('true' if Solution()." + fn + "(_g,_t) else 'false')", "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number[][]} matrix', ' * @param {number} target', ' * @return {boolean}', ' */', 'var ' + fn + ' = function(matrix, target) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _R=+_d[_p++];const _C=+_d[_p++];const _g=[];for(let _r=0;_r<_R;_r++){_g.push(_d.slice(_p,_p+_C).map(Number));_p+=_C;}const _t=+_d[_p++];_o.push(" + fn + "(_g,_t)?'true':'false');}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    bool ' + fn + '(vector<vector<int>>& matrix, int target) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int R,C;cin>>R>>C;vector<vector<int>> g(R,vector<int>(C));for(int i=0;i<R;i++)for(int j=0;j<C;j++)cin>>g[i][j];int t;cin>>t;cout<<(Solution().' + fn + '(g,t)?"true":"false")<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public boolean ' + fn + '(int[][] matrix, int target) {', '        // Write your code here', '        return false;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int R=sc.nextInt();int C=sc.nextInt();int[][] g=new int[R][C];for(int i=0;i<R;i++)for(int j=0;j<C;j++)g[i][j]=sc.nextInt();int t=sc.nextInt();sb.append(new Solution().' + fn + '(g,t)?"true":"false").append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (char[][] grid) -> int   (whitespace: R, C, then R row-strings of length C)
+T.CHARGRID_INT = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, grid):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', 'sys.setrecursionlimit(100000)', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _R=int(_d[_p]);_p+=1', '    _C=int(_d[_p]);_p+=1', '    _g=[]', '    for _r in range(_R):', '        _g.append(list(_d[_p]));_p+=1', '    _o.append(str(Solution().' + fn + '(_g)))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {character[][]} grid', ' * @return {number}', ' */', 'var ' + fn + ' = function(grid) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _R=+_d[_p++];const _C=+_d[_p++];const _g=[];for(let _r=0;_r<_R;_r++){_g.push(_d[_p++].split(''));}_o.push(String(" + fn + '(_g)));}', "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    int ' + fn + '(vector<vector<char>>& grid) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int R,C;cin>>R>>C;vector<vector<char>> g(R);for(int i=0;i<R;i++){string s;cin>>s;g[i]=vector<char>(s.begin(),s.end());}cout<<Solution().' + fn + '(g)<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public int ' + fn + '(char[][] grid) {', '        // Write your code here', '        return 0;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int R=sc.nextInt();int C=sc.nextInt();char[][] g=new char[R][];for(int i=0;i<R;i++)g[i]=sc.next().toCharArray();sb.append(new Solution().' + fn + '(g)).append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
 // ---------- Binary tree types (level-order input with "null" markers) ----------
 // ret: 'int' | 'bool' | 'arr'
 function treeType(fn, ret) {

@@ -116,7 +116,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 45 | [Number of Islands](https://leetcode.com/problems/number-of-islands/) | BFS/DFS | From each '1', flood-fill and count components | O(m×n) |
+| 45 | [Number of Islands](/dsa/problem/number-of-islands) | BFS/DFS | From each '1', flood-fill and count components | O(m×n) |
 | 46 | [Clone Graph](https://leetcode.com/problems/clone-graph/) | BFS/DFS | HashMap old→new, clone neighbors recursively | O(V+E) |
 | 47 | [Pacific Atlantic Water Flow](https://leetcode.com/problems/pacific-atlantic-water-flow/) | DFS | DFS from pacific edges + DFS from atlantic edges, intersect | O(m×n) |
 | 48 | [Course Schedule](https://leetcode.com/problems/course-schedule/) | Topological Sort | Kahn's BFS (in-degree) or DFS cycle detection | O(V+E) |
