@@ -4,7 +4,6 @@ title: "My Profile - Progress Dashboard"
 description: "Your SystemCraft dashboard: DSA problems solved by difficulty, streaks, submission heatmap, language breakdown, and High-Level & Low-Level Design progress."
 permalink: /profile
 hide_toc: true
-hide_comments: true
 ---
 
 {% include judge-firebase.html %}

@@ -310,8 +310,8 @@
         {% endunless %}
     </div>
 
-    <!-- Comments (Firestore-backed) -->
-    {% unless page.hide_comments %}
+    <!-- Comments (Firestore-backed) — only on HLD/LLD design pages -->
+    {% if page.url contains '/hld/' or page.url contains '/lld/' %}
     <div id="comments-section" style="max-width:900px;margin:0 auto;padding:0 1.5rem 3rem;position:relative;z-index:1;">
         <div class="comments-header">
             <h3>Discussion <span id="comment-count"></span></h3>
@@ -439,7 +439,7 @@
             refresh();
         })();
     </script>
-    {% endunless %}
+    {% endif %}
 
     <footer>
         <p>&copy; 2026 SystemCraft &middot; <a href="/">Home</a> &middot; <a href="/hld">HLD</a> &middot; <a href="/lld">LLD</a> &middot; <a href="/dsa">DSA</a> &middot; <a href="/system-design-interview-guide">Guide</a> &middot; <a href="/cheatsheet">Cheatsheet</a> &middot; <a href="/companies/amazon">Companies</a> &middot; <a href="/about">About</a> &middot; <a href="/privacy">Privacy</a></p>
