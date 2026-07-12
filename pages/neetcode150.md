@@ -97,20 +97,20 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 46 | [Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/) | Swap children recursively | O(n) |
+| 46 | [Invert Binary Tree](/dsa/problem/invert-binary-tree) | Swap children recursively | O(n) |
 | 47 | [Maximum Depth](/dsa/problem/maximum-depth-of-binary-tree) | `1 + max(left, right)` | O(n) |
 | 48 | [Diameter of Binary Tree](/dsa/problem/diameter-of-binary-tree) | At each node: leftH + rightH; track global max | O(n) |
 | 49 | [Balanced Binary Tree](/dsa/problem/balanced-binary-tree) | Check `abs(leftH - rightH) <= 1` at every node | O(n) |
-| 50 | [Same Tree](https://leetcode.com/problems/same-tree/) | Compare both nodes recursively | O(n) |
-| 51 | [Subtree of Another Tree](https://leetcode.com/problems/subtree-of-another-tree/) | For each node, isSameTree check | O(m×n) |
-| 52 | [Lowest Common Ancestor of BST](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/) | BST property: split point is LCA | O(h) |
-| 53 | [Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/) | BFS with queue | O(n) |
-| 54 | [Right Side View](https://leetcode.com/problems/binary-tree-right-side-view/) | BFS, take last node of each level | O(n) |
-| 55 | [Count Good Nodes](https://leetcode.com/problems/count-good-nodes-in-binary-tree/) | DFS with running max from root | O(n) |
-| 56 | [Validate BST](https://leetcode.com/problems/validate-binary-search-tree/) | DFS with (min, max) bounds | O(n) |
-| 57 | [Kth Smallest in BST](https://leetcode.com/problems/kth-smallest-element-in-a-bst/) | Inorder traversal, stop at k | O(h+k) |
+| 50 | [Same Tree](/dsa/problem/same-tree) | Compare both nodes recursively | O(n) |
+| 51 | [Subtree of Another Tree](/dsa/problem/subtree-of-another-tree) | For each node, isSameTree check | O(m×n) |
+| 52 | [Lowest Common Ancestor of BST](/dsa/problem/lowest-common-ancestor-of-a-binary-search-tree) | BST property: split point is LCA | O(h) |
+| 53 | [Level Order Traversal](/dsa/problem/binary-tree-level-order-traversal) | BFS with queue | O(n) |
+| 54 | [Right Side View](/dsa/problem/binary-tree-right-side-view) | BFS, take last node of each level | O(n) |
+| 55 | [Count Good Nodes](/dsa/problem/count-good-nodes-in-binary-tree) | DFS with running max from root | O(n) |
+| 56 | [Validate BST](/dsa/problem/validate-binary-search-tree) | DFS with (min, max) bounds | O(n) |
+| 57 | [Kth Smallest in BST](/dsa/problem/kth-smallest-element-in-a-bst) | Inorder traversal, stop at k | O(h+k) |
 | 58 | [Build Tree from Preorder & Inorder](https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/) | Root = preorder[0], split inorder, recurse | O(n) |
-| 59 | [Max Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/) | DFS: node + max(left,right,0); track global | O(n) |
+| 59 | [Max Path Sum](/dsa/problem/binary-tree-maximum-path-sum) | DFS: node + max(left,right,0); track global | O(n) |
 | 60 | [Serialize/Deserialize](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/) | Preorder with "#" for nulls | O(n) |
 
 ## Tries (3)

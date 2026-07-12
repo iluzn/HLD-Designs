@@ -80,11 +80,11 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 
 | # | Problem | Approach | Time | Space |
 |---|---|---|---|---|
-| 29 | [Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/) | Recursive: swap left/right children | O(n) | O(h) |
+| 29 | [Invert Binary Tree](/dsa/problem/invert-binary-tree) | Recursive: swap left/right children | O(n) | O(h) |
 | 30 | [Maximum Depth of Binary Tree](/dsa/problem/maximum-depth-of-binary-tree) | DFS: `1 + max(left, right)` | O(n) | O(h) |
-| 31 | [Lowest Common Ancestor](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/) | If both in left → go left. Both right → go right. Else current. | O(n) | O(h) |
-| 32 | [Validate BST](https://leetcode.com/problems/validate-binary-search-tree/) | DFS with (min, max) bounds | O(n) | O(h) |
-| 33 | [Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/) | BFS with queue, process level-by-level | O(n) | O(n) |
+| 31 | [Lowest Common Ancestor](/dsa/problem/lowest-common-ancestor-of-a-binary-search-tree) | If both in left → go left. Both right → go right. Else current. | O(n) | O(h) |
+| 32 | [Validate BST](/dsa/problem/validate-binary-search-tree) | DFS with (min, max) bounds | O(n) | O(h) |
+| 33 | [Level Order Traversal](/dsa/problem/binary-tree-level-order-traversal) | BFS with queue, process level-by-level | O(n) | O(n) |
 | 34 | [Serialize/Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/) | Preorder with nulls marked as "#" | O(n) | O(n) |
 
 ## Graphs

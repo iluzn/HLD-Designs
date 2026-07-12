@@ -34,6 +34,14 @@ function stdinOf(type, args) {
     case 'LIST_LIST_ARR': return args[0].length + '\n' + args[0].join(' ') + '\n' + args[1].length + '\n' + args[1].join(' ');
     case 'LIST_INT_ARR': case 'LIST_POS_BOOL': return args[0].length + '\n' + args[0].join(' ') + '\n' + args[1];
     case 'LISTK_ARR': return args[0].length + '\n' + args[0].map(function (l) { return l.length + '\n' + l.join(' '); }).join('\n');
+    case 'TREE_TREE_OUT': case 'TREE_LEVELS':
+      return args[0].map(function (x) { return x === null ? 'null' : x; }).join(' ');
+    case 'TREE_TREE_BOOL':
+      return args[0].map(function (x) { return x === null ? 'null' : x; }).join(' ') + '\n' + args[1].map(function (x) { return x === null ? 'null' : x; }).join(' ');
+    case 'TREE_INT_INT':
+      return args[0].map(function (x) { return x === null ? 'null' : x; }).join(' ') + '\n' + args[1];
+    case 'TREE_INT_INT_INT':
+      return args[0].map(function (x) { return x === null ? 'null' : x; }).join(' ') + '\n' + args[1] + ' ' + args[2];
     default: return '';
   }
 }
@@ -66,6 +74,14 @@ function displayOf(type, args) {
     case 'LIST_INT_ARR': return { head: arrStr(args[0]), k: '' + args[1] };
     case 'LIST_POS_BOOL': return { head: arrStr(args[0]), pos: '' + args[1] };
     case 'LISTK_ARR': return { lists: '[' + args[0].map(function (l) { return arrStr(l); }).join(',') + ']' };
+    case 'TREE_TREE_OUT': case 'TREE_LEVELS':
+      return { root: '[' + args[0].map(function (x) { return x === null ? 'null' : x; }).join(',') + ']' };
+    case 'TREE_TREE_BOOL':
+      return { p: '[' + args[0].map(function (x) { return x === null ? 'null' : x; }).join(',') + ']', q: '[' + args[1].map(function (x) { return x === null ? 'null' : x; }).join(',') + ']' };
+    case 'TREE_INT_INT':
+      return { root: '[' + args[0].map(function (x) { return x === null ? 'null' : x; }).join(',') + ']', k: '' + args[1] };
+    case 'TREE_INT_INT_INT':
+      return { root: '[' + args[0].map(function (x) { return x === null ? 'null' : x; }).join(',') + ']', p: '' + args[1], q: '' + args[2] };
     default: return {};
   }
 }

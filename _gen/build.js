@@ -134,6 +134,7 @@ require('./problems4.js').MORE4.forEach(function (p) { P.push(p); });
 require('./problems5.js').MORE5.forEach(function (p) { P.push(p); });
 require('./problems6.js').MORE6.forEach(function (p) { P.push(p); });
 require('./problems7.js').MORE7.forEach(function (p) { P.push(p); });
+require('./problems8.js').MORE8.forEach(function (p) { P.push(p); });
 
 // ---------- write ----------
 var indexRows = [];

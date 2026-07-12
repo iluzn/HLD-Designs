@@ -77,16 +77,16 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 26 | [Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/) | DFS | Recursively swap left/right children | O(n) |
+| 26 | [Invert Binary Tree](/dsa/problem/invert-binary-tree) | DFS | Recursively swap left/right children | O(n) |
 | 27 | [Maximum Depth of Binary Tree](/dsa/problem/maximum-depth-of-binary-tree) | DFS | `1 + max(left, right)` | O(n) |
-| 28 | [Same Tree](https://leetcode.com/problems/same-tree/) | DFS | Compare both nodes recursively | O(n) |
-| 29 | [Subtree of Another Tree](https://leetcode.com/problems/subtree-of-another-tree/) | DFS | For each node, check `isSameTree` | O(m×n) |
-| 30 | [Lowest Common Ancestor of BST](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/) | BST Property | Both < node → go left; both > → go right; else found | O(h) |
-| 31 | [Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/) | BFS | Queue, process level by level | O(n) |
-| 32 | [Validate BST](https://leetcode.com/problems/validate-binary-search-tree/) | DFS | Pass (min, max) bounds down | O(n) |
-| 33 | [Kth Smallest in BST](https://leetcode.com/problems/kth-smallest-element-in-a-bst/) | Inorder | Inorder traversal gives sorted; stop at k | O(h+k) |
+| 28 | [Same Tree](/dsa/problem/same-tree) | DFS | Compare both nodes recursively | O(n) |
+| 29 | [Subtree of Another Tree](/dsa/problem/subtree-of-another-tree) | DFS | For each node, check `isSameTree` | O(m×n) |
+| 30 | [Lowest Common Ancestor of BST](/dsa/problem/lowest-common-ancestor-of-a-binary-search-tree) | BST Property | Both < node → go left; both > → go right; else found | O(h) |
+| 31 | [Binary Tree Level Order Traversal](/dsa/problem/binary-tree-level-order-traversal) | BFS | Queue, process level by level | O(n) |
+| 32 | [Validate BST](/dsa/problem/validate-binary-search-tree) | DFS | Pass (min, max) bounds down | O(n) |
+| 33 | [Kth Smallest in BST](/dsa/problem/kth-smallest-element-in-a-bst) | Inorder | Inorder traversal gives sorted; stop at k | O(h+k) |
 | 34 | [Build Tree from Preorder & Inorder](https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/) | Recursion | Root = preorder[0], split inorder, recurse | O(n) |
-| 35 | [Binary Tree Max Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/) | DFS | At each node: max gain = node + max(left, right, 0). Track global max. | O(n) |
+| 35 | [Binary Tree Max Path Sum](/dsa/problem/binary-tree-maximum-path-sum) | DFS | At each node: max gain = node + max(left, right, 0). Track global max. | O(n) |
 | 36 | [Serialize/Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/) | Preorder | Mark nulls as "#", split by delimiter | O(n) |
 
 ## Tries (3)

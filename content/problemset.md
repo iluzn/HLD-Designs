@@ -93,6 +93,16 @@ Solve problems in your browser — pick a language, implement the function, and 
 | 80 | [Linked List Cycle](/dsa/problem/linked-list-cycle){:data-slug="linked-list-cycle"} | 🟢 Easy | Linked List, Two Pointers, Hash Table |
 | 81 | [Merge k Sorted Lists](/dsa/problem/merge-k-sorted-lists){:data-slug="merge-k-sorted-lists"} | 🔴 Hard | Linked List, Heap, Divide and Conquer, Merge Sort |
 | 82 | [Reorder List](/dsa/problem/reorder-list){:data-slug="reorder-list"} | 🟡 Medium | Linked List, Two Pointers, Stack |
+| 83 | [Invert Binary Tree](/dsa/problem/invert-binary-tree){:data-slug="invert-binary-tree"} | 🟢 Easy | Tree, DFS, BFS |
+| 84 | [Same Tree](/dsa/problem/same-tree){:data-slug="same-tree"} | 🟢 Easy | Tree, DFS, BFS |
+| 85 | [Subtree of Another Tree](/dsa/problem/subtree-of-another-tree){:data-slug="subtree-of-another-tree"} | 🟢 Easy | Tree, DFS, String Matching |
+| 86 | [Binary Tree Level Order Traversal](/dsa/problem/binary-tree-level-order-traversal){:data-slug="binary-tree-level-order-traversal"} | 🟡 Medium | Tree, BFS |
+| 87 | [Binary Tree Right Side View](/dsa/problem/binary-tree-right-side-view){:data-slug="binary-tree-right-side-view"} | 🟡 Medium | Tree, BFS, DFS |
+| 88 | [Count Good Nodes in Binary Tree](/dsa/problem/count-good-nodes-in-binary-tree){:data-slug="count-good-nodes-in-binary-tree"} | 🟡 Medium | Tree, DFS, BFS |
+| 89 | [Validate Binary Search Tree](/dsa/problem/validate-binary-search-tree){:data-slug="validate-binary-search-tree"} | 🟡 Medium | Tree, DFS, BST |
+| 90 | [Kth Smallest Element in a BST](/dsa/problem/kth-smallest-element-in-a-bst){:data-slug="kth-smallest-element-in-a-bst"} | 🟡 Medium | Tree, DFS, BST |
+| 91 | [Lowest Common Ancestor of a Binary Search Tree](/dsa/problem/lowest-common-ancestor-of-a-binary-search-tree){:data-slug="lowest-common-ancestor-of-a-binary-search-tree"} | 🟡 Medium | Tree, DFS, BST |
+| 92 | [Binary Tree Maximum Path Sum](/dsa/problem/binary-tree-maximum-path-sum){:data-slug="binary-tree-maximum-path-sum"} | 🔴 Hard | Tree, DFS, Dynamic Programming |
 
 {% include judge-firebase.html %}
 <script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>

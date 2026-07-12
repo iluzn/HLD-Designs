@@ -465,4 +465,84 @@ T.TREE_INT = function (fn) { return treeType(fn, 'int'); };
 T.TREE_BOOL = function (fn) { return treeType(fn, 'bool'); };
 T.TREE_ARR = function (fn) { return treeType(fn, 'arr'); };
 
+// ----- shared TreeNode stubs + builders/serializers for extra tree types -----
+var _TN_PY = ln('class TreeNode:', '    def __init__(self, val=0, left=None, right=None):', '        self.val = val', '        self.left = left', '        self.right = right', '');
+var _TN_CPP = ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'struct TreeNode {', '    int val; TreeNode *left, *right;', '    TreeNode(int v): val(v), left(nullptr), right(nullptr) {}', '};', '');
+var _TN_JAVA = ln('import java.util.*;', '', 'class TreeNode {', '    int val; TreeNode left, right;', '    TreeNode(int v) { val = v; }', '}', '');
+var _TN_JS = ln('/** Tree node shape: { val, left, right } */', '');
+var _BTF_PY = ln('from collections import deque', 'def _bt(line):', '    t=line.split()', '    if not t or t[0]=="null": return None', '    root=TreeNode(int(t[0])); q=deque([root]); i=1', '    while q and i<len(t):', '        n=q.popleft()', '        if i<len(t) and t[i]!="null":', '            n.left=TreeNode(int(t[i])); q.append(n.left)', '        i+=1', '        if i<len(t) and t[i]!="null":', '            n.right=TreeNode(int(t[i])); q.append(n.right)', '        i+=1', '    return root', 'def _st(root):', '    out=[]; q=deque([root])', '    while q:', '        n=q.popleft()', '        if n is None: out.append("null"); continue', '        out.append(str(n.val)); q.append(n.left); q.append(n.right)', '    while out and out[-1]=="null": out.pop()', "    return ' '.join(out)");
+var _BTF_JS = ln('function _bt(line){var t=line.split(/\\s+/).filter(function(x){return x.length;});if(!t.length||t[0]==="null")return null;var root={val:+t[0],left:null,right:null};var q=[root],i=1;while(q.length&&i<t.length){var n=q.shift();if(i<t.length&&t[i]!=="null"){n.left={val:+t[i],left:null,right:null};q.push(n.left);}i++;if(i<t.length&&t[i]!=="null"){n.right={val:+t[i],left:null,right:null};q.push(n.right);}i++;}return root;}', 'function _st(root){var out=[],q=[root];while(q.length){var n=q.shift();if(n===null){out.push("null");continue;}out.push(String(n.val));q.push(n.left);q.push(n.right);}while(out.length&&out[out.length-1]==="null")out.pop();return out.join(" ");}');
+var _BTF_CPP = ln('TreeNode* _bt(string line){istringstream is(line);vector<string> t;string x;while(is>>x)t.push_back(x);if(t.empty()||t[0]=="null")return nullptr;TreeNode* root=new TreeNode(stoi(t[0]));queue<TreeNode*> q;q.push(root);size_t i=1;while(!q.empty()&&i<t.size()){TreeNode* n=q.front();q.pop();if(i<t.size()&&t[i]!="null"){n->left=new TreeNode(stoi(t[i]));q.push(n->left);}i++;if(i<t.size()&&t[i]!="null"){n->right=new TreeNode(stoi(t[i]));q.push(n->right);}i++;}return root;}', 'string _st(TreeNode* root){vector<string> out;queue<TreeNode*> q;q.push(root);while(!q.empty()){TreeNode* n=q.front();q.pop();if(!n){out.push_back("null");continue;}out.push_back(to_string(n->val));q.push(n->left);q.push(n->right);}while(!out.empty()&&out.back()=="null")out.pop_back();string s;for(size_t i=0;i<out.size();i++){if(i)s+=" ";s+=out[i];}return s;}');
+var _BTF_JAVA = ln('  static TreeNode bt(String line){if(line==null)return null;String[] t=line.trim().split("\\\\s+");if(t.length==0||t[0].isEmpty()||t[0].equals("null"))return null;TreeNode root=new TreeNode(Integer.parseInt(t[0]));Queue<TreeNode> q=new LinkedList<>();q.add(root);int i=1;while(!q.isEmpty()&&i<t.length){TreeNode n=q.poll();if(i<t.length&&!t[i].equals("null")){n.left=new TreeNode(Integer.parseInt(t[i]));q.add(n.left);}i++;if(i<t.length&&!t[i].equals("null")){n.right=new TreeNode(Integer.parseInt(t[i]));q.add(n.right);}i++;}return root;}', '  static String st(TreeNode root){List<String> out=new ArrayList<>();Queue<TreeNode> q=new LinkedList<>();q.add(root);while(!q.isEmpty()){TreeNode n=q.poll();if(n==null){out.add("null");continue;}out.add(String.valueOf(n.val));q.add(n.left);q.add(n.right);}while(!out.isEmpty()&&out.get(out.size()-1).equals("null"))out.remove(out.size()-1);return String.join(" ",out);}');
+
+// (TreeNode p, TreeNode q) -> boolean   (line-based: T then 2 lines per case)
+T.TREE_TREE_BOOL = function (fn) {
+  return {
+    python: { stub: ln(_TN_PY + 'class Solution:', '    def ' + fn + '(self, p, q):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', _BTF_PY, '_L=sys.stdin.read().split("\\n"); _T=int(_L[0]); _o=[]', 'for _i in range(_T):', '    _a=_bt(_L[1+2*_i] if 1+2*_i<len(_L) else "")', '    _b=_bt(_L[2+2*_i] if 2+2*_i<len(_L) else "")', "    _o.append('true' if Solution()." + fn + "(_a,_b) else 'false')", 'print("\\n".join(_o))') },
+    javascript: { stub: ln(_TN_JS + '/**', ' * @param {TreeNode} p', ' * @param {TreeNode} q', ' * @return {boolean}', ' */', 'var ' + fn + ' = function(p, q) {', '    // Write your code here', '};'),
+      harness: ln(_BTF_JS, 'const _L=require("fs").readFileSync(0,"utf8").split("\\n"); const _T=+_L[0]; const _o=[];', 'for(let _i=0;_i<_T;_i++){const _a=_bt((_L[1+2*_i]||"").replace(/\\r$/,""));const _b=_bt((_L[2+2*_i]||"").replace(/\\r$/,""));_o.push(' + fn + "(_a,_b)?'true':'false');}", 'console.log(_o.join("\\n"));') },
+    cpp: { stub: ln(_TN_CPP + 'class Solution {', 'public:', '    bool ' + fn + '(TreeNode* p, TreeNode* q) {', '        // Write your code here', '    }', '};'),
+      harness: ln(_BTF_CPP, 'int main(){string line;getline(cin,line);int T=stoi(line);for(int c=0;c<T;c++){string l1,l2;if(!getline(cin,l1))l1="";if(!getline(cin,l2))l2="";cout<<(Solution().' + fn + '(_bt(l1),_bt(l2))?"true":"false")<<"\\n";}}') },
+    java: { stub: ln(_TN_JAVA + 'class Solution {', '    public boolean ' + fn + '(TreeNode p, TreeNode q) {', '        // Write your code here', '        return false;', '    }', '}'),
+      harness: ln('public class Main {', _BTF_JAVA, '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=Integer.parseInt(sc.nextLine().trim());StringBuilder sb=new StringBuilder();for(int c=0;c<T;c++){String l1=sc.hasNextLine()?sc.nextLine():"";String l2=sc.hasNextLine()?sc.nextLine():"";sb.append(new Solution().' + fn + '(bt(l1),bt(l2))?"true":"false").append("\\n");}System.out.print(sb);}', '}') },
+  };
+};
+
+// (TreeNode root) -> TreeNode   (line-based: T then T lines; output level-order)
+T.TREE_TREE_OUT = function (fn) {
+  return {
+    python: { stub: ln(_TN_PY + 'class Solution:', '    def ' + fn + '(self, root):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', _BTF_PY, '_L=sys.stdin.read().split("\\n"); _T=int(_L[0]); _o=[]', 'for _i in range(_T):', '    _r=Solution().' + fn + '(_bt(_L[1+_i] if 1+_i<len(_L) else ""))', '    _o.append(_st(_r))', 'print("\\n".join(_o))') },
+    javascript: { stub: ln(_TN_JS + '/**', ' * @param {TreeNode} root', ' * @return {TreeNode}', ' */', 'var ' + fn + ' = function(root) {', '    // Write your code here', '};'),
+      harness: ln(_BTF_JS, 'const _L=require("fs").readFileSync(0,"utf8").split("\\n"); const _T=+_L[0]; const _o=[];', 'for(let _i=0;_i<_T;_i++){const _r=' + fn + '(_bt((_L[1+_i]||"").replace(/\\r$/,"")));_o.push(_st(_r));}', 'console.log(_o.join("\\n"));') },
+    cpp: { stub: ln(_TN_CPP + 'class Solution {', 'public:', '    TreeNode* ' + fn + '(TreeNode* root) {', '        // Write your code here', '    }', '};'),
+      harness: ln(_BTF_CPP, 'int main(){string line;getline(cin,line);int T=stoi(line);for(int c=0;c<T;c++){string l;if(!getline(cin,l))l="";cout<<_st(Solution().' + fn + '(_bt(l)))<<"\\n";}}') },
+    java: { stub: ln(_TN_JAVA + 'class Solution {', '    public TreeNode ' + fn + '(TreeNode root) {', '        // Write your code here', '        return root;', '    }', '}'),
+      harness: ln('public class Main {', _BTF_JAVA, '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=Integer.parseInt(sc.nextLine().trim());StringBuilder sb=new StringBuilder();for(int c=0;c<T;c++){String l=sc.hasNextLine()?sc.nextLine():"";sb.append(st(new Solution().' + fn + '(bt(l)))).append("\\n");}System.out.print(sb);}', '}') },
+  };
+};
+
+// (TreeNode root) -> List<List<Integer>>   (output levels joined by | )
+T.TREE_LEVELS = function (fn) {
+  return {
+    python: { stub: ln(_TN_PY + 'class Solution:', '    def ' + fn + '(self, root):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', _BTF_PY, '_L=sys.stdin.read().split("\\n"); _T=int(_L[0]); _o=[]', 'for _i in range(_T):', '    _r=Solution().' + fn + '(_bt(_L[1+_i] if 1+_i<len(_L) else ""))', "    _o.append('|'.join(' '.join(str(x) for x in lvl) for lvl in _r))", 'print("\\n".join(_o))') },
+    javascript: { stub: ln(_TN_JS + '/**', ' * @param {TreeNode} root', ' * @return {number[][]}', ' */', 'var ' + fn + ' = function(root) {', '    // Write your code here', '};'),
+      harness: ln(_BTF_JS, 'const _L=require("fs").readFileSync(0,"utf8").split("\\n"); const _T=+_L[0]; const _o=[];', 'for(let _i=0;_i<_T;_i++){const _r=' + fn + '(_bt((_L[1+_i]||"").replace(/\\r$/,"")));_o.push(_r.map(function(lvl){return lvl.join(" ");}).join("|"));}', 'console.log(_o.join("\\n"));') },
+    cpp: { stub: ln(_TN_CPP + 'class Solution {', 'public:', '    vector<vector<int>> ' + fn + '(TreeNode* root) {', '        // Write your code here', '    }', '};'),
+      harness: ln(_BTF_CPP, 'int main(){string line;getline(cin,line);int T=stoi(line);for(int c=0;c<T;c++){string l;if(!getline(cin,l))l="";auto r=Solution().' + fn + '(_bt(l));string s;for(size_t i=0;i<r.size();i++){if(i)s+="|";for(size_t j=0;j<r[i].size();j++){if(j)s+=" ";s+=to_string(r[i][j]);}}cout<<s<<"\\n";}}') },
+    java: { stub: ln(_TN_JAVA + 'class Solution {', '    public List<List<Integer>> ' + fn + '(TreeNode root) {', '        // Write your code here', '        return new ArrayList<>();', '    }', '}'),
+      harness: ln('public class Main {', _BTF_JAVA, '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=Integer.parseInt(sc.nextLine().trim());StringBuilder sb=new StringBuilder();for(int c=0;c<T;c++){String l=sc.hasNextLine()?sc.nextLine():"";List<List<Integer>> r=new Solution().' + fn + '(bt(l));StringBuilder s=new StringBuilder();for(int i=0;i<r.size();i++){if(i>0)s.append("|");for(int j=0;j<r.get(i).size();j++){if(j>0)s.append(" ");s.append(r.get(i).get(j));}}sb.append(s).append("\\n");}System.out.print(sb);}', '}') },
+  };
+};
+
+// (TreeNode root, int k) -> int   (line-based: T then 2 lines per case: tree, k)
+T.TREE_INT_INT = function (fn) {
+  return {
+    python: { stub: ln(_TN_PY + 'class Solution:', '    def ' + fn + '(self, root, k):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', _BTF_PY, '_L=sys.stdin.read().split("\\n"); _T=int(_L[0]); _o=[]', 'for _i in range(_T):', '    _r=_bt(_L[1+2*_i] if 1+2*_i<len(_L) else "")', '    _k=int(_L[2+2*_i]) if 2+2*_i<len(_L) else 0', '    _o.append(str(Solution().' + fn + '(_r,_k)))', 'print("\\n".join(_o))') },
+    javascript: { stub: ln(_TN_JS + '/**', ' * @param {TreeNode} root', ' * @param {number} k', ' * @return {number}', ' */', 'var ' + fn + ' = function(root, k) {', '    // Write your code here', '};'),
+      harness: ln(_BTF_JS, 'const _L=require("fs").readFileSync(0,"utf8").split("\\n"); const _T=+_L[0]; const _o=[];', 'for(let _i=0;_i<_T;_i++){const _r=_bt((_L[1+2*_i]||"").replace(/\\r$/,""));const _k=+((_L[2+2*_i]||"0").trim());_o.push(String(' + fn + '(_r,_k)));}', 'console.log(_o.join("\\n"));') },
+    cpp: { stub: ln(_TN_CPP + 'class Solution {', 'public:', '    int ' + fn + '(TreeNode* root, int k) {', '        // Write your code here', '    }', '};'),
+      harness: ln(_BTF_CPP, 'int main(){string line;getline(cin,line);int T=stoi(line);for(int c=0;c<T;c++){string l,ks;if(!getline(cin,l))l="";if(!getline(cin,ks))ks="0";cout<<Solution().' + fn + '(_bt(l),stoi(ks))<<"\\n";}}') },
+    java: { stub: ln(_TN_JAVA + 'class Solution {', '    public int ' + fn + '(TreeNode root, int k) {', '        // Write your code here', '        return 0;', '    }', '}'),
+      harness: ln('public class Main {', _BTF_JAVA, '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=Integer.parseInt(sc.nextLine().trim());StringBuilder sb=new StringBuilder();for(int c=0;c<T;c++){String l=sc.hasNextLine()?sc.nextLine():"";int k=Integer.parseInt(sc.hasNextLine()?sc.nextLine().trim():"0");sb.append(new Solution().' + fn + '(bt(l),k)).append("\\n");}System.out.print(sb);}', '}') },
+  };
+};
+
+// (TreeNode root, int p, int q) -> int   (line-based: T then 2 lines: tree, "p q")
+T.TREE_INT_INT_INT = function (fn) {
+  return {
+    python: { stub: ln(_TN_PY + 'class Solution:', '    def ' + fn + '(self, root, p, q):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', _BTF_PY, '_L=sys.stdin.read().split("\\n"); _T=int(_L[0]); _o=[]', 'for _i in range(_T):', '    _r=_bt(_L[1+2*_i] if 1+2*_i<len(_L) else "")', '    _pq=(_L[2+2*_i] if 2+2*_i<len(_L) else "0 0").split()', '    _o.append(str(Solution().' + fn + '(_r,int(_pq[0]),int(_pq[1]))))', 'print("\\n".join(_o))') },
+    javascript: { stub: ln(_TN_JS + '/**', ' * @param {TreeNode} root', ' * @param {number} p', ' * @param {number} q', ' * @return {number}', ' */', 'var ' + fn + ' = function(root, p, q) {', '    // Write your code here', '};'),
+      harness: ln(_BTF_JS, 'const _L=require("fs").readFileSync(0,"utf8").split("\\n"); const _T=+_L[0]; const _o=[];', 'for(let _i=0;_i<_T;_i++){const _r=_bt((_L[1+2*_i]||"").replace(/\\r$/,""));const _pq=(_L[2+2*_i]||"0 0").trim().split(/\\s+/).map(Number);_o.push(String(' + fn + '(_r,_pq[0],_pq[1])));}', 'console.log(_o.join("\\n"));') },
+    cpp: { stub: ln(_TN_CPP + 'class Solution {', 'public:', '    int ' + fn + '(TreeNode* root, int p, int q) {', '        // Write your code here', '    }', '};'),
+      harness: ln(_BTF_CPP, 'int main(){string line;getline(cin,line);int T=stoi(line);for(int c=0;c<T;c++){string l,pq;if(!getline(cin,l))l="";if(!getline(cin,pq))pq="0 0";istringstream is(pq);int p,q;is>>p>>q;cout<<Solution().' + fn + '(_bt(l),p,q)<<"\\n";}}') },
+    java: { stub: ln(_TN_JAVA + 'class Solution {', '    public int ' + fn + '(TreeNode root, int p, int q) {', '        // Write your code here', '        return 0;', '    }', '}'),
+      harness: ln('public class Main {', _BTF_JAVA, '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=Integer.parseInt(sc.nextLine().trim());StringBuilder sb=new StringBuilder();for(int c=0;c<T;c++){String l=sc.hasNextLine()?sc.nextLine():"";String pq=sc.hasNextLine()?sc.nextLine().trim():"0 0";String[] pp=pq.split("\\\\s+");sb.append(new Solution().' + fn + '(bt(l),Integer.parseInt(pp[0]),Integer.parseInt(pp[1]))).append("\\n");}System.out.print(sb);}', '}') },
+  };
+};
+
 module.exports = { T, randInt, randArr, arrStr, ln };
