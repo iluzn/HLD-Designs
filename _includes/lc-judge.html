@@ -123,7 +123,12 @@
           : (tle ? 'Time Limit Exceeded'
           : ((runtimeErr && (f.out === '' || f.out == null)) ? 'Runtime Error' : 'Wrong Answer'))));
         addSub({ ts: Date.now(), lang: lang, langName: META[lang].name, status: status, passed: passed, total: cases.length, code: code });
-        if (status === 'Accepted') { markSolved(); paintSolved(); }
+        if (status === 'Accepted') {
+          markSolved(); paintSolved();
+          if (typeof triggerCelebration === 'function') {
+            triggerCelebration('Accepted \uD83C\uDF89', 'All ' + cases.length + ' test cases passed in ' + META[lang].name + '. On to the next one!');
+          }
+        }
       }
       renderResult();
       busy = false; runBtn.disabled = false; submitBtn.disabled = false; statusEl.textContent = '';
