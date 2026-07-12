@@ -49,17 +49,22 @@ hide_comments: true
 .pf-streakline { font-size:0.8rem; color:var(--text-muted); margin:-0.4rem 0 0.8rem; }
 .pf-streakline b { color:#f59e0b; }
 
+.pf-heat-card { background:var(--bg-card,rgba(25,25,35,0.55)); border:1px solid var(--border); border-radius:16px; padding:1.1rem 1.25rem; margin-bottom:1.2rem; }
 .pf-heat { display:flex; gap:3px; width:max-content; }
 .pf-week { display:flex; flex-direction:column; gap:3px; }
-.pf-day { width:12px; height:12px; border-radius:3px; background:var(--border); }
-.pf-day.l1{background:rgba(34,197,94,0.35);} .pf-day.l2{background:rgba(34,197,94,0.55);} .pf-day.l3{background:rgba(34,197,94,0.78);} .pf-day.l4{background:#22c55e;}
-.pf-heat-scroll { overflow-x:auto; padding-bottom:0.4rem; }
-.pf-heat-head { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:0.4rem; font-size:0.82rem; color:var(--text-muted); margin:-0.4rem 0 0.6rem; }
+.pf-day { width:12px; height:12px; border-radius:2px; background:var(--border); }
+.pf-day.l1{background:#9be9a8;} .pf-day.l2{background:#40c463;} .pf-day.l3{background:#30a14e;} .pf-day.l4{background:#216e39;}
+[data-theme="dark"] .pf-day.l1{background:#0e4429;} [data-theme="dark"] .pf-day.l2{background:#006d32;} [data-theme="dark"] .pf-day.l3{background:#26a641;} [data-theme="dark"] .pf-day.l4{background:#39d353;}
+.pf-heat-scroll { overflow-x:auto; padding-bottom:0.2rem; }
+.pf-heat-head { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; font-size:0.85rem; color:var(--text-muted); margin-bottom:0.8rem; }
 .pf-heat-head b { color:var(--text); font-weight:700; }
-.pf-months { display:flex; gap:3px; font-size:0.64rem; color:var(--text-dim); margin-bottom:4px; width:max-content; }
-.pf-mon { display:inline-block; text-align:left; overflow:hidden; white-space:nowrap; flex-shrink:0; }
+.pf-heat-title b { font-size:1.05rem; }
+.pf-info { display:inline-flex; width:15px; height:15px; align-items:center; justify-content:center; border-radius:50%; border:1px solid var(--text-dim); color:var(--text-dim); font-size:0.62rem; font-style:normal; font-weight:700; cursor:help; vertical-align:middle; margin-left:2px; }
+.pf-heat-stats { display:inline-flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+.pf-year-pill { display:inline-flex; align-items:center; gap:0.35rem; font-size:0.76rem; color:var(--text); background:var(--glass,rgba(255,255,255,0.04)); border:1px solid var(--border); border-radius:8px; padding:0.3rem 0.7rem; }
+.pf-months { display:flex; gap:3px; font-size:0.68rem; color:var(--text-dim); margin-top:6px; width:max-content; }
+.pf-mon { display:inline-block; text-align:left; overflow:visible; white-space:nowrap; flex-shrink:0; }
 .pf-day.fut { background:transparent; }
-.pf-legend { font-size:0.7rem; color:var(--text-dim); margin-top:0.5rem; display:flex; align-items:center; gap:0.4rem; }
 
 .pf-bars { display:grid; gap:0.6rem; margin-bottom:1.2rem; }
 .pf-bar-row { display:flex; align-items:center; gap:0.8rem; font-size:0.82rem; }
@@ -131,9 +136,6 @@ hide_comments: true
     var totalAll=(td.easy+td.medium+td.hard)||1, solvedAll=dc.easy+dc.medium+dc.hard;
     var byDay={}; subs.forEach(function(s){byDay[dayKey(new Date(s.ts))]=(byDay[dayKey(new Date(s.ts))]||0)+1;});
     var sk=streaks(byDay);
-    var weekAgo=Date.now()-7*86400000, solvedWeek={};
-    subs.forEach(function(s){ if(s.status==='Accepted' && s.ts>=weekAgo) solvedWeek[s.slug]=1; });
-    var solvedWeekN=Object.keys(solvedWeek).length;
     var name=user?(user.name||user.displayName||'You'):'Guest';
     var photo=user?(user.photo||user.photoURL):null;
     var avatar=photo?'<img src="'+esc(photo)+'" alt="" referrerpolicy="no-referrer">':'<div class="pf-hero-fallback">'+esc(name.charAt(0).toUpperCase())+'</div>';
@@ -171,13 +173,16 @@ hide_comments: true
       if(monthGroups.length && monthGroups[monthGroups.length-1].mon===wkMonth) monthGroups[monthGroups.length-1].count++;
       else monthGroups.push({mon:wkMonth,count:1});
     }
-    var monthRow=monthGroups.map(function(g){ return '<span class="pf-mon" style="width:'+(g.count*15-3)+'px">'+(g.count>=2?MON[g.mon]:'')+'</span>'; }).join('');
+    var monthRow=monthGroups.map(function(g,i){ var show=g.count>=2||i===0||i===monthGroups.length-1; return '<span class="pf-mon" style="width:'+(g.count*15-3)+'px">'+(show?MON[g.mon]:'')+'</span>'; }).join('');
 
     html+='<div class="pf-sec">🔥 Submission Activity</div>';
-    html+='<div class="pf-heat-head"><span><b>'+yearSubs+'</b> submission'+(yearSubs===1?'':'s')+' in the past one year &nbsp;&middot;&nbsp; <b>'+solvedWeekN+'</b> solved this week</span>'+
-      '<span>Total active days: <b>'+activeDays+'</b> &nbsp;&middot;&nbsp; Max streak: <b>'+sk.max+'</b></span></div>';
-    html+='<div class="pf-heat-scroll"><div class="pf-months">'+monthRow+'</div><div class="pf-heat">'+weeks.join('')+'</div></div>';
-    html+='<div class="pf-legend">Less <span class="pf-day"></span><span class="pf-day l1"></span><span class="pf-day l2"></span><span class="pf-day l3"></span><span class="pf-day l4"></span> More</div>';
+    html+='<div class="pf-heat-card">';
+    html+='<div class="pf-heat-head">'+
+      '<span class="pf-heat-title"><b>'+yearSubs+'</b> submission'+(yearSubs===1?'':'s')+' in the past one year <i class="pf-info" title="Accepted and failed submissions across all problems in the last 12 months">i</i></span>'+
+      '<span class="pf-heat-stats"><span>Total active days: <b>'+activeDays+'</b></span><span>Max streak: <b>'+sk.max+'</b></span><span class="pf-year-pill">Current &#9662;</span></span>'+
+    '</div>';
+    html+='<div class="pf-heat-scroll"><div class="pf-heat">'+weeks.join('')+'</div><div class="pf-months">'+monthRow+'</div></div>';
+    html+='</div>';
 
     // languages
     var langCount={}; subs.forEach(function(s){var l=s.langName||s.lang||'Unknown'; langCount[l]=(langCount[l]||0)+1;});
