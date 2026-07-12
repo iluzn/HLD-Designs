@@ -71,9 +71,9 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 
 | # | Problem | Approach | Time | Space |
 |---|---|---|---|---|
-| 25 | [Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/) | Iterative: prev/curr/next pointers | O(n) | O(1) |
-| 26 | [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) | Fast/slow pointers (Floyd's) | O(n) | O(1) |
-| 27 | [Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/) | Dummy head, compare and advance | O(n+m) | O(1) |
+| 25 | [Reverse Linked List](/dsa/problem/reverse-linked-list) | Iterative: prev/curr/next pointers | O(n) | O(1) |
+| 26 | [Linked List Cycle](/dsa/problem/linked-list-cycle) | Fast/slow pointers (Floyd's) | O(n) | O(1) |
+| 27 | [Merge Two Sorted Lists](/dsa/problem/merge-two-sorted-lists) | Dummy head, compare and advance | O(n+m) | O(1) |
 | 28 | [LRU Cache](https://leetcode.com/problems/lru-cache/) | HashMap + doubly-linked list (or LinkedHashMap) | O(1) all ops | O(cap) |
 
 ## Trees

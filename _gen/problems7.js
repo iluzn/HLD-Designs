@@ -1,0 +1,89 @@
+// Batch C: singly linked list problems.
+const { T, randInt, randArr, ln } = require('./gen.js');
+
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function ED(o) {
+  var h = '';
+  if (o.intuition) h += '<h3>Intuition</h3>' + (Array.isArray(o.intuition) ? o.intuition.map(function (p) { return '<p>' + p + '</p>'; }).join('') : '<p>' + o.intuition + '</p>');
+  if (o.approach) h += '<h3>Approach</h3><ol>' + o.approach.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol>';
+  if (o.code) h += '<h3>Solution</h3><pre><code>' + esc(o.code) + '</code></pre>';
+  h += '<h3>Complexity</h3><ul><li><b>Time — ' + o.time + ':</b> ' + o.timeWhy + '</li><li><b>Space — ' + o.space + ':</b> ' + o.spaceWhy + '</li></ul>';
+  if (o.pitfalls) h += '<h3>Common Pitfalls</h3><ul>' + o.pitfalls.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ul>';
+  return h;
+}
+
+const MORE7 = [];
+
+// ---- Reverse Linked List (LIST_ARR) ----
+MORE7.push({ slug: 'reverse-linked-list', title: 'Reverse Linked List', difficulty: 'easy', topics: ['Linked List', 'Recursion'], type: 'LIST_ARR', langsrc: T.LIST_ARR('reverseList'),
+  desc: '<p>Given the <code>head</code> of a singly linked list, reverse the list and return the new head. Lists are shown as arrays of node values.</p>',
+  examples: [{ in: 'head = [1,2,3,4,5]', out: '[5,4,3,2,1]' }, { in: 'head = []', out: '[]' }],
+  constraints: ['0 &lt;= number of nodes &lt;= 5000', '-5000 &lt;= Node.val &lt;= 5000'],
+  editorial: ED({ intuition: 'Reversing a singly linked list means flipping each <code>next</code> pointer to point backwards. Keep a <code>prev</code> pointer that trails behind and becomes the new head.', approach: ['Walk the list with <code>curr</code>, remembering the next node before you overwrite the pointer.', 'Point <code>curr.next</code> back to <code>prev</code>.', 'Advance prev and curr; when curr is null, prev is the new head.'], code: 'def reverseList(self, head):\n    prev = None\n    curr = head\n    while curr:\n        nxt = curr.next\n        curr.next = prev\n        prev = curr\n        curr = nxt\n    return prev', time: 'O(n)', timeWhy: 'each node is visited once.', space: 'O(1)', spaceWhy: 'only three pointers (iterative).', pitfalls: ['Save <code>curr.next</code> before reassigning it, or you lose the rest of the list.'] }),
+  gen: function () { var o = [[[1, 2, 3, 4, 5]], [[]], [[1]], [[1, 2]]]; for (var k = 0; k < 40; k++) o.push([randArr(randInt(0, 8), -20, 20)]); return o; },
+  ref: function (a) { return a[0].slice().reverse(); } });
+
+// ---- Merge Two Sorted Lists (LIST_LIST_ARR) ----
+MORE7.push({ slug: 'merge-two-sorted-lists', title: 'Merge Two Sorted Lists', difficulty: 'easy', topics: ['Linked List', 'Recursion'], type: 'LIST_LIST_ARR', langsrc: T.LIST_LIST_ARR('mergeTwoLists'),
+  desc: '<p>You are given the heads of two sorted linked lists <code>l1</code> and <code>l2</code>. Splice them into one sorted list and return its head.</p>',
+  examples: [{ in: 'l1 = [1,2,4], l2 = [1,3,4]', out: '[1,1,2,3,4,4]' }, { in: 'l1 = [], l2 = [0]', out: '[0]' }],
+  constraints: ['0 &lt;= list length &lt;= 50', '-100 &lt;= Node.val &lt;= 100', 'Both lists are sorted non-decreasing.'],
+  editorial: ED({ intuition: 'Since both inputs are already sorted, a single merge pass (like the merge step of merge sort) suffices — always attach the smaller current node.', approach: ['Use a dummy head so you never special-case the first node.', 'Compare the fronts of both lists, attach the smaller, and advance that list.', 'When one list runs out, attach the remainder of the other.'], code: 'def mergeTwoLists(self, l1, l2):\n    dummy = ListNode()\n    tail = dummy\n    while l1 and l2:\n        if l1.val <= l2.val:\n            tail.next = l1; l1 = l1.next\n        else:\n            tail.next = l2; l2 = l2.next\n        tail = tail.next\n    tail.next = l1 or l2\n    return dummy.next', time: 'O(n+m)', timeWhy: 'each node from both lists is visited once.', space: 'O(1)', spaceWhy: 'pointers only; the merge is in place.', pitfalls: ['Remember to attach the leftover tail — one list is usually longer.'] }),
+  gen: function () { function sa(n) { return randArr(n, -10, 10).sort(function (a, b) { return a - b; }); } var o = [[[1, 2, 4], [1, 3, 4]], [[], [0]], [[], []], [[5], [1, 2, 3]]]; for (var k = 0; k < 40; k++) o.push([sa(randInt(0, 6)), sa(randInt(0, 6))]); return o; },
+  ref: function (a) { return a[0].concat(a[1]).sort(function (x, y) { return x - y; }); } });
+
+// ---- Add Two Numbers (LIST_LIST_ARR) ----
+MORE7.push({ slug: 'add-two-numbers', title: 'Add Two Numbers', difficulty: 'medium', topics: ['Linked List', 'Math', 'Recursion'], type: 'LIST_LIST_ARR', langsrc: T.LIST_LIST_ARR('addTwoNumbers'),
+  desc: '<p>You are given two non-empty linked lists representing two non-negative integers. The digits are stored in <strong>reverse order</strong>, one digit per node. Add the two numbers and return the sum as a linked list, also in reverse order.</p>',
+  examples: [{ in: 'l1 = [2,4,3], l2 = [5,6,4]', out: '[7,0,8]', ex: '342 + 465 = 807.' }, { in: 'l1 = [9,9,9], l2 = [1]', out: '[0,0,0,1]' }],
+  constraints: ['1 &lt;= list length &lt;= 100', '0 &lt;= Node.val &lt;= 9', 'No leading zeros except the number 0 itself.'],
+  editorial: ED({ intuition: 'Reverse-order storage is convenient: the heads are the least significant digits, so you can add left to right exactly like grade-school addition, carrying into the next node.', approach: ['Walk both lists together with a running carry.', 'At each step sum the two current digits plus carry; the new node value is <code>sum % 10</code>, the new carry is <code>sum // 10</code>.', 'Continue while either list has nodes or a carry remains.'], code: 'def addTwoNumbers(self, l1, l2):\n    dummy = ListNode()\n    tail = dummy\n    carry = 0\n    while l1 or l2 or carry:\n        s = carry\n        if l1: s += l1.val; l1 = l1.next\n        if l2: s += l2.val; l2 = l2.next\n        carry, digit = divmod(s, 10)\n        tail.next = ListNode(digit)\n        tail = tail.next\n    return dummy.next', time: 'O(max(m,n))', timeWhy: 'one pass over the longer list.', space: 'O(max(m,n))', spaceWhy: 'the output list.', pitfalls: ['Do not forget the final carry — 999 + 1 grows the list by a node.'] }),
+  gen: function () { function num(L) { var d = []; for (var i = 0; i < L; i++) d.push(randInt(0, 9)); if (L > 1) d[L - 1] = randInt(1, 9); return d; } var o = [[[2, 4, 3], [5, 6, 4]], [[9, 9, 9], [1]], [[0], [0]], [[5], [5]]]; for (var k = 0; k < 40; k++) o.push([num(randInt(1, 5)), num(randInt(1, 5))]); return o; },
+  ref: function (a) { var n1 = BigInt(a[0].slice().reverse().join('')), n2 = BigInt(a[1].slice().reverse().join('')); var s = (n1 + n2).toString(); return s.split('').reverse().map(Number); } });
+
+// ---- Remove Nth Node From End of List (LIST_INT_ARR) ----
+MORE7.push({ slug: 'remove-nth-node-from-end-of-list', title: 'Remove Nth Node From End of List', difficulty: 'medium', topics: ['Linked List', 'Two Pointers'], type: 'LIST_INT_ARR', langsrc: T.LIST_INT_ARR('removeNthFromEnd'),
+  desc: '<p>Given the <code>head</code> of a linked list, remove the <code>k</code>-th node from the end and return the head. (LeetCode calls this parameter <code>n</code>.)</p>',
+  examples: [{ in: 'head = [1,2,3,4,5], k = 2', out: '[1,2,3,5]' }, { in: 'head = [1], k = 1', out: '[]' }],
+  constraints: ['1 &lt;= number of nodes &lt;= 30', '1 &lt;= k &lt;= number of nodes'],
+  editorial: ED({ intuition: 'To find the node k-from-the-end in one pass, keep two pointers k apart. When the leading one falls off the end, the trailing one sits just before the target.', approach: ['Use a dummy before the head so removing the first node is uniform.', 'Advance a fast pointer k steps, then move fast and slow together until fast reaches the end.', 'slow.next is the node to remove; relink around it.'], code: 'def removeNthFromEnd(self, head, k):\n    dummy = ListNode(0, head)\n    fast = slow = dummy\n    for _ in range(k):\n        fast = fast.next\n    while fast.next:\n        fast = fast.next\n        slow = slow.next\n    slow.next = slow.next.next\n    return dummy.next', time: 'O(n)', timeWhy: 'a single two-pointer pass.', space: 'O(1)', spaceWhy: 'two pointers.', pitfalls: ['Use a dummy node so removing the head (k == length) needs no special case.'] }),
+  gen: function () { var o = [[[1, 2, 3, 4, 5], 2], [[1], 1], [[1, 2], 1], [[1, 2], 2]]; for (var k = 0; k < 40; k++) { var n = randInt(1, 10), arr = randArr(n, -20, 20); o.push([arr, randInt(1, n)]); } return o; },
+  ref: function (a) { var arr = a[0].slice(), k = a[1]; arr.splice(arr.length - k, 1); return arr; } });
+
+// ---- Reverse Nodes in k-Group (LIST_INT_ARR) ----
+MORE7.push({ slug: 'reverse-nodes-in-k-group', title: 'Reverse Nodes in k-Group', difficulty: 'hard', topics: ['Linked List', 'Recursion'], type: 'LIST_INT_ARR', langsrc: T.LIST_INT_ARR('reverseKGroup'),
+  desc: '<p>Given the <code>head</code> of a linked list, reverse the nodes <code>k</code> at a time and return the modified list. Nodes left over (fewer than <code>k</code>) stay in their original order.</p>',
+  examples: [{ in: 'head = [1,2,3,4,5], k = 2', out: '[2,1,4,3,5]' }, { in: 'head = [1,2,3,4,5], k = 3', out: '[3,2,1,4,5]' }],
+  constraints: ['1 &lt;= number of nodes &lt;= 5000', '0 &lt;= Node.val &lt;= 1000', '1 &lt;= k &lt;= number of nodes'],
+  editorial: ED({ intuition: 'Process the list in fixed-size blocks: for each full group of k nodes, reverse it, then connect the reversed block to the rest. A leftover partial group at the end is left untouched.', approach: ['Check that k more nodes exist ahead; if not, stop.', 'Reverse the next k pointers, tracking the group boundary.', 'Reconnect the previous group\u2019s tail to the new head, and continue from the group\u2019s (now) tail.'], code: 'def reverseKGroup(self, head, k):\n    def has_k(node):\n        for _ in range(k):\n            if not node: return False\n            node = node.next\n        return True\n    dummy = ListNode(0, head)\n    group_prev = dummy\n    while has_k(group_prev.next):\n        prev, curr = None, group_prev.next\n        for _ in range(k):\n            nxt = curr.next; curr.next = prev; prev = curr; curr = nxt\n        tail = group_prev.next\n        group_prev.next = prev\n        tail.next = curr\n        group_prev = tail\n    return dummy.next', time: 'O(n)', timeWhy: 'each node is reversed once.', space: 'O(1)', spaceWhy: 'iterative pointer manipulation.', pitfalls: ['Only reverse a group once you have confirmed k nodes remain, otherwise you would reverse a partial tail.'] }),
+  gen: function () { var o = [[[1, 2, 3, 4, 5], 2], [[1, 2, 3, 4, 5], 3], [[1], 1], [[1, 2, 3, 4], 4]]; for (var t = 0; t < 40; t++) { var n = randInt(1, 10), arr = randArr(n, 0, 20); o.push([arr, randInt(1, n)]); } return o; },
+  ref: function (a) { var arr = a[0], k = a[1], res = []; for (var i = 0; i + k <= arr.length; i += k) { var block = arr.slice(i, i + k).reverse(); for (var j = 0; j < block.length; j++) res.push(block[j]); } var rem = arr.length - (arr.length % k); for (i = rem; i < arr.length; i++) res.push(arr[i]); return res; } });
+
+// ---- Linked List Cycle (LIST_POS_BOOL) ----
+MORE7.push({ slug: 'linked-list-cycle', title: 'Linked List Cycle', difficulty: 'easy', topics: ['Linked List', 'Two Pointers', 'Hash Table'], type: 'LIST_POS_BOOL', langsrc: T.LIST_POS_BOOL('hasCycle'),
+  desc: '<p>Given the <code>head</code> of a linked list, return <code>true</code> if it has a cycle. On this judge the input is the node values plus <code>pos</code> — the index the tail\u2019s <code>next</code> connects to, or <code>-1</code> for no cycle. <code>pos</code> is not passed to your function.</p>',
+  examples: [{ in: 'head = [3,2,0,-4], pos = 1', out: 'true' }, { in: 'head = [1], pos = -1', out: 'false' }],
+  constraints: ['0 &lt;= number of nodes &lt;= 10^4', '-10^5 &lt;= Node.val &lt;= 10^5', 'pos is -1 or a valid index.'],
+  editorial: ED({ intuition: "Use Floyd\u2019s tortoise and hare: a slow pointer moving one step and a fast pointer moving two. If there is a cycle the fast pointer eventually laps the slow one; if not, it reaches the end.", approach: ['Advance slow by 1 and fast by 2 each iteration.', 'If fast (or fast.next) becomes null, there is no cycle.', 'If slow and fast ever meet, there is a cycle.'], code: 'def hasCycle(self, head):\n    slow = fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n        if slow is fast:\n            return True\n    return False', time: 'O(n)', timeWhy: 'the pointers meet within a linear number of steps.', space: 'O(1)', spaceWhy: 'two pointers, no extra structure (beats the hash-set approach on space).', pitfalls: ['Check both <code>fast</code> and <code>fast.next</code> before the double step to avoid a null dereference.'] }),
+  gen: function () { var o = [[[3, 2, 0, -4], 1], [[1, 2], 0], [[1], -1], [[], -1]]; for (var k = 0; k < 40; k++) { var n = randInt(0, 8), arr = randArr(n, -20, 20); var pos = (n === 0) ? -1 : (Math.random() < 0.5 ? randInt(0, n - 1) : -1); o.push([arr, pos]); } return o; },
+  ref: function (a) { return a[1] >= 0; } });
+
+// ---- Merge k Sorted Lists (LISTK_ARR) ----
+MORE7.push({ slug: 'merge-k-sorted-lists', title: 'Merge k Sorted Lists', difficulty: 'hard', topics: ['Linked List', 'Heap', 'Divide and Conquer', 'Merge Sort'], type: 'LISTK_ARR', langsrc: T.LISTK_ARR('mergeKLists'),
+  desc: '<p>You are given an array of <code>k</code> sorted linked lists. Merge them into one sorted list and return its head.</p>',
+  examples: [{ in: 'lists = [[1,4,5],[1,3,4],[2,6]]', out: '[1,1,2,3,4,4,5,6]' }, { in: 'lists = []', out: '[]' }],
+  constraints: ['0 &lt;= k &lt;= 10^4', '0 &lt;= list length &lt;= 500', 'Each list is sorted non-decreasing.'],
+  editorial: ED({ intuition: 'The frontier of the merged list is always the smallest current head across the k lists. A min-heap of the k heads gives that smallest element in O(log k); alternatively pair up lists and merge two at a time (divide and conquer).', approach: ['Push the head of every non-empty list into a min-heap keyed by value.', 'Pop the smallest, append it to the result, and push its next node.', 'Repeat until the heap empties.'], code: 'import heapq\n\ndef mergeKLists(self, lists):\n    heap = []\n    for i, node in enumerate(lists):\n        if node:\n            heapq.heappush(heap, (node.val, i, node))\n    dummy = ListNode()\n    tail = dummy\n    while heap:\n        val, i, node = heapq.heappop(heap)\n        tail.next = node; tail = node\n        if node.next:\n            heapq.heappush(heap, (node.next.val, i, node.next))\n    return dummy.next', time: 'O(N log k)', timeWhy: 'each of the N total nodes is pushed/popped once from a heap of size k.', space: 'O(k)', spaceWhy: 'the heap holds at most one node per list.', pitfalls: ['Include a tiebreaker (list index) in the heap key so nodes with equal values never get compared directly.'] }),
+  gen: function () { function sa(n) { return randArr(n, -10, 10).sort(function (a, b) { return a - b; }); } var o = [[[[1, 4, 5], [1, 3, 4], [2, 6]]], [[]], [[[]]], [[[1], [0]]]]; for (var t = 0; t < 36; t++) { var K = randInt(0, 4), lists = []; for (var i = 0; i < K; i++) lists.push(sa(randInt(0, 5))); o.push([lists]); } return o; },
+  ref: function (a) { var all = []; a[0].forEach(function (l) { l.forEach(function (x) { all.push(x); }); }); return all.sort(function (x, y) { return x - y; }); } });
+
+// ---- Reorder List (LIST_ARR) ----
+MORE7.push({ slug: 'reorder-list', title: 'Reorder List', difficulty: 'medium', topics: ['Linked List', 'Two Pointers', 'Stack'], type: 'LIST_ARR', langsrc: T.LIST_ARR('reorderList'),
+  desc: '<p>Given the head of a singly linked list <code>L0 &rarr; L1 &rarr; ... &rarr; Ln-1 &rarr; Ln</code>, reorder it to <code>L0 &rarr; Ln &rarr; L1 &rarr; Ln-1 &rarr; L2 &rarr; ...</code>. Return the reordered list. (LeetCode mutates in place and returns void; here return the head.)</p>',
+  examples: [{ in: 'head = [1,2,3,4]', out: '[1,4,2,3]' }, { in: 'head = [1,2,3,4,5]', out: '[1,5,2,4,3]' }],
+  constraints: ['1 &lt;= number of nodes &lt;= 5*10^4', '0 &lt;= Node.val &lt;= 1000'],
+  editorial: ED({ intuition: 'The target order interleaves the list with its own reverse. Classic approach: find the middle, reverse the second half, then weave the two halves together.', approach: ['Find the midpoint with slow/fast pointers.', 'Reverse the second half.', 'Merge the first and reversed-second halves alternately.'], code: 'def reorderList(self, head):\n    if not head or not head.next:\n        return head\n    slow, fast = head, head.next\n    while fast and fast.next:\n        slow = slow.next; fast = fast.next.next\n    second = slow.next; slow.next = None\n    prev = None\n    while second:\n        nxt = second.next; second.next = prev; prev = second; second = nxt\n    first, second = head, prev\n    while second:\n        f2, s2 = first.next, second.next\n        first.next = second; second.next = f2\n        first, second = f2, s2\n    return head', time: 'O(n)', timeWhy: 'find-middle, reverse, and merge are each linear.', space: 'O(1)', spaceWhy: 'pointer surgery, no extra list.', pitfalls: ['Cut the first half (slow.next = None) before reversing, or you create a cycle.'] }),
+  gen: function () { var o = [[[1, 2, 3, 4]], [[1, 2, 3, 4, 5]], [[1]], [[1, 2]]]; for (var k = 0; k < 40; k++) o.push([randArr(randInt(1, 10), 0, 20)]); return o; },
+  ref: function (a) { var arr = a[0], res = [], i = 0, j = arr.length - 1, turn = 0; while (i <= j) { if (turn === 0) { res.push(arr[i]); i++; } else { res.push(arr[j]); j--; } turn ^= 1; } return res; } });
+
+module.exports = { MORE7 };

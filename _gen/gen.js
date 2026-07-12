@@ -293,6 +293,89 @@ T.STR_ARRSTR_BOOL = function (fn) {
   };
 };
 
+// ---------- Singly linked list types (array input, array output) ----------
+// Python/JS/C++/Java stubs include the ListNode definition; harnesses build
+// the list from "n v0 v1 ..." and print the result list space-separated.
+var _LN_PY = ln('class ListNode:', '    def __init__(self, val=0, next=None):', '        self.val = val', '        self.next = next', '');
+var _LN_CPP = ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'struct ListNode {', '    int val; ListNode *next;', '    ListNode(int x): val(x), next(nullptr) {}', '};', '');
+var _LN_JAVA = ln('import java.util.*;', '', 'class ListNode {', '    int val; ListNode next;', '    ListNode(int x) { val = x; }', '}', '');
+var _LN_JS = ln('/** Node shape: { val, next }. Build/return plain objects or use this ctor. */', 'function ListNode(val, next) { this.val = (val === undefined ? 0 : val); this.next = (next === undefined ? null : next); }', '');
+
+var _BL_PY = ln('def _bl(vals):', '    dummy=ListNode(0); cur=dummy', '    for v in vals: cur.next=ListNode(v); cur=cur.next', '    return dummy.next', 'def _tl(head):', '    out=[]', '    while head: out.append(head.val); head=head.next', '    return out');
+var _BL_JS = ln('function _bl(vals){let d=new ListNode(0),cur=d;for(const v of vals){cur.next=new ListNode(v);cur=cur.next;}return d.next;}', 'function _tl(head){const o=[];while(head){o.push(head.val);head=head.next;}return o;}');
+var _BL_CPP = ln('ListNode* _bl(vector<int>& vals){ListNode d(0);ListNode* cur=&d;for(int v:vals){cur->next=new ListNode(v);cur=cur->next;}return d.next;}', 'string _tl(ListNode* h){string s;bool f=true;while(h){if(!f)s+=" ";s+=to_string(h->val);f=false;h=h->next;}return s;}');
+var _BL_JAVA = ln('  static ListNode bl(int[] vals){ListNode d=new ListNode(0),cur=d;for(int v:vals){cur.next=new ListNode(v);cur=cur.next;}return d.next;}', '  static String tl(ListNode h){StringBuilder s=new StringBuilder();boolean f=true;while(h!=null){if(!f)s.append(" ");s.append(h.val);f=false;h=h.next;}return s.toString();}');
+
+// (ListNode head) -> ListNode   (stdin: n, values; output list values)
+T.LIST_ARR = function (fn) {
+  return {
+    python: { stub: ln(_LN_PY + 'class Solution:', '    def ' + fn + '(self, head):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', _BL_PY, '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _n=int(_d[_p]);_p+=1', '    _vals=list(map(int,_d[_p:_p+_n]));_p+=_n', '    _r=Solution().' + fn + '(_bl(_vals))', "    _o.append(' '.join(map(str,_tl(_r))))", "print('\\n'.join(_o))") },
+    javascript: { stub: ln(_LN_JS + '/**', ' * @param {ListNode} head', ' * @return {ListNode}', ' */', 'var ' + fn + ' = function(head) {', '    // Write your code here', '};'),
+      harness: ln(_BL_JS, "const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _n=+_d[_p++];const _vals=_d.slice(_p,_p+_n).map(Number);_p+=_n;const _r=" + fn + "(_bl(_vals));_o.push(_tl(_r).join(' '));}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln(_LN_CPP + 'class Solution {', 'public:', '    ListNode* ' + fn + '(ListNode* head) {', '        // Write your code here', '    }', '};'),
+      harness: ln(_BL_CPP, 'int main(){int T;cin>>T;while(T--){int n;cin>>n;vector<int> v(n);for(int i=0;i<n;i++)cin>>v[i];ListNode* r=Solution().' + fn + '(_bl(v));cout<<_tl(r)<<"\\n";}}') },
+    java: { stub: ln(_LN_JAVA + 'class Solution {', '    public ListNode ' + fn + '(ListNode head) {', '        // Write your code here', '        return head;', '    }', '}'),
+      harness: ln('public class Main {', _BL_JAVA, '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int n=sc.nextInt();int[] v=new int[n];for(int i=0;i<n;i++)v[i]=sc.nextInt();ListNode r=new Solution().' + fn + '(bl(v));sb.append(tl(r)).append("\\n");}System.out.print(sb);}', '}') },
+  };
+};
+
+// (ListNode l1, ListNode l2) -> ListNode   (stdin: n1, vals1, n2, vals2)
+T.LIST_LIST_ARR = function (fn) {
+  return {
+    python: { stub: ln(_LN_PY + 'class Solution:', '    def ' + fn + '(self, l1, l2):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', _BL_PY, '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _n1=int(_d[_p]);_p+=1', '    _v1=list(map(int,_d[_p:_p+_n1]));_p+=_n1', '    _n2=int(_d[_p]);_p+=1', '    _v2=list(map(int,_d[_p:_p+_n2]));_p+=_n2', '    _r=Solution().' + fn + '(_bl(_v1),_bl(_v2))', "    _o.append(' '.join(map(str,_tl(_r))))", "print('\\n'.join(_o))") },
+    javascript: { stub: ln(_LN_JS + '/**', ' * @param {ListNode} l1', ' * @param {ListNode} l2', ' * @return {ListNode}', ' */', 'var ' + fn + ' = function(l1, l2) {', '    // Write your code here', '};'),
+      harness: ln(_BL_JS, "const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _n1=+_d[_p++];const _v1=_d.slice(_p,_p+_n1).map(Number);_p+=_n1;const _n2=+_d[_p++];const _v2=_d.slice(_p,_p+_n2).map(Number);_p+=_n2;const _r=" + fn + "(_bl(_v1),_bl(_v2));_o.push(_tl(_r).join(' '));}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln(_LN_CPP + 'class Solution {', 'public:', '    ListNode* ' + fn + '(ListNode* l1, ListNode* l2) {', '        // Write your code here', '    }', '};'),
+      harness: ln(_BL_CPP, 'int main(){int T;cin>>T;while(T--){int n1;cin>>n1;vector<int> v1(n1);for(int i=0;i<n1;i++)cin>>v1[i];int n2;cin>>n2;vector<int> v2(n2);for(int i=0;i<n2;i++)cin>>v2[i];ListNode* r=Solution().' + fn + '(_bl(v1),_bl(v2));cout<<_tl(r)<<"\\n";}}') },
+    java: { stub: ln(_LN_JAVA + 'class Solution {', '    public ListNode ' + fn + '(ListNode l1, ListNode l2) {', '        // Write your code here', '        return l1;', '    }', '}'),
+      harness: ln('public class Main {', _BL_JAVA, '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int n1=sc.nextInt();int[] v1=new int[n1];for(int i=0;i<n1;i++)v1[i]=sc.nextInt();int n2=sc.nextInt();int[] v2=new int[n2];for(int i=0;i<n2;i++)v2[i]=sc.nextInt();ListNode r=new Solution().' + fn + '(bl(v1),bl(v2));sb.append(tl(r)).append("\\n");}System.out.print(sb);}', '}') },
+  };
+};
+
+// (ListNode head, int k) -> ListNode   (stdin: n, vals, k)
+T.LIST_INT_ARR = function (fn) {
+  return {
+    python: { stub: ln(_LN_PY + 'class Solution:', '    def ' + fn + '(self, head, k):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', _BL_PY, '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _n=int(_d[_p]);_p+=1', '    _vals=list(map(int,_d[_p:_p+_n]));_p+=_n', '    _k=int(_d[_p]);_p+=1', '    _r=Solution().' + fn + '(_bl(_vals),_k)', "    _o.append(' '.join(map(str,_tl(_r))))", "print('\\n'.join(_o))") },
+    javascript: { stub: ln(_LN_JS + '/**', ' * @param {ListNode} head', ' * @param {number} k', ' * @return {ListNode}', ' */', 'var ' + fn + ' = function(head, k) {', '    // Write your code here', '};'),
+      harness: ln(_BL_JS, "const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _n=+_d[_p++];const _vals=_d.slice(_p,_p+_n).map(Number);_p+=_n;const _k=+_d[_p++];const _r=" + fn + "(_bl(_vals),_k);_o.push(_tl(_r).join(' '));}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln(_LN_CPP + 'class Solution {', 'public:', '    ListNode* ' + fn + '(ListNode* head, int k) {', '        // Write your code here', '    }', '};'),
+      harness: ln(_BL_CPP, 'int main(){int T;cin>>T;while(T--){int n;cin>>n;vector<int> v(n);for(int i=0;i<n;i++)cin>>v[i];int k;cin>>k;ListNode* r=Solution().' + fn + '(_bl(v),k);cout<<_tl(r)<<"\\n";}}') },
+    java: { stub: ln(_LN_JAVA + 'class Solution {', '    public ListNode ' + fn + '(ListNode head, int k) {', '        // Write your code here', '        return head;', '    }', '}'),
+      harness: ln('public class Main {', _BL_JAVA, '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int n=sc.nextInt();int[] v=new int[n];for(int i=0;i<n;i++)v[i]=sc.nextInt();int k=sc.nextInt();ListNode r=new Solution().' + fn + '(bl(v),k);sb.append(tl(r)).append("\\n");}System.out.print(sb);}', '}') },
+  };
+};
+
+// (ListNode head) -> boolean, list may be cyclic   (stdin: n, vals, pos)
+T.LIST_POS_BOOL = function (fn) {
+  return {
+    python: { stub: ln(_LN_PY + 'class Solution:', '    def ' + fn + '(self, head):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', 'def _blc(vals,pos):', '    if not vals: return None', '    nodes=[ListNode(v) for v in vals]', '    for i in range(len(nodes)-1): nodes[i].next=nodes[i+1]', '    if pos>=0: nodes[-1].next=nodes[pos]', '    return nodes[0]', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _n=int(_d[_p]);_p+=1', '    _vals=list(map(int,_d[_p:_p+_n]));_p+=_n', '    _pos=int(_d[_p]);_p+=1', "    _o.append('true' if Solution()." + fn + "(_blc(_vals,_pos)) else 'false')", "print('\\n'.join(_o))") },
+    javascript: { stub: ln(_LN_JS + '/**', ' * @param {ListNode} head', ' * @return {boolean}', ' */', 'var ' + fn + ' = function(head) {', '    // Write your code here', '};'),
+      harness: ln('function _blc(vals,pos){if(!vals.length)return null;const nodes=vals.map(v=>new ListNode(v));for(let i=0;i<nodes.length-1;i++)nodes[i].next=nodes[i+1];if(pos>=0)nodes[nodes.length-1].next=nodes[pos];return nodes[0];}', "const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _n=+_d[_p++];const _vals=_d.slice(_p,_p+_n).map(Number);_p+=_n;const _pos=+_d[_p++];_o.push(" + fn + "(_blc(_vals,_pos))?'true':'false');}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln(_LN_CPP + 'class Solution {', 'public:', '    bool ' + fn + '(ListNode* head) {', '        // Write your code here', '    }', '};'),
+      harness: ln('ListNode* _blc(vector<int>& vals,int pos){if(vals.empty())return nullptr;vector<ListNode*> nodes;for(int v:vals)nodes.push_back(new ListNode(v));for(size_t i=0;i+1<nodes.size();i++)nodes[i]->next=nodes[i+1];if(pos>=0)nodes.back()->next=nodes[pos];return nodes[0];}', 'int main(){int T;cin>>T;while(T--){int n;cin>>n;vector<int> v(n);for(int i=0;i<n;i++)cin>>v[i];int pos;cin>>pos;cout<<(Solution().' + fn + '(_blc(v,pos))?"true":"false")<<"\\n";}}') },
+    java: { stub: ln(_LN_JAVA + 'class Solution {', '    public boolean ' + fn + '(ListNode head) {', '        // Write your code here', '        return false;', '    }', '}'),
+      harness: ln('public class Main {', '  static ListNode blc(int[] vals,int pos){if(vals.length==0)return null;ListNode[] nodes=new ListNode[vals.length];for(int i=0;i<vals.length;i++)nodes[i]=new ListNode(vals[i]);for(int i=0;i+1<nodes.length;i++)nodes[i].next=nodes[i+1];if(pos>=0)nodes[nodes.length-1].next=nodes[pos];return nodes[0];}', '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int n=sc.nextInt();int[] v=new int[n];for(int i=0;i<n;i++)v[i]=sc.nextInt();int pos=sc.nextInt();sb.append(new Solution().' + fn + '(blc(v,pos))?"true":"false").append("\\n");}System.out.print(sb);}', '}') },
+  };
+};
+
+// (ListNode[] lists) -> ListNode   (stdin: K, then each list: n, vals)
+T.LISTK_ARR = function (fn) {
+  return {
+    python: { stub: ln(_LN_PY + 'class Solution:', '    def ' + fn + '(self, lists):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', _BL_PY, '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _K=int(_d[_p]);_p+=1', '    _lists=[]', '    for _j in range(_K):', '        _n=int(_d[_p]);_p+=1', '        _vals=list(map(int,_d[_p:_p+_n]));_p+=_n', '        _lists.append(_bl(_vals))', '    _r=Solution().' + fn + '(_lists)', "    _o.append(' '.join(map(str,_tl(_r))))", "print('\\n'.join(_o))") },
+    javascript: { stub: ln(_LN_JS + '/**', ' * @param {ListNode[]} lists', ' * @return {ListNode}', ' */', 'var ' + fn + ' = function(lists) {', '    // Write your code here', '};'),
+      harness: ln(_BL_JS, "const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _K=+_d[_p++];const _lists=[];for(let _j=0;_j<_K;_j++){const _n=+_d[_p++];const _vals=_d.slice(_p,_p+_n).map(Number);_p+=_n;_lists.push(_bl(_vals));}const _r=" + fn + "(_lists);_o.push(_tl(_r).join(' '));}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln(_LN_CPP + 'class Solution {', 'public:', '    ListNode* ' + fn + '(vector<ListNode*>& lists) {', '        // Write your code here', '    }', '};'),
+      harness: ln(_BL_CPP, 'int main(){int T;cin>>T;while(T--){int K;cin>>K;vector<ListNode*> lists;for(int j=0;j<K;j++){int n;cin>>n;vector<int> v(n);for(int i=0;i<n;i++)cin>>v[i];lists.push_back(_bl(v));}ListNode* r=Solution().' + fn + '(lists);cout<<_tl(r)<<"\\n";}}') },
+    java: { stub: ln(_LN_JAVA + 'class Solution {', '    public ListNode ' + fn + '(ListNode[] lists) {', '        // Write your code here', '        return null;', '    }', '}'),
+      harness: ln('public class Main {', _BL_JAVA, '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int K=sc.nextInt();ListNode[] lists=new ListNode[K];for(int j=0;j<K;j++){int n=sc.nextInt();int[] v=new int[n];for(int i=0;i<n;i++)v[i]=sc.nextInt();lists[j]=bl(v);}ListNode r=new Solution().' + fn + '(lists);sb.append(tl(r)).append("\\n");}System.out.print(sb);}', '}') },
+  };
+};
+
 // (int[][] grid) -> int   (whitespace: R, C, then R*C ints)
 T.GRID_INT = function (fn) {
   return {

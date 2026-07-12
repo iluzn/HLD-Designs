@@ -66,12 +66,12 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 20 | [Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/) | Iterative/Recursive | prev/curr/next pointer swap | O(n) |
-| 21 | [Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/) | Merge | Dummy head, compare and advance | O(n+m) |
-| 22 | [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) | Fast/Slow | Floyd's cycle detection | O(n) |
-| 23 | [Reorder List](https://leetcode.com/problems/reorder-list/) | Find Middle + Reverse + Merge | Split at mid, reverse 2nd half, interleave | O(n) |
-| 24 | [Remove Nth Node From End](https://leetcode.com/problems/remove-nth-node-from-end-of-list/) | Two Pointers | Advance fast N steps, then move both | O(n) |
-| 25 | [Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) | Heap | Min-heap of K list heads, extract-min and advance | O(n log k) |
+| 20 | [Reverse Linked List](/dsa/problem/reverse-linked-list) | Iterative/Recursive | prev/curr/next pointer swap | O(n) |
+| 21 | [Merge Two Sorted Lists](/dsa/problem/merge-two-sorted-lists) | Merge | Dummy head, compare and advance | O(n+m) |
+| 22 | [Linked List Cycle](/dsa/problem/linked-list-cycle) | Fast/Slow | Floyd's cycle detection | O(n) |
+| 23 | [Reorder List](/dsa/problem/reorder-list) | Find Middle + Reverse + Merge | Split at mid, reverse 2nd half, interleave | O(n) |
+| 24 | [Remove Nth Node From End](/dsa/problem/remove-nth-node-from-end-of-list) | Two Pointers | Advance fast N steps, then move both | O(n) |
+| 25 | [Merge K Sorted Lists](/dsa/problem/merge-k-sorted-lists) | Heap | Min-heap of K list heads, extract-min and advance | O(n log k) |
 
 ## Trees (11)
 
@@ -103,7 +103,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 |---|---|---|---|---|
 | 40 | [Top K Frequent Elements](/dsa/problem/top-k-frequent-elements) | Heap / Bucket Sort | Count freq → min-heap of size K (or bucket sort O(n)) | O(n log k) |
 | 41 | [Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/) | Two Heaps | Max-heap (left half) + min-heap (right half), balance sizes | O(log n) per add |
-| 42 | [Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) | Heap | (duplicate - see #25) | O(n log k) |
+| 42 | [Merge K Sorted Lists](/dsa/problem/merge-k-sorted-lists) | Heap | (duplicate - see #25) | O(n log k) |
 
 ## Backtracking (2)
 

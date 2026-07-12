@@ -30,6 +30,10 @@ function stdinOf(type, args) {
       return args[0].length + ' ' + (args[0][0] ? args[0][0].length : 0) + '\n' + args[0].map(function (r) { return r.join(' '); }).join('\n') + '\n' + args[1];
     case 'CHARGRID_INT':
       return args[0].length + ' ' + (args[0][0] ? args[0][0].length : 0) + '\n' + args[0].join('\n');
+    case 'LIST_ARR': return args[0].length + '\n' + args[0].join(' ');
+    case 'LIST_LIST_ARR': return args[0].length + '\n' + args[0].join(' ') + '\n' + args[1].length + '\n' + args[1].join(' ');
+    case 'LIST_INT_ARR': case 'LIST_POS_BOOL': return args[0].length + '\n' + args[0].join(' ') + '\n' + args[1];
+    case 'LISTK_ARR': return args[0].length + '\n' + args[0].map(function (l) { return l.length + '\n' + l.join(' '); }).join('\n');
     default: return '';
   }
 }
@@ -57,6 +61,11 @@ function displayOf(type, args) {
       return { matrix: '[' + args[0].map(function (r) { return '[' + r.join(',') + ']'; }).join(',') + ']', target: '' + args[1] };
     case 'CHARGRID_INT':
       return { grid: '[' + args[0].map(function (r) { return '"' + r + '"'; }).join(',') + ']' };
+    case 'LIST_ARR': return { head: arrStr(args[0]) };
+    case 'LIST_LIST_ARR': return { l1: arrStr(args[0]), l2: arrStr(args[1]) };
+    case 'LIST_INT_ARR': return { head: arrStr(args[0]), k: '' + args[1] };
+    case 'LIST_POS_BOOL': return { head: arrStr(args[0]), pos: '' + args[1] };
+    case 'LISTK_ARR': return { lists: '[' + args[0].map(function (l) { return arrStr(l); }).join(',') + ']' };
     default: return {};
   }
 }

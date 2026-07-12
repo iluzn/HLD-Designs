@@ -81,17 +81,17 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 35 | [Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/) | prev/curr/next iterative | O(n) |
-| 36 | [Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/) | Dummy head, compare, advance | O(n+m) |
-| 37 | [Reorder List](https://leetcode.com/problems/reorder-list/) | Find mid + reverse 2nd half + interleave | O(n) |
-| 38 | [Remove Nth Node From End](https://leetcode.com/problems/remove-nth-node-from-end-of-list/) | Fast ahead N, then move both | O(n) |
+| 35 | [Reverse Linked List](/dsa/problem/reverse-linked-list) | prev/curr/next iterative | O(n) |
+| 36 | [Merge Two Sorted Lists](/dsa/problem/merge-two-sorted-lists) | Dummy head, compare, advance | O(n+m) |
+| 37 | [Reorder List](/dsa/problem/reorder-list) | Find mid + reverse 2nd half + interleave | O(n) |
+| 38 | [Remove Nth Node From End](/dsa/problem/remove-nth-node-from-end-of-list) | Fast ahead N, then move both | O(n) |
 | 39 | [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/) | HashMap old→new or interleave nodes | O(n) |
-| 40 | [Add Two Numbers](https://leetcode.com/problems/add-two-numbers/) | Carry propagation through both lists | O(max(m,n)) |
-| 41 | [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) | Floyd's fast/slow | O(n) |
+| 40 | [Add Two Numbers](/dsa/problem/add-two-numbers) | Carry propagation through both lists | O(max(m,n)) |
+| 41 | [Linked List Cycle](/dsa/problem/linked-list-cycle) | Floyd's fast/slow | O(n) |
 | 42 | [Find Duplicate Number](/dsa/problem/find-the-duplicate-number) | Floyd's on index array (cycle start) | O(n) |
 | 43 | [LRU Cache](https://leetcode.com/problems/lru-cache/) | HashMap + doubly-linked list | O(1) |
-| 44 | [Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) | Min-heap of K heads | O(n log k) |
-| 45 | [Reverse Nodes in K-Group](https://leetcode.com/problems/reverse-nodes-in-k-group/) | Count K, reverse segment, connect | O(n) |
+| 44 | [Merge K Sorted Lists](/dsa/problem/merge-k-sorted-lists) | Min-heap of K heads | O(n log k) |
+| 45 | [Reverse Nodes in K-Group](/dsa/problem/reverse-nodes-in-k-group) | Count K, reverse segment, connect | O(n) |
 
 ## Trees (15)
 

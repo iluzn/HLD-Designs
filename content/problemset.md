@@ -85,6 +85,14 @@ Solve problems in your browser — pick a language, implement the function, and 
 | 72 | [Longest Increasing Path in a Matrix](/dsa/problem/longest-increasing-path-in-a-matrix){:data-slug="longest-increasing-path-in-a-matrix"} | 🔴 Hard | Graph, DFS, Dynamic Programming, Matrix, Memoization |
 | 73 | [Swim in Rising Water](/dsa/problem/swim-in-rising-water){:data-slug="swim-in-rising-water"} | 🔴 Hard | Graph, Binary Search, Heap, Matrix |
 | 74 | [Search a 2D Matrix](/dsa/problem/search-a-2d-matrix){:data-slug="search-a-2d-matrix"} | 🟡 Medium | Array, Binary Search, Matrix |
+| 75 | [Reverse Linked List](/dsa/problem/reverse-linked-list){:data-slug="reverse-linked-list"} | 🟢 Easy | Linked List, Recursion |
+| 76 | [Merge Two Sorted Lists](/dsa/problem/merge-two-sorted-lists){:data-slug="merge-two-sorted-lists"} | 🟢 Easy | Linked List, Recursion |
+| 77 | [Add Two Numbers](/dsa/problem/add-two-numbers){:data-slug="add-two-numbers"} | 🟡 Medium | Linked List, Math, Recursion |
+| 78 | [Remove Nth Node From End of List](/dsa/problem/remove-nth-node-from-end-of-list){:data-slug="remove-nth-node-from-end-of-list"} | 🟡 Medium | Linked List, Two Pointers |
+| 79 | [Reverse Nodes in k-Group](/dsa/problem/reverse-nodes-in-k-group){:data-slug="reverse-nodes-in-k-group"} | 🔴 Hard | Linked List, Recursion |
+| 80 | [Linked List Cycle](/dsa/problem/linked-list-cycle){:data-slug="linked-list-cycle"} | 🟢 Easy | Linked List, Two Pointers, Hash Table |
+| 81 | [Merge k Sorted Lists](/dsa/problem/merge-k-sorted-lists){:data-slug="merge-k-sorted-lists"} | 🔴 Hard | Linked List, Heap, Divide and Conquer, Merge Sort |
+| 82 | [Reorder List](/dsa/problem/reorder-list){:data-slug="reorder-list"} | 🟡 Medium | Linked List, Two Pointers, Stack |
 
 {% include judge-firebase.html %}
 <script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>
