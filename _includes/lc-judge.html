@@ -238,14 +238,23 @@
     else if (/GRID/.test(type) && disp.grid !== undefined) { svg = scGridSVG(scParse(disp.grid)); }
     return svg ? '<div class="lc-diagram">' + svg + '</div>' : '';
   }
-  // Visual examples block shown in the Description tab (LeetCode-style).
-  function scDescExtras() {
-    var html = '', diagrams = '', cs = P.cases.slice(0, 3);
-    cs.forEach(function (c, i) { var d = scDiagram(P.type, c.display); if (d) diagrams += '<div class="lc-ex-dg"><div class="lc-ex-cap">Example ' + (i + 1) + '</div>' + d + '</div>'; });
-    if (diagrams) html += '<div class="lc-vis"><h2>Visualized Examples</h2>' + diagrams + '</div>';
-    var note = scFormatNote(P.type);
-    if (note) html += '<div class="lc-fmt-note lc-fmt-desc">' + note + '</div>';
-    return html;
+  // Insert each example's diagram inline, right under its "Example N" heading
+  // (LeetCode-style), rather than in a separate section.
+  function scInjectDiagrams() {
+    if (!leftBody) return;
+    var note = scFormatNote(P.type), noteAdded = false;
+    Array.prototype.forEach.call(leftBody.querySelectorAll('h2'), function (h) {
+      var m = /^Example\s+(\d+)/.exec((h.textContent || '').trim());
+      if (!m) return;
+      var c = P.cases[parseInt(m[1], 10) - 1];
+      if (!c) return;
+      var dg = scDiagram(P.type, c.display);
+      if (!dg) return;
+      var wrap = document.createElement('div');
+      wrap.innerHTML = dg + (!noteAdded && note ? '<div class="lc-fmt-note">' + note + '</div>' : '');
+      h.parentNode.insertBefore(wrap, h.nextSibling);
+      noteAdded = true;
+    });
   }
   function scFormatNote(type) {
     if (/^TREE/.test(type)) return 'Tree given in level-order (breadth-first); <code>null</code> marks a missing child.';
@@ -318,7 +327,7 @@
 
   function showLeftTab(tab) {
     leftTabs.forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-ltab') === tab); });
-    if (tab === 'description') { leftBody.innerHTML = descHtml + scDescExtras(); paintSolved(); return; }
+    if (tab === 'description') { leftBody.innerHTML = descHtml; scInjectDiagrams(); paintSolved(); return; }
     if (tab === 'editorial') {
       leftBody.innerHTML = P.editorial ? '<div class="lc-editorial">' + P.editorial + '</div>' : '<div class="lc-empty">Editorial coming soon.</div>';
       return;
@@ -380,7 +389,7 @@
     if (!langSel || !editorHost || !leftBody) return;
 
     descHtml = leftBody.innerHTML;
-    leftBody.innerHTML = descHtml + scDescExtras();
+    scInjectDiagrams();
     paintSolved();
     // Progress loads async once auth resolves; re-paint when it's ready or changes.
     document.addEventListener('sc-judge-ready', function () {
