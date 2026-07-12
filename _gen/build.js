@@ -4,6 +4,7 @@ const { T, randInt, randArr, arrStr, ln } = require('./gen.js');
 const { P, stdinOf, displayOf, fmtExpected, OUT } = require('./problems.js');
 const { EDITORIALS } = require('./editorials.js');
 const { SOLUTIONS, FULLCLASS, fillStub } = require('./solutions.js');
+const { prettyC } = require('./prettyc.js');
 
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 function escH(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -17,6 +18,7 @@ function solBlock(slug, langs) {
   var tabs = '', panes = '';
   avail.forEach(function (l, i) {
     var code = FULLCLASS[slug] ? sol[l] : fillStub(langs[l].stub, sol[l], l);
+    if (l !== 'python') code = prettyC(code);   // reindent one-line C-style bodies
     tabs += '<button class="lc-sol-tab' + (i === 0 ? ' active' : '') + '" data-l="' + l + '">' + names[l] + '</button>';
     panes += '<pre class="lc-sol-code" data-l="' + l + '"' + (i === 0 ? '' : ' hidden') + '><code>' + escH(code) + '</code></pre>';
   });
