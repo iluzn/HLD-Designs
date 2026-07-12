@@ -161,6 +161,7 @@ require('./problems12.js').MORE12.forEach(function (p) { P.push(p); });
 require('./problems13.js').MORE13.forEach(function (p) { P.push(p); });
 require('./problems14.js').MORE14.forEach(function (p) { P.push(p); });
 require('./problems15.js').MORE15.forEach(function (p) { P.push(p); });
+require('./problems16.js').MORE16.forEach(function (p) { P.push(p); });
 
 // ---------- write ----------
 var indexRows = [];
