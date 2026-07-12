@@ -122,10 +122,11 @@
     .lc-kbd b { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text-muted); }
     .lc-editor-wrap { flex: 1; min-height: 0; position: relative; }
     .lc-editor-wrap .CodeMirror { height: 100%; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
-    /* Autocomplete popup */
-    .CodeMirror-hints { position: absolute; z-index: 1000; max-height: 18em; overflow-y: auto; margin: 0; padding: 4px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2, #1e1e28); box-shadow: 0 8px 24px rgba(0,0,0,0.35); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; list-style: none; }
-    .CodeMirror-hint { padding: 3px 10px; border-radius: 5px; color: var(--text); white-space: pre; cursor: pointer; }
-    li.CodeMirror-hint-active { background: var(--accent, #818cf8); color: #fff; }
+    /* Autocomplete popup — !important overrides the addon's default white CSS
+       which loads dynamically after this block. */
+    .CodeMirror-hints { position: absolute; z-index: 1000; max-height: 18em; overflow-y: auto; margin: 0; padding: 4px; border-radius: 8px !important; border: 1px solid var(--border) !important; background: var(--panel-2) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; list-style: none; }
+    .CodeMirror-hint { padding: 3px 10px !important; border-radius: 5px; color: var(--text) !important; white-space: pre; cursor: pointer; }
+    li.CodeMirror-hint-active { background: var(--accent) !important; color: #fff !important; }
     /* Disable programming ligatures so != stays "!=" (not "≠"), >= stays ">=", etc. */
     .CodeMirror, .CodeMirror-line, .lc-sol-code, .lc-sub-code, .lc-io-box, .lc-left code, .lc-editorial code, .lc-fmt-note code, pre, code { font-variant-ligatures: none !important; -webkit-font-feature-settings: "liga" 0, "calt" 0 !important; font-feature-settings: "liga" 0, "calt" 0 !important; }
 
