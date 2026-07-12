@@ -88,17 +88,6 @@ permalink: /profile
   function diffCounts(solved){ var d={easy:0,medium:0,hard:0}; solved.forEach(function(sl){var c=CAT[sl]; if(c&&d[c.difficulty]!==undefined) d[c.difficulty]++;}); return d; }
   function totalByDiff(){ var t={easy:0,medium:0,hard:0}; Object.keys(CAT).forEach(function(sl){var df=CAT[sl].difficulty; if(t[df]!==undefined) t[df]++;}); return t; }
 
-  function sdProgress(){
-    var prog = window._userProgress || {}; var areas = { HLD:0, LLD:0, Concepts:0, 'DSA Lists':0 };
-    Object.keys(prog).forEach(function(key){ var obj=prog[key]||{}, count=0; Object.keys(obj).forEach(function(k){ if(obj[k]) count++; });
-      var kl=key.toLowerCase();
-      if (kl.indexOf('hld')===0 || kl.indexOf('_hld')!==-1) areas.HLD+=count;
-      else if (kl.indexOf('lld')===0) areas.LLD+=count;
-      else if (kl.indexOf('concept')!==-1) areas.Concepts+=count;
-      else areas['DSA Lists']+=count; });
-    return areas;
-  }
-
   function dayKey(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
   function streaks(byDay){
     var days=Object.keys(byDay); if(!days.length) return {cur:0,max:0};
@@ -136,8 +125,6 @@ permalink: /profile
     var totalAll=(td.easy+td.medium+td.hard)||1, solvedAll=dc.easy+dc.medium+dc.hard;
     var byDay={}; subs.forEach(function(s){byDay[dayKey(new Date(s.ts))]=(byDay[dayKey(new Date(s.ts))]||0)+1;});
     var sk=streaks(byDay);
-    var sd=sdProgress(); var sdTotal=sd.HLD+sd.LLD+sd.Concepts+sd['DSA Lists'];
-
     var name=user?(user.name||user.displayName||'You'):'Guest';
     var photo=user?(user.photo||user.photoURL):null;
     var avatar=photo?'<img src="'+esc(photo)+'" alt="">':'<div class="pf-hero-fallback">'+esc(name.charAt(0).toUpperCase())+'</div>';
@@ -192,14 +179,6 @@ permalink: /profile
       langs.forEach(function(l){ var v=langCount[l], pct=Math.round(v/maxL*100); html+='<div class="pf-bar-row"><span class="lbl">'+esc(l)+'</span><div class="pf-bar-track"><div class="pf-bar-fill" style="width:'+pct+'%"></div></div><span class="val">'+v+'</span></div>'; });
       html+='</div>';
     }
-
-    // system design / lld
-    html+='<div class="pf-sec">🏗️ System Design &amp; LLD Progress</div>';
-    if(sdTotal>0){
-      html+='<div class="pf-bars">'; var maxv=Math.max(sd.HLD,sd.LLD,sd.Concepts,sd['DSA Lists'],1);
-      [['HLD','HLD'],['LLD','LLD'],['Concepts','Concepts'],['DSA Lists','DSA Lists']].forEach(function(x){ var v=sd[x[1]],pct=Math.round(v/maxv*100); html+='<div class="pf-bar-row"><span class="lbl">'+x[0]+'</span><div class="pf-bar-track"><div class="pf-bar-fill" style="width:'+pct+'%"></div></div><span class="val">'+v+'</span></div>'; });
-      html+='</div>';
-    } else html+='<div class="pf-empty">Nothing tracked yet. Tick items on the <a href="/hld" style="color:var(--accent)">HLD</a>, <a href="/lld" style="color:var(--accent)">LLD</a>, and <a href="/concepts" style="color:var(--accent)">Concepts</a> pages.</div>';
 
     // recent submissions
     if(subs.length){
