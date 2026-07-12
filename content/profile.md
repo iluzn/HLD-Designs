@@ -49,7 +49,8 @@ hide_toc: true
 .pf-streakline b { color:#f59e0b; }
 
 .pf-heat-card { background:var(--bg-card,rgba(25,25,35,0.55)); border:1px solid var(--border); border-radius:16px; padding:1.1rem 1.25rem; margin-bottom:1.2rem; }
-.pf-heat { display:flex; gap:3px; width:max-content; }
+.pf-heat { display:flex; gap:11px; width:max-content; }
+.pf-mgroup { display:flex; gap:3px; }
 .pf-week { display:flex; flex-direction:column; gap:3px; }
 .pf-day { width:12px; height:12px; border-radius:2px; background:var(--border); }
 .pf-day.l1{background:#9be9a8;} .pf-day.l2{background:#40c463;} .pf-day.l3{background:#30a14e;} .pf-day.l4{background:#216e39;}
@@ -61,7 +62,7 @@ hide_toc: true
 .pf-info { display:inline-flex; width:15px; height:15px; align-items:center; justify-content:center; border-radius:50%; border:1px solid var(--text-dim); color:var(--text-dim); font-size:0.62rem; font-style:normal; font-weight:700; cursor:help; vertical-align:middle; margin-left:2px; }
 .pf-heat-stats { display:inline-flex; align-items:center; gap:1rem; flex-wrap:wrap; }
 .pf-year-pill { display:inline-flex; align-items:center; gap:0.35rem; font-size:0.76rem; color:var(--text); background:var(--glass,rgba(255,255,255,0.04)); border:1px solid var(--border); border-radius:8px; padding:0.3rem 0.7rem; }
-.pf-months { display:flex; gap:3px; font-size:0.68rem; color:var(--text-dim); margin-top:6px; width:max-content; }
+.pf-months { display:flex; gap:11px; font-size:0.68rem; color:var(--text-dim); margin-top:6px; width:max-content; }
 .pf-mon { display:inline-block; text-align:left; overflow:visible; white-space:nowrap; flex-shrink:0; }
 .pf-day.fut { background:transparent; }
 
@@ -163,15 +164,18 @@ hide_toc: true
     var WEEKS=53;
     var today=new Date(); today.setHours(0,0,0,0);
     var start=new Date(today); start.setDate(start.getDate()-((WEEKS-1)*7+today.getDay()));
-    var cur=new Date(start), weeks=[], monthGroups=[], yearSubs=0, activeDays=0;
+    var cur=new Date(start), monthGroups=[], yearSubs=0, activeDays=0;
     for(var w=0;w<WEEKS;w++){
       var col=[]; var wkMonth=cur.getMonth();
       for(var dd=0;dd<7;dd++){ var k2=dayKey(cur); var c=byDay[k2]||0; var future=cur>today; if(!future&&c>0){yearSubs+=c;activeDays++;} var lv=future?'fut':(c===0?'':(c>=8?'l4':c>=4?'l3':c>=2?'l2':'l1')); col.push('<div class="pf-day '+lv+'" title="'+c+' submission'+(c===1?'':'s')+' on '+k2+'"></div>'); cur.setDate(cur.getDate()+1); }
-      weeks.push('<div class="pf-week">'+col.join('')+'</div>');
-      // group consecutive week-columns by month so the label can center over its block
-      if(monthGroups.length && monthGroups[monthGroups.length-1].mon===wkMonth) monthGroups[monthGroups.length-1].count++;
-      else monthGroups.push({mon:wkMonth,count:1});
+      var weekHtml='<div class="pf-week">'+col.join('')+'</div>';
+      // group consecutive week-columns by month so each month renders as its
+      // own block with a gap between blocks (LeetCode style)
+      var lastG=monthGroups[monthGroups.length-1];
+      if(lastG && lastG.mon===wkMonth){ lastG.count++; lastG.weeks.push(weekHtml); }
+      else monthGroups.push({mon:wkMonth,count:1,weeks:[weekHtml]});
     }
+    var gridHtml=monthGroups.map(function(g){ return '<div class="pf-mgroup">'+g.weeks.join('')+'</div>'; }).join('');
     var monthRow=monthGroups.map(function(g,i){ var show=g.count>=2||i===0||i===monthGroups.length-1; return '<span class="pf-mon" style="width:'+(g.count*15-3)+'px">'+(show?MON[g.mon]:'')+'</span>'; }).join('');
 
     html+='<div class="pf-sec">🔥 Submission Activity</div>';
@@ -180,7 +184,7 @@ hide_toc: true
       '<span class="pf-heat-title"><b>'+yearSubs+'</b> submission'+(yearSubs===1?'':'s')+' in the past one year <i class="pf-info" title="Accepted and failed submissions across all problems in the last 12 months">i</i></span>'+
       '<span class="pf-heat-stats"><span>Total active days: <b>'+activeDays+'</b></span><span>Max streak: <b>'+sk.max+'</b></span><span class="pf-year-pill">Current &#9662;</span></span>'+
     '</div>';
-    html+='<div class="pf-heat-scroll"><div class="pf-heat">'+weeks.join('')+'</div><div class="pf-months">'+monthRow+'</div></div>';
+    html+='<div class="pf-heat-scroll"><div class="pf-heat">'+gridHtml+'</div><div class="pf-months">'+monthRow+'</div></div>';
     html+='</div>';
 
     // languages
