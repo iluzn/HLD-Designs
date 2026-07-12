@@ -412,6 +412,7 @@
     return { list: list.slice(0, 40), from: CodeMirror.Pos(cur.line, start), to: CodeMirror.Pos(cur.line, end) };
   }
   function triggerHint() { if (cm && cm.showHint) cm.showHint({ hint: scHint, completeSingle: false }); }
+  var autoSuggestOn = lsGet('sc-autosuggest', true);
 
   function initEditor() {
     var lang = curLang();
@@ -420,6 +421,7 @@
     cm.on('change', function () { persistCode(curLang(), cm.getValue()); });
     // Auto-open suggestions while typing an identifier (IDE-style).
     cm.on('inputRead', function (editor, change) {
+      if (!autoSuggestOn) return;
       var t = change.text && change.text[0];
       if (t && /[A-Za-z_$]/.test(t) && !editor.state.completionActive) triggerHint();
     });
@@ -480,6 +482,21 @@
     loadCM().then(function () {
       initEditor();
       resetBtn.addEventListener('click', function () { cm.setValue(P.langs[curLang()].stub || ''); persistCode(curLang(), cm.getValue()); });
+      // Shuffle → jump to a random problem from the catalog
+      var shuffleBtn = document.getElementById('lc-shuffle');
+      if (shuffleBtn) shuffleBtn.addEventListener('click', function () {
+        var list = window.SC_DAILY || [];
+        if (!list.length) return;
+        var here = (location.pathname.match(/\/dsa\/problem\/([^/]+)/) || [])[1];
+        var pick = list[Math.floor(Math.random() * list.length)];
+        if (list.length > 1) while (pick[0] === here) pick = list[Math.floor(Math.random() * list.length)];
+        location.href = '/dsa/problem/' + pick[0];
+      });
+      // Autosuggest on/off toggle (persisted)
+      var asBtn = document.getElementById('lc-autosuggest');
+      function paintAS() { if (asBtn) asBtn.textContent = '💡 Suggest: ' + (autoSuggestOn ? 'On' : 'Off'); }
+      paintAS();
+      if (asBtn) asBtn.addEventListener('click', function () { autoSuggestOn = !autoSuggestOn; lsSet('sc-autosuggest', autoSuggestOn); paintAS(); });
       runBtn.addEventListener('click', function () { activeCase = 0; runCases(P.cases.slice(0, SAMPLE), false); });
       submitBtn.addEventListener('click', function () { runCases(P.cases, true); });
       document.addEventListener('keydown', function (e) {

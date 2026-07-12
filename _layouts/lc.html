@@ -213,10 +213,13 @@
                 <button class="theme-toggle" id="theme-btn" title="Toggle theme">🌙</button>
                 {% include daily-data.html %}
                 {% include streak-daily.html %}
+                {% include auth-button.html %}
                 <div class="nav-links" id="nav-links">
-                    <a href="/problemset">← Problemset</a>
+                    <a href="/problemset">Problemset</a>
                     <a href="/dsa">DSA</a>
                     <a href="/hld">HLD</a>
+                    <a href="/lld">LLD</a>
+                    <a href="/concepts">Concepts</a>
                 </div>
             </nav>
         </div>
@@ -239,6 +242,8 @@
                 <span class="lc-spacer"></span>
                 <button class="lc-timer" id="lc-timer" type="button" title="Timer — click to pause/resume, double-click to reset">00:00</button>
                 <button class="lc-reset" id="lc-reset" type="button">Reset</button>
+                <button class="lc-reset" id="lc-shuffle" type="button" title="Jump to a random problem">🔀 Shuffle</button>
+                <button class="lc-reset" id="lc-autosuggest" type="button" title="Toggle code autosuggestions">💡 Suggest: On</button>
                 <button class="lc-btn lc-run" id="lc-run" type="button" disabled>Run</button>
                 <button class="lc-btn lc-submit" id="lc-submit" type="button" disabled>Submit</button>
             </div>
@@ -262,6 +267,7 @@
     (function(){var b=document.getElementById('theme-btn');function set(t){document.documentElement.setAttribute('data-theme',t);localStorage.setItem('theme',t);b.textContent=t==='dark'?'☀️':'🌙';}var cur=localStorage.getItem('theme')||'dark';b.textContent=cur==='dark'?'☀️':'🌙';b.addEventListener('click',function(){set(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');});})();
     </script>
     {% include celebration.html %}
+    {% include firebase-auth.html %}
     {% include judge-firebase.html %}
     {% include lc-judge.html %}
 </body>
