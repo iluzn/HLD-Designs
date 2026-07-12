@@ -814,7 +814,7 @@
     {% include firebase-auth.html %}
 
     <!-- Reading time -->
-
+    {% unless page.hide_toc %}
     <script>
     (function() {
         var content = document.querySelector('.content');
@@ -831,6 +831,7 @@
         }
     })();
     </script>
+    {% endunless %}
 
     <!-- Completion celebration + self-assessment (psychology: completion reward + reflection) -->
     <script>
