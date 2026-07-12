@@ -89,9 +89,9 @@ const SOL = {
   },
   'top-k-frequent-elements': {
     python: '        from collections import Counter\n        c=Counter(nums)\n        return [v for v,_ in c.most_common(k)]',
-    javascript: '    const c={}; for(const x of nums)c[x]=(c[x]||0)+1; return Object.keys(c).map(Number).sort((a,b)=>c[b]-c[a]).slice(0,k);',
-    cpp: '        unordered_map<int,int> c; for(int x:nums)c[x]++; vector<pair<int,int>> v(c.begin(),c.end()); sort(v.begin(),v.end(),[](const pair<int,int>&a,const pair<int,int>&b){return a.second>b.second;}); vector<int> r; for(int i=0;i<k&&i<(int)v.size();i++)r.push_back(v[i].first); return r;',
-    java: '        Map<Integer,Integer> c=new HashMap<>(); for(int x:nums)c.merge(x,1,Integer::sum); List<Integer> keys=new ArrayList<>(c.keySet()); keys.sort((a,b)->c.get(b)-c.get(a)); int[] r=new int[k]; for(int i=0;i<k;i++)r[i]=keys.get(i); return r;',
+    javascript: '    const c={}; for(const x of nums)c[x]=(c[x]||0)+1;\n    const buckets=Array.from({length:nums.length+1},()=>[]);   // bucket by frequency: O(n)\n    for(const key in c) buckets[c[key]].push(Number(key));\n    const r=[];\n    for(let f=buckets.length-1;f>=0&&r.length<k;f--) for(const v of buckets[f]){ r.push(v); if(r.length===k) break; }\n    return r;',
+    cpp: '        unordered_map<int,int> c; for(int x:nums)c[x]++;\n        vector<vector<int>> buckets(nums.size()+1);              // bucket by frequency: O(n)\n        for(auto& kv:c) buckets[kv.second].push_back(kv.first);\n        vector<int> r;\n        for(int f=(int)buckets.size()-1;f>=0&&(int)r.size()<k;f--) for(int v:buckets[f]){ r.push_back(v); if((int)r.size()==k) break; }\n        return r;',
+    java: '        Map<Integer,Integer> c=new HashMap<>(); for(int x:nums)c.merge(x,1,Integer::sum);\n        List<Integer>[] buckets=new List[nums.length+1];         // bucket by frequency: O(n)\n        for(int f=0;f<buckets.length;f++) buckets[f]=new ArrayList<>();\n        for(Map.Entry<Integer,Integer> e:c.entrySet()) buckets[e.getValue()].add(e.getKey());\n        int[] r=new int[k]; int idx=0;\n        for(int f=buckets.length-1;f>=0&&idx<k;f--) for(int v:buckets[f]){ r[idx++]=v; if(idx==k) break; }\n        return r;',
   },
 };
 module.exports = { SOL };
