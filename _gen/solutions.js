@@ -3,7 +3,7 @@
 // FULLCLASS[slug] = true  when the solution is a complete class (design
 // problems) and should be shown verbatim rather than filled into a stub.
 var SOLUTIONS = {}, FULLCLASS = {};
-['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'].forEach(function (b) {
+['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'].forEach(function (b) {
   var mod;
   try { mod = require('./sol-batch' + b + '.js'); } catch (e) { return; }
   Object.keys(mod.SOL).forEach(function (slug) {
