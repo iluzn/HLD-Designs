@@ -145,35 +145,6 @@ permalink: /dsa/
     </div>
 </div>
 
-<!-- Browse by Pattern -->
-<div class="section">
-    <h2 class="section-title">Browse by Pattern</h2>
-    <div class="pattern-table-wrap">
-        <table class="pattern-table">
-            <thead>
-                <tr><th>Pattern</th><th>What to recognize</th><th>Key problems</th></tr>
-            </thead>
-            <tbody>
-                <tr><td><strong>Two Pointers</strong></td><td>Sorted array, find pair, shrink from both ends</td><td><a href="/dsa/problem/3sum">3Sum</a>, <a href="/dsa/problem/container-with-most-water">Container With Most Water</a>, <a href="/dsa/problem/trapping-rain-water">Trapping Rain Water</a></td></tr>
-                <tr><td><strong>Sliding Window</strong></td><td>Contiguous subarray/substring with a constraint</td><td><a href="/dsa/problem/longest-substring-without-repeating-characters">Longest Substring</a>, <a href="https://leetcode.com/problems/minimum-window-substring/">Min Window Substring</a>, <a href="/dsa/problem/sliding-window-maximum">Max Sum K</a></td></tr>
-                <tr><td><strong>Binary Search</strong></td><td>Sorted data, or "find minimum X such that..."</td><td><a href="/dsa/problem/search-in-rotated-sorted-array">Rotated Array</a>, <a href="/dsa/problem/koko-eating-bananas">Koko Bananas</a>, <a href="https://leetcode.com/problems/median-of-two-sorted-arrays/">Median of Two Arrays</a></td></tr>
-                <tr><td><strong>Stack</strong></td><td>Next greater/smaller, matching, undo</td><td><a href="/dsa/problem/daily-temperatures">Daily Temperatures</a>, <a href="/dsa/problem/valid-parentheses">Valid Parentheses</a>, <a href="/dsa/problem/largest-rectangle-in-histogram">Largest Rectangle</a></td></tr>
-                <tr><td><strong>Linked List</strong></td><td>Pointer manipulation, cycles, merge</td><td><a href="/dsa/problem/reverse-linked-list">Reverse</a>, <a href="/dsa/problem/linked-list-cycle">Cycle Detection</a>, <a href="/dsa/problem/lru-cache">LRU Cache</a>, <a href="/dsa/problem/merge-k-sorted-lists">Merge K Sorted</a></td></tr>
-                <tr><td><strong>Trees</strong></td><td>Hierarchy, recursion, level-order</td><td><a href="/dsa/problem/maximum-depth-of-binary-tree">Max Depth</a>, <a href="/dsa/problem/validate-binary-search-tree">Validate BST</a>, <a href="/dsa/problem/lowest-common-ancestor-of-a-binary-search-tree">LCA</a>, <a href="https://leetcode.com/problems/serialize-and-deserialize-binary-tree/">Serialize/Deserialize</a></td></tr>
-                <tr><td><strong>Graphs (BFS/DFS)</strong></td><td>Shortest path, connectivity, islands</td><td><a href="/dsa/problem/number-of-islands">Number of Islands</a>, <a href="/dsa/problem/word-ladder">Word Ladder</a>, <a href="/dsa/problem/course-schedule">Course Schedule</a></td></tr>
-                <tr><td><strong>Dynamic Programming</strong></td><td>Overlapping subproblems, count ways / min cost</td><td><a href="/dsa/problem/coin-change">Coin Change</a>, <a href="/dsa/problem/longest-increasing-subsequence">LIS</a>, <a href="/dsa/problem/edit-distance">Edit Distance</a>, <a href="https://leetcode.com/problems/partition-equal-subset-sum/">Knapsack</a></td></tr>
-                <tr><td><strong>Greedy</strong></td><td>Locally optimal → globally optimal</td><td><a href="/dsa/problem/merge-intervals">Merge Intervals</a>, <a href="/dsa/problem/jump-game">Jump Game</a>, <a href="/dsa/problem/non-overlapping-intervals">Activity Selection</a></td></tr>
-                <tr><td><strong>Backtracking</strong></td><td>All combinations/permutations, constraint satisfaction</td><td><a href="/dsa/problem/subsets">Subsets</a>, <a href="/dsa/problem/permutations">Permutations</a>, <a href="https://leetcode.com/problems/n-queens/">N-Queens</a>, <a href="/dsa/problem/word-search">Word Search</a></td></tr>
-                <tr><td><strong>Heap</strong></td><td>Top K, merge K sorted, running median</td><td><a href="/dsa/problem/kth-largest-element-in-an-array">Kth Largest</a>, <a href="https://leetcode.com/problems/find-median-from-data-stream/">Find Median</a>, <a href="/dsa/problem/task-scheduler">Task Scheduler</a></td></tr>
-                <tr><td><strong>Union-Find</strong></td><td>Connected components, merge groups</td><td><a href="/dsa/problem/number-of-connected-components-in-an-undirected-graph">Components Count</a>, <a href="https://leetcode.com/problems/accounts-merge/">Accounts Merge</a>, <a href="/dsa/problem/redundant-connection">Redundant Connection</a></td></tr>
-                <tr><td><strong>Trie</strong></td><td>Prefix search, autocomplete, word dictionaries</td><td><a href="/dsa/problem/implement-trie-prefix-tree">Implement Trie</a>, <a href="https://leetcode.com/problems/word-search-ii/">Word Search II</a>, <a href="https://leetcode.com/problems/design-search-autocomplete-system/">Autocomplete</a></td></tr>
-                <tr><td><strong>Topological Sort</strong></td><td>Dependencies, ordering, cycle detection</td><td><a href="/dsa/problem/course-schedule">Course Schedule</a>, <a href="https://leetcode.com/problems/alien-dictionary/">Alien Dictionary</a>, <a href="https://leetcode.com/problems/course-schedule-ii/">Build Order</a></td></tr>
-            </tbody>
-        </table>
-    </div>
-    <p class="pattern-link">Deep dive on each pattern with code templates → <a href="/dsa-fundamentals">DSA Fundamentals</a></p>
-</div>
-
 <!-- Solutions now live inside the judge -->
 <div class="section">
     <h2 class="section-title">Solve & Learn in One Place</h2>
@@ -319,17 +290,6 @@ nav a.active { color: var(--accent); background: rgba(129,140,248,0.1); font-wei
 .list-progress { margin-top: auto; }
 .list-progress-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
 .list-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #a78bfa); border-radius: 3px; width: 0%; transition: width 0.4s; }
-
-/* Pattern table */
-.pattern-table-wrap { overflow-x: auto; margin-bottom: 1rem; }
-.pattern-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-.pattern-table th { text-align: left; padding: 0.7rem 1rem; background: var(--card-bg); border: 1px solid var(--border); color: var(--text); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; }
-.pattern-table td { padding: 0.7rem 1rem; border: 1px solid var(--border); color: var(--text-muted); }
-.pattern-table td strong { color: var(--text); font-weight: 600; }
-.pattern-table tr:hover td { background: rgba(99,102,241,0.03); }
-.pattern-link { font-size: 0.82rem; color: var(--text-muted); }
-.pattern-link a { color: var(--accent); text-decoration: none; }
-.pattern-link a:hover { text-decoration: underline; }
 
 /* Solutions grid */
 .solutions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.8rem; margin-bottom: 1rem; }
