@@ -25,6 +25,11 @@ function stdinOf(type, args) {
     case 'STR_ARR': return args[0];
     case 'ARRSTR_INT': return args[0].length + '\n' + args[0].join(' ');
     case 'STR_ARRSTR_BOOL': return args[0] + '\n' + args[1].length + '\n' + args[1].join(' ');
+    case 'ARR_LISTS': case 'ARR_LISTS_PERM': return args[0].length + '\n' + args[0].join(' ');
+    case 'ARR_INT_LISTS': return args[0].length + '\n' + args[0].join(' ') + '\n' + args[1];
+    case 'INT_ARRSTR': return '' + args[0];
+    case 'STR_ARRSTR': case 'STR_LISTSTR': return args[0];
+    case 'ARRSTR_LISTSTR': return args[0].length + '\n' + args[0].join(' ');
     case 'GRID_INT': case 'GRID_ARR': case 'GRID_BOOL': case 'GRID_GRID':
       return args[0].length + ' ' + (args[0][0] ? args[0][0].length : 0) + '\n' + args[0].map(function (r) { return r.join(' '); }).join('\n');
     case 'GRID_TGT_BOOL':
@@ -66,6 +71,12 @@ function displayOf(type, args) {
     case 'ARR_ARR_INT': return { a: arrStr(args[0]), b: arrStr(args[1]) };
     case 'ARRSTR_INT': return { words: '[' + args[0].map(function (w) { return '"' + w + '"'; }).join(',') + ']' };
     case 'STR_ARRSTR_BOOL': return { s: '"' + args[0] + '"', wordDict: '[' + args[1].map(function (w) { return '"' + w + '"'; }).join(',') + ']' };
+    case 'ARR_LISTS': case 'ARR_LISTS_PERM': return { nums: arrStr(args[0]) };
+    case 'ARR_INT_LISTS': return { candidates: arrStr(args[0]), target: '' + args[1] };
+    case 'INT_ARRSTR': return { n: '' + args[0] };
+    case 'STR_ARRSTR': return { digits: '"' + args[0] + '"' };
+    case 'STR_LISTSTR': return { s: '"' + args[0] + '"' };
+    case 'ARRSTR_LISTSTR': return { strs: '[' + args[0].map(function (w) { return '"' + w + '"'; }).join(',') + ']' };
     case 'GRID_INT': case 'GRID_ARR': case 'GRID_BOOL': case 'GRID_GRID':
       return { grid: '[' + args[0].map(function (r) { return '[' + r.join(',') + ']'; }).join(',') + ']' };
     case 'GRID_TGT_BOOL':

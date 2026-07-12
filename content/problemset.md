@@ -124,6 +124,16 @@ Solve problems in your browser — pick a language, implement the function, and 
 | 111 | [Rotate Image](/dsa/problem/rotate-image){:data-slug="rotate-image"} | 🟡 Medium | Array, Math, Matrix |
 | 112 | [Set Matrix Zeroes](/dsa/problem/set-matrix-zeroes){:data-slug="set-matrix-zeroes"} | 🟡 Medium | Array, Hash Table, Matrix |
 | 113 | [Last Stone Weight](/dsa/problem/last-stone-weight){:data-slug="last-stone-weight"} | 🟢 Easy | Array, Heap, Greedy |
+| 114 | [Subsets](/dsa/problem/subsets){:data-slug="subsets"} | 🟡 Medium | Array, Backtracking, Bit Manipulation |
+| 115 | [Subsets II](/dsa/problem/subsets-ii){:data-slug="subsets-ii"} | 🟡 Medium | Array, Backtracking, Bit Manipulation |
+| 116 | [Permutations](/dsa/problem/permutations){:data-slug="permutations"} | 🟡 Medium | Array, Backtracking |
+| 117 | [Combination Sum](/dsa/problem/combination-sum){:data-slug="combination-sum"} | 🟡 Medium | Array, Backtracking |
+| 118 | [Combination Sum II](/dsa/problem/combination-sum-ii){:data-slug="combination-sum-ii"} | 🟡 Medium | Array, Backtracking |
+| 119 | [Palindrome Partitioning](/dsa/problem/palindrome-partitioning){:data-slug="palindrome-partitioning"} | 🟡 Medium | String, Backtracking, Dynamic Programming |
+| 120 | [Generate Parentheses](/dsa/problem/generate-parentheses){:data-slug="generate-parentheses"} | 🟡 Medium | String, Backtracking, Dynamic Programming |
+| 121 | [Letter Combinations of a Phone Number](/dsa/problem/letter-combinations-of-a-phone-number){:data-slug="letter-combinations-of-a-phone-number"} | 🟡 Medium | String, Backtracking, Hash Table |
+| 122 | [3Sum](/dsa/problem/3sum){:data-slug="3sum"} | 🟡 Medium | Array, Two Pointers, Sorting |
+| 123 | [Group Anagrams](/dsa/problem/group-anagrams){:data-slug="group-anagrams"} | 🟡 Medium | Array, String, Hash Table, Sorting |
 
 {% include judge-firebase.html %}
 <script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>

@@ -27,7 +27,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 | 3 | [Contains Duplicate](/dsa/problem/contains-duplicate) | HashSet - add and check | O(n) | O(n) |
 | 4 | [Product of Array Except Self](/dsa/problem/product-of-array-except-self) | Left-pass prefix product + right-pass suffix product | O(n) | O(1)* |
 | 5 | [Maximum Subarray (Kadane)](/dsa/problem/maximum-subarray) | Track `currentMax = max(num, currentMax + num)` | O(n) | O(1) |
-| 6 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | Sort each word → use as HashMap key | O(n·k log k) | O(n·k) |
+| 6 | [Group Anagrams](/dsa/problem/group-anagrams) | Sort each word → use as HashMap key | O(n·k log k) | O(n·k) |
 | 7 | [Top K Frequent Elements](/dsa/problem/top-k-frequent-elements) | HashMap count + min-heap of size K (or bucket sort) | O(n log k) | O(n) |
 | 8 | [Encode/Decode Strings](https://leetcode.com/problems/encode-and-decode-strings/) | Length-prefix each string: `"4#word"` | O(n) | O(1) |
 
@@ -36,7 +36,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 | # | Problem | Approach | Time | Space |
 |---|---|---|---|---|
 | 9 | [Valid Palindrome](/dsa/problem/valid-palindrome) | Left/right pointers, skip non-alphanumeric, compare | O(n) | O(1) |
-| 10 | [3Sum](https://leetcode.com/problems/3sum/) | Sort + fix one, two-pointer on rest. Skip duplicates. | O(n²) | O(1) |
+| 10 | [3Sum](/dsa/problem/3sum) | Sort + fix one, two-pointer on rest. Skip duplicates. | O(n²) | O(1) |
 | 11 | [Container With Most Water](/dsa/problem/container-with-most-water) | Left/right, move the shorter side inward | O(n) | O(1) |
 | 12 | [Trapping Rain Water](/dsa/problem/trapping-rain-water) | Two pointers with `leftMax`/`rightMax` tracking | O(n) | O(1) |
 
@@ -165,7 +165,7 @@ If you only have 3 days, solve these - they cover the most patterns with the lea
 1. [Two Sum](/dsa/problem/two-sum) (HashMap)
 2. [Best Time to Buy/Sell Stock](/dsa/problem/best-time-to-buy-and-sell-stock) (Greedy/Kadane)
 3. [Longest Substring Without Repeating](/dsa/problem/longest-substring-without-repeating-characters) (Sliding Window)
-4. [3Sum](https://leetcode.com/problems/3sum/) (Two Pointers + Sort)
+4. [3Sum](/dsa/problem/3sum) (Two Pointers + Sort)
 5. [Merge Intervals](/dsa/problem/merge-intervals) (Sort + Sweep)
 6. [Number of Islands](/dsa/problem/number-of-islands) (BFS/DFS)
 7. [Coin Change](/dsa/problem/coin-change) (DP)

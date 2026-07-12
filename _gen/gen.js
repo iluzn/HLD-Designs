@@ -474,6 +474,100 @@ T.GRID_GRID = function (fn) {
   };
 };
 
+// ----- canonicalizers for list-of-list outputs (order-independent judging) --
+var _CANON_PY = ln('def _cmp_key(x): return (len(x), x)', 'def _canon(res, sw):', '    r=[sorted(x) if sw else list(x) for x in res]', '    r.sort()', "    return '|'.join(' '.join(map(str,x)) for x in r)", 'def _canonS(res, sw):', '    r=[sorted(x) if sw else list(x) for x in res]', '    r.sort()', "    return '|'.join(' '.join(x) for x in r)");
+var _CANON_JS = ln('function _cmp(a,b){for(var i=0;i<Math.min(a.length,b.length);i++){if(a[i]<b[i])return -1;if(a[i]>b[i])return 1;}return a.length-b.length;}', 'function _canon(res,sw){var r=res.map(function(x){return sw?x.slice().sort(function(p,q){return p-q;}):x.slice();});r.sort(_cmp);return r.map(function(x){return x.join(" ");}).join("|");}', 'function _canonS(res,sw){var r=res.map(function(x){return sw?x.slice().sort():x.slice();});r.sort(_cmp);return r.map(function(x){return x.join(" ");}).join("|");}');
+var _CANON_CPP = ln('template<class V> string _canonI(vector<vector<int>> res, bool sw){if(sw)for(auto&x:res)sort(x.begin(),x.end());sort(res.begin(),res.end());string s;for(size_t i=0;i<res.size();i++){if(i)s+="|";for(size_t j=0;j<res[i].size();j++){if(j)s+=" ";s+=to_string(res[i][j]);}}return s;}', 'string _canonS(vector<vector<string>> res, bool sw){if(sw)for(auto&x:res)sort(x.begin(),x.end());sort(res.begin(),res.end());string s;for(size_t i=0;i<res.size();i++){if(i)s+="|";for(size_t j=0;j<res[i].size();j++){if(j)s+=" ";s+=res[i][j];}}return s;}');
+var _CANON_JAVA = ln('  static <T extends Comparable<T>> int cmpL(List<T> a, List<T> b){int n=Math.min(a.size(),b.size());for(int i=0;i<n;i++){int c=a.get(i).compareTo(b.get(i));if(c!=0)return c;}return a.size()-b.size();}', '  static String canonI(List<List<Integer>> res, boolean sw){List<List<Integer>> r=new ArrayList<>();for(List<Integer> x:res){List<Integer> y=new ArrayList<>(x);if(sw)Collections.sort(y);r.add(y);}r.sort(Main::cmpL);StringBuilder s=new StringBuilder();for(int i=0;i<r.size();i++){if(i>0)s.append("|");for(int j=0;j<r.get(i).size();j++){if(j>0)s.append(" ");s.append(r.get(i).get(j));}}return s.toString();}', '  static String canonS(List<List<String>> res, boolean sw){List<List<String>> r=new ArrayList<>();for(List<String> x:res){List<String> y=new ArrayList<>(x);if(sw)Collections.sort(y);r.add(y);}r.sort(Main::cmpL);StringBuilder s=new StringBuilder();for(int i=0;i<r.size();i++){if(i>0)s.append("|");for(int j=0;j<r.get(i).size();j++){if(j>0)s.append(" ");s.append(r.get(i).get(j));}}return s.toString();}');
+var _SORTSTR_JS = ln('function _sortStr(arr){return arr.slice().sort().join(" ");}');
+
+// (int[] nums) -> int[][]   canonical; sw=sort-within (subsets/combos) vs false (perms)
+function arrListsType(fn, sw) {
+  var swp = sw ? 'True' : 'False', swj = sw ? 'true' : 'false';
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, nums):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', _CANON_PY, '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _n=int(_d[_p]);_p+=1', '    _nums=list(map(int,_d[_p:_p+_n]));_p+=_n', '    _o.append(_canon(Solution().' + fn + '(_nums), ' + swp + '))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number[]} nums', ' * @return {number[][]}', ' */', 'var ' + fn + ' = function(nums) {', '    // Write your code here', '};'),
+      harness: ln(_CANON_JS, "const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", 'for(let _i=0;_i<_T;_i++){const _n=+_d[_p++];const _nums=_d.slice(_p,_p+_n).map(Number);_p+=_n;_o.push(_canon(' + fn + '(_nums),' + swj + '));}', "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    vector<vector<int>> ' + fn + '(vector<int>& nums) {', '        // Write your code here', '    }', '};'),
+      harness: ln(_CANON_CPP, 'int main(){int T;cin>>T;while(T--){int n;cin>>n;vector<int> nums(n);for(int i=0;i<n;i++)cin>>nums[i];cout<<_canonI<int>(Solution().' + fn + '(nums),' + swj + ')<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public List<List<Integer>> ' + fn + '(int[] nums) {', '        // Write your code here', '        return new ArrayList<>();', '    }', '}'),
+      harness: ln('public class Main {', _CANON_JAVA, '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int n=sc.nextInt();int[] nums=new int[n];for(int i=0;i<n;i++)nums[i]=sc.nextInt();sb.append(canonI(new Solution().' + fn + '(nums),' + swj + ')).append("\\n");}System.out.print(sb);}', '}') },
+  };
+}
+T.ARR_LISTS = function (fn) { return arrListsType(fn, true); };
+T.ARR_LISTS_PERM = function (fn) { return arrListsType(fn, false); };
+
+// (int[] candidates, int target) -> int[][]   canonical, sort-within
+T.ARR_INT_LISTS = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, candidates, target):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', _CANON_PY, '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _n=int(_d[_p]);_p+=1', '    _c=list(map(int,_d[_p:_p+_n]));_p+=_n', '    _t=int(_d[_p]);_p+=1', '    _o.append(_canon(Solution().' + fn + '(_c,_t), True))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number[]} candidates', ' * @param {number} target', ' * @return {number[][]}', ' */', 'var ' + fn + ' = function(candidates, target) {', '    // Write your code here', '};'),
+      harness: ln(_CANON_JS, "const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", 'for(let _i=0;_i<_T;_i++){const _n=+_d[_p++];const _c=_d.slice(_p,_p+_n).map(Number);_p+=_n;const _t=+_d[_p++];_o.push(_canon(' + fn + '(_c,_t),true));}', "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    vector<vector<int>> ' + fn + '(vector<int>& candidates, int target) {', '        // Write your code here', '    }', '};'),
+      harness: ln(_CANON_CPP, 'int main(){int T;cin>>T;while(T--){int n;cin>>n;vector<int> c(n);for(int i=0;i<n;i++)cin>>c[i];int t;cin>>t;cout<<_canonI<int>(Solution().' + fn + '(c,t),true)<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public List<List<Integer>> ' + fn + '(int[] candidates, int target) {', '        // Write your code here', '        return new ArrayList<>();', '    }', '}'),
+      harness: ln('public class Main {', _CANON_JAVA, '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int n=sc.nextInt();int[] c=new int[n];for(int i=0;i<n;i++)c[i]=sc.nextInt();int t=sc.nextInt();sb.append(canonI(new Solution().' + fn + '(c,t),true)).append("\\n");}System.out.print(sb);}', '}') },
+  };
+};
+
+// (int n) -> string[]   (sorted, space-joined)
+T.INT_ARRSTR = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, n):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _n=int(_d[_p]);_p+=1', "    _o.append(' '.join(sorted(Solution()." + fn + '(_n))))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number} n', ' * @return {string[]}', ' */', 'var ' + fn + ' = function(n) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _n=+_d[_p++];_o.push(" + fn + "(_n).slice().sort().join(' '));}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    vector<string> ' + fn + '(int n) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int n;cin>>n;vector<string> r=Solution().' + fn + '(n);sort(r.begin(),r.end());string s;for(size_t i=0;i<r.size();i++){if(i)s+=" ";s+=r[i];}cout<<s<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public List<String> ' + fn + '(int n) {', '        // Write your code here', '        return new ArrayList<>();', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int n=sc.nextInt();List<String> r=new Solution().' + fn + '(n);Collections.sort(r);sb.append(String.join(" ",r)).append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (string s) -> string[]   (line-based; sorted, space-joined)
+T.STR_ARRSTR = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, digits):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', "_l=sys.stdin.read().split('\\n')", '_T=int(_l[0]);_o=[]', 'for _i in range(_T):', '    _s=_l[1+_i] if 1+_i<len(_l) else ""', "    _o.append(' '.join(sorted(Solution()." + fn + '(_s))))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {string} digits', ' * @return {string[]}', ' */', 'var ' + fn + ' = function(digits) {', '    // Write your code here', '};'),
+      harness: ln("const _l=require('fs').readFileSync(0,'utf8').split('\\n');const _T=+_l[0];const _o=[];", "for(let _i=0;_i<_T;_i++){const _s=(_l[1+_i]||'').replace(/\\r$/,'');_o.push(" + fn + "(_s).slice().sort().join(' '));}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    vector<string> ' + fn + '(string digits) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){string l;getline(cin,l);int T=stoi(l);string s;for(int i=0;i<T;i++){if(!getline(cin,s))s="";vector<string> r=Solution().' + fn + '(s);sort(r.begin(),r.end());string o;for(size_t k=0;k<r.size();k++){if(k)o+=" ";o+=r[k];}cout<<o<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public List<String> ' + fn + '(String digits) {', '        // Write your code here', '        return new ArrayList<>();', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=Integer.parseInt(sc.nextLine().trim());StringBuilder sb=new StringBuilder();for(int i=0;i<T;i++){String s=sc.hasNextLine()?sc.nextLine():"";List<String> r=new Solution().' + fn + '(s);Collections.sort(r);sb.append(String.join(" ",r)).append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (string s) -> List<List<String>>   (line-based; canonical, sort-within=false)
+T.STR_LISTSTR = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, s):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', _CANON_PY, "_l=sys.stdin.read().split('\\n')", '_T=int(_l[0]);_o=[]', 'for _i in range(_T):', '    _s=_l[1+_i] if 1+_i<len(_l) else ""', '    _o.append(_canonS(Solution().' + fn + '(_s), False))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {string} s', ' * @return {string[][]}', ' */', 'var ' + fn + ' = function(s) {', '    // Write your code here', '};'),
+      harness: ln(_CANON_JS, "const _l=require('fs').readFileSync(0,'utf8').split('\\n');const _T=+_l[0];const _o=[];", "for(let _i=0;_i<_T;_i++){const _s=(_l[1+_i]||'').replace(/\\r$/,'');_o.push(_canonS(" + fn + '(_s),false));}', "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    vector<vector<string>> ' + fn + '(string s) {', '        // Write your code here', '    }', '};'),
+      harness: ln(_CANON_CPP, 'int main(){string l;getline(cin,l);int T=stoi(l);string s;for(int i=0;i<T;i++){if(!getline(cin,s))s="";cout<<_canonS(Solution().' + fn + '(s),false)<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public List<List<String>> ' + fn + '(String s) {', '        // Write your code here', '        return new ArrayList<>();', '    }', '}'),
+      harness: ln('public class Main {', _CANON_JAVA, '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=Integer.parseInt(sc.nextLine().trim());StringBuilder sb=new StringBuilder();for(int i=0;i<T;i++){String s=sc.hasNextLine()?sc.nextLine():"";sb.append(canonS(new Solution().' + fn + '(s),false)).append("\\n");}System.out.print(sb);}', '}') },
+  };
+};
+
+// (string[] strs) -> List<List<String>>   (whitespace; canonical, sort-within=true)
+T.ARRSTR_LISTSTR = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, strs):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', _CANON_PY, '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _c=int(_d[_p]);_p+=1', '    _w=_d[_p:_p+_c];_p+=_c', '    _o.append(_canonS(Solution().' + fn + '(_w), True))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {string[]} strs', ' * @return {string[][]}', ' */', 'var ' + fn + ' = function(strs) {', '    // Write your code here', '};'),
+      harness: ln(_CANON_JS, "const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", 'for(let _i=0;_i<_T;_i++){const _c=+_d[_p++];const _w=_d.slice(_p,_p+_c);_p+=_c;_o.push(_canonS(' + fn + '(_w),true));}', "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    vector<vector<string>> ' + fn + '(vector<string>& strs) {', '        // Write your code here', '    }', '};'),
+      harness: ln(_CANON_CPP, 'int main(){int T;cin>>T;while(T--){int c;cin>>c;vector<string> w(c);for(int i=0;i<c;i++)cin>>w[i];cout<<_canonS(Solution().' + fn + '(w),true)<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public List<List<String>> ' + fn + '(String[] strs) {', '        // Write your code here', '        return new ArrayList<>();', '    }', '}'),
+      harness: ln('public class Main {', _CANON_JAVA, '  public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int c=sc.nextInt();String[] w=new String[c];for(int i=0;i<c;i++)w[i]=sc.next();sb.append(canonS(new Solution().' + fn + '(w),true)).append("\\n");}System.out.print(sb);}', '}') },
+  };
+};
+
 // (char[][] grid) -> int   (whitespace: R, C, then R row-strings of length C)
 T.CHARGRID_INT = function (fn) {
   return {

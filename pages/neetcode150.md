@@ -25,7 +25,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 1 | [Contains Duplicate](/dsa/problem/contains-duplicate) | HashSet | O(n) |
 | 2 | [Valid Anagram](/dsa/problem/valid-anagram) | Sort or count[26] | O(n) |
 | 3 | [Two Sum](/dsa/problem/two-sum) | HashMap complement lookup | O(n) |
-| 4 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | Sorted string as HashMap key | O(n·k log k) |
+| 4 | [Group Anagrams](/dsa/problem/group-anagrams) | Sorted string as HashMap key | O(n·k log k) |
 | 5 | [Top K Frequent Elements](/dsa/problem/top-k-frequent-elements) | HashMap + min-heap K or bucket sort | O(n log k) |
 | 6 | [Encode and Decode Strings](https://leetcode.com/problems/encode-and-decode-strings/) | Length-prefix: `"4#word"` | O(n) |
 | 7 | [Product of Array Except Self](/dsa/problem/product-of-array-except-self) | Left prefix × right suffix | O(n) |
@@ -38,7 +38,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 |---|---|---|---|
 | 10 | [Valid Palindrome](/dsa/problem/valid-palindrome) | Two pointers inward, skip non-alpha | O(n) |
 | 11 | [Two Sum II (Sorted)](/dsa/problem/two-sum-ii) | Left/right, move based on sum vs target | O(n) |
-| 12 | [3Sum](https://leetcode.com/problems/3sum/) | Sort + fix one + two-pointer | O(n²) |
+| 12 | [3Sum](/dsa/problem/3sum) | Sort + fix one + two-pointer | O(n²) |
 | 13 | [Container With Most Water](/dsa/problem/container-with-most-water) | Move shorter side inward | O(n) |
 | 14 | [Trapping Rain Water](/dsa/problem/trapping-rain-water) | Two pointers with leftMax/rightMax | O(n) |
 
@@ -60,7 +60,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 21 | [Valid Parentheses](/dsa/problem/valid-parentheses) | Push open, pop close, check match | O(n) |
 | 22 | [Min Stack](https://leetcode.com/problems/min-stack/) | Two stacks (values + running min) | O(1) |
 | 23 | [Evaluate Reverse Polish Notation](/dsa/problem/evaluate-reverse-polish-notation) | Stack of numbers, pop 2 on operator | O(n) |
-| 24 | [Generate Parentheses](https://leetcode.com/problems/generate-parentheses/) | Backtracking with open/close count | O(4^n/√n) |
+| 24 | [Generate Parentheses](/dsa/problem/generate-parentheses) | Backtracking with open/close count | O(4^n/√n) |
 | 25 | [Daily Temperatures](/dsa/problem/daily-temperatures) | Monotonic decreasing stack, pop when warmer | O(n) |
 | 26 | [Car Fleet](https://leetcode.com/problems/car-fleet/) | Sort by position desc, stack by time to reach target | O(n log n) |
 | 27 | [Largest Rectangle in Histogram](/dsa/problem/largest-rectangle-in-histogram) | Monotonic stack for next-smaller on both sides | O(n) |
@@ -137,14 +137,14 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 71 | [Subsets](https://leetcode.com/problems/subsets/) | Include/exclude each element | O(2^n) |
-| 72 | [Combination Sum](https://leetcode.com/problems/combination-sum/) | DFS with remaining, reuse allowed | O(2^t) |
-| 73 | [Permutations](https://leetcode.com/problems/permutations/) | Swap-based or used[] array | O(n!) |
-| 74 | [Subsets II (with dups)](https://leetcode.com/problems/subsets-ii/) | Sort + skip duplicates at same level | O(2^n) |
-| 75 | [Combination Sum II](https://leetcode.com/problems/combination-sum-ii/) | Sort + skip same value at same depth | O(2^n) |
+| 71 | [Subsets](/dsa/problem/subsets) | Include/exclude each element | O(2^n) |
+| 72 | [Combination Sum](/dsa/problem/combination-sum) | DFS with remaining, reuse allowed | O(2^t) |
+| 73 | [Permutations](/dsa/problem/permutations) | Swap-based or used[] array | O(n!) |
+| 74 | [Subsets II (with dups)](/dsa/problem/subsets-ii/) | Sort + skip duplicates at same level | O(2^n) |
+| 75 | [Combination Sum II](/dsa/problem/combination-sum-ii/) | Sort + skip same value at same depth | O(2^n) |
 | 76 | [Word Search](https://leetcode.com/problems/word-search/) | DFS from each cell, backtrack | O(m×n×4^L) |
-| 77 | [Palindrome Partitioning](https://leetcode.com/problems/palindrome-partitioning/) | DFS + isPalin check at each split | O(n×2^n) |
-| 78 | [Letter Combinations of Phone](https://leetcode.com/problems/letter-combinations-of-a-phone-number/) | DFS through digit→letters mapping | O(4^n) |
+| 77 | [Palindrome Partitioning](/dsa/problem/palindrome-partitioning) | DFS + isPalin check at each split | O(n×2^n) |
+| 78 | [Letter Combinations of Phone](/dsa/problem/letter-combinations-of-a-phone-number) | DFS through digit→letters mapping | O(4^n) |
 | 79 | [N-Queens](https://leetcode.com/problems/n-queens/) | Place row-by-row, check col/diag conflicts | O(n!) |
 
 ## Graphs (13)

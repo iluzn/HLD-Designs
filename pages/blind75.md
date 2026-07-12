@@ -30,7 +30,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 | 6 | [Maximum Product Subarray](/dsa/problem/maximum-product-subarray) | DP | Track both maxProd and minProd (negatives flip) | O(n) |
 | 7 | [Find Minimum in Rotated Sorted Array](/dsa/problem/find-minimum-in-rotated-sorted-array) | Binary Search | Shrink toward unsorted half | O(log n) |
 | 8 | [Search in Rotated Sorted Array](/dsa/problem/search-in-rotated-sorted-array) | Binary Search | Check which half is sorted, decide direction | O(log n) |
-| 9 | [3Sum](https://leetcode.com/problems/3sum/) | Two Pointers | Sort + fix one + two-pointer. Skip dupes. | O(n²) |
+| 9 | [3Sum](/dsa/problem/3sum) | Two Pointers | Sort + fix one + two-pointer. Skip dupes. | O(n²) |
 
 ## Two Pointers (3)
 
@@ -47,7 +47,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 | 13 | [Longest Substring Without Repeating](/dsa/problem/longest-substring-without-repeating-characters) | Sliding Window | HashMap for last-seen index, jump left on conflict | O(n) |
 | 14 | [Longest Repeating Character Replacement](/dsa/problem/longest-repeating-character-replacement) | Sliding Window | Window valid while `len - maxFreq <= k` | O(n) |
 | 15 | [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) | Sliding Window | Expand until valid, shrink to minimize | O(n) |
-| 16 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | HashMap | Sorted string as key | O(n·k log k) |
+| 16 | [Group Anagrams](/dsa/problem/group-anagrams) | HashMap | Sorted string as key | O(n·k log k) |
 
 ## Stack (1)
 
@@ -109,7 +109,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 43 | [Combination Sum](https://leetcode.com/problems/combination-sum/) | Backtracking | DFS with remaining target, include/skip each candidate | O(2^t) |
+| 43 | [Combination Sum](/dsa/problem/combination-sum) | Backtracking | DFS with remaining target, include/skip each candidate | O(2^t) |
 | 44 | [Word Search](https://leetcode.com/problems/word-search/) | Backtracking | DFS from each cell, mark visited, backtrack | O(m×n×4^L) |
 
 ## Graphs (8)
