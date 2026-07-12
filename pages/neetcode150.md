@@ -58,7 +58,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | # | Problem | Approach | Time |
 |---|---|---|---|
 | 21 | [Valid Parentheses](/dsa/problem/valid-parentheses) | Push open, pop close, check match | O(n) |
-| 22 | [Min Stack](https://leetcode.com/problems/min-stack/) | Two stacks (values + running min) | O(1) |
+| 22 | [Min Stack](/dsa/problem/min-stack) | Two stacks (values + running min) | O(1) |
 | 23 | [Evaluate Reverse Polish Notation](/dsa/problem/evaluate-reverse-polish-notation) | Stack of numbers, pop 2 on operator | O(n) |
 | 24 | [Generate Parentheses](/dsa/problem/generate-parentheses) | Backtracking with open/close count | O(4^n/√n) |
 | 25 | [Daily Temperatures](/dsa/problem/daily-temperatures) | Monotonic decreasing stack, pop when warmer | O(n) |
@@ -74,7 +74,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 30 | [Koko Eating Bananas](/dsa/problem/koko-eating-bananas) | Binary search on speed, check feasibility | O(n log m) |
 | 31 | [Find Minimum in Rotated Sorted Array](/dsa/problem/find-minimum-in-rotated-sorted-array) | If mid > right, min in right half | O(log n) |
 | 32 | [Search in Rotated Sorted Array](/dsa/problem/search-in-rotated-sorted-array) | Determine sorted half, check target in it | O(log n) |
-| 33 | [Time Based Key-Value Store](https://leetcode.com/problems/time-based-key-value-store/) | HashMap + binary search on timestamps | O(log n) |
+| 33 | [Time Based Key-Value Store](/dsa/problem/time-based-key-value-store) | HashMap + binary search on timestamps | O(log n) |
 | 34 | [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) | Binary search on partition of smaller array | O(log min(m,n)) |
 
 ## Linked List (11)
@@ -89,7 +89,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 40 | [Add Two Numbers](/dsa/problem/add-two-numbers) | Carry propagation through both lists | O(max(m,n)) |
 | 41 | [Linked List Cycle](/dsa/problem/linked-list-cycle) | Floyd's fast/slow | O(n) |
 | 42 | [Find Duplicate Number](/dsa/problem/find-the-duplicate-number) | Floyd's on index array (cycle start) | O(n) |
-| 43 | [LRU Cache](https://leetcode.com/problems/lru-cache/) | HashMap + doubly-linked list | O(1) |
+| 43 | [LRU Cache](/dsa/problem/lru-cache) | HashMap + doubly-linked list | O(1) |
 | 44 | [Merge K Sorted Lists](/dsa/problem/merge-k-sorted-lists) | Min-heap of K heads | O(n log k) |
 | 45 | [Reverse Nodes in K-Group](/dsa/problem/reverse-nodes-in-k-group) | Count K, reverse segment, connect | O(n) |
 
@@ -117,8 +117,8 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 61 | [Implement Trie](https://leetcode.com/problems/implement-trie-prefix-tree/) | children[26] + isEnd per node | O(L) |
-| 62 | [Add and Search Word](https://leetcode.com/problems/design-add-and-search-words-data-structure/) | DFS on '.' wildcard | O(26^L) worst |
+| 61 | [Implement Trie](/dsa/problem/implement-trie-prefix-tree) | children[26] + isEnd per node | O(L) |
+| 62 | [Add and Search Word](/dsa/problem/design-add-and-search-words-data-structure) | DFS on '.' wildcard | O(26^L) worst |
 | 63 | [Word Search II](/dsa/problem/word-search-ii/) | Trie of words + DFS grid | O(m×n×4^L) |
 
 ## Heap / Priority Queue (7)
@@ -259,7 +259,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 148 | [Design Add and Search Words](https://leetcode.com/problems/design-add-and-search-words-data-structure/) | Trie + DFS on wildcards | O(26^L) |
+| 148 | [Design Add and Search Words](/dsa/problem/design-add-and-search-words-data-structure) | Trie + DFS on wildcards | O(26^L) |
 | 149 | [Maximum Product of Word Lengths](/dsa/problem/maximum-product-of-word-lengths) | Bitmask per word, compare pairs with no overlap | O(n²) |
 | 150 | [Longest Increasing Subsequence](/dsa/problem/longest-increasing-subsequence) | Patience sort + binary search | O(n log n) |
 

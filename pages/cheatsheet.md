@@ -56,7 +56,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 | 17 | [Valid Parentheses](/dsa/problem/valid-parentheses) | Push open, pop on close, check match | O(n) | O(n) |
 | 18 | [Daily Temperatures](/dsa/problem/daily-temperatures) | Monotonic stack: pop when current > top | O(n) | O(n) |
 | 19 | [Largest Rectangle in Histogram](/dsa/problem/largest-rectangle-in-histogram) | Monotonic stack for next-smaller on both sides | O(n) | O(n) |
-| 20 | [Min Stack](https://leetcode.com/problems/min-stack/) | Two stacks: values + running minimum | O(1) all ops | O(n) |
+| 20 | [Min Stack](/dsa/problem/min-stack) | Two stacks: values + running minimum | O(1) all ops | O(n) |
 
 ## Binary Search
 
@@ -74,7 +74,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 | 25 | [Reverse Linked List](/dsa/problem/reverse-linked-list) | Iterative: prev/curr/next pointers | O(n) | O(1) |
 | 26 | [Linked List Cycle](/dsa/problem/linked-list-cycle) | Fast/slow pointers (Floyd's) | O(n) | O(1) |
 | 27 | [Merge Two Sorted Lists](/dsa/problem/merge-two-sorted-lists) | Dummy head, compare and advance | O(n+m) | O(1) |
-| 28 | [LRU Cache](https://leetcode.com/problems/lru-cache/) | HashMap + doubly-linked list (or LinkedHashMap) | O(1) all ops | O(cap) |
+| 28 | [LRU Cache](/dsa/problem/lru-cache) | HashMap + doubly-linked list (or LinkedHashMap) | O(1) all ops | O(cap) |
 
 ## Trees
 
@@ -169,7 +169,7 @@ If you only have 3 days, solve these - they cover the most patterns with the lea
 5. [Merge Intervals](/dsa/problem/merge-intervals) (Sort + Sweep)
 6. [Number of Islands](/dsa/problem/number-of-islands) (BFS/DFS)
 7. [Coin Change](/dsa/problem/coin-change) (DP)
-8. [LRU Cache](https://leetcode.com/problems/lru-cache/) (HashMap + DLL)
+8. [LRU Cache](/dsa/problem/lru-cache) (HashMap + DLL)
 9. [Course Schedule](/dsa/problem/course-schedule) (Topological Sort)
 10. [Valid Parentheses](/dsa/problem/valid-parentheses) (Stack)
 

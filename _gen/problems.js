@@ -68,6 +68,8 @@ function stdinOf(type, args) {
       return args[0].map(function (x) { return x === null ? 'null' : x; }).join(' ') + '\n' + args[1];
     case 'TREE_INT_INT_INT':
       return args[0].map(function (x) { return x === null ? 'null' : x; }).join(' ') + '\n' + args[1] + ' ' + args[2];
+    case 'OPS':
+      return args[0].length + '\n' + args[0].map(function (o) { return o.name + (o.a && o.a.length ? ' ' + o.a.join(' ') : ''); }).join('\n');
     default: return '';
   }
 }
@@ -129,6 +131,11 @@ function displayOf(type, args) {
       return { root: '[' + args[0].map(function (x) { return x === null ? 'null' : x; }).join(',') + ']', k: '' + args[1] };
     case 'TREE_INT_INT_INT':
       return { root: '[' + args[0].map(function (x) { return x === null ? 'null' : x; }).join(',') + ']', p: '' + args[1], q: '' + args[2] };
+    case 'OPS':
+      return {
+        operations: '[' + args[0].map(function (o) { return '"' + o.name + '"'; }).join(',') + ']',
+        values: '[' + args[0].map(function (o) { return '[' + (o.a || []).map(function (x) { return typeof x === 'string' ? '"' + x + '"' : x; }).join(',') + ']'; }).join(',') + ']'
+      };
     default: return {};
   }
 }

@@ -93,8 +93,8 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 37 | [Implement Trie](https://leetcode.com/problems/implement-trie-prefix-tree/) | Trie | TrieNode with children[26] + isEnd flag | O(L) per op |
-| 38 | [Add and Search Word](https://leetcode.com/problems/design-add-and-search-words-data-structure/) | Trie + DFS | On '.', branch to all children | O(26^L) worst |
+| 37 | [Implement Trie](/dsa/problem/implement-trie-prefix-tree) | Trie | TrieNode with children[26] + isEnd flag | O(L) per op |
+| 38 | [Add and Search Word](/dsa/problem/design-add-and-search-words-data-structure) | Trie + DFS | On '.', branch to all children | O(26^L) worst |
 | 39 | [Word Search II](/dsa/problem/word-search-ii/) | Trie + Backtracking | Build trie of words, DFS grid matching trie paths | O(m×n×4^L) |
 
 ## Heap / Priority Queue (3)

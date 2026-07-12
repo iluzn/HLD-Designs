@@ -150,6 +150,11 @@ Solve problems in your browser — pick a language, implement the function, and 
 | 137 | [Car Fleet](/dsa/problem/car-fleet){:data-slug="car-fleet"} | 🟡 Medium | Array, Stack, Sorting, Monotonic Stack |
 | 138 | [Merge Triplets to Form Target Triplet](/dsa/problem/merge-triplets-to-form-target-triplet){:data-slug="merge-triplets-to-form-target-triplet"} | 🟡 Medium | Array, Greedy |
 | 139 | [Network Delay Time](/dsa/problem/network-delay-time){:data-slug="network-delay-time"} | 🟡 Medium | Graph, Dijkstra, Heap, Shortest Path |
+| 140 | [Min Stack](/dsa/problem/min-stack){:data-slug="min-stack"} | 🟡 Medium | Stack, Design |
+| 141 | [Implement Trie (Prefix Tree)](/dsa/problem/implement-trie-prefix-tree){:data-slug="implement-trie-prefix-tree"} | 🟡 Medium | Trie, Design, Hash Table, String |
+| 142 | [Design Add and Search Words Data Structure](/dsa/problem/design-add-and-search-words-data-structure){:data-slug="design-add-and-search-words-data-structure"} | 🟡 Medium | Trie, Design, DFS, String |
+| 143 | [Time Based Key-Value Store](/dsa/problem/time-based-key-value-store){:data-slug="time-based-key-value-store"} | 🟡 Medium | Hash Table, Binary Search, Design |
+| 144 | [LRU Cache](/dsa/problem/lru-cache){:data-slug="lru-cache"} | 🟡 Medium | Hash Table, Linked List, Design |
 
 {% include judge-firebase.html %}
 <script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>
