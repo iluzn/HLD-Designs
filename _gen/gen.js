@@ -125,6 +125,20 @@ T.STR_INT = function (fn) {
   };
 };
 
+// (int[] nums, int target) -> int[]  (space-separated, order preserved)
+T.ARR_TGT_ARR = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, nums, target):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _n=int(_d[_p]);_p+=1', '    _nums=list(map(int,_d[_p:_p+_n]));_p+=_n', '    _t=int(_d[_p]);_p+=1', "    _o.append(' '.join(map(str,Solution()." + fn + '(_nums,_t))))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number[]} nums', ' * @param {number} target', ' * @return {number[]}', ' */', 'var ' + fn + ' = function(nums, target) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _n=+_d[_p++];const _nums=_d.slice(_p,_p+_n).map(Number);_p+=_n;const _t=+_d[_p++];_o.push(" + fn + "(_nums,_t).join(' '));}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    vector<int> ' + fn + '(vector<int>& nums, int target) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int n;cin>>n;vector<int> nums(n);for(int i=0;i<n;i++)cin>>nums[i];int t;cin>>t;vector<int> r=Solution().' + fn + '(nums,t);for(size_t i=0;i<r.size();i++){if(i)cout<<\' \';cout<<r[i];}cout<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public int[] ' + fn + '(int[] nums, int target) {', '        // Write your code here', '        return nums;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int n=sc.nextInt();int[] nums=new int[n];for(int i=0;i<n;i++)nums[i]=sc.nextInt();int t=sc.nextInt();int[] r=new Solution().' + fn + '(nums,t);for(int i=0;i<r.length;i++){if(i>0)sb.append(\' \');sb.append(r[i]);}sb.append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
 // (int n) -> boolean
 T.INT_BOOL = function (fn) {
   return {

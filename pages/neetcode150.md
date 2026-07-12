@@ -30,7 +30,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 6 | [Encode and Decode Strings](https://leetcode.com/problems/encode-and-decode-strings/) | Length-prefix: `"4#word"` | O(n) |
 | 7 | [Product of Array Except Self](/dsa/problem/product-of-array-except-self) | Left prefix × right suffix | O(n) |
 | 8 | [Valid Sudoku](https://leetcode.com/problems/valid-sudoku/) | HashSet per row + col + box | O(81) |
-| 9 | [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/) | HashSet, only start if num-1 absent | O(n) |
+| 9 | [Longest Consecutive Sequence](/dsa/problem/longest-consecutive-sequence) | HashSet, only start if num-1 absent | O(n) |
 
 ## Two Pointers (5)
 
@@ -71,7 +71,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 |---|---|---|---|
 | 28 | [Binary Search](/dsa/problem/binary-search) | Standard lo/hi with mid | O(log n) |
 | 29 | [Search 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) | Treat as flat sorted array, binary search | O(log(m×n)) |
-| 30 | [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/) | Binary search on speed, check feasibility | O(n log m) |
+| 30 | [Koko Eating Bananas](/dsa/problem/koko-eating-bananas) | Binary search on speed, check feasibility | O(n log m) |
 | 31 | [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | If mid > right, min in right half | O(log n) |
 | 32 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Determine sorted half, check target in it | O(log n) |
 | 33 | [Time Based Key-Value Store](https://leetcode.com/problems/time-based-key-value-store/) | HashMap + binary search on timestamps | O(log n) |
@@ -88,7 +88,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 39 | [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/) | HashMap old→new or interleave nodes | O(n) |
 | 40 | [Add Two Numbers](https://leetcode.com/problems/add-two-numbers/) | Carry propagation through both lists | O(max(m,n)) |
 | 41 | [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) | Floyd's fast/slow | O(n) |
-| 42 | [Find Duplicate Number](https://leetcode.com/problems/find-the-duplicate-number/) | Floyd's on index array (cycle start) | O(n) |
+| 42 | [Find Duplicate Number](/dsa/problem/find-the-duplicate-number) | Floyd's on index array (cycle start) | O(n) |
 | 43 | [LRU Cache](https://leetcode.com/problems/lru-cache/) | HashMap + doubly-linked list | O(1) |
 | 44 | [Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) | Min-heap of K heads | O(n log k) |
 | 45 | [Reverse Nodes in K-Group](https://leetcode.com/problems/reverse-nodes-in-k-group/) | Count K, reverse segment, connect | O(n) |
@@ -248,7 +248,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | # | Problem | Approach | Time |
 |---|---|---|---|
 | 141 | [Single Number](/dsa/problem/single-number) | XOR all → duplicate cancels, single remains | O(n) |
-| 142 | [Number of 1 Bits](https://leetcode.com/problems/number-of-1-bits/) | `n & (n-1)` removes LSB; count | O(32) |
+| 142 | [Number of 1 Bits](/dsa/problem/number-of-1-bits) | `n & (n-1)` removes LSB; count | O(32) |
 | 143 | [Counting Bits](https://leetcode.com/problems/counting-bits/) | `dp[i] = dp[i>>1] + (i&1)` | O(n) |
 | 144 | [Reverse Bits](https://leetcode.com/problems/reverse-bits/) | Shift result left + OR with (n&1) + shift n right | O(32) |
 | 145 | [Missing Number](/dsa/problem/missing-number) | XOR all indices + all values | O(n) |

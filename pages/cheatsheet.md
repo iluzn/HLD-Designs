@@ -64,7 +64,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 |---|---|---|---|---|
 | 21 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Binary search - check which half is sorted | O(log n) | O(1) |
 | 22 | [Find Minimum in Rotated Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Binary search - shrink toward the unsorted half | O(log n) | O(1) |
-| 23 | [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/) | Binary search on answer (speed), check feasibility | O(n log m) | O(1) |
+| 23 | [Koko Eating Bananas](/dsa/problem/koko-eating-bananas) | Binary search on answer (speed), check feasibility | O(n log m) | O(1) |
 | 24 | [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) | Binary search on partition of smaller array | O(log min(m,n)) | O(1) |
 
 ## Linked List

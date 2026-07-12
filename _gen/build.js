@@ -127,8 +127,9 @@ P.push({ slug: 'search-insert-position', title: 'Search Insert Position', diffic
   },
   ref: function (a) { var n = a[0], t = a[1], lo = 0, hi = n.length; while (lo < hi) { var mid = (lo + hi) >> 1; if (n[mid] < t) lo = mid + 1; else hi = mid; } return lo; } });
 
-// Additional problems (with editorials) from problems2.js
+// Additional problems (with editorials) from problems2.js / problems3.js
 require('./problems2.js').MORE.forEach(function (p) { P.push(p); });
+require('./problems3.js').MORE3.forEach(function (p) { P.push(p); });
 
 // ---------- write ----------
 var indexRows = [];

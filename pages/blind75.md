@@ -123,7 +123,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 | 49 | [Number of Connected Components](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/) | Union-Find / DFS | Union-Find with path compression, count roots | O(V+E·α) |
 | 50 | [Graph Valid Tree](https://leetcode.com/problems/graph-valid-tree/) | Union-Find | Tree = connected + no cycle: E == V-1 + union-find no duplicate edge | O(V+E) |
 | 51 | [Alien Dictionary](https://leetcode.com/problems/alien-dictionary/) | Topological Sort | Build graph from word order, topo sort | O(C) |
-| 52 | [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/) | HashSet | For each num, if num-1 not in set → start counting up | O(n) |
+| 52 | [Longest Consecutive Sequence](/dsa/problem/longest-consecutive-sequence) | HashSet | For each num, if num-1 not in set → start counting up | O(n) |
 
 ## Dynamic Programming (11)
 
@@ -162,7 +162,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 71 | [Number of 1 Bits](https://leetcode.com/problems/number-of-1-bits/) | Bit Counting | `n & (n-1)` removes lowest set bit; count iterations | O(32) |
+| 71 | [Number of 1 Bits](/dsa/problem/number-of-1-bits) | Bit Counting | `n & (n-1)` removes lowest set bit; count iterations | O(32) |
 | 72 | [Counting Bits](https://leetcode.com/problems/counting-bits/) | DP + Bits | `dp[i] = dp[i >> 1] + (i & 1)` | O(n) |
 | 73 | [Reverse Bits](https://leetcode.com/problems/reverse-bits/) | Bit Manipulation | Shift result left, OR with `n & 1`, shift n right | O(32) |
 | 74 | [Missing Number](/dsa/problem/missing-number) | XOR | XOR all indices + all values → missing remains | O(n) |

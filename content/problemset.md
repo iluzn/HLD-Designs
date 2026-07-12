@@ -42,6 +42,16 @@ Solve problems in your browser — pick a language, implement the function, and 
 | 29 | [Palindrome Number](/dsa/problem/palindrome-number){:data-slug="palindrome-number"} | 🟢 Easy | Math |
 | 30 | [Min Cost Climbing Stairs](/dsa/problem/min-cost-climbing-stairs){:data-slug="min-cost-climbing-stairs"} | 🟢 Easy | Array, Dynamic Programming |
 | 31 | [Sqrt(x)](/dsa/problem/sqrtx){:data-slug="sqrtx"} | 🟢 Easy | Math, Binary Search |
+| 32 | [Longest Consecutive Sequence](/dsa/problem/longest-consecutive-sequence){:data-slug="longest-consecutive-sequence"} | 🟡 Medium | Array, Hash Table, Union Find |
+| 33 | [Find the Duplicate Number](/dsa/problem/find-the-duplicate-number){:data-slug="find-the-duplicate-number"} | 🟡 Medium | Array, Two Pointers, Binary Search |
+| 34 | [Squares of a Sorted Array](/dsa/problem/squares-of-a-sorted-array){:data-slug="squares-of-a-sorted-array"} | 🟢 Easy | Array, Two Pointers, Sorting |
+| 35 | [First Unique Character in a String](/dsa/problem/first-unique-character-in-a-string){:data-slug="first-unique-character-in-a-string"} | 🟢 Easy | String, Hash Table, Queue |
+| 36 | [Is Subsequence](/dsa/problem/is-subsequence){:data-slug="is-subsequence"} | 🟢 Easy | String, Two Pointers, Dynamic Programming |
+| 37 | [Number of 1 Bits](/dsa/problem/number-of-1-bits){:data-slug="number-of-1-bits"} | 🟢 Easy | Bit Manipulation |
+| 38 | [Koko Eating Bananas](/dsa/problem/koko-eating-bananas){:data-slug="koko-eating-bananas"} | 🟡 Medium | Array, Binary Search |
+| 39 | [Subarray Sum Equals K](/dsa/problem/subarray-sum-equals-k){:data-slug="subarray-sum-equals-k"} | 🟡 Medium | Array, Hash Table, Prefix Sum |
+| 40 | [Minimum Size Subarray Sum](/dsa/problem/minimum-size-subarray-sum){:data-slug="minimum-size-subarray-sum"} | 🟡 Medium | Array, Sliding Window, Two Pointers |
+| 41 | [Rotate Array](/dsa/problem/rotate-array){:data-slug="rotate-array"} | 🟡 Medium | Array, Two Pointers |
 
 {% include judge-firebase.html %}
 <script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>
