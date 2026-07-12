@@ -122,6 +122,8 @@
     .lc-kbd b { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text-muted); }
     .lc-editor-wrap { flex: 1; min-height: 0; position: relative; }
     .lc-editor-wrap .CodeMirror { height: 100%; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+    /* Disable programming ligatures so != stays "!=" (not "≠"), >= stays ">=", etc. */
+    .CodeMirror, .CodeMirror-line, .lc-sol-code, .lc-sub-code, .lc-io-box, .lc-left code, .lc-editorial code, .lc-fmt-note code, pre, code { font-variant-ligatures: none !important; -webkit-font-feature-settings: "liga" 0, "calt" 0 !important; font-feature-settings: "liga" 0, "calt" 0 !important; }
 
     /* ---- Console (right bottom) ---- */
     .lc-console { border-top: 1px solid var(--border); background: var(--panel); display: flex; flex-direction: column; max-height: 46%; }

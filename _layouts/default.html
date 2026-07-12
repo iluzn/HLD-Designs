@@ -130,6 +130,8 @@
 
         /* Code blocks — glassmorphism */
         .content code { font-family: 'JetBrains Mono', monospace; font-size: 0.83em; padding: 2px 7px; border-radius: 5px; }
+        /* Disable programming ligatures so operators like != render literally, not as ≠ */
+        .content code, .content pre, .content pre code, pre[class*="language-"], code[class*="language-"] { font-variant-ligatures: none !important; -webkit-font-feature-settings: "liga" 0, "calt" 0 !important; font-feature-settings: "liga" 0, "calt" 0 !important; }
         [data-theme="dark"] .content code { background: rgba(30,30,50,0.8); color: #c4b5fd; border: 1px solid rgba(255,255,255,0.08); }
         [data-theme="light"] .content code { background: rgba(79,70,229,0.08); color: #3730a3; border: 1px solid rgba(79,70,229,0.15); }
         .content pre { position: relative; background: var(--code-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.2rem 1.4rem; overflow-x: auto; margin-bottom: 1.5rem; backdrop-filter: blur(8px); }
