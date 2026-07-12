@@ -44,9 +44,11 @@
 </style>
 <script>
 (function () {
+  function init(tries) {
   var P = window.SC_PROBLEMS || [];
   var root = document.getElementById('ps-root');
   if (!root) return;
+  if (!P.length && (tries || 0) < 20) { setTimeout(function () { init((tries || 0) + 1); }, 100); return; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   var params = new URLSearchParams(location.search);
   var state = { q: '', diff: 'all', status: 'all', topic: params.get('topic') || 'all' };
@@ -140,5 +142,7 @@
   if (window._scJudgeReady) render();
   document.addEventListener('sc-judge-ready', render);
   setTimeout(render, 1500);
+  }
+  if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', function () { init(); });
 })();
 </script>
