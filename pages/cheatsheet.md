@@ -95,7 +95,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 | 36 | [Clone Graph](https://leetcode.com/problems/clone-graph/) | BFS/DFS + HashMap (old node → new node) | O(V+E) | O(V) |
 | 37 | [Course Schedule](/dsa/problem/course-schedule) | Topological sort (BFS Kahn's or DFS cycle detection) | O(V+E) | O(V+E) |
 | 38 | [Word Ladder](/dsa/problem/word-ladder) | BFS level-by-level, change one char at a time | O(n·26·L) | O(n·L) |
-| 39 | [Dijkstra's Shortest Path](https://leetcode.com/problems/network-delay-time/) | Min-heap + relaxation | O((V+E) log V) | O(V) |
+| 39 | [Dijkstra's Shortest Path](/dsa/problem/network-delay-time) | Min-heap + relaxation | O((V+E) log V) | O(V) |
 
 ## Dynamic Programming
 

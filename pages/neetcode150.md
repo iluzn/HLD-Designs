@@ -62,7 +62,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 23 | [Evaluate Reverse Polish Notation](/dsa/problem/evaluate-reverse-polish-notation) | Stack of numbers, pop 2 on operator | O(n) |
 | 24 | [Generate Parentheses](/dsa/problem/generate-parentheses) | Backtracking with open/close count | O(4^n/√n) |
 | 25 | [Daily Temperatures](/dsa/problem/daily-temperatures) | Monotonic decreasing stack, pop when warmer | O(n) |
-| 26 | [Car Fleet](https://leetcode.com/problems/car-fleet/) | Sort by position desc, stack by time to reach target | O(n log n) |
+| 26 | [Car Fleet](/dsa/problem/car-fleet) | Sort by position desc, stack by time to reach target | O(n log n) |
 | 27 | [Largest Rectangle in Histogram](/dsa/problem/largest-rectangle-in-histogram) | Monotonic stack for next-smaller on both sides | O(n) |
 
 ## Binary Search (7)
@@ -171,7 +171,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 |---|---|---|---|
 | 93 | [Reconstruct Itinerary](https://leetcode.com/problems/reconstruct-itinerary/) | DFS + sort adjacency (Hierholzer's) | O(E log E) |
 | 94 | [Min Cost to Connect All Points](/dsa/problem/min-cost-to-connect-all-points) | Prim's MST with min-heap | O(n² log n) |
-| 95 | [Network Delay Time](https://leetcode.com/problems/network-delay-time/) | Dijkstra from source | O((V+E) log V) |
+| 95 | [Network Delay Time](/dsa/problem/network-delay-time) | Dijkstra from source | O((V+E) log V) |
 | 96 | [Swim in Rising Water](/dsa/problem/swim-in-rising-water) | Binary search + BFS or Dijkstra on grid | O(n² log n) |
 | 97 | [Alien Dictionary](https://leetcode.com/problems/alien-dictionary/) | Build DAG from word order, topo sort | O(C) |
 | 98 | [Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/) | Bellman-Ford K iterations or BFS with layers | O(K×E) |
@@ -216,7 +216,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 122 | [Jump Game II](/dsa/problem/jump-game-ii) | BFS-style levels (current reach, next reach) | O(n) |
 | 123 | [Gas Station](https://leetcode.com/problems/gas-station/) | If total gas >= total cost, solution exists; find start via running sum | O(n) |
 | 124 | [Hand of Straights](/dsa/problem/hand-of-straights) | Sort + greedily form groups with HashMap | O(n log n) |
-| 125 | [Merge Triplets to Form Target](https://leetcode.com/problems/merge-triplets-to-form-target-triplet/) | For each triplet, check if any coordinate matches without exceeding | O(n) |
+| 125 | [Merge Triplets to Form Target](/dsa/problem/merge-triplets-to-form-target-triplet) | For each triplet, check if any coordinate matches without exceeding | O(n) |
 | 126 | [Partition Labels](/dsa/problem/partition-labels) | Last occurrence of each char; extend end, split when i == end | O(n) |
 | 127 | [Valid Parenthesis String](/dsa/problem/valid-parenthesis-string) | Track min/max open count range | O(n) |
 

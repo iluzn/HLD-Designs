@@ -816,4 +816,46 @@ T.CHARGRID_STR_BOOL = function (fn) {
   };
 };
 
+// (int target, int[] a, int[] b) -> int   (whitespace: target, n, a[n], b[n])
+T.INT_ARR_ARR_INT = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, target, position, speed):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _t=int(_d[_p]);_p+=1', '    _n=int(_d[_p]);_p+=1', '    _a=list(map(int,_d[_p:_p+_n]));_p+=_n', '    _b=list(map(int,_d[_p:_p+_n]));_p+=_n', '    _o.append(str(Solution().' + fn + '(_t,_a,_b)))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number} target', ' * @param {number[]} position', ' * @param {number[]} speed', ' * @return {number}', ' */', 'var ' + fn + ' = function(target, position, speed) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", 'for(let _i=0;_i<_T;_i++){const _t=+_d[_p++];const _n=+_d[_p++];const _a=_d.slice(_p,_p+_n).map(Number);_p+=_n;const _b=_d.slice(_p,_p+_n).map(Number);_p+=_n;_o.push(String(' + fn + '(_t,_a,_b)));}', "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    int ' + fn + '(int target, vector<int>& position, vector<int>& speed) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int t,n;cin>>t>>n;vector<int> a(n),b(n);for(int i=0;i<n;i++)cin>>a[i];for(int i=0;i<n;i++)cin>>b[i];cout<<Solution().' + fn + '(t,a,b)<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public int ' + fn + '(int target, int[] position, int[] speed) {', '        // Write your code here', '        return 0;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] z){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int t=sc.nextInt();int n=sc.nextInt();int[] a=new int[n];int[] b=new int[n];for(int i=0;i<n;i++)a[i]=sc.nextInt();for(int i=0;i<n;i++)b[i]=sc.nextInt();sb.append(new Solution().' + fn + '(t,a,b)).append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (int[][] triplets, int[] target(3)) -> boolean   (whitespace: R, C, grid, 3 target ints)
+T.GRID_TRIP_BOOL = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, triplets, target):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _R=int(_d[_p]);_p+=1', '    _C=int(_d[_p]);_p+=1', '    _g=[]', '    for _r in range(_R):', '        _g.append(list(map(int,_d[_p:_p+_C])));_p+=_C', '    _t=list(map(int,_d[_p:_p+3]));_p+=3', "    _o.append('true' if Solution()." + fn + "(_g,_t) else 'false')", "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number[][]} triplets', ' * @param {number[]} target', ' * @return {boolean}', ' */', 'var ' + fn + ' = function(triplets, target) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _R=+_d[_p++];const _C=+_d[_p++];const _g=[];for(let _r=0;_r<_R;_r++){_g.push(_d.slice(_p,_p+_C).map(Number));_p+=_C;}const _t=_d.slice(_p,_p+3).map(Number);_p+=3;_o.push(" + fn + "(_g,_t)?'true':'false');}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    bool ' + fn + '(vector<vector<int>>& triplets, vector<int>& target) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int R,C;cin>>R>>C;vector<vector<int>> g(R,vector<int>(C));for(int i=0;i<R;i++)for(int j=0;j<C;j++)cin>>g[i][j];vector<int> t(3);for(int i=0;i<3;i++)cin>>t[i];cout<<(Solution().' + fn + '(g,t)?"true":"false")<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public boolean ' + fn + '(int[][] triplets, int[] target) {', '        // Write your code here', '        return false;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int R=sc.nextInt();int C=sc.nextInt();int[][] g=new int[R][C];for(int i=0;i<R;i++)for(int j=0;j<C;j++)g[i][j]=sc.nextInt();int[] t=new int[3];for(int i=0;i<3;i++)t[i]=sc.nextInt();sb.append(new Solution().' + fn + '(g,t)?"true":"false").append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (int[][] grid, int n, int k) -> int   (whitespace: R, C, grid, n, k)
+T.GRID_INT_INT_INT = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, times, n, k):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _R=int(_d[_p]);_p+=1', '    _C=int(_d[_p]);_p+=1', '    _g=[]', '    for _r in range(_R):', '        _g.append(list(map(int,_d[_p:_p+_C])));_p+=_C', '    _n=int(_d[_p]);_p+=1', '    _k=int(_d[_p]);_p+=1', '    _o.append(str(Solution().' + fn + '(_g,_n,_k)))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number[][]} times', ' * @param {number} n', ' * @param {number} k', ' * @return {number}', ' */', 'var ' + fn + ' = function(times, n, k) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", 'for(let _i=0;_i<_T;_i++){const _R=+_d[_p++];const _C=+_d[_p++];const _g=[];for(let _r=0;_r<_R;_r++){_g.push(_d.slice(_p,_p+_C).map(Number));_p+=_C;}const _n=+_d[_p++];const _k=+_d[_p++];_o.push(String(' + fn + '(_g,_n,_k)));}', "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    int ' + fn + '(vector<vector<int>>& times, int n, int k) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int R,C;cin>>R>>C;vector<vector<int>> g(R,vector<int>(C));for(int i=0;i<R;i++)for(int j=0;j<C;j++)cin>>g[i][j];int n,k;cin>>n>>k;cout<<Solution().' + fn + '(g,n,k)<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public int ' + fn + '(int[][] times, int n, int k) {', '        // Write your code here', '        return 0;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int R=sc.nextInt();int C=sc.nextInt();int[][] g=new int[R][C];for(int i=0;i<R;i++)for(int j=0;j<C;j++)g[i][j]=sc.nextInt();int n=sc.nextInt();int k=sc.nextInt();sb.append(new Solution().' + fn + '(g,n,k)).append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
 module.exports = { T, randInt, randArr, arrStr, ln };

@@ -50,6 +50,12 @@ function stdinOf(type, args) {
       return args[0] + '\n' + args[1] + '\n' + args[2];
     case 'CHARGRID_STR_BOOL':
       return args[0].length + ' ' + (args[0][0] ? args[0][0].length : 0) + '\n' + args[0].join('\n') + '\n' + args[1];
+    case 'INT_ARR_ARR_INT':
+      return args[0] + '\n' + args[1].length + '\n' + args[1].join(' ') + '\n' + args[2].join(' ');
+    case 'GRID_TRIP_BOOL':
+      return args[0].length + ' ' + (args[0][0] ? args[0][0].length : 0) + '\n' + args[0].map(function (r) { return r.join(' '); }).join('\n') + '\n' + args[1].join(' ');
+    case 'GRID_INT_INT_INT':
+      return args[0].length + ' ' + (args[0][0] ? args[0][0].length : 0) + '\n' + args[0].map(function (r) { return r.join(' '); }).join('\n') + '\n' + args[1] + ' ' + args[2];
     case 'LIST_ARR': return args[0].length + '\n' + args[0].join(' ');
     case 'LIST_LIST_ARR': return args[0].length + '\n' + args[0].join(' ') + '\n' + args[1].length + '\n' + args[1].join(' ');
     case 'LIST_INT_ARR': case 'LIST_POS_BOOL': return args[0].length + '\n' + args[0].join(' ') + '\n' + args[1];
@@ -107,6 +113,9 @@ function displayOf(type, args) {
       return { board: '[' + args[0].map(function (r) { return '"' + r + '"'; }).join(',') + ']' };
     case 'ARR_INT_BOOL': return { hand: arrStr(args[0]), k: '' + args[1] };
     case 'STR_STR_STR_BOOL': return { s1: '"' + args[0] + '"', s2: '"' + args[1] + '"', s3: '"' + args[2] + '"' };
+    case 'INT_ARR_ARR_INT': return { target: '' + args[0], position: arrStr(args[1]), speed: arrStr(args[2]) };
+    case 'GRID_TRIP_BOOL': return { triplets: '[' + args[0].map(function (r) { return '[' + r.join(',') + ']'; }).join(',') + ']', target: arrStr(args[1]) };
+    case 'GRID_INT_INT_INT': return { times: '[' + args[0].map(function (r) { return '[' + r.join(',') + ']'; }).join(',') + ']', n: '' + args[1], k: '' + args[2] };
     case 'LIST_ARR': return { head: arrStr(args[0]) };
     case 'LIST_LIST_ARR': return { l1: arrStr(args[0]), l2: arrStr(args[1]) };
     case 'LIST_INT_ARR': return { head: arrStr(args[0]), k: '' + args[1] };

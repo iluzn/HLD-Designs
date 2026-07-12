@@ -147,6 +147,9 @@ Solve problems in your browser — pick a language, implement the function, and 
 | 134 | [Interleaving String](/dsa/problem/interleaving-string){:data-slug="interleaving-string"} | 🟡 Medium | String, Dynamic Programming |
 | 135 | [Word Search](/dsa/problem/word-search){:data-slug="word-search"} | 🟡 Medium | Array, Backtracking, Matrix |
 | 136 | [Task Scheduler](/dsa/problem/task-scheduler){:data-slug="task-scheduler"} | 🟡 Medium | Array, Greedy, Heap, Hash Table |
+| 137 | [Car Fleet](/dsa/problem/car-fleet){:data-slug="car-fleet"} | 🟡 Medium | Array, Stack, Sorting, Monotonic Stack |
+| 138 | [Merge Triplets to Form Target Triplet](/dsa/problem/merge-triplets-to-form-target-triplet){:data-slug="merge-triplets-to-form-target-triplet"} | 🟡 Medium | Array, Greedy |
+| 139 | [Network Delay Time](/dsa/problem/network-delay-time){:data-slug="network-delay-time"} | 🟡 Medium | Graph, Dijkstra, Heap, Shortest Path |
 
 {% include judge-firebase.html %}
 <script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>
