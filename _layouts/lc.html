@@ -137,6 +137,16 @@
     .lc-io-label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin: 0.6rem 0 0.25rem; }
     .lc-io-box { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.7rem; white-space: pre-wrap; word-break: break-word; color: var(--text); }
     .lc-io-box.bad { border-color: rgba(239,68,68,0.4); color: #f87171; }
+    .lc-fmt-note { font-size: 0.72rem; color: var(--text-muted); margin: 0.55rem 0 0.1rem; line-height: 1.4; }
+    .lc-fmt-note code { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; background: var(--panel-2); padding: 0.02rem 0.28rem; border-radius: 4px; }
+    .lc-diagram { background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem; margin: 0.5rem 0 0.3rem; overflow-x: auto; text-align: center; }
+    .lc-diagram .lc-dg { max-width: 100%; height: auto; }
+    .lc-dg-node { fill: var(--panel); stroke: var(--accent, #f59e0b); stroke-width: 2; }
+    .lc-dg-edge { stroke: var(--text-dim); stroke-width: 2; }
+    .lc-dg-arrow { fill: var(--text-dim); }
+    .lc-dg-text { fill: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; }
+    .lc-dg-cell { fill: var(--panel); stroke: var(--border); stroke-width: 1; }
+    .lc-dg-empty { color: var(--text-muted); font-style: italic; font-size: 0.8rem; padding: 0.4rem; }
     .lc-verdict { font-size: 1rem; font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.6rem; }
     .lc-verdict.ac { color: #22c55e; } .lc-verdict.wa { color: #ef4444; } .lc-verdict.run { color: var(--text-muted); font-weight: 600; }
     .lc-spinner { display:inline-block; width:15px; height:15px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:lc-spin 0.7s linear infinite; }

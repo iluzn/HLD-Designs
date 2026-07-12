@@ -143,6 +143,71 @@
 
   function caseInputStr(c) { return c.display ? Object.keys(c.display).map(function (k) { return k + ' = ' + c.display[k]; }).join('\n') : c.stdin; }
 
+  // ---- LeetCode-style diagrams + input format hints for the sample cases ----
+  function scParse(v) { try { return JSON.parse(v); } catch (e) { return null; } }
+  function scBuildTree(arr) {
+    if (!arr || !arr.length || arr[0] === null) return null;
+    var root = { val: arr[0], left: null, right: null }, q = [root], i = 1;
+    while (q.length && i < arr.length) {
+      var n = q.shift();
+      if (i < arr.length && arr[i] !== null) { n.left = { val: arr[i], left: null, right: null }; q.push(n.left); } i++;
+      if (i < arr.length && arr[i] !== null) { n.right = { val: arr[i], left: null, right: null }; q.push(n.right); } i++;
+    }
+    return root;
+  }
+  function scTreeSVG(arr) {
+    var root = scBuildTree(arr);
+    if (!root) return '<div class="lc-dg-empty">empty tree</div>';
+    var xc = 0, maxd = 0;
+    (function assign(n, d) { if (!n) return; assign(n.left, d + 1); n.x = xc++; n.y = d; if (d > maxd) maxd = d; assign(n.right, d + 1); })(root, 0);
+    var sx = 46, sy = 56, pad = 22, r = 15;
+    var nodes = []; (function collect(n) { if (!n) return; nodes.push(n); collect(n.left); collect(n.right); })(root);
+    function px(n) { return pad + r + n.x * sx; } function py(n) { return pad + r + n.y * sy; }
+    var W = pad * 2 + r * 2 + (xc - 1) * sx, H = pad * 2 + r * 2 + maxd * sy, edges = '', circ = '';
+    nodes.forEach(function (n) {
+      if (n.left) edges += '<line class="lc-dg-edge" x1="' + px(n) + '" y1="' + py(n) + '" x2="' + px(n.left) + '" y2="' + py(n.left) + '"/>';
+      if (n.right) edges += '<line class="lc-dg-edge" x1="' + px(n) + '" y1="' + py(n) + '" x2="' + px(n.right) + '" y2="' + py(n.right) + '"/>';
+    });
+    nodes.forEach(function (n) { circ += '<circle class="lc-dg-node" cx="' + px(n) + '" cy="' + py(n) + '" r="' + r + '"/><text class="lc-dg-text" x="' + px(n) + '" y="' + (py(n) + 4) + '" text-anchor="middle">' + n.val + '</text>'; });
+    return '<svg class="lc-dg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">' + edges + circ + '</svg>';
+  }
+  function scListSVG(arr) {
+    if (!arr || !arr.length) return '<div class="lc-dg-empty">empty list</div>';
+    var bw = 38, bh = 30, gap = 26, pad = 12, y = 12, x = pad, parts = '';
+    arr.forEach(function (v, i) {
+      parts += '<rect class="lc-dg-node" x="' + x + '" y="' + y + '" width="' + bw + '" height="' + bh + '" rx="5"/><text class="lc-dg-text" x="' + (x + bw / 2) + '" y="' + (y + bh / 2 + 4) + '" text-anchor="middle">' + v + '</text>';
+      if (i < arr.length - 1) parts += '<line class="lc-dg-edge" x1="' + (x + bw) + '" y1="' + (y + bh / 2) + '" x2="' + (x + bw + gap) + '" y2="' + (y + bh / 2) + '" marker-end="url(#scarrow)"/>';
+      x += bw + gap;
+    });
+    var W = x - gap + pad, H = bh + y * 2;
+    return '<svg class="lc-dg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '"><defs><marker id="scarrow" markerWidth="8" markerHeight="8" refX="6.5" refY="3" orient="auto"><path class="lc-dg-arrow" d="M0,0 L7,3 L0,6"/></marker></defs>' + parts + '</svg>';
+  }
+  function scGridSVG(g) {
+    if (!g || !g.length) return '';
+    var rows = g.map(function (row) { return typeof row === 'string' ? row.split('') : row; });
+    var R = rows.length, C = rows[0].length, cs = 30, pad = 6, parts = '';
+    for (var i = 0; i < R; i++) for (var j = 0; j < C; j++) {
+      var x = pad + j * cs, y = pad + i * cs;
+      parts += '<rect class="lc-dg-cell" x="' + x + '" y="' + y + '" width="' + cs + '" height="' + cs + '"/><text class="lc-dg-text" x="' + (x + cs / 2) + '" y="' + (y + cs / 2 + 4) + '" text-anchor="middle">' + rows[i][j] + '</text>';
+    }
+    return '<svg class="lc-dg" width="' + (pad * 2 + C * cs) + '" height="' + (pad * 2 + R * cs) + '" viewBox="0 0 ' + (pad * 2 + C * cs) + ' ' + (pad * 2 + R * cs) + '">' + parts + '</svg>';
+  }
+  function scDiagram(type, disp) {
+    if (!disp) return '';
+    var svg = '';
+    if (/^TREE/.test(type)) { var k = disp.root !== undefined ? 'root' : (disp.p !== undefined ? 'p' : null); if (k) svg = scTreeSVG(scParse(disp[k])); }
+    else if (/^LIST/.test(type)) { var k2 = disp.head !== undefined ? 'head' : (disp.l1 !== undefined ? 'l1' : null); if (k2) svg = scListSVG(scParse(disp[k2])); }
+    else if (/GRID/.test(type) && disp.grid !== undefined) { svg = scGridSVG(scParse(disp.grid)); }
+    return svg ? '<div class="lc-diagram">' + svg + '</div>' : '';
+  }
+  function scFormatNote(type) {
+    if (/^TREE/.test(type)) return 'Tree given in level-order (breadth-first); <code>null</code> marks a missing child.';
+    if (/^LIST/.test(type)) return 'Linked list values from head to tail.';
+    if (/^CHARGRID/.test(type)) return 'Character grid — one row per line.';
+    if (/GRID/.test(type)) return '2D grid — one row per line.';
+    return '';
+  }
+
   function renderCases() {
     var cs = P.cases.slice(0, SAMPLE);
     var tabs = cs.map(function (c, i) {
@@ -152,6 +217,9 @@
     }).join('');
     var c = cs[activeCase] || cs[0]; var body = '';
     if (c) {
+      body += scDiagram(P.type, c.display);
+      var note = scFormatNote(P.type);
+      if (note) body += '<div class="lc-fmt-note">' + note + '</div>';
       body += '<div class="lc-io-label">Input</div><div class="lc-io-box">' + esc(caseInputStr(c)) + '</div>';
       body += '<div class="lc-io-label">Expected</div><div class="lc-io-box">' + esc(c.expected) + '</div>';
       var res = lastResults && lastResults.results[activeCase];
