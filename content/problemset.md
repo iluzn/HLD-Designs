@@ -52,6 +52,16 @@ Solve problems in your browser — pick a language, implement the function, and 
 | 39 | [Subarray Sum Equals K](/dsa/problem/subarray-sum-equals-k){:data-slug="subarray-sum-equals-k"} | 🟡 Medium | Array, Hash Table, Prefix Sum |
 | 40 | [Minimum Size Subarray Sum](/dsa/problem/minimum-size-subarray-sum){:data-slug="minimum-size-subarray-sum"} | 🟡 Medium | Array, Sliding Window, Two Pointers |
 | 41 | [Rotate Array](/dsa/problem/rotate-array){:data-slug="rotate-array"} | 🟡 Medium | Array, Two Pointers |
+| 42 | [Maximum Depth of Binary Tree](/dsa/problem/maximum-depth-of-binary-tree){:data-slug="maximum-depth-of-binary-tree"} | 🟢 Easy | Tree, DFS, BFS |
+| 43 | [Minimum Depth of Binary Tree](/dsa/problem/minimum-depth-of-binary-tree){:data-slug="minimum-depth-of-binary-tree"} | 🟢 Easy | Tree, DFS, BFS |
+| 44 | [Balanced Binary Tree](/dsa/problem/balanced-binary-tree){:data-slug="balanced-binary-tree"} | 🟢 Easy | Tree, DFS |
+| 45 | [Symmetric Tree](/dsa/problem/symmetric-tree){:data-slug="symmetric-tree"} | 🟢 Easy | Tree, DFS, BFS |
+| 46 | [Diameter of Binary Tree](/dsa/problem/diameter-of-binary-tree){:data-slug="diameter-of-binary-tree"} | 🟢 Easy | Tree, DFS |
+| 47 | [Binary Tree Inorder Traversal](/dsa/problem/binary-tree-inorder-traversal){:data-slug="binary-tree-inorder-traversal"} | 🟢 Easy | Tree, DFS, Stack |
+| 48 | [Binary Tree Preorder Traversal](/dsa/problem/binary-tree-preorder-traversal){:data-slug="binary-tree-preorder-traversal"} | 🟢 Easy | Tree, DFS, Stack |
+| 49 | [Binary Tree Postorder Traversal](/dsa/problem/binary-tree-postorder-traversal){:data-slug="binary-tree-postorder-traversal"} | 🟢 Easy | Tree, DFS, Stack |
+| 50 | [Sum of Left Leaves](/dsa/problem/sum-of-left-leaves){:data-slug="sum-of-left-leaves"} | 🟢 Easy | Tree, DFS |
+| 51 | [Count Complete Tree Nodes](/dsa/problem/count-complete-tree-nodes){:data-slug="count-complete-tree-nodes"} | 🟢 Easy | Tree, DFS, Binary Search |
 
 {% include judge-firebase.html %}
 <script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>

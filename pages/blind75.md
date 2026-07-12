@@ -78,7 +78,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
 | 26 | [Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/) | DFS | Recursively swap left/right children | O(n) |
-| 27 | [Maximum Depth of Binary Tree](https://leetcode.com/problems/maximum-depth-of-binary-tree/) | DFS | `1 + max(left, right)` | O(n) |
+| 27 | [Maximum Depth of Binary Tree](/dsa/problem/maximum-depth-of-binary-tree) | DFS | `1 + max(left, right)` | O(n) |
 | 28 | [Same Tree](https://leetcode.com/problems/same-tree/) | DFS | Compare both nodes recursively | O(n) |
 | 29 | [Subtree of Another Tree](https://leetcode.com/problems/subtree-of-another-tree/) | DFS | For each node, check `isSameTree` | O(m×n) |
 | 30 | [Lowest Common Ancestor of BST](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/) | BST Property | Both < node → go left; both > → go right; else found | O(h) |

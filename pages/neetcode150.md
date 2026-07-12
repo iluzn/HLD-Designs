@@ -98,9 +98,9 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | # | Problem | Approach | Time |
 |---|---|---|---|
 | 46 | [Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/) | Swap children recursively | O(n) |
-| 47 | [Maximum Depth](https://leetcode.com/problems/maximum-depth-of-binary-tree/) | `1 + max(left, right)` | O(n) |
-| 48 | [Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree/) | At each node: leftH + rightH; track global max | O(n) |
-| 49 | [Balanced Binary Tree](https://leetcode.com/problems/balanced-binary-tree/) | Check `abs(leftH - rightH) <= 1` at every node | O(n) |
+| 47 | [Maximum Depth](/dsa/problem/maximum-depth-of-binary-tree) | `1 + max(left, right)` | O(n) |
+| 48 | [Diameter of Binary Tree](/dsa/problem/diameter-of-binary-tree) | At each node: leftH + rightH; track global max | O(n) |
+| 49 | [Balanced Binary Tree](/dsa/problem/balanced-binary-tree) | Check `abs(leftH - rightH) <= 1` at every node | O(n) |
 | 50 | [Same Tree](https://leetcode.com/problems/same-tree/) | Compare both nodes recursively | O(n) |
 | 51 | [Subtree of Another Tree](https://leetcode.com/problems/subtree-of-another-tree/) | For each node, isSameTree check | O(m×n) |
 | 52 | [Lowest Common Ancestor of BST](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/) | BST property: split point is LCA | O(h) |

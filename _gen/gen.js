@@ -153,4 +153,37 @@ T.INT_BOOL = function (fn) {
   };
 };
 
+// ---------- Binary tree types (level-order input with "null" markers) ----------
+// ret: 'int' | 'bool' | 'arr'
+function treeType(fn, ret) {
+  var pyOut = ret === 'bool' ? "('true' if _r else 'false')" : (ret === 'arr' ? "' '.join(map(str,_r))" : 'str(_r)');
+  var jsOut = ret === 'bool' ? "(_r?'true':'false')" : (ret === 'arr' ? "_r.join(' ')" : 'String(_r)');
+  var cppType = ret === 'bool' ? 'bool' : (ret === 'arr' ? 'vector<int>' : 'int');
+  var javaType = ret === 'bool' ? 'boolean' : (ret === 'arr' ? 'int[]' : 'int');
+  var javaRet = ret === 'bool' ? 'false' : (ret === 'arr' ? 'new int[]{}' : '0');
+  var cppPrint = ret === 'bool' ? 'cout<<(_r?"true":"false")<<"\\n";' : (ret === 'arr' ? 'for(size_t i=0;i<_r.size();i++){if(i)cout<<\' \';cout<<_r[i];}cout<<"\\n";' : 'cout<<_r<<"\\n";');
+  var javaPrint = ret === 'bool' ? 'sb.append(_r?"true":"false").append("\\n");' : (ret === 'arr' ? 'for(int i=0;i<_r.length;i++){if(i>0)sb.append(\' \');sb.append(_r[i]);}sb.append("\\n");' : 'sb.append(_r).append("\\n");');
+  return {
+    python: {
+      stub: ln('class TreeNode:', '    def __init__(self, val=0, left=None, right=None):', '        self.val = val', '        self.left = left', '        self.right = right', '', 'class Solution:', '    def ' + fn + '(self, root):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', 'from collections import deque', 'def _bt(t):', '    if not t or t[0]=="null": return None', '    root=TreeNode(int(t[0])); q=deque([root]); i=1', '    while q and i<len(t):', '        n=q.popleft()', '        if i<len(t) and t[i]!="null":', '            n.left=TreeNode(int(t[i])); q.append(n.left)', '        i+=1', '        if i<len(t) and t[i]!="null":', '            n.right=TreeNode(int(t[i])); q.append(n.right)', '        i+=1', '    return root', '_L=sys.stdin.read().split("\\n"); _T=int(_L[0]); _o=[]', 'for _i in range(_T):', '    _t=_L[1+_i].split() if 1+_i<len(_L) else []', '    _r=Solution().' + fn + '(_bt(_t))', '    _o.append(' + pyOut + ')', 'print("\\n".join(_o))'),
+    },
+    javascript: {
+      stub: ln('/**', ' * Tree node shape: { val, left, right }', ' * @param {TreeNode} root', ' * @return {' + (ret === 'bool' ? 'boolean' : ret === 'arr' ? 'number[]' : 'number') + '}', ' */', 'var ' + fn + ' = function(root) {', '    // Write your code here', '};'),
+      harness: ln('function _bt(line){', '  const t=line.split(/\\s+/).filter(x=>x.length);', '  if(!t.length||t[0]==="null")return null;', '  const root={val:+t[0],left:null,right:null}; const q=[root]; let i=1;', '  while(q.length&&i<t.length){', '    const n=q.shift();', '    if(i<t.length&&t[i]!=="null"){n.left={val:+t[i],left:null,right:null};q.push(n.left);} i++;', '    if(i<t.length&&t[i]!=="null"){n.right={val:+t[i],left:null,right:null};q.push(n.right);} i++;', '  }', '  return root;', '}', 'const _L=require("fs").readFileSync(0,"utf8").split("\\n"); const _T=+_L[0]; const _o=[];', 'for(let _i=0;_i<_T;_i++){ const _r=' + fn + '(_bt((_L[1+_i]||"").replace(/\\r$/,""))); _o.push(' + jsOut + '); }', 'console.log(_o.join("\\n"));'),
+    },
+    cpp: {
+      stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'struct TreeNode {', '    int val; TreeNode *left, *right;', '    TreeNode(int v): val(v), left(nullptr), right(nullptr) {}', '};', '', 'class Solution {', 'public:', '    ' + cppType + ' ' + fn + '(TreeNode* root) {', '        // Write your code here', '    }', '};'),
+      harness: ln('TreeNode* _bt(string line){', '  istringstream is(line); vector<string> t; string x; while(is>>x) t.push_back(x);', '  if(t.empty()||t[0]=="null") return nullptr;', '  TreeNode* root=new TreeNode(stoi(t[0])); queue<TreeNode*> q; q.push(root); size_t i=1;', '  while(!q.empty()&&i<t.size()){', '    TreeNode* n=q.front(); q.pop();', '    if(i<t.size()&&t[i]!="null"){n->left=new TreeNode(stoi(t[i]));q.push(n->left);} i++;', '    if(i<t.size()&&t[i]!="null"){n->right=new TreeNode(stoi(t[i]));q.push(n->right);} i++;', '  }', '  return root;', '}', 'int main(){', '  string line; getline(cin,line); int T=stoi(line);', '  for(int c=0;c<T;c++){ string l; if(!getline(cin,l))l=""; auto _r=Solution().' + fn + '(_bt(l)); ' + cppPrint + ' }', '}'),
+    },
+    java: {
+      stub: ln('import java.util.*;', '', 'class TreeNode {', '    int val; TreeNode left, right;', '    TreeNode(int v) { val = v; }', '}', '', 'class Solution {', '    public ' + javaType + ' ' + fn + '(TreeNode root) {', '        // Write your code here', '        return ' + javaRet + ';', '    }', '}'),
+      harness: ln('public class Main {', '  static TreeNode bt(String line){', '    if(line==null) return null;', '    String[] t=line.trim().split("\\\\s+");', '    if(t.length==0||t[0].isEmpty()||t[0].equals("null")) return null;', '    TreeNode root=new TreeNode(Integer.parseInt(t[0]));', '    Queue<TreeNode> q=new LinkedList<>(); q.add(root); int i=1;', '    while(!q.isEmpty()&&i<t.length){', '      TreeNode n=q.poll();', '      if(i<t.length&&!t[i].equals("null")){n.left=new TreeNode(Integer.parseInt(t[i]));q.add(n.left);} i++;', '      if(i<t.length&&!t[i].equals("null")){n.right=new TreeNode(Integer.parseInt(t[i]));q.add(n.right);} i++;', '    }', '    return root;', '  }', '  public static void main(String[] a){', '    Scanner sc=new Scanner(System.in);', '    int T=Integer.parseInt(sc.nextLine().trim());', '    StringBuilder sb=new StringBuilder();', '    for(int c=0;c<T;c++){', '      String line=sc.hasNextLine()?sc.nextLine():"";', '      ' + javaType + ' _r=new Solution().' + fn + '(bt(line));', '      ' + javaPrint, '    }', '    System.out.print(sb);', '  }', '}'),
+    },
+  };
+}
+T.TREE_INT = function (fn) { return treeType(fn, 'int'); };
+T.TREE_BOOL = function (fn) { return treeType(fn, 'bool'); };
+T.TREE_ARR = function (fn) { return treeType(fn, 'arr'); };
+
 module.exports = { T, randInt, randArr, arrStr, ln };

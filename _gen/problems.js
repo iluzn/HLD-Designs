@@ -13,6 +13,8 @@ function stdinOf(type, args) {
     case 'INT_INT': case 'INT_BOOL': return '' + args[0];
     case 'STR_BOOL': case 'STR_INT': return args[0];
     case 'STR_STR_BOOL': return args[0] + '\n' + args[1];
+    case 'TREE_INT': case 'TREE_BOOL': case 'TREE_ARR':
+      return args[0].map(function (x) { return x === null ? 'null' : x; }).join(' ');
     default: return '';
   }
 }
@@ -23,6 +25,8 @@ function displayOf(type, args) {
     case 'INT_INT': case 'INT_BOOL': return { n: '' + args[0] };
     case 'STR_BOOL': case 'STR_INT': return { s: '"' + args[0] + '"' };
     case 'STR_STR_BOOL': return { s: '"' + args[0] + '"', t: '"' + args[1] + '"' };
+    case 'TREE_INT': case 'TREE_BOOL': case 'TREE_ARR':
+      return { root: '[' + args[0].map(function (x) { return x === null ? 'null' : x; }).join(',') + ']' };
     default: return {};
   }
 }
