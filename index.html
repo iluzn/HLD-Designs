@@ -504,6 +504,9 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
         var target = parseInt(el.textContent.replace(/[^0-9]/g, ''));
         var suffix = el.textContent.replace(/[0-9]/g, '');
         if (isNaN(target) || target === 0) return;
+        // Branded/approximate values like "150+" must not flash intermediate
+        // numbers (e.g. "99+") — show the final value directly.
+        if (suffix.trim()) { el.textContent = target + suffix; return; }
 
         var duration = 1200;
         var startTime = null;

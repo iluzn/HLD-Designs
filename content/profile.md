@@ -52,6 +52,8 @@ permalink: /profile
 .pf-day { width:12px; height:12px; border-radius:3px; background:var(--border); }
 .pf-day.l1{background:rgba(34,197,94,0.35);} .pf-day.l2{background:rgba(34,197,94,0.55);} .pf-day.l3{background:rgba(34,197,94,0.78);} .pf-day.l4{background:#22c55e;}
 .pf-months { display:flex; gap:3px; font-size:0.62rem; color:var(--text-dim); margin-bottom:3px; }
+.pf-mon { width:12px; display:inline-block; overflow:visible; white-space:nowrap; }
+.pf-day.fut { background:transparent; }
 .pf-legend { font-size:0.7rem; color:var(--text-dim); margin-top:0.5rem; display:flex; align-items:center; gap:0.4rem; }
 
 .pf-bars { display:grid; gap:0.6rem; margin-bottom:1.2rem; }
@@ -157,14 +159,17 @@ permalink: /profile
     '</div>';
 
     // heatmap with month labels + streak line
+    // rolling 1-year window (53 weeks), aligned to week start
+    var WEEKS=53;
     var today=new Date(); today.setHours(0,0,0,0);
-    var start=new Date(today); start.setDate(start.getDate()-(25*7+today.getDay()));
+    var start=new Date(today); start.setDate(start.getDate()-((WEEKS-1)*7+today.getDay()));
     var cur=new Date(start), weeks=[], monthRow=[], lastMon=-1;
-    for(var w=0;w<26;w++){
+    for(var w=0;w<WEEKS;w++){
       var col=[]; var wkMonth=cur.getMonth();
-      for(var dd=0;dd<7;dd++){ var k2=dayKey(cur); var c=byDay[k2]||0; var lv=c===0?'':(c>=8?'l4':c>=4?'l3':c>=2?'l2':'l1'); col.push('<div class="pf-day '+lv+'" title="'+c+' submissions on '+k2+'"></div>'); cur.setDate(cur.getDate()+1); }
+      for(var dd=0;dd<7;dd++){ var k2=dayKey(cur); var c=byDay[k2]||0; var future=cur>today; var lv=future?'fut':(c===0?'':(c>=8?'l4':c>=4?'l3':c>=2?'l2':'l1')); col.push('<div class="pf-day '+lv+'" title="'+c+' submissions on '+k2+'"></div>'); cur.setDate(cur.getDate()+1); }
       weeks.push('<div class="pf-week">'+col.join('')+'</div>');
-      monthRow.push('<span style="width:12px;display:inline-block">'+(wkMonth!==lastMon?MON[wkMonth]:'')+'</span>'); lastMon=wkMonth;
+      // label a column only when its month differs from the previous column's
+      monthRow.push('<span class="pf-mon">'+(wkMonth!==lastMon?MON[wkMonth]:'')+'</span>'); lastMon=wkMonth;
     }
     html+='<div class="pf-sec">🔥 Submission Activity</div>';
     html+='<div class="pf-streakline">Current streak <b>'+sk.cur+'</b> day'+(sk.cur===1?'':'s')+' · Longest <b>'+sk.max+'</b> · '+subs.length+' total submissions</div>';
