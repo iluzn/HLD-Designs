@@ -568,6 +568,71 @@ T.ARRSTR_LISTSTR = function (fn) {
   };
 };
 
+// (int n, int[][] edges) -> boolean/int   (whitespace: n, m, then m pairs)
+function edgesNType(fn, ret) {
+  var pyOut = ret === 'bool' ? "('true' if _r else 'false')" : 'str(_r)';
+  var jsOut = ret === 'bool' ? "(_r?'true':'false')" : 'String(_r)';
+  var cppT = ret === 'bool' ? 'bool' : 'int';
+  var cppP = ret === 'bool' ? 'cout<<(_r?"true":"false")<<"\\n";' : 'cout<<_r<<"\\n";';
+  var jT = ret === 'bool' ? 'boolean' : 'int';
+  var jRet = ret === 'bool' ? 'false' : '0';
+  var jP = ret === 'bool' ? 'sb.append(_r?"true":"false").append("\\n");' : 'sb.append(_r).append("\\n");';
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, n, edges):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', 'sys.setrecursionlimit(100000)', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _n=int(_d[_p]);_p+=1', '    _m=int(_d[_p]);_p+=1', '    _edges=[]', '    for _e in range(_m):', '        _edges.append([int(_d[_p]),int(_d[_p+1])]);_p+=2', '    _r=Solution().' + fn + '(_n,_edges)', '    _o.append(' + pyOut + ')', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number} n', ' * @param {number[][]} edges', ' * @return {' + (ret === 'bool' ? 'boolean' : 'number') + '}', ' */', 'var ' + fn + ' = function(n, edges) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", 'for(let _i=0;_i<_T;_i++){const _n=+_d[_p++];const _m=+_d[_p++];const _edges=[];for(let _e=0;_e<_m;_e++){_edges.push([+_d[_p],+_d[_p+1]]);_p+=2;}const _r=' + fn + '(_n,_edges);_o.push(' + jsOut + ');}', "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    ' + cppT + ' ' + fn + '(int n, vector<vector<int>>& edges) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int n,m;cin>>n>>m;vector<vector<int>> edges(m,vector<int>(2));for(int i=0;i<m;i++)cin>>edges[i][0]>>edges[i][1];auto _r=Solution().' + fn + '(n,edges);' + cppP + '}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public ' + jT + ' ' + fn + '(int n, int[][] edges) {', '        // Write your code here', '        return ' + jRet + ';', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int n=sc.nextInt();int m=sc.nextInt();int[][] edges=new int[m][2];for(int i=0;i<m;i++){edges[i][0]=sc.nextInt();edges[i][1]=sc.nextInt();}' + jT + ' _r=new Solution().' + fn + '(n,edges);' + jP + '}System.out.print(sb);}}') },
+  };
+}
+T.INT_EDGES_BOOL = function (fn) { return edgesNType(fn, 'bool'); };
+T.INT_EDGES_INT = function (fn) { return edgesNType(fn, 'int'); };
+
+// (int[][] edges) -> int[]   (whitespace: m, then m pairs; output space-separated)
+T.EDGES_ARR = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, edges):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', 'sys.setrecursionlimit(100000)', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _m=int(_d[_p]);_p+=1', '    _edges=[]', '    for _e in range(_m):', '        _edges.append([int(_d[_p]),int(_d[_p+1])]);_p+=2', "    _o.append(' '.join(map(str,Solution()." + fn + '(_edges))))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number[][]} edges', ' * @return {number[]}', ' */', 'var ' + fn + ' = function(edges) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _m=+_d[_p++];const _edges=[];for(let _e=0;_e<_m;_e++){_edges.push([+_d[_p],+_d[_p+1]]);_p+=2;}_o.push(" + fn + "(_edges).join(' '));}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    vector<int> ' + fn + '(vector<vector<int>>& edges) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int m;cin>>m;vector<vector<int>> edges(m,vector<int>(2));for(int i=0;i<m;i++)cin>>edges[i][0]>>edges[i][1];vector<int> r=Solution().' + fn + '(edges);for(size_t i=0;i<r.size();i++){if(i)cout<<\' \';cout<<r[i];}cout<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public int[] ' + fn + '(int[][] edges) {', '        // Write your code here', '        return new int[]{};', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int m=sc.nextInt();int[][] edges=new int[m][2];for(int i=0;i<m;i++){edges[i][0]=sc.nextInt();edges[i][1]=sc.nextInt();}int[] r=new Solution().' + fn + '(edges);for(int i=0;i<r.length;i++){if(i>0)sb.append(\' \');sb.append(r[i]);}sb.append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (char[][] board) -> char[][]   (input R C then R row-strings; output rows joined by | )
+T.CHARGRID_GRID = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, board):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', 'sys.setrecursionlimit(100000)', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _R=int(_d[_p]);_p+=1', '    _C=int(_d[_p]);_p+=1', '    _g=[]', '    for _r in range(_R):', '        _g.append(list(_d[_p]));_p+=1', '    _res=Solution().' + fn + '(_g)', '    if _res is None: _res=_g', "    _o.append('|'.join(''.join(row) for row in _res))", "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {character[][]} board', ' * @return {character[][]}', ' */', 'var ' + fn + ' = function(board) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _R=+_d[_p++];const _C=+_d[_p++];const _g=[];for(let _r=0;_r<_R;_r++){_g.push(_d[_p++].split(''));}const _res=" + fn + "(_g)||_g;_o.push(_res.map(function(row){return row.join('');}).join('|'));}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    void ' + fn + '(vector<vector<char>>& board) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int R,C;cin>>R>>C;vector<vector<char>> g(R);for(int i=0;i<R;i++){string s;cin>>s;g[i]=vector<char>(s.begin(),s.end());}Solution().' + fn + '(g);string o;for(int i=0;i<R;i++){if(i)o+="|";for(char c:g[i])o+=c;}cout<<o<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public void ' + fn + '(char[][] board) {', '        // Write your code here', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int R=sc.nextInt();int C=sc.nextInt();char[][] g=new char[R][];for(int i=0;i<R;i++)g[i]=sc.next().toCharArray();new Solution().' + fn + '(g);StringBuilder o=new StringBuilder();for(int i=0;i<R;i++){if(i>0)o.append("|");o.append(new String(g[i]));}sb.append(o).append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (string beginWord, string endWord, string[] wordList) -> int   (whitespace: begin, end, count, words)
+T.STR_STR_ARRSTR_INT = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, beginWord, endWord, wordList):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _b=_d[_p];_p+=1', '    _e=_d[_p];_p+=1', '    _c=int(_d[_p]);_p+=1', '    _w=_d[_p:_p+_c];_p+=_c', '    _o.append(str(Solution().' + fn + '(_b,_e,list(_w))))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {string} beginWord', ' * @param {string} endWord', ' * @param {string[]} wordList', ' * @return {number}', ' */', 'var ' + fn + ' = function(beginWord, endWord, wordList) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", 'for(let _i=0;_i<_T;_i++){const _b=_d[_p++];const _e=_d[_p++];const _c=+_d[_p++];const _w=_d.slice(_p,_p+_c);_p+=_c;_o.push(String(' + fn + '(_b,_e,_w)));}', "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    int ' + fn + '(string beginWord, string endWord, vector<string>& wordList) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){string b,e;cin>>b>>e;int c;cin>>c;vector<string> w(c);for(int i=0;i<c;i++)cin>>w[i];cout<<Solution().' + fn + '(b,e,w)<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public int ' + fn + '(String beginWord, String endWord, List<String> wordList) {', '        // Write your code here', '        return 0;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){String b=sc.next();String e=sc.next();int c=sc.nextInt();List<String> w=new ArrayList<>();for(int i=0;i<c;i++)w.add(sc.next());sb.append(new Solution().' + fn + '(b,e,w)).append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
 // (char[][] grid) -> int   (whitespace: R, C, then R row-strings of length C)
 T.CHARGRID_INT = function (fn) {
   return {

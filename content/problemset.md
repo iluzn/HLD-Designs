@@ -134,6 +134,14 @@ Solve problems in your browser — pick a language, implement the function, and 
 | 121 | [Letter Combinations of a Phone Number](/dsa/problem/letter-combinations-of-a-phone-number){:data-slug="letter-combinations-of-a-phone-number"} | 🟡 Medium | String, Backtracking, Hash Table |
 | 122 | [3Sum](/dsa/problem/3sum){:data-slug="3sum"} | 🟡 Medium | Array, Two Pointers, Sorting |
 | 123 | [Group Anagrams](/dsa/problem/group-anagrams){:data-slug="group-anagrams"} | 🟡 Medium | Array, String, Hash Table, Sorting |
+| 124 | [Course Schedule](/dsa/problem/course-schedule){:data-slug="course-schedule"} | 🟡 Medium | Graph, Topological Sort, DFS, BFS |
+| 125 | [Number of Connected Components in an Undirected Graph](/dsa/problem/number-of-connected-components-in-an-undirected-graph){:data-slug="number-of-connected-components-in-an-undirected-graph"} | 🟡 Medium | Graph, Union Find, DFS, BFS |
+| 126 | [Graph Valid Tree](/dsa/problem/graph-valid-tree){:data-slug="graph-valid-tree"} | 🟡 Medium | Graph, Union Find, DFS, BFS |
+| 127 | [Redundant Connection](/dsa/problem/redundant-connection){:data-slug="redundant-connection"} | 🟡 Medium | Graph, Union Find |
+| 128 | [Min Cost to Connect All Points](/dsa/problem/min-cost-to-connect-all-points){:data-slug="min-cost-to-connect-all-points"} | 🟡 Medium | Graph, Minimum Spanning Tree, Heap |
+| 129 | [Walls and Gates](/dsa/problem/walls-and-gates){:data-slug="walls-and-gates"} | 🟡 Medium | Graph, BFS, Matrix |
+| 130 | [Surrounded Regions](/dsa/problem/surrounded-regions){:data-slug="surrounded-regions"} | 🟡 Medium | Graph, DFS, BFS, Matrix |
+| 131 | [Word Ladder](/dsa/problem/word-ladder){:data-slug="word-ladder"} | 🔴 Hard | Graph, BFS, Hash Table |
 
 {% include judge-firebase.html %}
 <script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>

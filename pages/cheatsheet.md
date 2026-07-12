@@ -93,8 +93,8 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 |---|---|---|---|---|
 | 35 | [Number of Islands](/dsa/problem/number-of-islands) | BFS/DFS from each '1', mark visited | O(m×n) | O(m×n) |
 | 36 | [Clone Graph](https://leetcode.com/problems/clone-graph/) | BFS/DFS + HashMap (old node → new node) | O(V+E) | O(V) |
-| 37 | [Course Schedule](https://leetcode.com/problems/course-schedule/) | Topological sort (BFS Kahn's or DFS cycle detection) | O(V+E) | O(V+E) |
-| 38 | [Word Ladder](https://leetcode.com/problems/word-ladder/) | BFS level-by-level, change one char at a time | O(n·26·L) | O(n·L) |
+| 37 | [Course Schedule](/dsa/problem/course-schedule) | Topological sort (BFS Kahn's or DFS cycle detection) | O(V+E) | O(V+E) |
+| 38 | [Word Ladder](/dsa/problem/word-ladder) | BFS level-by-level, change one char at a time | O(n·26·L) | O(n·L) |
 | 39 | [Dijkstra's Shortest Path](https://leetcode.com/problems/network-delay-time/) | Min-heap + relaxation | O((V+E) log V) | O(V) |
 
 ## Dynamic Programming
@@ -170,7 +170,7 @@ If you only have 3 days, solve these - they cover the most patterns with the lea
 6. [Number of Islands](/dsa/problem/number-of-islands) (BFS/DFS)
 7. [Coin Change](/dsa/problem/coin-change) (DP)
 8. [LRU Cache](https://leetcode.com/problems/lru-cache/) (HashMap + DLL)
-9. [Course Schedule](https://leetcode.com/problems/course-schedule/) (Topological Sort)
+9. [Course Schedule](/dsa/problem/course-schedule) (Topological Sort)
 10. [Valid Parentheses](/dsa/problem/valid-parentheses) (Stack)
 
 ---

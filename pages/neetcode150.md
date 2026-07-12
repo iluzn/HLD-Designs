@@ -154,23 +154,23 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 80 | [Number of Islands](/dsa/problem/number-of-islands) | BFS/DFS flood fill | O(m×n) |
 | 81 | [Max Area of Island](/dsa/problem/max-area-of-island) | DFS, count cells per component | O(m×n) |
 | 82 | [Clone Graph](https://leetcode.com/problems/clone-graph/) | BFS/DFS + HashMap old→new | O(V+E) |
-| 83 | [Walls and Gates](https://leetcode.com/problems/walls-and-gates/) | Multi-source BFS from all gates | O(m×n) |
+| 83 | [Walls and Gates](/dsa/problem/walls-and-gates) | Multi-source BFS from all gates | O(m×n) |
 | 84 | [Rotting Oranges](/dsa/problem/rotting-oranges) | Multi-source BFS from all rotten | O(m×n) |
 | 85 | [Pacific Atlantic Water Flow](https://leetcode.com/problems/pacific-atlantic-water-flow/) | DFS from each ocean edge, intersect | O(m×n) |
-| 86 | [Surrounded Regions](https://leetcode.com/problems/surrounded-regions/) | DFS from border 'O's, mark safe; flip rest | O(m×n) |
-| 87 | [Course Schedule](https://leetcode.com/problems/course-schedule/) | Topological sort (Kahn's) | O(V+E) |
-| 88 | [Course Schedule II](https://leetcode.com/problems/course-schedule-ii/) | Topo sort, return the order | O(V+E) |
-| 89 | [Graph Valid Tree](https://leetcode.com/problems/graph-valid-tree/) | V-1 edges + connected (Union-Find) | O(V+E) |
-| 90 | [Number of Connected Components](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/) | Union-Find or DFS count | O(V+E) |
-| 91 | [Redundant Connection](https://leetcode.com/problems/redundant-connection/) | Union-Find - edge that creates cycle | O(V+E) |
-| 92 | [Word Ladder](https://leetcode.com/problems/word-ladder/) | BFS level-by-level, change one char | O(n×26×L) |
+| 86 | [Surrounded Regions](/dsa/problem/surrounded-regions) | DFS from border 'O's, mark safe; flip rest | O(m×n) |
+| 87 | [Course Schedule](/dsa/problem/course-schedule) | Topological sort (Kahn's) | O(V+E) |
+| 88 | [Course Schedule II](/dsa/problem/course-schedule-ii/) | Topo sort, return the order | O(V+E) |
+| 89 | [Graph Valid Tree](/dsa/problem/graph-valid-tree) | V-1 edges + connected (Union-Find) | O(V+E) |
+| 90 | [Number of Connected Components](/dsa/problem/number-of-connected-components-in-an-undirected-graph) | Union-Find or DFS count | O(V+E) |
+| 91 | [Redundant Connection](/dsa/problem/redundant-connection) | Union-Find - edge that creates cycle | O(V+E) |
+| 92 | [Word Ladder](/dsa/problem/word-ladder) | BFS level-by-level, change one char | O(n×26×L) |
 
 ## Advanced Graphs (6)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
 | 93 | [Reconstruct Itinerary](https://leetcode.com/problems/reconstruct-itinerary/) | DFS + sort adjacency (Hierholzer's) | O(E log E) |
-| 94 | [Min Cost to Connect All Points](https://leetcode.com/problems/min-cost-to-connect-all-points/) | Prim's MST with min-heap | O(n² log n) |
+| 94 | [Min Cost to Connect All Points](/dsa/problem/min-cost-to-connect-all-points) | Prim's MST with min-heap | O(n² log n) |
 | 95 | [Network Delay Time](https://leetcode.com/problems/network-delay-time/) | Dijkstra from source | O((V+E) log V) |
 | 96 | [Swim in Rising Water](/dsa/problem/swim-in-rising-water) | Binary search + BFS or Dijkstra on grid | O(n² log n) |
 | 97 | [Alien Dictionary](https://leetcode.com/problems/alien-dictionary/) | Build DAG from word order, topo sort | O(C) |

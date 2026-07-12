@@ -119,9 +119,9 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 | 45 | [Number of Islands](/dsa/problem/number-of-islands) | BFS/DFS | From each '1', flood-fill and count components | O(m×n) |
 | 46 | [Clone Graph](https://leetcode.com/problems/clone-graph/) | BFS/DFS | HashMap old→new, clone neighbors recursively | O(V+E) |
 | 47 | [Pacific Atlantic Water Flow](https://leetcode.com/problems/pacific-atlantic-water-flow/) | DFS | DFS from pacific edges + DFS from atlantic edges, intersect | O(m×n) |
-| 48 | [Course Schedule](https://leetcode.com/problems/course-schedule/) | Topological Sort | Kahn's BFS (in-degree) or DFS cycle detection | O(V+E) |
-| 49 | [Number of Connected Components](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/) | Union-Find / DFS | Union-Find with path compression, count roots | O(V+E·α) |
-| 50 | [Graph Valid Tree](https://leetcode.com/problems/graph-valid-tree/) | Union-Find | Tree = connected + no cycle: E == V-1 + union-find no duplicate edge | O(V+E) |
+| 48 | [Course Schedule](/dsa/problem/course-schedule) | Topological Sort | Kahn's BFS (in-degree) or DFS cycle detection | O(V+E) |
+| 49 | [Number of Connected Components](/dsa/problem/number-of-connected-components-in-an-undirected-graph) | Union-Find / DFS | Union-Find with path compression, count roots | O(V+E·α) |
+| 50 | [Graph Valid Tree](/dsa/problem/graph-valid-tree) | Union-Find | Tree = connected + no cycle: E == V-1 + union-find no duplicate edge | O(V+E) |
 | 51 | [Alien Dictionary](https://leetcode.com/problems/alien-dictionary/) | Topological Sort | Build graph from word order, topo sort | O(C) |
 | 52 | [Longest Consecutive Sequence](/dsa/problem/longest-consecutive-sequence) | HashSet | For each num, if num-1 not in set → start counting up | O(n) |
 

@@ -12,7 +12,10 @@ function fillStub(stub, body, lang) {
   if (lang === 'python') return stub.replace(/        # Write your code here\n        pass/, body);
   if (lang === 'javascript') return stub.replace(/    \/\/ Write your code here/, body);
   if (lang === 'cpp') return stub.replace(/        \/\/ Write your code here/, body);
-  return stub.replace(/        \/\/ Write your code here\n        return [^\n]*\n/, body + '\n');
+  if (/        \/\/ Write your code here\n        return [^\n]*\n/.test(stub)) {
+    return stub.replace(/        \/\/ Write your code here\n        return [^\n]*\n/, body + '\n');
+  }
+  return stub.replace(/        \/\/ Write your code here\n/, body + '\n');
 }
 function loadProblem(slug) {
   const s = fs.readFileSync(path.join(__dirname, '..', 'content', 'dsa', 'problem', slug + '.md'), 'utf8');

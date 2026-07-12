@@ -34,8 +34,14 @@ function stdinOf(type, args) {
       return args[0].length + ' ' + (args[0][0] ? args[0][0].length : 0) + '\n' + args[0].map(function (r) { return r.join(' '); }).join('\n');
     case 'GRID_TGT_BOOL':
       return args[0].length + ' ' + (args[0][0] ? args[0][0].length : 0) + '\n' + args[0].map(function (r) { return r.join(' '); }).join('\n') + '\n' + args[1];
-    case 'CHARGRID_INT':
+    case 'CHARGRID_INT': case 'CHARGRID_GRID':
       return args[0].length + ' ' + (args[0][0] ? args[0][0].length : 0) + '\n' + args[0].join('\n');
+    case 'INT_EDGES_BOOL': case 'INT_EDGES_INT':
+      return args[0] + '\n' + args[1].length + '\n' + args[1].map(function (e) { return e.join(' '); }).join('\n');
+    case 'EDGES_ARR':
+      return args[0].length + '\n' + args[0].map(function (e) { return e.join(' '); }).join('\n');
+    case 'STR_STR_ARRSTR_INT':
+      return args[0] + '\n' + args[1] + '\n' + args[2].length + '\n' + args[2].join(' ');
     case 'LIST_ARR': return args[0].length + '\n' + args[0].join(' ');
     case 'LIST_LIST_ARR': return args[0].length + '\n' + args[0].join(' ') + '\n' + args[1].length + '\n' + args[1].join(' ');
     case 'LIST_INT_ARR': case 'LIST_POS_BOOL': return args[0].length + '\n' + args[0].join(' ') + '\n' + args[1];
@@ -81,8 +87,14 @@ function displayOf(type, args) {
       return { grid: '[' + args[0].map(function (r) { return '[' + r.join(',') + ']'; }).join(',') + ']' };
     case 'GRID_TGT_BOOL':
       return { matrix: '[' + args[0].map(function (r) { return '[' + r.join(',') + ']'; }).join(',') + ']', target: '' + args[1] };
-    case 'CHARGRID_INT':
+    case 'CHARGRID_INT': case 'CHARGRID_GRID':
       return { grid: '[' + args[0].map(function (r) { return '"' + r + '"'; }).join(',') + ']' };
+    case 'INT_EDGES_BOOL': case 'INT_EDGES_INT':
+      return { n: '' + args[0], edges: '[' + args[1].map(function (e) { return '[' + e.join(',') + ']'; }).join(',') + ']' };
+    case 'EDGES_ARR':
+      return { edges: '[' + args[0].map(function (e) { return '[' + e.join(',') + ']'; }).join(',') + ']' };
+    case 'STR_STR_ARRSTR_INT':
+      return { beginWord: '"' + args[0] + '"', endWord: '"' + args[1] + '"', wordList: '[' + args[2].map(function (w) { return '"' + w + '"'; }).join(',') + ']' };
     case 'LIST_ARR': return { head: arrStr(args[0]) };
     case 'LIST_LIST_ARR': return { l1: arrStr(args[0]), l2: arrStr(args[1]) };
     case 'LIST_INT_ARR': return { head: arrStr(args[0]), k: '' + args[1] };
