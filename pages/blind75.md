@@ -28,8 +28,8 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 | 4 | [Product of Array Except Self](/dsa/problem/product-of-array-except-self) | Prefix/Suffix | Left-pass × right-pass | O(n) |
 | 5 | [Maximum Subarray](/dsa/problem/maximum-subarray) | Kadane | `curMax = max(num, curMax + num)` | O(n) |
 | 6 | [Maximum Product Subarray](/dsa/problem/maximum-product-subarray) | DP | Track both maxProd and minProd (negatives flip) | O(n) |
-| 7 | [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Binary Search | Shrink toward unsorted half | O(log n) |
-| 8 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Binary Search | Check which half is sorted, decide direction | O(log n) |
+| 7 | [Find Minimum in Rotated Sorted Array](/dsa/problem/find-minimum-in-rotated-sorted-array) | Binary Search | Shrink toward unsorted half | O(log n) |
+| 8 | [Search in Rotated Sorted Array](/dsa/problem/search-in-rotated-sorted-array) | Binary Search | Check which half is sorted, decide direction | O(log n) |
 | 9 | [3Sum](https://leetcode.com/problems/3sum/) | Two Pointers | Sort + fix one + two-pointer. Skip dupes. | O(n²) |
 
 ## Two Pointers (3)
@@ -59,8 +59,8 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
-| 18 | [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Binary Search | If `mid > right`, min is in right half | O(log n) |
-| 19 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Binary Search | Determine sorted half, check if target is in it | O(log n) |
+| 18 | [Find Minimum in Rotated Sorted Array](/dsa/problem/find-minimum-in-rotated-sorted-array) | Binary Search | If `mid > right`, min is in right half | O(log n) |
+| 19 | [Search in Rotated Sorted Array](/dsa/problem/search-in-rotated-sorted-array) | Binary Search | Determine sorted half, check if target is in it | O(log n) |
 
 ## Linked List (6)
 
@@ -138,7 +138,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 | 59 | [Decode Ways](/dsa/problem/decode-ways) | DP | `dp[i]` based on 1-digit and 2-digit valid decodings | O(n) |
 | 60 | [Unique Paths](/dsa/problem/unique-paths) | DP (2D) | `dp[i][j] = dp[i-1][j] + dp[i][j-1]` | O(m×n) |
 | 61 | [Jump Game](/dsa/problem/jump-game) | Greedy | Track farthest reachable | O(n) |
-| 62 | [Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) | DP (2D) | `if match: dp[i][j] = dp[i-1][j-1]+1` else `max(left, up)` | O(m×n) |
+| 62 | [Longest Common Subsequence](/dsa/problem/longest-common-subsequence) | DP (2D) | `if match: dp[i][j] = dp[i-1][j-1]+1` else `max(left, up)` | O(m×n) |
 | 63 | [Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/) | DP (0/1 Knapsack) | Can we make sum/2 with a subset? Boolean dp. | O(n×sum) |
 
 ## Intervals (5)

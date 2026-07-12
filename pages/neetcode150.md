@@ -49,7 +49,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 15 | [Best Time to Buy/Sell Stock](/dsa/problem/best-time-to-buy-and-sell-stock) | Track min, compute profit at each step | O(n) |
 | 16 | [Longest Substring Without Repeating](/dsa/problem/longest-substring-without-repeating-characters) | HashMap last-seen, jump left on conflict | O(n) |
 | 17 | [Longest Repeating Character Replacement](/dsa/problem/longest-repeating-character-replacement) | `len - maxFreq <= k` window | O(n) |
-| 18 | [Permutation in String](https://leetcode.com/problems/permutation-in-string/) | Fixed window of size len(s1), compare freq counts | O(n) |
+| 18 | [Permutation in String](/dsa/problem/permutation-in-string) | Fixed window of size len(s1), compare freq counts | O(n) |
 | 19 | [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) | Expand until valid, shrink to minimize | O(n) |
 | 20 | [Sliding Window Maximum](/dsa/problem/sliding-window-maximum) | Monotonic decreasing deque | O(n) |
 
@@ -59,11 +59,11 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 |---|---|---|---|
 | 21 | [Valid Parentheses](/dsa/problem/valid-parentheses) | Push open, pop close, check match | O(n) |
 | 22 | [Min Stack](https://leetcode.com/problems/min-stack/) | Two stacks (values + running min) | O(1) |
-| 23 | [Evaluate Reverse Polish Notation](https://leetcode.com/problems/evaluate-reverse-polish-notation/) | Stack of numbers, pop 2 on operator | O(n) |
+| 23 | [Evaluate Reverse Polish Notation](/dsa/problem/evaluate-reverse-polish-notation) | Stack of numbers, pop 2 on operator | O(n) |
 | 24 | [Generate Parentheses](https://leetcode.com/problems/generate-parentheses/) | Backtracking with open/close count | O(4^n/√n) |
-| 25 | [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) | Monotonic decreasing stack, pop when warmer | O(n) |
+| 25 | [Daily Temperatures](/dsa/problem/daily-temperatures) | Monotonic decreasing stack, pop when warmer | O(n) |
 | 26 | [Car Fleet](https://leetcode.com/problems/car-fleet/) | Sort by position desc, stack by time to reach target | O(n log n) |
-| 27 | [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) | Monotonic stack for next-smaller on both sides | O(n) |
+| 27 | [Largest Rectangle in Histogram](/dsa/problem/largest-rectangle-in-histogram) | Monotonic stack for next-smaller on both sides | O(n) |
 
 ## Binary Search (7)
 
@@ -72,8 +72,8 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 28 | [Binary Search](/dsa/problem/binary-search) | Standard lo/hi with mid | O(log n) |
 | 29 | [Search 2D Matrix](/dsa/problem/search-a-2d-matrix) | Treat as flat sorted array, binary search | O(log(m×n)) |
 | 30 | [Koko Eating Bananas](/dsa/problem/koko-eating-bananas) | Binary search on speed, check feasibility | O(n log m) |
-| 31 | [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | If mid > right, min in right half | O(log n) |
-| 32 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Determine sorted half, check target in it | O(log n) |
+| 31 | [Find Minimum in Rotated Sorted Array](/dsa/problem/find-minimum-in-rotated-sorted-array) | If mid > right, min in right half | O(log n) |
+| 32 | [Search in Rotated Sorted Array](/dsa/problem/search-in-rotated-sorted-array) | Determine sorted half, check target in it | O(log n) |
 | 33 | [Time Based Key-Value Store](https://leetcode.com/problems/time-based-key-value-store/) | HashMap + binary search on timestamps | O(log n) |
 | 34 | [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) | Binary search on partition of smaller array | O(log min(m,n)) |
 
@@ -196,16 +196,16 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | # | Problem | Approach | Time |
 |---|---|---|---|
 | 109 | [Unique Paths](/dsa/problem/unique-paths) | `dp[i][j] = dp[i-1][j] + dp[i][j-1]` | O(m×n) |
-| 110 | [Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) | Match→diag+1, else max(left,up) | O(m×n) |
-| 111 | [Best Time Buy/Sell with Cooldown](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/) | States: hold, sold, rest | O(n) |
-| 112 | [Coin Change II (count ways)](https://leetcode.com/problems/coin-change-ii/) | `dp[i] += dp[i-coin]` | O(amount×coins) |
-| 113 | [Target Sum](https://leetcode.com/problems/target-sum/) | 0/1 knapsack on (sum+total)/2 | O(n×sum) |
+| 110 | [Longest Common Subsequence](/dsa/problem/longest-common-subsequence) | Match→diag+1, else max(left,up) | O(m×n) |
+| 111 | [Best Time Buy/Sell with Cooldown](/dsa/problem/best-time-to-buy-and-sell-stock-with-cooldown) | States: hold, sold, rest | O(n) |
+| 112 | [Coin Change II (count ways)](/dsa/problem/coin-change-ii) | `dp[i] += dp[i-coin]` | O(amount×coins) |
+| 113 | [Target Sum](/dsa/problem/target-sum) | 0/1 knapsack on (sum+total)/2 | O(n×sum) |
 | 114 | [Interleaving String](https://leetcode.com/problems/interleaving-string/) | 2D dp[i][j] = can form s3[0..i+j] from s1[0..i] + s2[0..j] | O(m×n) |
 | 115 | [Longest Increasing Path in Matrix](/dsa/problem/longest-increasing-path-in-a-matrix) | DFS + memo on grid | O(m×n) |
-| 116 | [Distinct Subsequences](https://leetcode.com/problems/distinct-subsequences/) | `dp[i][j] = dp[i-1][j] + (match ? dp[i-1][j-1] : 0)` | O(m×n) |
-| 117 | [Edit Distance](https://leetcode.com/problems/edit-distance/) | Insert/delete/replace dp table | O(m×n) |
-| 118 | [Burst Balloons](https://leetcode.com/problems/burst-balloons/) | Interval DP: last balloon to burst in range | O(n³) |
-| 119 | [Regular Expression Matching](https://leetcode.com/problems/regular-expression-matching/) | 2D DP for '.' and '*' | O(m×n) |
+| 116 | [Distinct Subsequences](/dsa/problem/distinct-subsequences) | `dp[i][j] = dp[i-1][j] + (match ? dp[i-1][j-1] : 0)` | O(m×n) |
+| 117 | [Edit Distance](/dsa/problem/edit-distance) | Insert/delete/replace dp table | O(m×n) |
+| 118 | [Burst Balloons](/dsa/problem/burst-balloons) | Interval DP: last balloon to burst in range | O(n³) |
+| 119 | [Regular Expression Matching](/dsa/problem/regular-expression-matching) | 2D DP for '.' and '*' | O(m×n) |
 
 ## Greedy (8)
 

@@ -54,16 +54,16 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 | # | Problem | Approach | Time | Space |
 |---|---|---|---|---|
 | 17 | [Valid Parentheses](/dsa/problem/valid-parentheses) | Push open, pop on close, check match | O(n) | O(n) |
-| 18 | [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) | Monotonic stack: pop when current > top | O(n) | O(n) |
-| 19 | [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) | Monotonic stack for next-smaller on both sides | O(n) | O(n) |
+| 18 | [Daily Temperatures](/dsa/problem/daily-temperatures) | Monotonic stack: pop when current > top | O(n) | O(n) |
+| 19 | [Largest Rectangle in Histogram](/dsa/problem/largest-rectangle-in-histogram) | Monotonic stack for next-smaller on both sides | O(n) | O(n) |
 | 20 | [Min Stack](https://leetcode.com/problems/min-stack/) | Two stacks: values + running minimum | O(1) all ops | O(n) |
 
 ## Binary Search
 
 | # | Problem | Approach | Time | Space |
 |---|---|---|---|---|
-| 21 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Binary search - check which half is sorted | O(log n) | O(1) |
-| 22 | [Find Minimum in Rotated Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Binary search - shrink toward the unsorted half | O(log n) | O(1) |
+| 21 | [Search in Rotated Sorted Array](/dsa/problem/search-in-rotated-sorted-array) | Binary search - check which half is sorted | O(log n) | O(1) |
+| 22 | [Find Minimum in Rotated Array](/dsa/problem/find-minimum-in-rotated-sorted-array) | Binary search - shrink toward the unsorted half | O(log n) | O(1) |
 | 23 | [Koko Eating Bananas](/dsa/problem/koko-eating-bananas) | Binary search on answer (speed), check feasibility | O(n log m) | O(1) |
 | 24 | [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) | Binary search on partition of smaller array | O(log min(m,n)) | O(1) |
 
@@ -106,7 +106,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 | 42 | [Longest Increasing Subsequence](/dsa/problem/longest-increasing-subsequence) | DP: O(n²) or patience sort with binary search: O(n log n) | O(n log n) | O(n) |
 | 43 | [Word Break](/dsa/problem/word-break) | `dp[i] = any dp[j] && s[j:i] in dict` | O(n²·L) | O(n) |
 | 44 | [House Robber](/dsa/problem/house-robber) | `dp[i] = max(dp[i-1], dp[i-2] + nums[i])` | O(n) | O(1) |
-| 45 | [Edit Distance](https://leetcode.com/problems/edit-distance/) | 2D DP: insert/delete/replace at each (i,j) | O(m×n) | O(m×n) |
+| 45 | [Edit Distance](/dsa/problem/edit-distance) | 2D DP: insert/delete/replace at each (i,j) | O(m×n) | O(m×n) |
 
 ## Greedy / Intervals
 

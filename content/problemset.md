@@ -103,6 +103,20 @@ Solve problems in your browser — pick a language, implement the function, and 
 | 90 | [Kth Smallest Element in a BST](/dsa/problem/kth-smallest-element-in-a-bst){:data-slug="kth-smallest-element-in-a-bst"} | 🟡 Medium | Tree, DFS, BST |
 | 91 | [Lowest Common Ancestor of a Binary Search Tree](/dsa/problem/lowest-common-ancestor-of-a-binary-search-tree){:data-slug="lowest-common-ancestor-of-a-binary-search-tree"} | 🟡 Medium | Tree, DFS, BST |
 | 92 | [Binary Tree Maximum Path Sum](/dsa/problem/binary-tree-maximum-path-sum){:data-slug="binary-tree-maximum-path-sum"} | 🔴 Hard | Tree, DFS, Dynamic Programming |
+| 93 | [Daily Temperatures](/dsa/problem/daily-temperatures){:data-slug="daily-temperatures"} | 🟡 Medium | Array, Stack, Monotonic Stack |
+| 94 | [Evaluate Reverse Polish Notation](/dsa/problem/evaluate-reverse-polish-notation){:data-slug="evaluate-reverse-polish-notation"} | 🟡 Medium | Array, Stack, Math |
+| 95 | [Largest Rectangle in Histogram](/dsa/problem/largest-rectangle-in-histogram){:data-slug="largest-rectangle-in-histogram"} | 🔴 Hard | Array, Stack, Monotonic Stack |
+| 96 | [Find Minimum in Rotated Sorted Array](/dsa/problem/find-minimum-in-rotated-sorted-array){:data-slug="find-minimum-in-rotated-sorted-array"} | 🟡 Medium | Array, Binary Search |
+| 97 | [Search in Rotated Sorted Array](/dsa/problem/search-in-rotated-sorted-array){:data-slug="search-in-rotated-sorted-array"} | 🟡 Medium | Array, Binary Search |
+| 98 | [Permutation in String](/dsa/problem/permutation-in-string){:data-slug="permutation-in-string"} | 🟡 Medium | String, Sliding Window, Hash Table |
+| 99 | [Best Time to Buy and Sell Stock with Cooldown](/dsa/problem/best-time-to-buy-and-sell-stock-with-cooldown){:data-slug="best-time-to-buy-and-sell-stock-with-cooldown"} | 🟡 Medium | Array, Dynamic Programming |
+| 100 | [Burst Balloons](/dsa/problem/burst-balloons){:data-slug="burst-balloons"} | 🔴 Hard | Array, Dynamic Programming, Interval DP |
+| 101 | [Regular Expression Matching](/dsa/problem/regular-expression-matching){:data-slug="regular-expression-matching"} | 🔴 Hard | String, Dynamic Programming, Recursion |
+| 102 | [Longest Common Subsequence](/dsa/problem/longest-common-subsequence){:data-slug="longest-common-subsequence"} | 🟡 Medium | String, Dynamic Programming |
+| 103 | [Edit Distance](/dsa/problem/edit-distance){:data-slug="edit-distance"} | 🟡 Medium | String, Dynamic Programming |
+| 104 | [Distinct Subsequences](/dsa/problem/distinct-subsequences){:data-slug="distinct-subsequences"} | 🔴 Hard | String, Dynamic Programming |
+| 105 | [Coin Change II](/dsa/problem/coin-change-ii){:data-slug="coin-change-ii"} | 🟡 Medium | Array, Dynamic Programming |
+| 106 | [Target Sum](/dsa/problem/target-sum){:data-slug="target-sum"} | 🟡 Medium | Array, Dynamic Programming, Backtracking |
 
 {% include judge-firebase.html %}
 <script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>

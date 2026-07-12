@@ -237,6 +237,34 @@ T.ARR_INT_ARR = function (fn) {
   };
 };
 
+// (string s, string t) -> int   (line-based: T then 2 lines per case)
+T.STR_STR_INT = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, s, t):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', "_l=sys.stdin.read().split('\\n')", '_T=int(_l[0]);_o=[]', 'for _i in range(_T):', '    _s=_l[1+2*_i] if 1+2*_i<len(_l) else ""', '    _t=_l[2+2*_i] if 2+2*_i<len(_l) else ""', '    _o.append(str(Solution().' + fn + '(_s,_t)))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {string} s', ' * @param {string} t', ' * @return {number}', ' */', 'var ' + fn + ' = function(s, t) {', '    // Write your code here', '};'),
+      harness: ln("const _l=require('fs').readFileSync(0,'utf8').split('\\n');const _T=+_l[0];const _o=[];", "for(let _i=0;_i<_T;_i++){const _s=(_l[1+2*_i]||'').replace(/\\r$/,'');const _t=(_l[2+2*_i]||'').replace(/\\r$/,'');_o.push(String(" + fn + "(_s,_t)));}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    int ' + fn + '(string s, string t) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){string l;getline(cin,l);int T=stoi(l);string s,t;for(int i=0;i<T;i++){if(!getline(cin,s))s="";if(!getline(cin,t))t="";cout<<Solution().' + fn + '(s,t)<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public int ' + fn + '(String s, String t) {', '        // Write your code here', '        return 0;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=Integer.parseInt(sc.nextLine().trim());StringBuilder sb=new StringBuilder();for(int i=0;i<T;i++){String s=sc.hasNextLine()?sc.nextLine():"";String t=sc.hasNextLine()?sc.nextLine():"";sb.append(new Solution().' + fn + '(s,t)).append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (int[] nums, int k) -> int   (whitespace: n, nums, k)
+T.ARR_INT_INT = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, nums, k):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _n=int(_d[_p]);_p+=1', '    _nums=list(map(int,_d[_p:_p+_n]));_p+=_n', '    _k=int(_d[_p]);_p+=1', '    _o.append(str(Solution().' + fn + '(_nums,_k)))', "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number[]} nums', ' * @param {number} k', ' * @return {number}', ' */', 'var ' + fn + ' = function(nums, k) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", 'for(let _i=0;_i<_T;_i++){const _n=+_d[_p++];const _nums=_d.slice(_p,_p+_n).map(Number);_p+=_n;const _k=+_d[_p++];_o.push(String(' + fn + '(_nums,_k)));}', "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    int ' + fn + '(vector<int>& nums, int k) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int n;cin>>n;vector<int> nums(n);for(int i=0;i<n;i++)cin>>nums[i];int k;cin>>k;cout<<Solution().' + fn + '(nums,k)<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public int ' + fn + '(int[] nums, int k) {', '        // Write your code here', '        return 0;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int n=sc.nextInt();int[] nums=new int[n];for(int i=0;i<n;i++)nums[i]=sc.nextInt();int k=sc.nextInt();sb.append(new Solution().' + fn + '(nums,k)).append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
 // (int[] a, int[] b) -> int   (whitespace: n, a[n], b[n])
 T.ARR_ARR_INT = function (fn) {
   return {
