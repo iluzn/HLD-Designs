@@ -705,7 +705,7 @@ document.querySelectorAll('a').forEach(function(a) {
             var topicCount = {};
             slugs.forEach(function (s) { (CAT[s].topics || []).forEach(function (t) { topicCount[t] = (topicCount[t] || 0) + 1; }); });
             var topics = Object.keys(topicCount).sort(function (a, b) { return topicCount[b] - topicCount[a]; }).slice(0, 10);
-            q.innerHTML = '<span class="qb-label">Popular topics:</span>' + topics.map(function (t) { return '<a class="qb-pill" href="/problemset">' + esc(t) + ' <em>' + topicCount[t] + '</em></a>'; }).join('');
+            q.innerHTML = '<span class="qb-label">Popular topics:</span>' + topics.map(function (t) { return '<a class="qb-pill" href="/problemset?topic=' + encodeURIComponent(t) + '">' + esc(t) + ' <em>' + topicCount[t] + '</em></a>'; }).join('');
         }
     }
     function ready(fn) { if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }

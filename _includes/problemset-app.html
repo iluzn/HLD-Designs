@@ -1,0 +1,144 @@
+<!-- Interactive problemset: search + difficulty/status/topic filters + solved
+     status, driven by window.SC_PROBLEMS (emitted by build) and window._scJudge
+     (per-user solved set, loaded globally by the default layout). -->
+<style>
+#ps-root { --e:#22c55e; --m:#eab308; --h:#ef4444; }
+.ps-sub { color: var(--text-muted); font-size: 0.9rem; margin: -0.5rem 0 1.2rem; }
+.ps-stats { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1.3rem; }
+.ps-stat { background: var(--glass, var(--bg-card)); border: 1px solid var(--border); border-radius: 12px; padding: 0.6rem 0.9rem; min-width: 96px; }
+.ps-stat b { display: block; font-size: 1.25rem; font-weight: 800; line-height: 1.1; }
+.ps-stat span { font-size: 0.7rem; color: var(--text-dim); }
+.ps-stat.e b { color: var(--e); } .ps-stat.m b { color: var(--m); } .ps-stat.h b { color: var(--h); }
+.ps-ring { display: flex; align-items: center; gap: 0.8rem; background: var(--glass, var(--bg-card)); border: 1px solid var(--border); border-radius: 12px; padding: 0.5rem 1rem 0.5rem 0.6rem; }
+.ps-ring b { font-size: 1.4rem; font-weight: 800; } .ps-ring span { font-size: 0.72rem; color: var(--text-dim); }
+
+.ps-controls { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-bottom: 1rem; }
+#ps-search { flex: 1; min-width: 200px; background: var(--card-bg); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 0.55rem 0.9rem; font-size: 0.88rem; font-family: inherit; outline: none; transition: border-color 0.2s; }
+#ps-search:focus { border-color: var(--accent); }
+.ps-seg { display: inline-flex; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.ps-seg button { background: none; border: none; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; padding: 0.5rem 0.85rem; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.ps-seg button:hover { color: var(--text); }
+.ps-seg button.on { background: var(--accent); color: #fff; }
+#ps-topic { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 0.5rem 0.7rem; font-size: 0.82rem; font-family: inherit; cursor: pointer; outline: none; }
+
+.ps-count { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.6rem; }
+.ps-list { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.ps-row { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); transition: background 0.15s; }
+.ps-row:last-child { border-bottom: none; }
+.ps-row:hover { background: rgba(129,140,248,0.06); }
+.ps-row:nth-child(even) { background: rgba(127,127,127,0.03); }
+.ps-row:nth-child(even):hover { background: rgba(129,140,248,0.06); }
+.ps-status { width: 18px; flex-shrink: 0; text-align: center; }
+.ps-status .dot { display: inline-block; width: 15px; height: 15px; border-radius: 50%; border: 2px solid var(--border); }
+.ps-status.solved .dot { border: none; background: var(--e); position: relative; }
+.ps-status.solved .dot::after { content: '✓'; position: absolute; inset: 0; color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.ps-num { width: 34px; flex-shrink: 0; color: var(--text-dim); font-size: 0.78rem; }
+.ps-title { flex: 1; min-width: 0; font-size: 0.9rem; font-weight: 500; }
+.ps-row:hover .ps-title { color: var(--accent); }
+.ps-topics { display: flex; gap: 0.3rem; flex-wrap: wrap; justify-content: flex-end; max-width: 42%; }
+.ps-tag { font-size: 0.66rem; color: var(--text-dim); background: var(--tag-bg, rgba(127,127,127,0.08)); border: 1px solid var(--border); padding: 1px 7px; border-radius: 20px; white-space: nowrap; }
+.ps-diff { flex-shrink: 0; font-size: 0.72rem; font-weight: 700; width: 68px; text-align: right; text-transform: capitalize; }
+.ps-diff.easy { color: var(--e); } .ps-diff.medium { color: var(--m); } .ps-diff.hard { color: var(--h); }
+.ps-empty { text-align: center; color: var(--text-dim); padding: 2.5rem 1rem; font-size: 0.9rem; }
+@media (max-width: 640px) { .ps-topics { display: none; } .ps-diff { width: 54px; } }
+</style>
+<script>
+(function () {
+  var P = window.SC_PROBLEMS || [];
+  var root = document.getElementById('ps-root');
+  if (!root) return;
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var params = new URLSearchParams(location.search);
+  var state = { q: '', diff: 'all', status: 'all', topic: params.get('topic') || 'all' };
+  var initDiff = (params.get('difficulty') || '').toLowerCase();
+  if (['easy', 'medium', 'hard'].indexOf(initDiff) !== -1) state.diff = initDiff;
+
+  var topics = {};
+  P.forEach(function (p) { (p.g || []).forEach(function (t) { topics[t] = (topics[t] || 0) + 1; }); });
+  var topicList = Object.keys(topics).sort();
+
+  root.innerHTML =
+    '<h1>Problemset</h1>' +
+    '<p class="ps-sub">Solve in your browser — pick a language, implement the function, and Submit for an instant verdict. Progress saves automatically to your profile.</p>' +
+    '<div class="ps-stats" id="ps-stats"></div>' +
+    '<div class="ps-controls">' +
+      '<input id="ps-search" type="text" placeholder="Search problems…" autocomplete="off">' +
+      '<div class="ps-seg" id="ps-diff">' +
+        '<button data-v="all" class="on">All</button><button data-v="easy">Easy</button><button data-v="medium">Medium</button><button data-v="hard">Hard</button>' +
+      '</div>' +
+      '<div class="ps-seg" id="ps-status">' +
+        '<button data-v="all" class="on">All</button><button data-v="todo">Todo</button><button data-v="solved">Solved</button>' +
+      '</div>' +
+      '<select id="ps-topic"><option value="all">All Topics</option>' + topicList.map(function (t) { return '<option value="' + esc(t) + '">' + esc(t) + ' (' + topics[t] + ')</option>'; }).join('') + '</select>' +
+    '</div>' +
+    '<div class="ps-count" id="ps-count"></div>' +
+    '<div class="ps-list" id="ps-list"></div>' +
+    '<div class="ps-empty" id="ps-empty" hidden>No problems match your filters.</div>';
+
+  var listEl = root.querySelector('#ps-list');
+  var emptyEl = root.querySelector('#ps-empty');
+  var countEl = root.querySelector('#ps-count');
+  var statsEl = root.querySelector('#ps-stats');
+  var searchEl = root.querySelector('#ps-search');
+  var topicEl = root.querySelector('#ps-topic');
+  topicEl.value = state.topic;
+
+  function solvedSet() { var s = {}; ((window._scJudge && window._scJudge.solved) || []).forEach(function (x) { s[x] = 1; }); return s; }
+
+  function renderStats(sv) {
+    var tot = { easy: 0, medium: 0, hard: 0 }, sol = { easy: 0, medium: 0, hard: 0 };
+    P.forEach(function (p) { if (tot[p.d] != null) { tot[p.d]++; if (sv[p.s]) sol[p.d]++; } });
+    var totalSolved = sol.easy + sol.medium + sol.hard, total = P.length;
+    statsEl.innerHTML =
+      '<div class="ps-ring"><b>' + totalSolved + '</b><span>/ ' + total + '<br>solved</span></div>' +
+      '<div class="ps-stat e"><b>' + sol.easy + ' / ' + tot.easy + '</b><span>Easy</span></div>' +
+      '<div class="ps-stat m"><b>' + sol.medium + ' / ' + tot.medium + '</b><span>Medium</span></div>' +
+      '<div class="ps-stat h"><b>' + sol.hard + ' / ' + tot.hard + '</b><span>Hard</span></div>';
+  }
+
+  function render() {
+    var sv = solvedSet();
+    renderStats(sv);
+    var q = state.q.toLowerCase();
+    var rows = '', shown = 0;
+    P.forEach(function (p, i) {
+      if (state.diff !== 'all' && p.d !== state.diff) return;
+      var isSolved = !!sv[p.s];
+      if (state.status === 'solved' && !isSolved) return;
+      if (state.status === 'todo' && isSolved) return;
+      if (state.topic !== 'all' && (p.g || []).indexOf(state.topic) === -1) return;
+      if (q && p.t.toLowerCase().indexOf(q) === -1) return;
+      shown++;
+      var tags = (p.g || []).slice(0, 3).map(function (t) { return '<span class="ps-tag">' + esc(t) + '</span>'; }).join('');
+      rows += '<a class="ps-row" href="/dsa/problem/' + p.s + '">' +
+        '<span class="ps-status' + (isSolved ? ' solved' : '') + '"><span class="dot"></span></span>' +
+        '<span class="ps-num">' + (i + 1) + '</span>' +
+        '<span class="ps-title">' + esc(p.t) + '</span>' +
+        '<span class="ps-topics">' + tags + '</span>' +
+        '<span class="ps-diff ' + p.d + '">' + p.d + '</span>' +
+        '</a>';
+    });
+    listEl.innerHTML = rows;
+    emptyEl.hidden = shown > 0;
+    countEl.textContent = shown + ' problem' + (shown === 1 ? '' : 's');
+  }
+
+  searchEl.addEventListener('input', function () { state.q = searchEl.value; render(); });
+  topicEl.addEventListener('change', function () { state.topic = topicEl.value; render(); });
+  root.querySelector('#ps-diff').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    state.diff = b.dataset.v; this.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); }); render();
+  });
+  root.querySelector('#ps-status').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    state.status = b.dataset.v; this.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); }); render();
+  });
+  // reflect any difficulty preselected from the URL
+  root.querySelector('#ps-diff').querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x.dataset.v === state.diff); });
+
+  render();
+  if (window._scJudgeReady) render();
+  document.addEventListener('sc-judge-ready', render);
+  setTimeout(render, 1500);
+})();
+</script>

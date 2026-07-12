@@ -193,14 +193,11 @@ P.forEach(function (p) {
 });
 
 // problemset index
-var emoji = { easy: '🟢 Easy', medium: '🟡 Medium', hard: '🔴 Hard' };
-var rows = indexRows.map(function (r, i) {
-  return '| ' + (i + 1) + ' | [' + r.title + '](/dsa/problem/' + r.slug + '){:data-slug="' + r.slug + '"} | ' + emoji[r.difficulty] + ' | ' + r.topics.join(', ') + ' |';
-}).join('\n');
-var idx = '---\nlayout: default\ntitle: "Problemset - Practice Coding Problems"\ndescription: "SystemCraft Problemset. Solve LeetCode-style problems in Python, Java, C++, or JavaScript with an in-browser judge, test cases, and instant verdicts."\npermalink: /problemset\n---\n\n' +
-  '# Problemset\n\nSolve problems in your browser — pick a language, implement the function, and Submit for an instant verdict. Your solved problems are tracked automatically.\n\n' +
-  '| # | Problem | Difficulty | Topics |\n|---|---|---|---|\n' + rows + '\n\n' +
-  '<script>(function(){function upd(){var boxes=document.querySelectorAll(".content table input[type=checkbox]");if(!boxes.length)return;var done=0;boxes.forEach(function(b){if(b.checked)done++;});var fill=document.getElementById("progress-fill"),lab=document.getElementById("progress-label");var pct=Math.round(done/boxes.length*100);if(fill)fill.style.width=pct+"%";if(lab)lab.textContent=done+"/"+boxes.length+" ("+pct+"%)";}function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){if(s.indexOf(a.getAttribute("data-slug"))===-1)return;var row=a.closest("tr");if(row){var cb=row.querySelector("input[type=checkbox]");if(cb){cb.checked=true;cb.style.opacity="1";}}if(!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\\"color:#22c55e;font-weight:700\\">\\u2713</span> ");}});upd();}catch(e){}}function run(){mark();setTimeout(mark,300);setTimeout(mark,1200);}if(window._scJudgeReady)run();document.addEventListener("sc-judge-ready",run);})();</script>\n';
+var psData = indexRows.map(function (r) { return { s: r.slug, t: r.title, d: r.difficulty, g: r.topics || [] }; });
+var idx = '---\nlayout: default\ntitle: "Problemset - Practice Coding Problems"\ndescription: "SystemCraft Problemset. Solve LeetCode-style problems in Python, Java, C++, or JavaScript with an in-browser judge, test cases, and instant verdicts."\npermalink: /problemset\nhide_toc: true\n---\n\n' +
+  '{% raw %}\n<div id="ps-root">Loading problems…</div>\n' +
+  '<script>window.SC_PROBLEMS = ' + JSON.stringify(psData) + ';</script>\n{% endraw %}\n' +
+  '{% include problemset-app.html %}\n';
 fs.writeFileSync(path.join(__dirname, '..', 'content', 'problemset.md'), idx);
 
 // Catalog: slug -> { title, difficulty } for the profile difficulty breakdown.
