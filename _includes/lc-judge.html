@@ -238,6 +238,22 @@
     else if (/GRID/.test(type)) { var gk = disp.grid !== undefined ? 'grid' : (disp.matrix !== undefined ? 'matrix' : (disp.board !== undefined ? 'board' : null)); if (gk) svg = scGridSVG(scParse(disp[gk])); }
     return svg ? '<div class="lc-diagram">' + svg + '</div>' : '';
   }
+  // Language tabs inside the editorial's "Full Solution" block.
+  function wireSolutionTabs() {
+    var box = leftBody.querySelector('.lc-sol');
+    if (!box) return;
+    box.querySelectorAll('.lc-sol-tab').forEach(function (t) {
+      t.addEventListener('click', function () {
+        var l = t.getAttribute('data-l');
+        box.querySelectorAll('.lc-sol-tab').forEach(function (x) { x.classList.toggle('active', x === t); });
+        box.querySelectorAll('.lc-sol-code').forEach(function (p) { p.hidden = p.getAttribute('data-l') !== l; });
+      });
+    });
+    // Default to the language the user is currently coding in.
+    var want = box.querySelector('.lc-sol-tab[data-l="' + curLang() + '"]');
+    if (want) want.click();
+  }
+
   // Insert each example's diagram inline, right under its "Example N" heading
   // (LeetCode-style), rather than in a separate section.
   function scInjectDiagrams() {
@@ -330,6 +346,7 @@
     if (tab === 'description') { leftBody.innerHTML = descHtml; scInjectDiagrams(); paintSolved(); return; }
     if (tab === 'editorial') {
       leftBody.innerHTML = P.editorial ? '<div class="lc-editorial">' + P.editorial + '</div>' : '<div class="lc-empty">Editorial coming soon.</div>';
+      wireSolutionTabs();
       return;
     }
     if (tab === 'submissions') {

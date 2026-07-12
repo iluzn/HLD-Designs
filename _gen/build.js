@@ -3,8 +3,25 @@ const path = require('path');
 const { T, randInt, randArr, arrStr, ln } = require('./gen.js');
 const { P, stdinOf, displayOf, fmtExpected, OUT } = require('./problems.js');
 const { EDITORIALS } = require('./editorials.js');
+const { SOLUTIONS, FULLCLASS, fillStub } = require('./solutions.js');
 
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+function escH(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+// Build a language-tabbed "Full Solution" block for the editorial.
+function solBlock(slug, langs) {
+  var sol = SOLUTIONS[slug];
+  if (!sol) return '';
+  var order = ['python', 'java', 'cpp', 'javascript'], names = { python: 'Python', java: 'Java', cpp: 'C++', javascript: 'JavaScript' };
+  var avail = order.filter(function (l) { return sol[l] && langs[l]; });
+  if (!avail.length) return '';
+  var tabs = '', panes = '';
+  avail.forEach(function (l, i) {
+    var code = FULLCLASS[slug] ? sol[l] : fillStub(langs[l].stub, sol[l], l);
+    tabs += '<button class="lc-sol-tab' + (i === 0 ? ' active' : '') + '" data-l="' + l + '">' + names[l] + '</button>';
+    panes += '<pre class="lc-sol-code" data-l="' + l + '"' + (i === 0 ? '' : ' hidden') + '><code>' + escH(code) + '</code></pre>';
+  });
+  return '<div class="lc-sol"><h3>Full Solution &mdash; all languages</h3><div class="lc-sol-tabs">' + tabs + '</div>' + panes + '</div>';
+}
 function pick(arr) { return arr[randInt(0, arr.length - 1)]; }
 
 // ---------- remaining problems (template-based) ----------
@@ -157,7 +174,10 @@ P.forEach(function (p) {
     cases.push({ stdin: stdin, expected: fmtExpected(p.ref(args)), display: displayOf(p.type, args) });
   });
 
-  var sc = { id: p.slug, type: p.type || '', diagram: p.diagram || '', editorial: EDITORIALS[p.slug] || p.editorial, langs: langs, cases: cases };
+  var edHtml = EDITORIALS[p.slug] || p.editorial || '';
+  var sb = solBlock(p.slug, langs);
+  if (sb) edHtml = edHtml.replace(/<h3>Solution<\/h3><pre><code>[\s\S]*?<\/code><\/pre>/, '') + sb;
+  var sc = { id: p.slug, type: p.type || '', diagram: p.diagram || '', editorial: edHtml, langs: langs, cases: cases };
   var topics = p.topics.map(function (t) { return '<span class="lc-tag">' + t + '</span>'; }).join('');
   var exs = p.examples.map(function (e, i) { return '<h2>Example ' + (i + 1) + '</h2><pre>Input:  ' + e.in + '\nOutput: ' + e.out + (e.ex ? '\nExplanation: ' + e.ex : '') + '</pre>'; }).join('\n');
   var cons = '<h2>Constraints</h2><ul>' + p.constraints.map(function (c) { return '<li>' + c + '</li>'; }).join('') + '</ul>';
