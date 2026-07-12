@@ -1,0 +1,63 @@
+<!-- Header widget: Daily Challenge (same problem for everyone each UTC day)
+     + current streak flame when signed in. Depends on window.SC_DAILY
+     (daily-data.html) and window._scJudge (judge-firebase.html). -->
+<a href="/problemset" id="sc-daily-btn" class="sc-daily-btn" title="Daily Challenge">
+    <span class="sc-daily-flame">🔥</span><span id="sc-daily-count" class="sc-daily-count"></span>
+</a>
+<script>
+(function () {
+    var btn = document.getElementById('sc-daily-btn');
+    var countEl = document.getElementById('sc-daily-count');
+    if (!btn) return;
+
+    // Pick today's problem deterministically from a UTC day index so every
+    // user worldwide sees the same problem on the same day.
+    function pickDaily() {
+        var list = window.SC_DAILY;
+        if (!list || !list.length) return;
+        var now = new Date();
+        var dayNum = Math.floor(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) / 86400000);
+        var d = list[((dayNum % list.length) + list.length) % list.length];
+        btn.href = '/dsa/problem/' + d[0];
+        btn.title = 'Daily Challenge · ' + d[1];
+    }
+
+    // Current-streak: count consecutive days up to today with a submission.
+    function dayKey(d) { return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+    function currentStreak() {
+        var j = window._scJudge;
+        if (!j || !j.subs) return 0;
+        var set = {};
+        Object.keys(j.subs).forEach(function (sl) {
+            (j.subs[sl] || []).forEach(function (s) { if (s && s.ts) set[dayKey(new Date(s.ts))] = 1; });
+        });
+        var cur = 0, d = new Date(); d.setHours(0, 0, 0, 0);
+        if (!set[dayKey(d)]) d.setDate(d.getDate() - 1); // today not done yet is fine
+        while (set[dayKey(d)]) { cur++; d.setDate(d.getDate() - 1); }
+        return cur;
+    }
+
+    function refreshStreak() {
+        var signedIn = !!(window._scUser || window._firebaseUser);
+        if (!signedIn) { countEl.textContent = ''; btn.classList.remove('has-streak'); return; }
+        var s = currentStreak();
+        if (s > 0) {
+            countEl.textContent = s;
+            btn.classList.add('has-streak');
+            btn.title = 'Current streak: ' + s + ' day' + (s === 1 ? '' : 's') + ' · click for the Daily Challenge';
+        } else {
+            countEl.textContent = '';
+            btn.classList.remove('has-streak');
+        }
+    }
+
+    function ready(fn) { if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
+    ready(function () {
+        pickDaily();
+        refreshStreak();
+        if (window._scJudgeReady) refreshStreak();
+        document.addEventListener('sc-judge-ready', refreshStreak);
+        setTimeout(refreshStreak, 2000);
+    });
+})();
+</script>

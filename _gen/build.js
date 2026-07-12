@@ -198,7 +198,6 @@ var rows = indexRows.map(function (r, i) {
 var idx = '---\nlayout: default\ntitle: "Problemset - Practice Coding Problems"\ndescription: "SystemCraft Problemset. Solve LeetCode-style problems in Python, Java, C++, or JavaScript with an in-browser judge, test cases, and instant verdicts."\npermalink: /problemset\n---\n\n' +
   '# Problemset\n\nSolve problems in your browser — pick a language, implement the function, and Submit for an instant verdict. Your solved problems are tracked automatically.\n\n' +
   '| # | Problem | Difficulty | Topics |\n|---|---|---|---|\n' + rows + '\n\n' +
-  '{% include judge-firebase.html %}\n' +
   '<script>(function(){function upd(){var boxes=document.querySelectorAll(".content table input[type=checkbox]");if(!boxes.length)return;var done=0;boxes.forEach(function(b){if(b.checked)done++;});var fill=document.getElementById("progress-fill"),lab=document.getElementById("progress-label");var pct=Math.round(done/boxes.length*100);if(fill)fill.style.width=pct+"%";if(lab)lab.textContent=done+"/"+boxes.length+" ("+pct+"%)";}function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){if(s.indexOf(a.getAttribute("data-slug"))===-1)return;var row=a.closest("tr");if(row){var cb=row.querySelector("input[type=checkbox]");if(cb){cb.checked=true;cb.style.opacity="1";}}if(!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\\"color:#22c55e;font-weight:700\\">\\u2713</span> ");}});upd();}catch(e){}}function run(){mark();setTimeout(mark,300);setTimeout(mark,1200);}if(window._scJudgeReady)run();document.addEventListener("sc-judge-ready",run);})();</script>\n';
 fs.writeFileSync(path.join(__dirname, '..', 'content', 'problemset.md'), idx);
 
@@ -208,4 +207,11 @@ indexRows.forEach(function (r) { catalog[r.slug] = { title: r.title, difficulty:
 fs.writeFileSync(path.join(__dirname, '..', '_includes', 'sc-catalog.html'),
   '<script>window.SC_CATALOG = ' + JSON.stringify(catalog) + ';</script>\n');
 
-console.log('Generated ' + P.length + ' problems + problemset index + catalog.');
+// Compact ordered [slug, title] list for the header Daily Challenge widget.
+// A deterministic date seed indexes this list so every user gets the same
+// problem on the same (UTC) day, like LeetCode's daily.
+var dailyList = indexRows.map(function (r) { return [r.slug, r.title]; });
+fs.writeFileSync(path.join(__dirname, '..', '_includes', 'daily-data.html'),
+  '<script>window.SC_DAILY = ' + JSON.stringify(dailyList) + ';</script>\n');
+
+console.log('Generated ' + P.length + ' problems + problemset index + catalog + daily.');

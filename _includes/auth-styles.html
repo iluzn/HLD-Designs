@@ -1,4 +1,14 @@
 <style>
+/* Daily Challenge + streak flame */
+.sc-daily-btn { display: inline-flex; align-items: center; gap: 0.15rem; text-decoration: none; background: none; background-image: none; border: 1px solid var(--border); border-radius: 20px; padding: 0.28rem 0.6rem; margin-left: 0.35rem; font-size: 0.78rem; font-weight: 700; line-height: 1; color: var(--text-muted); transition: all 0.2s; white-space: nowrap; }
+.sc-daily-btn:hover { border-color: rgba(249,115,22,0.5); background: rgba(249,115,22,0.08); color: var(--text); }
+.sc-daily-flame { filter: grayscale(0.4); transition: filter 0.2s; font-size: 0.9rem; }
+.sc-daily-btn.has-streak .sc-daily-flame { filter: none; }
+.sc-daily-btn:hover .sc-daily-flame { filter: none; }
+.sc-daily-count { color: #f97316; font-weight: 800; min-width: 0.5rem; }
+.sc-daily-count:empty { display: none; }
+@media (max-width: 480px) { .sc-daily-btn { padding: 0.28rem 0.45rem; margin-left: 0.2rem; } }
+
 .auth-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-size: 0.72rem; padding: 0.3rem 0.7rem; border-radius: 20px; margin-left: 0.5rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 500; white-space: nowrap; position: relative; }
 .auth-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(129,140,248,0.05); }
 .auth-btn.signed-in { padding: 0.2rem; border-radius: 50%; border-color: transparent; background: none; }

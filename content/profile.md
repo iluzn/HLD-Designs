@@ -6,7 +6,6 @@ permalink: /profile
 hide_toc: true
 ---
 
-{% include judge-firebase.html %}
 {% include sc-catalog.html %}
 
 {% raw %}
