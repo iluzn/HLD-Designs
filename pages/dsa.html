@@ -62,11 +62,25 @@ permalink: /dsa/
     <h1>Data Structures & <em>Algorithms</em></h1>
     <p>Pattern-based problems with Java, Python, and C++ solutions. Curated lists, progress tracking, and company tags. Built for Amazon, Google, Meta, and top startups.</p>
     <div class="hero-stats">
-        <div class="hero-stat"><strong>150+</strong><span>Problems</span></div>
+        <div class="hero-stat"><strong>144</strong><span>Problems</span></div>
         <div class="hero-stat"><strong>14</strong><span>Patterns</span></div>
-        <div class="hero-stat"><strong>3</strong><span>Languages</span></div>
+        <div class="hero-stat"><strong>4</strong><span>Languages</span></div>
     </div>
 </section>
+
+<!-- Live band: Problem of the Day + personalized progress + quick browse -->
+<div class="section dsa-live">
+    <div class="dsa-live-grid">
+        <a class="daily-card" id="dsa-daily" href="/problemset">
+            <div class="daily-tag">🔥 Problem of the Day</div>
+            <div class="daily-title" id="dsa-daily-title">Loading today's challenge…</div>
+            <div class="daily-meta" id="dsa-daily-meta"></div>
+            <span class="daily-go">Solve it now →</span>
+        </a>
+        <div class="prog-card" id="dsa-prog"></div>
+    </div>
+    <div class="quick-browse" id="dsa-quick"></div>
+</div>
 
 <!-- Start here callout -->
 <!-- Where to start -->
@@ -419,10 +433,51 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); pa
 footer a { color: var(--accent); text-decoration: none; }
 footer a:hover { text-decoration: underline; }
 
+/* Live band */
+.dsa-live-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 1rem; margin-bottom: 1rem; }
+.daily-card { position: relative; display: flex; flex-direction: column; gap: 0.5rem; background: linear-gradient(135deg, rgba(129,140,248,0.12), rgba(167,139,250,0.06)); border: 1px solid rgba(129,140,248,0.3); border-radius: 16px; padding: 1.3rem 1.4rem; text-decoration: none; color: var(--text); transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; overflow: hidden; }
+.daily-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), #a78bfa, #f472b6); }
+.daily-card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 14px 34px rgba(129,140,248,0.18); }
+.daily-tag { font-size: 0.72rem; font-weight: 700; color: var(--accent-light); letter-spacing: 0.02em; }
+.daily-title { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.25; }
+.daily-meta { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; min-height: 1.4rem; }
+.daily-go { margin-top: auto; font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+.qd { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; text-transform: capitalize; }
+.qd.easy { background: rgba(34,197,94,0.14); color: #22c55e; } .qd.medium { background: rgba(234,179,8,0.14); color: #eab308; } .qd.hard { background: rgba(239,68,68,0.14); color: #ef4444; }
+.qd.solved { background: rgba(34,197,94,0.14); color: #22c55e; }
+.qt { font-size: 0.68rem; color: var(--text-dim); background: var(--tag-bg); border: 1px solid var(--tag-border); padding: 2px 7px; border-radius: 6px; }
+
+.prog-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.3rem 1.4rem; }
+.prog-head { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.9rem; }
+.prog-body { display: flex; align-items: center; gap: 1.4rem; }
+.prog-ring { position: relative; width: 120px; height: 120px; flex-shrink: 0; }
+.prog-ring-c { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.prog-ring-c b { font-size: 1.7rem; font-weight: 800; line-height: 1; }
+.prog-ring-c span { font-size: 0.72rem; color: var(--text-dim); }
+.prog-side { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+.db-row { display: flex; align-items: center; gap: 0.6rem; font-size: 0.76rem; }
+.db-name { width: 58px; font-weight: 600; }
+.db-track { flex: 1; height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.db-fill { height: 100%; border-radius: 4px; }
+.db-num { width: 48px; text-align: right; color: var(--text-dim); font-size: 0.72rem; }
+.prog-streak { margin-top: 0.3rem; font-size: 0.78rem; color: var(--text-muted); }
+.prog-streak b { color: #f59e0b; } .prog-streak a { color: var(--accent); text-decoration: none; }
+.prog-signin p { font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.9rem; }
+.prog-signin-btn { background: var(--accent); color: #fff; border: none; padding: 0.55rem 1.1rem; border-radius: 10px; font-size: 0.84rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+.prog-signin-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(129,140,248,0.3); }
+.prog-diffs { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+
+.quick-browse { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.qb-label { font-size: 0.78rem; color: var(--text-dim); font-weight: 600; margin-right: 0.2rem; }
+.qb-pill { font-size: 0.78rem; color: var(--text-muted); background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 0.32rem 0.8rem; text-decoration: none; transition: all 0.2s; }
+.qb-pill:hover { border-color: var(--accent); color: var(--text); }
+.qb-pill em { font-style: normal; color: var(--accent-light); font-weight: 700; margin-left: 0.15rem; }
+
 @media (max-width: 768px) {
     .hero h1 { font-size: 2rem; }
     .hero { padding: 3rem 1.5rem 1.5rem; }
     .hero-stats { gap: 1.5rem; }
+    .dsa-live-grid { grid-template-columns: 1fr; }
     .start-grid { grid-template-columns: 1fr; }
     .lists-grid { grid-template-columns: 1fr; }
     .solutions-grid { grid-template-columns: 1fr; }
@@ -589,6 +644,97 @@ document.querySelectorAll('a').forEach(function(a) {
     window.addEventListener('scroll', checkCounters);
 })();
 </script>
+{% include sc-catalog.html %}
+{% include daily-data.html %}
+
+<!-- Live DSA band: daily challenge + personalized progress + quick browse -->
+<script>
+(function () {
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+    function dayKey(dt) { return dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate(); }
+    function diffBar(name, done, tot, col) {
+        var pct = tot ? Math.round(done / tot * 100) : 0;
+        return '<div class="db-row"><span class="db-name" style="color:' + col + '">' + name + '</span><div class="db-track"><div class="db-fill" style="width:' + pct + '%;background:' + col + '"></div></div><span class="db-num">' + done + '/' + tot + '</span></div>';
+    }
+    function render() {
+        var CAT = window.SC_CATALOG || {};
+        var slugs = Object.keys(CAT);
+        if (!slugs.length) return;
+        var total = slugs.length;
+        var byDiff = { easy: 0, medium: 0, hard: 0 };
+        slugs.forEach(function (s) { var d = CAT[s].difficulty; if (byDiff[d] != null) byDiff[d]++; });
+        var data = window._scJudge || { solved: [], subs: {} };
+        var solved = data.solved || [];
+        var solvedByDiff = { easy: 0, medium: 0, hard: 0 };
+        solved.forEach(function (s) { var c = CAT[s]; if (c && solvedByDiff[c.difficulty] != null) solvedByDiff[c.difficulty]++; });
+        var user = window._scUser || window._firebaseUser || null;
+
+        // Problem of the Day (same for all users by UTC day)
+        var list = window.SC_DAILY || [];
+        if (list.length) {
+            var now = new Date();
+            var dayNum = Math.floor(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) / 86400000);
+            var d = list[((dayNum % list.length) + list.length) % list.length];
+            var c = CAT[d[0]] || {};
+            var dEl = document.getElementById('dsa-daily');
+            if (dEl) {
+                dEl.href = '/dsa/problem/' + d[0];
+                document.getElementById('dsa-daily-title').textContent = d[1];
+                var meta = '';
+                if (c.difficulty) meta += '<span class="qd ' + c.difficulty + '">' + c.difficulty + '</span>';
+                if (c.topics) meta += c.topics.slice(0, 2).map(function (t) { return '<span class="qt">' + esc(t) + '</span>'; }).join('');
+                if (solved.indexOf(d[0]) !== -1) meta += '<span class="qd solved">✓ Solved</span>';
+                document.getElementById('dsa-daily-meta').innerHTML = meta;
+            }
+        }
+
+        // Progress card
+        var prog = document.getElementById('dsa-prog');
+        if (prog) {
+            var solvedN = solved.length, pct = total ? Math.round(solvedN / total * 100) : 0;
+            if (user) {
+                var byDay = {};
+                Object.keys(data.subs || {}).forEach(function (sl) { (data.subs[sl] || []).forEach(function (su) { if (su && su.ts) byDay[dayKey(new Date(su.ts))] = 1; }); });
+                var cur = 0, dd = new Date(); dd.setHours(0, 0, 0, 0);
+                if (!byDay[dayKey(dd)]) dd.setDate(dd.getDate() - 1);
+                while (byDay[dayKey(dd)]) { cur++; dd.setDate(dd.getDate() - 1); }
+                var r = 52, C = 2 * Math.PI * r, off = C * (1 - pct / 100);
+                prog.innerHTML = '<div class="prog-head">Your Progress</div>' +
+                    '<div class="prog-body">' +
+                    '<div class="prog-ring"><svg width="120" height="120" viewBox="0 0 120 120"><defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#a78bfa"/></linearGradient></defs><circle cx="60" cy="60" r="52" fill="none" stroke="var(--border)" stroke-width="10"/><circle cx="60" cy="60" r="52" fill="none" stroke="url(#pg)" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + C + '" stroke-dashoffset="' + off + '" transform="rotate(-90 60 60)"/></svg><div class="prog-ring-c"><b>' + solvedN + '</b><span>/ ' + total + ' solved</span></div></div>' +
+                    '<div class="prog-side">' +
+                    diffBar('Easy', solvedByDiff.easy, byDiff.easy, '#22c55e') +
+                    diffBar('Medium', solvedByDiff.medium, byDiff.medium, '#eab308') +
+                    diffBar('Hard', solvedByDiff.hard, byDiff.hard, '#ef4444') +
+                    '<div class="prog-streak">🔥 <b>' + cur + '</b> day streak &middot; <a href="/profile">View profile →</a></div>' +
+                    '</div></div>';
+            } else {
+                prog.innerHTML = '<div class="prog-head">Track your progress</div>' +
+                    '<div class="prog-signin">' +
+                    '<p>Sign in to save solved problems, build a streak, and pick up where you left off across devices.</p>' +
+                    '<button class="prog-signin-btn" type="button">Sign in with Google</button>' +
+                    '<div class="prog-diffs"><span class="qd easy">' + byDiff.easy + ' Easy</span><span class="qd medium">' + byDiff.medium + ' Medium</span><span class="qd hard">' + byDiff.hard + ' Hard</span></div>' +
+                    '</div>';
+                var b = prog.querySelector('.prog-signin-btn');
+                if (b) b.addEventListener('click', function () { var a = document.getElementById('auth-btn'); if (a) a.click(); });
+            }
+        }
+
+        // Quick-browse topic pills
+        var q = document.getElementById('dsa-quick');
+        if (q) {
+            var topicCount = {};
+            slugs.forEach(function (s) { (CAT[s].topics || []).forEach(function (t) { topicCount[t] = (topicCount[t] || 0) + 1; }); });
+            var topics = Object.keys(topicCount).sort(function (a, b) { return topicCount[b] - topicCount[a]; }).slice(0, 10);
+            q.innerHTML = '<span class="qb-label">Popular topics:</span>' + topics.map(function (t) { return '<a class="qb-pill" href="/problemset">' + esc(t) + ' <em>' + topicCount[t] + '</em></a>'; }).join('');
+        }
+    }
+    function ready(fn) { if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
+    ready(function () { render(); if (window._scJudgeReady) render(); document.addEventListener('sc-judge-ready', render); setTimeout(render, 1500); });
+})();
+</script>
+
+{% include judge-firebase.html %}
 {% include firebase-auth.html %}
 {% include search-palette.html %}
 </body>
