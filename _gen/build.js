@@ -163,6 +163,14 @@ require('./problems14.js').MORE14.forEach(function (p) { P.push(p); });
 require('./problems15.js').MORE15.forEach(function (p) { P.push(p); });
 require('./problems16.js').MORE16.forEach(function (p) { P.push(p); });
 require('./problems17.js').MORE17.forEach(function (p) { P.push(p); });
+require('./problems18.js').MORE18.forEach(function (p) { P.push(p); });
+require('./problems19.js').MORE19.forEach(function (p) { P.push(p); });
+require('./problems20.js').MORE20.forEach(function (p) { P.push(p); });
+require('./problems21.js').MORE21.forEach(function (p) { P.push(p); });
+require('./problems22.js').MORE22.forEach(function (p) { P.push(p); });
+require('./problems23.js').MORE23.forEach(function (p) { P.push(p); });
+require('./problems24.js').MORE24.forEach(function (p) { P.push(p); });
+require('./problems25.js').MORE25.forEach(function (p) { P.push(p); });
 
 // ---------- write ----------
 var indexRows = [];
