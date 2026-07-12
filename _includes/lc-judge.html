@@ -115,23 +115,40 @@
       var passed = compileErr ? 0 : (firstFail === -1 ? cases.length : firstFail);
       lastResults = { cases: cases, results: results, isSubmit: isSubmit, compileErr: compileErr, firstFail: firstFail, passed: passed };
 
-      if (isSubmit) {
-        var f = results[firstFail] || {};
-        var status = compileErr ? 'Compile Error'
-          : (passed === cases.length ? 'Accepted'
-          : (f.error ? 'Runtime Error'
-          : (tle ? 'Time Limit Exceeded'
-          : ((runtimeErr && (f.out === '' || f.out == null)) ? 'Runtime Error' : 'Wrong Answer'))));
-        addSub({ ts: Date.now(), lang: lang, langName: META[lang].name, status: status, passed: passed, total: cases.length, code: code });
-        if (status === 'Accepted') {
-          markSolved(); paintSolved();
-          if (typeof triggerCelebration === 'function') {
-            triggerCelebration('Accepted \uD83C\uDF89', 'All ' + cases.length + ' test cases passed in ' + META[lang].name + '. On to the next one!');
+      function finalize() {
+        if (isSubmit) {
+          var f = results[firstFail] || {};
+          var status = compileErr ? 'Compile Error'
+            : (passed === cases.length ? 'Accepted'
+            : (f.error ? 'Runtime Error'
+            : (tle ? 'Time Limit Exceeded'
+            : ((runtimeErr && (f.out === '' || f.out == null)) ? 'Runtime Error' : 'Wrong Answer'))));
+          addSub({ ts: Date.now(), lang: lang, langName: META[lang].name, status: status, passed: passed, total: cases.length, code: code });
+          if (status === 'Accepted') {
+            markSolved(); paintSolved();
+            if (typeof triggerCelebration === 'function') {
+              triggerCelebration('Accepted \uD83C\uDF89', 'All ' + cases.length + ' test cases passed in ' + META[lang].name + '. On to the next one!');
+            }
           }
         }
+        renderResult();
+        busy = false; runBtn.disabled = false; submitBtn.disabled = false; statusEl.textContent = '';
       }
-      renderResult();
-      busy = false; runBtn.disabled = false; submitBtn.disabled = false; statusEl.textContent = '';
+
+      // On submit, tick the passed-case counter up (23/32 ... 24/32) before the
+      // verdict — a progressive reveal, since all cases run in one execution.
+      if (isSubmit && !compileErr && cases.length > 1) {
+        var total = cases.length, target = firstFail === -1 ? total : firstFail, cur = 0;
+        var stepMs = Math.max(12, Math.min(45, Math.floor(650 / Math.max(target, 1))));
+        (function tick() {
+          consoleBody.innerHTML = '<div class="lc-verdict run"><span class="lc-spinner"></span>&nbsp;&nbsp;Judging&nbsp; ' + cur + ' / ' + total + '</div>';
+          if (cur >= target) { finalize(); return; }
+          cur++;
+          setTimeout(tick, stepMs);
+        })();
+      } else {
+        finalize();
+      }
     }).catch(function () {
       consoleBody.innerHTML = '<div class="lc-verdict wa">Backend Unavailable <small>Could not reach the execution service.</small></div>';
       busy = false; runBtn.disabled = false; submitBtn.disabled = false; statusEl.textContent = '';
