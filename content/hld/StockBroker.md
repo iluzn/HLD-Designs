@@ -341,6 +341,8 @@ flowchart LR
 
 ### Flow 1: Order Placement End-to-End
 
+**In simple terms:** Your app's network drops mid-trade. It retries. Without protection, you buy the same stock twice. We need to guarantee that retrying a request never causes double-execution.
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -352,8 +354,6 @@ sequenceDiagram
     participant NS as Notification Svc
 
     User->>GW: POST /orders (idempotencyKey)
-
-**In simple terms:** Your app's network drops mid-trade. It retries. Without protection, you buy the same stock twice. We need to guarantee that retrying a request never causes double-execution.
     GW->>GW: Rate limit + Auth + Idempotency check
     GW->>OMS: Forward order
     OMS->>DB: Check balance and block funds
