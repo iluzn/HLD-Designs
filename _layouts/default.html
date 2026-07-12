@@ -101,6 +101,7 @@
 
         /* Layout */
         .page-layout { max-width: 1200px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; display: grid; grid-template-columns: 1fr 200px; gap: 3rem; position: relative; z-index: 1; }
+        .page-layout.no-toc { grid-template-columns: 1fr; max-width: 1080px; }
 
         /* TOC — glassmorphism sidebar */
         .toc { position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; font-size: 0.78rem; padding: 1rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; backdrop-filter: blur(12px); }
@@ -294,20 +295,23 @@
         </div>
     </header>
 
-    <div class="page-layout">
+    <div class="page-layout{% if page.hide_toc %} no-toc{% endif %}">
         <div class="content">
             <div class="breadcrumbs">
                 <a href="/">Home</a> &rsaquo; <span>{{ page.title }}</span>
             </div>
             {{ content }}
         </div>
+        {% unless page.hide_toc %}
         <aside class="toc">
             <div class="toc-title">On this page</div>
             <div id="toc-links"></div>
         </aside>
+        {% endunless %}
     </div>
 
     <!-- Comments (Firestore-backed) -->
+    {% unless page.hide_comments %}
     <div id="comments-section" style="max-width:900px;margin:0 auto;padding:0 1.5rem 3rem;position:relative;z-index:1;">
         <div class="comments-header">
             <h3>Discussion <span id="comment-count"></span></h3>
@@ -435,6 +439,7 @@
             refresh();
         })();
     </script>
+    {% endunless %}
 
     <footer>
         <p>&copy; 2026 SystemCraft &middot; <a href="/">Home</a> &middot; <a href="/hld">HLD</a> &middot; <a href="/lld">LLD</a> &middot; <a href="/dsa">DSA</a> &middot; <a href="/system-design-interview-guide">Guide</a> &middot; <a href="/cheatsheet">Cheatsheet</a> &middot; <a href="/companies/amazon">Companies</a> &middot; <a href="/about">About</a> &middot; <a href="/privacy">Privacy</a></p>

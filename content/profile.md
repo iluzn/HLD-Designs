@@ -3,6 +3,8 @@ layout: default
 title: "My Profile - Progress Dashboard"
 description: "Your SystemCraft dashboard: DSA problems solved by difficulty, streaks, submission heatmap, language breakdown, and High-Level & Low-Level Design progress."
 permalink: /profile
+hide_toc: true
+hide_comments: true
 ---
 
 {% include judge-firebase.html %}
@@ -115,6 +117,10 @@ permalink: /profile
   function render(){
     var root=document.getElementById('pf-root');
     var user=window._scUser||window._firebaseUser||null;
+    // Bind to the same signed-in identity (dp) the header uses: fall back to
+    // the cached auth photo/name so the profile hero shows instantly while
+    // Firebase restores the session async.
+    if(!user){ try{ var _c=JSON.parse(localStorage.getItem('authCache')||'null'); if(_c&&(_c.photoURL||_c.displayName)) user={name:_c.displayName,photo:_c.photoURL,email:null}; }catch(e){} }
     var data=window._scJudge||{solved:[],subs:{}};
     var solved=data.solved||[];
     var subs=[]; Object.keys(data.subs||{}).forEach(function(sl){(data.subs[sl]||[]).forEach(function(s){s=Object.assign({},s);s.slug=sl;subs.push(s);});});
@@ -130,7 +136,7 @@ permalink: /profile
     var solvedWeekN=Object.keys(solvedWeek).length;
     var name=user?(user.name||user.displayName||'You'):'Guest';
     var photo=user?(user.photo||user.photoURL):null;
-    var avatar=photo?'<img src="'+esc(photo)+'" alt="">':'<div class="pf-hero-fallback">'+esc(name.charAt(0).toUpperCase())+'</div>';
+    var avatar=photo?'<img src="'+esc(photo)+'" alt="" referrerpolicy="no-referrer">':'<div class="pf-hero-fallback">'+esc(name.charAt(0).toUpperCase())+'</div>';
 
     var html='<div class="pf-hero">'+avatar+'<div><h2>'+esc(name)+'</h2><div class="sub">'+(user?esc(user.email||'Signed in'):'Not signed in · saved in this browser')+'</div></div></div>';
     if(!user) html+='<div class="pf-note">You are not signed in — progress is stored only in this browser. <a href="/">Sign in</a> to sync across devices.</div>';
