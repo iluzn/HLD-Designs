@@ -235,7 +235,7 @@
     else if (P.diagram === 'HIST') svg = scHistSVG(scParse(disp.nums), 'plain');
     else if (/^TREE/.test(type)) { var k = disp.root !== undefined ? 'root' : (disp.p !== undefined ? 'p' : null); if (k) svg = scTreeSVG(scParse(disp[k])); }
     else if (/^LIST/.test(type)) { var k2 = disp.head !== undefined ? 'head' : (disp.l1 !== undefined ? 'l1' : null); if (k2) svg = scListSVG(scParse(disp[k2])); }
-    else if (/GRID/.test(type) && disp.grid !== undefined) { svg = scGridSVG(scParse(disp.grid)); }
+    else if (/GRID/.test(type)) { var gk = disp.grid !== undefined ? 'grid' : (disp.matrix !== undefined ? 'matrix' : (disp.board !== undefined ? 'board' : null)); if (gk) svg = scGridSVG(scParse(disp[gk])); }
     return svg ? '<div class="lc-diagram">' + svg + '</div>' : '';
   }
   // Insert each example's diagram inline, right under its "Example N" heading
