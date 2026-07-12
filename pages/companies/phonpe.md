@@ -86,42 +86,42 @@ PhonePe is one of India's most competitive fintech companies. The interview proc
 | # | Problem | Pattern | Difficulty | Link |
 |---|---------|---------|-----------|------|
 | 1 | House Robber III | Tree DP | Medium | [LeetCode →](https://leetcode.com/problems/house-robber-iii/) |
-| 2 | Binary Tree Maximum Path Sum | DFS | Hard | [LeetCode →](https://leetcode.com/problems/binary-tree-maximum-path-sum/) |
+| 2 | Binary Tree Maximum Path Sum | DFS | Hard | [Solve →](/dsa/problem/binary-tree-maximum-path-sum) |
 | 3 | All Nodes Distance K in Binary Tree | Tree → Graph + BFS | Medium | [LeetCode →](https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/) |
 | 4 | Serialize and Deserialize Binary Tree | BFS/DFS | Hard | [LeetCode →](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/) |
 | 5 | Lowest Common Ancestor | DFS | Medium | [LeetCode →](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/) |
-| 6 | Validate Binary Search Tree | DFS + Range | Medium | [LeetCode →](https://leetcode.com/problems/validate-binary-search-tree/) |
-| 7 | Kth Smallest Element in BST | Inorder | Medium | [LeetCode →](https://leetcode.com/problems/kth-smallest-element-in-a-bst/) |
+| 6 | Validate Binary Search Tree | DFS + Range | Medium | [Solve →](/dsa/problem/validate-binary-search-tree) |
+| 7 | Kth Smallest Element in BST | Inorder | Medium | [Solve →](/dsa/problem/kth-smallest-element-in-a-bst) |
 | 8 | Flatten Binary Tree to Linked List | DFS | Medium | [LeetCode →](https://leetcode.com/problems/flatten-binary-tree-to-linked-list/) |
 | 9 | Construct Binary Tree from Inorder and Postorder | Recursion | Medium | [LeetCode →](https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/) |
-| 10 | Diameter of Binary Tree | DFS | Easy | [LeetCode →](https://leetcode.com/problems/diameter-of-binary-tree/) |
+| 10 | Diameter of Binary Tree | DFS | Easy | [Solve →](/dsa/problem/diameter-of-binary-tree) |
 
 ### Dynamic Programming
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---------|---------|-----------|------|
 | 11 | Candy | Greedy/DP | Hard | [LeetCode →](https://leetcode.com/problems/candy/) |
-| 12 | House Robber | Linear DP | Medium | [LeetCode →](https://leetcode.com/problems/house-robber/) |
-| 13 | House Robber II (Circular) | Linear DP | Medium | [LeetCode →](https://leetcode.com/problems/house-robber-ii/) |
-| 14 | Longest Increasing Subsequence | DP + Binary Search | Medium | [LeetCode →](https://leetcode.com/problems/longest-increasing-subsequence/) |
-| 15 | Coin Change | Unbounded Knapsack | Medium | [LeetCode →](https://leetcode.com/problems/coin-change/) |
-| 16 | Edit Distance | 2D DP | Medium | [LeetCode →](https://leetcode.com/problems/edit-distance/) |
-| 17 | Word Break | DP | Medium | [LeetCode →](https://leetcode.com/problems/word-break/) |
-| 18 | Maximum Subarray (Kadane's) | DP | Medium | [LeetCode →](https://leetcode.com/problems/maximum-subarray/) |
-| 19 | Unique Paths | Grid DP | Medium | [LeetCode →](https://leetcode.com/problems/unique-paths/) |
+| 12 | House Robber | Linear DP | Medium | [Solve →](/dsa/problem/house-robber) |
+| 13 | House Robber II (Circular) | Linear DP | Medium | [Solve →](/dsa/problem/house-robber-ii) |
+| 14 | Longest Increasing Subsequence | DP + Binary Search | Medium | [Solve →](/dsa/problem/longest-increasing-subsequence) |
+| 15 | Coin Change | Unbounded Knapsack | Medium | [Solve →](/dsa/problem/coin-change) |
+| 16 | Edit Distance | 2D DP | Medium | [Solve →](/dsa/problem/edit-distance) |
+| 17 | Word Break | DP | Medium | [Solve →](/dsa/problem/word-break) |
+| 18 | Maximum Subarray (Kadane's) | DP | Medium | [Solve →](/dsa/problem/maximum-subarray) |
+| 19 | Unique Paths | Grid DP | Medium | [Solve →](/dsa/problem/unique-paths) |
 | 20 | Minimum Path Sum | Grid DP | Medium | [LeetCode →](https://leetcode.com/problems/minimum-path-sum/) |
 | 21 | Maximal Square | Grid DP | Medium | [LeetCode →](https://leetcode.com/problems/maximal-square/) |
-| 22 | Jump Game | Greedy/DP | Medium | [LeetCode →](https://leetcode.com/problems/jump-game/) |
+| 22 | Jump Game | Greedy/DP | Medium | [Solve →](/dsa/problem/jump-game) |
 | 23 | Longest Palindromic Substring | Expand from Center / DP | Medium | [LeetCode →](https://leetcode.com/problems/longest-palindromic-substring/) |
 
 ### Graphs / BFS / DFS
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---------|---------|-----------|------|
-| 24 | Number of Islands | BFS/DFS | Medium | [LeetCode →](https://leetcode.com/problems/number-of-islands/) |
-| 25 | Course Schedule | Topological Sort | Medium | [LeetCode →](https://leetcode.com/problems/course-schedule/) |
-| 26 | Word Ladder | BFS | Hard | [LeetCode →](https://leetcode.com/problems/word-ladder/) |
-| 27 | Rotting Oranges | Multi-source BFS | Medium | [LeetCode →](https://leetcode.com/problems/rotting-oranges/) |
+| 24 | Number of Islands | BFS/DFS | Medium | [Solve →](/dsa/problem/number-of-islands) |
+| 25 | Course Schedule | Topological Sort | Medium | [Solve →](/dsa/problem/course-schedule) |
+| 26 | Word Ladder | BFS | Hard | [Solve →](/dsa/problem/word-ladder) |
+| 27 | Rotting Oranges | Multi-source BFS | Medium | [Solve →](/dsa/problem/rotting-oranges) |
 | 28 | Number of Provinces | Union-Find/DFS | Medium | [LeetCode →](https://leetcode.com/problems/number-of-provinces/) |
 | 29 | Clone Graph | BFS + HashMap | Medium | [LeetCode →](https://leetcode.com/problems/clone-graph/) |
 | 30 | Shortest Path in Binary Matrix | BFS | Medium | [LeetCode →](https://leetcode.com/problems/shortest-path-in-binary-matrix/) |
@@ -130,26 +130,26 @@ PhonePe is one of India's most competitive fintech companies. The interview proc
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---------|---------|-----------|------|
-| 31 | Two Sum | HashMap | Easy | [LeetCode →](https://leetcode.com/problems/two-sum/) |
-| 32 | 3Sum | Two Pointers + Sort | Medium | [LeetCode →](https://leetcode.com/problems/3sum/) |
-| 33 | Trapping Rain Water | Two Pointers / Stack | Hard | [LeetCode →](https://leetcode.com/problems/trapping-rain-water/) |
-| 34 | Merge Intervals | Sort + Sweep | Medium | [LeetCode →](https://leetcode.com/problems/merge-intervals/) |
-| 35 | Meeting Rooms II | Intervals + Heap | Medium | [LeetCode →](https://leetcode.com/problems/meeting-rooms-ii/) |
-| 36 | Subarray Sum Equals K | Prefix Sum + HashMap | Medium | [LeetCode →](https://leetcode.com/problems/subarray-sum-equals-k/) |
-| 37 | Product of Array Except Self | Prefix/Suffix | Medium | [LeetCode →](https://leetcode.com/problems/product-of-array-except-self/) |
-| 38 | Longest Substring Without Repeating Characters | Sliding Window | Medium | [LeetCode →](https://leetcode.com/problems/longest-substring-without-repeating-characters/) |
-| 39 | Group Anagrams | HashMap + Sorting | Medium | [LeetCode →](https://leetcode.com/problems/group-anagrams/) |
-| 40 | Find the Duplicate Number | Fast/Slow Pointer | Medium | [LeetCode →](https://leetcode.com/problems/find-the-duplicate-number/) |
-| 41 | Set Matrix Zeroes | Array | Medium | [LeetCode →](https://leetcode.com/problems/set-matrix-zeroes/) |
-| 42 | Spiral Matrix | Simulation | Medium | [LeetCode →](https://leetcode.com/problems/spiral-matrix/) |
+| 31 | Two Sum | HashMap | Easy | [Solve →](/dsa/problem/two-sum) |
+| 32 | 3Sum | Two Pointers + Sort | Medium | [Solve →](/dsa/problem/3sum) |
+| 33 | Trapping Rain Water | Two Pointers / Stack | Hard | [Solve →](/dsa/problem/trapping-rain-water) |
+| 34 | Merge Intervals | Sort + Sweep | Medium | [Solve →](/dsa/problem/merge-intervals) |
+| 35 | Meeting Rooms II | Intervals + Heap | Medium | [Solve →](/dsa/problem/meeting-rooms-ii) |
+| 36 | Subarray Sum Equals K | Prefix Sum + HashMap | Medium | [Solve →](/dsa/problem/subarray-sum-equals-k) |
+| 37 | Product of Array Except Self | Prefix/Suffix | Medium | [Solve →](/dsa/problem/product-of-array-except-self) |
+| 38 | Longest Substring Without Repeating Characters | Sliding Window | Medium | [Solve →](/dsa/problem/longest-substring-without-repeating-characters) |
+| 39 | Group Anagrams | HashMap + Sorting | Medium | [Solve →](/dsa/problem/group-anagrams) |
+| 40 | Find the Duplicate Number | Fast/Slow Pointer | Medium | [Solve →](/dsa/problem/find-the-duplicate-number) |
+| 41 | Set Matrix Zeroes | Array | Medium | [Solve →](/dsa/problem/set-matrix-zeroes) |
+| 42 | Spiral Matrix | Simulation | Medium | [Solve →](/dsa/problem/spiral-matrix) |
 
 ### Binary Search
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---------|---------|-----------|------|
-| 43 | Search in Rotated Sorted Array | Modified BS | Medium | [LeetCode →](https://leetcode.com/problems/search-in-rotated-sorted-array/) |
-| 44 | Find Minimum in Rotated Sorted Array | Binary Search | Medium | [LeetCode →](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) |
-| 45 | Koko Eating Bananas | BS on Answer | Medium | [LeetCode →](https://leetcode.com/problems/koko-eating-bananas/) |
+| 43 | Search in Rotated Sorted Array | Modified BS | Medium | [Solve →](/dsa/problem/search-in-rotated-sorted-array) |
+| 44 | Find Minimum in Rotated Sorted Array | Binary Search | Medium | [Solve →](/dsa/problem/find-minimum-in-rotated-sorted-array) |
+| 45 | Koko Eating Bananas | BS on Answer | Medium | [Solve →](/dsa/problem/koko-eating-bananas) |
 | 46 | Find Peak Element | Binary Search | Medium | [LeetCode →](https://leetcode.com/problems/find-peak-element/) |
 | 47 | Median of Two Sorted Arrays | Binary Search | Hard | [LeetCode →](https://leetcode.com/problems/median-of-two-sorted-arrays/) |
 
@@ -157,44 +157,44 @@ PhonePe is one of India's most competitive fintech companies. The interview proc
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---------|---------|-----------|------|
-| 48 | Valid Parentheses | Stack | Easy | [LeetCode →](https://leetcode.com/problems/valid-parentheses/) |
-| 49 | Largest Rectangle in Histogram | Monotonic Stack | Hard | [LeetCode →](https://leetcode.com/problems/largest-rectangle-in-histogram/) |
-| 50 | Min Stack | Stack Design | Medium | [LeetCode →](https://leetcode.com/problems/min-stack/) |
-| 51 | Daily Temperatures | Monotonic Stack | Medium | [LeetCode →](https://leetcode.com/problems/daily-temperatures/) |
+| 48 | Valid Parentheses | Stack | Easy | [Solve →](/dsa/problem/valid-parentheses) |
+| 49 | Largest Rectangle in Histogram | Monotonic Stack | Hard | [Solve →](/dsa/problem/largest-rectangle-in-histogram) |
+| 50 | Min Stack | Stack Design | Medium | [Solve →](/dsa/problem/min-stack) |
+| 51 | Daily Temperatures | Monotonic Stack | Medium | [Solve →](/dsa/problem/daily-temperatures) |
 | 52 | Next Greater Element I | Monotonic Stack | Easy | [LeetCode →](https://leetcode.com/problems/next-greater-element-i/) |
 
 ### Linked List
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---------|---------|-----------|------|
-| 53 | LRU Cache | HashMap + DLL | Medium | [LeetCode →](https://leetcode.com/problems/lru-cache/) |
-| 54 | Reverse Linked List | Iterative/Recursive | Easy | [LeetCode →](https://leetcode.com/problems/reverse-linked-list/) |
-| 55 | Merge Two Sorted Lists | Two Pointers | Easy | [LeetCode →](https://leetcode.com/problems/merge-two-sorted-lists/) |
-| 56 | Linked List Cycle | Fast/Slow Pointers | Easy | [LeetCode →](https://leetcode.com/problems/linked-list-cycle/) |
+| 53 | LRU Cache | HashMap + DLL | Medium | [Solve →](/dsa/problem/lru-cache) |
+| 54 | Reverse Linked List | Iterative/Recursive | Easy | [Solve →](/dsa/problem/reverse-linked-list) |
+| 55 | Merge Two Sorted Lists | Two Pointers | Easy | [Solve →](/dsa/problem/merge-two-sorted-lists) |
+| 56 | Linked List Cycle | Fast/Slow Pointers | Easy | [Solve →](/dsa/problem/linked-list-cycle) |
 
 ### Heap / Greedy
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---------|---------|-----------|------|
-| 57 | Kth Largest Element | QuickSelect / Heap | Medium | [LeetCode →](https://leetcode.com/problems/kth-largest-element-in-an-array/) |
-| 58 | Top K Frequent Elements | Heap / Bucket Sort | Medium | [LeetCode →](https://leetcode.com/problems/top-k-frequent-elements/) |
-| 59 | Merge K Sorted Lists | Min-Heap | Hard | [LeetCode →](https://leetcode.com/problems/merge-k-sorted-lists/) |
-| 60 | Task Scheduler | Greedy / Heap | Medium | [LeetCode →](https://leetcode.com/problems/task-scheduler/) |
+| 57 | Kth Largest Element | QuickSelect / Heap | Medium | [Solve →](/dsa/problem/kth-largest-element-in-an-array) |
+| 58 | Top K Frequent Elements | Heap / Bucket Sort | Medium | [Solve →](/dsa/problem/top-k-frequent-elements) |
+| 59 | Merge K Sorted Lists | Min-Heap | Hard | [Solve →](/dsa/problem/merge-k-sorted-lists) |
+| 60 | Task Scheduler | Greedy / Heap | Medium | [Solve →](/dsa/problem/task-scheduler) |
 
 ### Backtracking
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---------|---------|-----------|------|
-| 61 | Word Search | DFS + Backtrack | Medium | [LeetCode →](https://leetcode.com/problems/word-search/) |
-| 62 | Combination Sum | Backtracking | Medium | [LeetCode →](https://leetcode.com/problems/combination-sum/) |
-| 63 | Generate Parentheses | Backtracking | Medium | [LeetCode →](https://leetcode.com/problems/generate-parentheses/) |
+| 61 | Word Search | DFS + Backtrack | Medium | [Solve →](/dsa/problem/word-search) |
+| 62 | Combination Sum | Backtracking | Medium | [Solve →](/dsa/problem/combination-sum) |
+| 63 | Generate Parentheses | Backtracking | Medium | [Solve →](/dsa/problem/generate-parentheses) |
 
 ### Union-Find / DSU (Trending in 2025-2026)
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---------|---------|-----------|------|
-| 64 | Number of Connected Components | Union-Find | Medium | [LeetCode →](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/) |
-| 65 | Redundant Connection | Union-Find | Medium | [LeetCode →](https://leetcode.com/problems/redundant-connection/) |
+| 64 | Number of Connected Components | Union-Find | Medium | [Solve →](/dsa/problem/number-of-connected-components-in-an-undirected-graph) |
+| 65 | Redundant Connection | Union-Find | Medium | [Solve →](/dsa/problem/redundant-connection) |
 | 66 | Accounts Merge | Union-Find + DFS | Medium | [LeetCode →](https://leetcode.com/problems/accounts-merge/) |
 
 ### Additional Confirmed (2025-2026)
@@ -204,7 +204,7 @@ PhonePe is one of India's most competitive fintech companies. The interview proc
 | 67 | Distribute Coins in Binary Tree | Tree DFS | Medium | [LeetCode →](https://leetcode.com/problems/distribute-coins-in-binary-tree/) |
 | 68 | Maximum Product of Three Numbers | Sorting + Greedy | Easy | [LeetCode →](https://leetcode.com/problems/maximum-product-of-three-numbers/) |
 | 69 | Minimum Window Substring | Sliding Window | Hard | [LeetCode →](https://leetcode.com/problems/minimum-window-substring/) |
-| 70 | Container With Most Water | Two Pointers | Medium | [LeetCode →](https://leetcode.com/problems/container-with-most-water/) |
+| 70 | Container With Most Water | Two Pointers | Medium | [Solve →](/dsa/problem/container-with-most-water) |
 
 ---
 

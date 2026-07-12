@@ -61,14 +61,14 @@ Amazon's loop for SDE-2 and above includes 1-2 system design rounds alongside co
 
 | # | Problem | Pattern | Link |
 |---|---------|---------|------|
-| 1 | Two Sum | HashMap | [LeetCode →](https://leetcode.com/problems/two-sum/) |
-| 2 | Merge Intervals | Sorting + Greedy | [LeetCode →](https://leetcode.com/problems/merge-intervals/) |
-| 3 | LRU Cache | HashMap + Doubly Linked List | [LeetCode →](https://leetcode.com/problems/lru-cache/) |
-| 4 | Number of Islands | BFS/DFS on Grid | [LeetCode →](https://leetcode.com/problems/number-of-islands/) |
-| 5 | Word Ladder | BFS | [LeetCode →](https://leetcode.com/problems/word-ladder/) |
-| 6 | Sliding Window Maximum | Monotonic Deque | [LeetCode →](https://leetcode.com/problems/sliding-window-maximum/) |
-| 7 | Course Schedule | Topological Sort | [LeetCode →](https://leetcode.com/problems/course-schedule/) |
-| 8 | Trapping Rain Water | Two Pointers / Stack | [LeetCode →](https://leetcode.com/problems/trapping-rain-water/) |
+| 1 | Two Sum | HashMap | [Solve →](/dsa/problem/two-sum) |
+| 2 | Merge Intervals | Sorting + Greedy | [Solve →](/dsa/problem/merge-intervals) |
+| 3 | LRU Cache | HashMap + Doubly Linked List | [Solve →](/dsa/problem/lru-cache) |
+| 4 | Number of Islands | BFS/DFS on Grid | [Solve →](/dsa/problem/number-of-islands) |
+| 5 | Word Ladder | BFS | [Solve →](/dsa/problem/word-ladder) |
+| 6 | Sliding Window Maximum | Monotonic Deque | [Solve →](/dsa/problem/sliding-window-maximum) |
+| 7 | Course Schedule | Topological Sort | [Solve →](/dsa/problem/course-schedule) |
+| 8 | Trapping Rain Water | Two Pointers / Stack | [Solve →](/dsa/problem/trapping-rain-water) |
 | 9 | Median of Two Sorted Arrays | Binary Search | [LeetCode →](https://leetcode.com/problems/median-of-two-sorted-arrays/) |
 | 10 | Serialize and Deserialize Binary Tree | Tree + BFS/DFS | [LeetCode →](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/) |
 

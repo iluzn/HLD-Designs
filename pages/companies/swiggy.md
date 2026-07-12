@@ -62,16 +62,16 @@ Swiggy's interview process for SDE-2+ follows the Indian product company templat
 
 | # | Problem | Pattern | Link |
 |---|---------|---------|------|
-| 1 | Two Sum | HashMap | [LeetCode →](https://leetcode.com/problems/two-sum/) |
-| 2 | Merge Intervals | Sorting + Greedy | [LeetCode →](https://leetcode.com/problems/merge-intervals/) |
-| 3 | Longest Substring Without Repeating | Sliding Window | [LeetCode →](https://leetcode.com/problems/longest-substring-without-repeating-characters/) |
-| 4 | LRU Cache | HashMap + DLL | [LeetCode →](https://leetcode.com/problems/lru-cache/) |
-| 5 | Rotting Oranges | BFS on Grid | [LeetCode →](https://leetcode.com/problems/rotting-oranges/) |
-| 6 | Coin Change | DP | [LeetCode →](https://leetcode.com/problems/coin-change/) |
-| 7 | Kth Largest Element | Quick Select / Heap | [LeetCode →](https://leetcode.com/problems/kth-largest-element-in-an-array/) |
+| 1 | Two Sum | HashMap | [Solve →](/dsa/problem/two-sum) |
+| 2 | Merge Intervals | Sorting + Greedy | [Solve →](/dsa/problem/merge-intervals) |
+| 3 | Longest Substring Without Repeating | Sliding Window | [Solve →](/dsa/problem/longest-substring-without-repeating-characters) |
+| 4 | LRU Cache | HashMap + DLL | [Solve →](/dsa/problem/lru-cache) |
+| 5 | Rotting Oranges | BFS on Grid | [Solve →](/dsa/problem/rotting-oranges) |
+| 6 | Coin Change | DP | [Solve →](/dsa/problem/coin-change) |
+| 7 | Kth Largest Element | Quick Select / Heap | [Solve →](/dsa/problem/kth-largest-element-in-an-array) |
 | 8 | Binary Tree Zigzag Level Order | BFS | [LeetCode →](https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/) |
 | 9 | Next Greater Element | Monotonic Stack | [LeetCode →](https://leetcode.com/problems/next-greater-element-i/) |
-| 10 | Trapping Rain Water | Two Pointers / Stack | [LeetCode →](https://leetcode.com/problems/trapping-rain-water/) |
+| 10 | Trapping Rain Water | Two Pointers / Stack | [Solve →](/dsa/problem/trapping-rain-water) |
 
 ---
 

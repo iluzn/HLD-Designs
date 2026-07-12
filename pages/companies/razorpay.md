@@ -62,16 +62,16 @@ Razorpay's loop for SDE-2+ includes DSA, machine coding (90 min), system design,
 
 | # | Problem | Pattern | Link |
 |---|---------|---------|------|
-| 1 | Two Sum | HashMap | [LeetCode →](https://leetcode.com/problems/two-sum/) |
-| 2 | Valid Parentheses | Stack | [LeetCode →](https://leetcode.com/problems/valid-parentheses/) |
-| 3 | Merge Intervals | Sorting + Greedy | [LeetCode →](https://leetcode.com/problems/merge-intervals/) |
-| 4 | LRU Cache | HashMap + DLL | [LeetCode →](https://leetcode.com/problems/lru-cache/) |
-| 5 | Maximum Subarray | Kadane's Algorithm | [LeetCode →](https://leetcode.com/problems/maximum-subarray/) |
-| 6 | Coin Change | DP | [LeetCode →](https://leetcode.com/problems/coin-change/) |
-| 7 | Binary Search | Binary Search | [LeetCode →](https://leetcode.com/problems/binary-search/) |
-| 8 | Linked List Cycle | Fast and Slow Pointers | [LeetCode →](https://leetcode.com/problems/linked-list-cycle/) |
-| 9 | Group Anagrams | HashMap + Sorting | [LeetCode →](https://leetcode.com/problems/group-anagrams/) |
-| 10 | Min Stack | Stack Design | [LeetCode →](https://leetcode.com/problems/min-stack/) |
+| 1 | Two Sum | HashMap | [Solve →](/dsa/problem/two-sum) |
+| 2 | Valid Parentheses | Stack | [Solve →](/dsa/problem/valid-parentheses) |
+| 3 | Merge Intervals | Sorting + Greedy | [Solve →](/dsa/problem/merge-intervals) |
+| 4 | LRU Cache | HashMap + DLL | [Solve →](/dsa/problem/lru-cache) |
+| 5 | Maximum Subarray | Kadane's Algorithm | [Solve →](/dsa/problem/maximum-subarray) |
+| 6 | Coin Change | DP | [Solve →](/dsa/problem/coin-change) |
+| 7 | Binary Search | Binary Search | [Solve →](/dsa/problem/binary-search) |
+| 8 | Linked List Cycle | Fast and Slow Pointers | [Solve →](/dsa/problem/linked-list-cycle) |
+| 9 | Group Anagrams | HashMap + Sorting | [Solve →](/dsa/problem/group-anagrams) |
+| 10 | Min Stack | Stack Design | [Solve →](/dsa/problem/min-stack) |
 
 ---
 

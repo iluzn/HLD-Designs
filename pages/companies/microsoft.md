@@ -53,16 +53,16 @@ Microsoft's interview loop for SDE-2+ includes 1 system design round alongside 2
 
 | # | Problem | Pattern | Link |
 |---|---------|---------|------|
-| 1 | LRU Cache | HashMap + Doubly Linked List | [LeetCode →](https://leetcode.com/problems/lru-cache/) |
-| 2 | Course Schedule | Topological Sort | [LeetCode →](https://leetcode.com/problems/course-schedule/) |
-| 3 | Merge Intervals | Sorting + Greedy | [LeetCode →](https://leetcode.com/problems/merge-intervals/) |
-| 4 | Binary Tree Level Order Traversal | BFS | [LeetCode →](https://leetcode.com/problems/binary-tree-level-order-traversal/) |
-| 5 | Add Two Numbers (Linked List) | Linked List | [LeetCode →](https://leetcode.com/problems/add-two-numbers/) |
-| 6 | Valid Parentheses | Stack | [LeetCode →](https://leetcode.com/problems/valid-parentheses/) |
+| 1 | LRU Cache | HashMap + Doubly Linked List | [Solve →](/dsa/problem/lru-cache) |
+| 2 | Course Schedule | Topological Sort | [Solve →](/dsa/problem/course-schedule) |
+| 3 | Merge Intervals | Sorting + Greedy | [Solve →](/dsa/problem/merge-intervals) |
+| 4 | Binary Tree Level Order Traversal | BFS | [Solve →](/dsa/problem/binary-tree-level-order-traversal) |
+| 5 | Add Two Numbers (Linked List) | Linked List | [Solve →](/dsa/problem/add-two-numbers) |
+| 6 | Valid Parentheses | Stack | [Solve →](/dsa/problem/valid-parentheses) |
 | 7 | Clone Graph | BFS/DFS + HashMap | [LeetCode →](https://leetcode.com/problems/clone-graph/) |
-| 8 | Spiral Matrix | Simulation | [LeetCode →](https://leetcode.com/problems/spiral-matrix/) |
+| 8 | Spiral Matrix | Simulation | [Solve →](/dsa/problem/spiral-matrix) |
 | 9 | Design Tic-Tac-Toe | Design | [LeetCode →](https://leetcode.com/problems/design-tic-tac-toe/) |
-| 10 | Word Search | Backtracking | [LeetCode →](https://leetcode.com/problems/word-search/) |
+| 10 | Word Search | Backtracking | [Solve →](/dsa/problem/word-search) |
 
 ---
 

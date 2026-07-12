@@ -52,16 +52,16 @@ Uber's interview loop for SDE-2+ emphasizes distributed systems heavily. The sys
 
 | # | Problem | Pattern | Link |
 |---|---------|---------|------|
-| 1 | Merge Intervals | Sorting + Greedy | [LeetCode →](https://leetcode.com/problems/merge-intervals/) |
-| 2 | Sliding Window Maximum | Monotonic Deque | [LeetCode →](https://leetcode.com/problems/sliding-window-maximum/) |
-| 3 | Group Anagrams | HashMap + Sorting | [LeetCode →](https://leetcode.com/problems/group-anagrams/) |
-| 4 | LRU Cache | HashMap + Doubly Linked List | [LeetCode →](https://leetcode.com/problems/lru-cache/) |
-| 5 | Word Break | DP + Trie | [LeetCode →](https://leetcode.com/problems/word-break/) |
-| 6 | Task Scheduler | Greedy / Heap | [LeetCode →](https://leetcode.com/problems/task-scheduler/) |
+| 1 | Merge Intervals | Sorting + Greedy | [Solve →](/dsa/problem/merge-intervals) |
+| 2 | Sliding Window Maximum | Monotonic Deque | [Solve →](/dsa/problem/sliding-window-maximum) |
+| 3 | Group Anagrams | HashMap + Sorting | [Solve →](/dsa/problem/group-anagrams) |
+| 4 | LRU Cache | HashMap + Doubly Linked List | [Solve →](/dsa/problem/lru-cache) |
+| 5 | Word Break | DP + Trie | [Solve →](/dsa/problem/word-break) |
+| 6 | Task Scheduler | Greedy / Heap | [Solve →](/dsa/problem/task-scheduler) |
 | 7 | Cheapest Flights Within K Stops | BFS / Bellman-Ford | [LeetCode →](https://leetcode.com/problems/cheapest-flights-within-k-stops/) |
-| 8 | Longest Consecutive Sequence | HashSet | [LeetCode →](https://leetcode.com/problems/longest-consecutive-sequence/) |
+| 8 | Longest Consecutive Sequence | HashSet | [Solve →](/dsa/problem/longest-consecutive-sequence) |
 | 9 | Find Median from Data Stream | Two Heaps | [LeetCode →](https://leetcode.com/problems/find-median-from-data-stream/) |
-| 10 | Graph Valid Tree | Union-Find / DFS | [LeetCode →](https://leetcode.com/problems/graph-valid-tree/) |
+| 10 | Graph Valid Tree | Union-Find / DFS | [Solve →](/dsa/problem/graph-valid-tree) |
 
 ---
 

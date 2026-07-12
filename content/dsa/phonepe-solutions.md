@@ -44,7 +44,7 @@ private int[] dfs(TreeNode node) {
 }
 ```
 
-### 2. Binary Tree Maximum Path Sum — [LC 124](https://leetcode.com/problems/binary-tree-maximum-path-sum/) · Hard
+### 2. Binary Tree Maximum Path Sum — [LC 124](/dsa/problem/binary-tree-maximum-path-sum) · Hard
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/binary-tree-maximum-path-sum)
 
@@ -165,7 +165,7 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
 }
 ```
 
-### 6. Validate Binary Search Tree — [LC 98](https://leetcode.com/problems/validate-binary-search-tree/) · Medium
+### 6. Validate Binary Search Tree — [LC 98](/dsa/problem/validate-binary-search-tree) · Medium
 
 **Approach:** Carry down a valid `(low, high)` range. Each node must lie strictly inside it; recurse tightening the bound. Use `long` bounds to avoid Integer overflow.
 
@@ -183,7 +183,7 @@ private boolean valid(TreeNode node, long low, long high) {
 }
 ```
 
-### 7. Kth Smallest Element in a BST — [LC 230](https://leetcode.com/problems/kth-smallest-element-in-a-bst/) · Medium
+### 7. Kth Smallest Element in a BST — [LC 230](/dsa/problem/kth-smallest-element-in-a-bst) · Medium
 
 **Approach:** In-order traversal of a BST visits values in sorted order. Stop at the k-th.
 
@@ -252,7 +252,7 @@ private TreeNode build(int[] post, int inLo, int inHi) {
 }
 ```
 
-### 10. Diameter of Binary Tree — [LC 543](https://leetcode.com/problems/diameter-of-binary-tree/) · Easy
+### 10. Diameter of Binary Tree — [LC 543](/dsa/problem/diameter-of-binary-tree) · Easy
 
 **Approach:** DFS returns height. At each node the longest path through it is `leftHeight + rightHeight`; track the global max.
 
@@ -330,7 +330,7 @@ public int candy(int[] ratings) {
 }
 ```
 
-### 12. House Robber — [LC 198](https://leetcode.com/problems/house-robber/) · Medium
+### 12. House Robber — [LC 198](/dsa/problem/house-robber) · Medium
 
 **Approach:** `dp[i] = max(dp[i-1], dp[i-2] + nums[i])`. Roll into two variables.
 
@@ -348,7 +348,7 @@ public int rob(int[] nums) {
 }
 ```
 
-### 13. House Robber II (Circular) — [LC 213](https://leetcode.com/problems/house-robber-ii/) · Medium
+### 13. House Robber II (Circular) — [LC 213](/dsa/problem/house-robber-ii) · Medium
 
 **Approach:** First and last house are adjacent, so run linear House Robber twice: excluding the last, and excluding the first. Take the max.
 
@@ -372,7 +372,7 @@ private int robLine(int[] nums, int lo, int hi) {
 }
 ```
 
-### 14. Longest Increasing Subsequence — [LC 300](https://leetcode.com/problems/longest-increasing-subsequence/) · Medium
+### 14. Longest Increasing Subsequence — [LC 300](/dsa/problem/longest-increasing-subsequence) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/longest-increasing-subsequence)
 
@@ -398,7 +398,7 @@ public int lengthOfLIS(int[] nums) {
 }
 ```
 
-### 15. Coin Change — [LC 322](https://leetcode.com/problems/coin-change/) · Medium
+### 15. Coin Change — [LC 322](/dsa/problem/coin-change) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/coin-change)
 
@@ -418,7 +418,7 @@ public int coinChange(int[] coins, int amount) {
 }
 ```
 
-### 16. Edit Distance — [LC 72](https://leetcode.com/problems/edit-distance/) · Medium
+### 16. Edit Distance — [LC 72](/dsa/problem/edit-distance) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/edit-distance)
 
@@ -446,7 +446,7 @@ public int minDistance(String word1, String word2) {
 }
 ```
 
-### 17. Word Break — [LC 139](https://leetcode.com/problems/word-break/) · Medium
+### 17. Word Break — [LC 139](/dsa/problem/word-break) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/word-break)
 
@@ -471,7 +471,7 @@ public boolean wordBreak(String s, List<String> wordDict) {
 }
 ```
 
-### 18. Maximum Subarray (Kadane's) — [LC 53](https://leetcode.com/problems/maximum-subarray/) · Medium
+### 18. Maximum Subarray (Kadane's) — [LC 53](/dsa/problem/maximum-subarray) · Medium
 
 **Approach:** Track the best subarray ending here: either extend or restart. Keep a global max.
 
@@ -488,7 +488,7 @@ public int maxSubArray(int[] nums) {
 }
 ```
 
-### 19. Unique Paths — [LC 62](https://leetcode.com/problems/unique-paths/) · Medium
+### 19. Unique Paths — [LC 62](/dsa/problem/unique-paths) · Medium
 
 **Approach:** Grid DP with a rolling 1D row. Each cell = cell above + cell left.
 
@@ -550,7 +550,7 @@ public int maximalSquare(char[][] matrix) {
 }
 ```
 
-### 22. Jump Game — [LC 55](https://leetcode.com/problems/jump-game/) · Medium
+### 22. Jump Game — [LC 55](/dsa/problem/jump-game) · Medium
 
 **Approach:** Greedy. Track the farthest reachable index; if you ever stand beyond it, fail.
 
@@ -599,7 +599,7 @@ private int expand(String s, int left, int right) {
 
 ## Graphs / BFS / DFS
 
-### 24. Number of Islands — [LC 200](https://leetcode.com/problems/number-of-islands/) · Medium
+### 24. Number of Islands — [LC 200](/dsa/problem/number-of-islands) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/number-of-islands)
 
@@ -626,7 +626,7 @@ private void sink(char[][] grid, int i, int j) {
 }
 ```
 
-### 25. Course Schedule — [LC 207](https://leetcode.com/problems/course-schedule/) · Medium
+### 25. Course Schedule — [LC 207](/dsa/problem/course-schedule) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/course-schedule)
 
@@ -658,7 +658,7 @@ public boolean canFinish(int numCourses, int[][] prerequisites) {
 }
 ```
 
-### 26. Word Ladder — [LC 127](https://leetcode.com/problems/word-ladder/) · Hard
+### 26. Word Ladder — [LC 127](/dsa/problem/word-ladder) · Hard
 
 **Approach:** BFS over words; neighbors are words differing by one letter. Use a wildcard pattern map (`h*t`) to find neighbors in O(word length) rather than comparing all pairs.
 
@@ -694,7 +694,7 @@ public int ladderLength(String beginWord, String endWord, List<String> wordList)
 }
 ```
 
-### 27. Rotting Oranges — [LC 994](https://leetcode.com/problems/rotting-oranges/) · Medium
+### 27. Rotting Oranges — [LC 994](/dsa/problem/rotting-oranges) · Medium
 
 **Approach:** Multi-source BFS. Seed the queue with all rotten oranges, spread one minute per level, count fresh remaining.
 
@@ -812,7 +812,7 @@ public int shortestPathBinaryMatrix(int[][] grid) {
 
 ## Arrays / Strings / Hashing
 
-### 31. Two Sum — [LC 1](https://leetcode.com/problems/two-sum/) · Easy
+### 31. Two Sum — [LC 1](/dsa/problem/two-sum) · Easy
 
 **Approach:** One-pass HashMap of value → index. For each number, check if its complement was already seen.
 
@@ -830,7 +830,7 @@ public int[] twoSum(int[] nums, int target) {
 }
 ```
 
-### 32. 3Sum — [LC 15](https://leetcode.com/problems/3sum/) · Medium
+### 32. 3Sum — [LC 15](/dsa/problem/3sum) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/3sum)
 
@@ -860,7 +860,7 @@ public List<List<Integer>> threeSum(int[] nums) {
 }
 ```
 
-### 33. Trapping Rain Water — [LC 42](https://leetcode.com/problems/trapping-rain-water/) · Hard
+### 33. Trapping Rain Water — [LC 42](/dsa/problem/trapping-rain-water) · Hard
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/trapping-rain-water)
 
@@ -887,7 +887,7 @@ public int trap(int[] height) {
 }
 ```
 
-### 34. Merge Intervals — [LC 56](https://leetcode.com/problems/merge-intervals/) · Medium
+### 34. Merge Intervals — [LC 56](/dsa/problem/merge-intervals) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/merge-intervals)
 
@@ -911,7 +911,7 @@ public int[][] merge(int[][] intervals) {
 }
 ```
 
-### 35. Meeting Rooms II — [LC 253](https://leetcode.com/problems/meeting-rooms-ii/) · Medium
+### 35. Meeting Rooms II — [LC 253](/dsa/problem/meeting-rooms-ii) · Medium
 
 **Approach:** Min-heap of end times. Sort by start; if the earliest ending room is free before the next meeting starts, reuse it, else allocate a new room. Heap size = rooms needed.
 
@@ -929,7 +929,7 @@ public int minMeetingRooms(int[][] intervals) {
 }
 ```
 
-### 36. Subarray Sum Equals K — [LC 560](https://leetcode.com/problems/subarray-sum-equals-k/) · Medium
+### 36. Subarray Sum Equals K — [LC 560](/dsa/problem/subarray-sum-equals-k) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/subarray-sum-equals-k)
 
@@ -951,7 +951,7 @@ public int subarraySum(int[] nums, int k) {
 }
 ```
 
-### 37. Product of Array Except Self — [LC 238](https://leetcode.com/problems/product-of-array-except-self/) · Medium
+### 37. Product of Array Except Self — [LC 238](/dsa/problem/product-of-array-except-self) · Medium
 
 **Approach:** Two sweeps. First pass stores prefix products; second pass multiplies by a running suffix product. No division.
 
@@ -972,7 +972,7 @@ public int[] productExceptSelf(int[] nums) {
 }
 ```
 
-### 38. Longest Substring Without Repeating Characters — [LC 3](https://leetcode.com/problems/longest-substring-without-repeating-characters/) · Medium
+### 38. Longest Substring Without Repeating Characters — [LC 3](/dsa/problem/longest-substring-without-repeating-characters) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/longest-substring-without-repeating)
 
@@ -994,7 +994,7 @@ public int lengthOfLongestSubstring(String s) {
 }
 ```
 
-### 39. Group Anagrams — [LC 49](https://leetcode.com/problems/group-anagrams/) · Medium
+### 39. Group Anagrams — [LC 49](/dsa/problem/group-anagrams) · Medium
 
 **Approach:** Key each word by its sorted character signature; group into a map.
 
@@ -1012,7 +1012,7 @@ public List<List<String>> groupAnagrams(String[] strs) {
 }
 ```
 
-### 40. Find the Duplicate Number — [LC 287](https://leetcode.com/problems/find-the-duplicate-number/) · Medium
+### 40. Find the Duplicate Number — [LC 287](/dsa/problem/find-the-duplicate-number) · Medium
 
 **Approach:** Treat values as "next index" pointers; the duplicate is the entrance of a cycle. Floyd's tortoise and hare, O(1) space, no mutation.
 
@@ -1035,7 +1035,7 @@ public int findDuplicate(int[] nums) {
 }
 ```
 
-### 41. Set Matrix Zeroes — [LC 73](https://leetcode.com/problems/set-matrix-zeroes/) · Medium
+### 41. Set Matrix Zeroes — [LC 73](/dsa/problem/set-matrix-zeroes) · Medium
 
 **Approach:** Use the first row and column as zero-flags to get O(1) space. Track separately whether the first row/column themselves need zeroing.
 
@@ -1061,7 +1061,7 @@ public void setZeroes(int[][] matrix) {
 }
 ```
 
-### 42. Spiral Matrix — [LC 54](https://leetcode.com/problems/spiral-matrix/) · Medium
+### 42. Spiral Matrix — [LC 54](/dsa/problem/spiral-matrix) · Medium
 
 **Approach:** Maintain four boundaries; peel off top row, right column, bottom row, left column, shrinking inward.
 
@@ -1138,7 +1138,7 @@ public String minWindow(String s, String t) {
 }
 ```
 
-### 70. Container With Most Water — [LC 11](https://leetcode.com/problems/container-with-most-water/) · Medium
+### 70. Container With Most Water — [LC 11](/dsa/problem/container-with-most-water) · Medium
 
 **Approach:** Two pointers from both ends. Area is limited by the shorter wall, so move the shorter pointer inward hoping for a taller one.
 
@@ -1160,7 +1160,7 @@ public int maxArea(int[] height) {
 
 ## Binary Search
 
-### 43. Search in Rotated Sorted Array — [LC 33](https://leetcode.com/problems/search-in-rotated-sorted-array/) · Medium
+### 43. Search in Rotated Sorted Array — [LC 33](/dsa/problem/search-in-rotated-sorted-array) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/search-in-rotated-sorted-array)
 
@@ -1186,7 +1186,7 @@ public int search(int[] nums, int target) {
 }
 ```
 
-### 44. Find Minimum in Rotated Sorted Array — [LC 153](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) · Medium
+### 44. Find Minimum in Rotated Sorted Array — [LC 153](/dsa/problem/find-minimum-in-rotated-sorted-array) · Medium
 
 **Approach:** Binary search for the inflection point. If `mid` value exceeds the rightmost, the minimum is to the right; else it's at mid or left.
 
@@ -1204,7 +1204,7 @@ public int findMin(int[] nums) {
 }
 ```
 
-### 45. Koko Eating Bananas — [LC 875](https://leetcode.com/problems/koko-eating-bananas/) · Medium
+### 45. Koko Eating Bananas — [LC 875](/dsa/problem/koko-eating-bananas) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/koko-eating-bananas)
 
@@ -1282,7 +1282,7 @@ public double findMedianSortedArrays(int[] a, int[] b) {
 
 ## Stack
 
-### 48. Valid Parentheses — [LC 20](https://leetcode.com/problems/valid-parentheses/) · Easy
+### 48. Valid Parentheses — [LC 20](/dsa/problem/valid-parentheses) · Easy
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/valid-parentheses)
 
@@ -1303,7 +1303,7 @@ public boolean isValid(String s) {
 }
 ```
 
-### 49. Largest Rectangle in Histogram — [LC 84](https://leetcode.com/problems/largest-rectangle-in-histogram/) · Hard
+### 49. Largest Rectangle in Histogram — [LC 84](/dsa/problem/largest-rectangle-in-histogram) · Hard
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/largest-rectangle-in-histogram)
 
@@ -1328,7 +1328,7 @@ public int largestRectangleArea(int[] heights) {
 }
 ```
 
-### 50. Min Stack — [LC 155](https://leetcode.com/problems/min-stack/) · Medium
+### 50. Min Stack — [LC 155](/dsa/problem/min-stack) · Medium
 
 **Approach:** Store each element alongside the running minimum in a single stack of pairs, so `getMin` is O(1).
 
@@ -1348,7 +1348,7 @@ class MinStack {
 }
 ```
 
-### 51. Daily Temperatures — [LC 739](https://leetcode.com/problems/daily-temperatures/) · Medium
+### 51. Daily Temperatures — [LC 739](/dsa/problem/daily-temperatures) · Medium
 
 **Approach:** Monotonic decreasing stack of indices. When a warmer day arrives, pop all colder days and record the day gap.
 
@@ -1395,7 +1395,7 @@ public int[] nextGreaterElement(int[] nums1, int[] nums2) {
 
 ## Linked List
 
-### 53. LRU Cache — [LC 146](https://leetcode.com/problems/lru-cache/) · Medium
+### 53. LRU Cache — [LC 146](/dsa/problem/lru-cache) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/lru-cache)
 
@@ -1455,7 +1455,7 @@ class LRUCache {
 }
 ```
 
-### 54. Reverse Linked List — [LC 206](https://leetcode.com/problems/reverse-linked-list/) · Easy
+### 54. Reverse Linked List — [LC 206](/dsa/problem/reverse-linked-list) · Easy
 
 **Approach:** Iteratively flip each `next` pointer, tracking the previous node.
 
@@ -1474,7 +1474,7 @@ public ListNode reverseList(ListNode head) {
 }
 ```
 
-### 55. Merge Two Sorted Lists — [LC 21](https://leetcode.com/problems/merge-two-sorted-lists/) · Easy
+### 55. Merge Two Sorted Lists — [LC 21](/dsa/problem/merge-two-sorted-lists) · Easy
 
 **Approach:** Dummy head; repeatedly append the smaller head. Attach the leftover tail at the end.
 
@@ -1493,7 +1493,7 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
 }
 ```
 
-### 56. Linked List Cycle — [LC 141](https://leetcode.com/problems/linked-list-cycle/) · Easy
+### 56. Linked List Cycle — [LC 141](/dsa/problem/linked-list-cycle) · Easy
 
 **Approach:** Floyd's tortoise and hare. If a fast pointer laps a slow one, there's a cycle.
 
@@ -1515,7 +1515,7 @@ public boolean hasCycle(ListNode head) {
 
 ## Heap / Greedy
 
-### 57. Kth Largest Element — [LC 215](https://leetcode.com/problems/kth-largest-element-in-an-array/) · Medium
+### 57. Kth Largest Element — [LC 215](/dsa/problem/kth-largest-element-in-an-array) · Medium
 
 **Approach:** Min-heap of size k. Keep only the k largest seen; the root is the answer. (QuickSelect gives O(n) average but the heap is cleaner to write.)
 
@@ -1532,7 +1532,7 @@ public int findKthLargest(int[] nums, int k) {
 }
 ```
 
-### 58. Top K Frequent Elements — [LC 347](https://leetcode.com/problems/top-k-frequent-elements/) · Medium
+### 58. Top K Frequent Elements — [LC 347](/dsa/problem/top-k-frequent-elements) · Medium
 
 **Approach:** Count frequencies, then bucket sort by frequency (index = count). Collect from the highest buckets down.
 
@@ -1563,7 +1563,7 @@ public int[] topKFrequent(int[] nums, int k) {
 }
 ```
 
-### 59. Merge K Sorted Lists — [LC 23](https://leetcode.com/problems/merge-k-sorted-lists/) · Hard
+### 59. Merge K Sorted Lists — [LC 23](/dsa/problem/merge-k-sorted-lists) · Hard
 
 **Approach:** Min-heap of the current head of each list. Pop the smallest, append it, push its successor.
 
@@ -1585,7 +1585,7 @@ public ListNode mergeKLists(ListNode[] lists) {
 }
 ```
 
-### 60. Task Scheduler — [LC 621](https://leetcode.com/problems/task-scheduler/) · Medium
+### 60. Task Scheduler — [LC 621](/dsa/problem/task-scheduler) · Medium
 
 **Approach:** The most frequent task defines the skeleton of idle slots. Compute frames from `maxCount` and fill gaps with other tasks; answer is `max(totalTasks, framework slots)`.
 
@@ -1609,7 +1609,7 @@ public int leastInterval(char[] tasks, int n) {
 
 ## Backtracking
 
-### 61. Word Search — [LC 79](https://leetcode.com/problems/word-search/) · Medium
+### 61. Word Search — [LC 79](/dsa/problem/word-search) · Medium
 
 **Approach:** DFS from each cell, matching one character at a time; mark the cell visited during recursion and restore it on backtrack.
 
@@ -1639,7 +1639,7 @@ private boolean dfs(char[][] board, String word, int i, int j, int k) {
 }
 ```
 
-### 62. Combination Sum — [LC 39](https://leetcode.com/problems/combination-sum/) · Medium
+### 62. Combination Sum — [LC 39](/dsa/problem/combination-sum) · Medium
 
 **Approach:** DFS choosing candidates with reuse. Pass a `start` index to avoid permutations; subtract from remaining target.
 
@@ -1664,7 +1664,7 @@ private void backtrack(int[] candidates, int remain, int start,
 }
 ```
 
-### 63. Generate Parentheses — [LC 22](https://leetcode.com/problems/generate-parentheses/) · Medium
+### 63. Generate Parentheses — [LC 22](/dsa/problem/generate-parentheses) · Medium
 
 **Approach:** DFS tracking open and close counts. Add `(` while open < n; add `)` while close < open.
 
@@ -1722,7 +1722,7 @@ class DSU {
 }
 ```
 
-### 64. Number of Connected Components — [LC 323](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/) · Medium
+### 64. Number of Connected Components — [LC 323](/dsa/problem/number-of-connected-components-in-an-undirected-graph) · Medium
 
 🔎 [Deep dive: full walkthrough with Java, Python & C++ →](/dsa/number-of-connected-components)
 
@@ -1738,7 +1738,7 @@ public int countComponents(int n, int[][] edges) {
 }
 ```
 
-### 65. Redundant Connection — [LC 684](https://leetcode.com/problems/redundant-connection/) · Medium
+### 65. Redundant Connection — [LC 684](/dsa/problem/redundant-connection) · Medium
 
 **Approach:** Add edges one by one; the first edge whose endpoints already share a root is the cycle-closing redundant edge.
 

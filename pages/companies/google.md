@@ -80,98 +80,98 @@ Same as L4 but adds:
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---|---|---|---|
-| 1 | Number of Islands | BFS/DFS Grid | Medium | [LeetCode →](https://leetcode.com/problems/number-of-islands/) |
-| 2 | Word Ladder | BFS Shortest Path | Hard | [LeetCode →](https://leetcode.com/problems/word-ladder/) |
-| 3 | Course Schedule | Topological Sort | Medium | [LeetCode →](https://leetcode.com/problems/course-schedule/) |
+| 1 | Number of Islands | BFS/DFS Grid | Medium | [Solve →](/dsa/problem/number-of-islands) |
+| 2 | Word Ladder | BFS Shortest Path | Hard | [Solve →](/dsa/problem/word-ladder) |
+| 3 | Course Schedule | Topological Sort | Medium | [Solve →](/dsa/problem/course-schedule) |
 | 4 | Course Schedule II | Topological Sort | Medium | [LeetCode →](https://leetcode.com/problems/course-schedule-ii/) |
 | 5 | Clone Graph | BFS + HashMap | Medium | [LeetCode →](https://leetcode.com/problems/clone-graph/) |
-| 6 | Network Delay Time | Dijkstra | Medium | [LeetCode →](https://leetcode.com/problems/network-delay-time/) |
+| 6 | Network Delay Time | Dijkstra | Medium | [Solve →](/dsa/problem/network-delay-time) |
 | 7 | Accounts Merge | Union-Find | Medium | [LeetCode →](https://leetcode.com/problems/accounts-merge/) |
 | 8 | Alien Dictionary | Topological Sort | Hard | [LeetCode →](https://leetcode.com/problems/alien-dictionary/) |
 | 9 | Pacific Atlantic Water Flow | Multi-source DFS | Medium | [LeetCode →](https://leetcode.com/problems/pacific-atlantic-water-flow/) |
 | 10 | Shortest Path in Binary Matrix | BFS | Medium | [LeetCode →](https://leetcode.com/problems/shortest-path-in-binary-matrix/) |
 | 11 | Minimum Height Trees | Topological BFS | Medium | [LeetCode →](https://leetcode.com/problems/minimum-height-trees/) |
-| 12 | Swim in Rising Water | BFS + Heap | Hard | [LeetCode →](https://leetcode.com/problems/swim-in-rising-water/) |
+| 12 | Swim in Rising Water | BFS + Heap | Hard | [Solve →](/dsa/problem/swim-in-rising-water) |
 | 13 | Critical Connections in Network | Tarjan's (Bridges) | Hard | [LeetCode →](https://leetcode.com/problems/critical-connections-in-a-network/) |
-| 14 | Rotting Oranges | Multi-source BFS | Medium | [LeetCode →](https://leetcode.com/problems/rotting-oranges/) |
+| 14 | Rotting Oranges | Multi-source BFS | Medium | [Solve →](/dsa/problem/rotting-oranges) |
 | 15 | Cheapest Flights Within K Stops | BFS / Bellman-Ford | Medium | [LeetCode →](https://leetcode.com/problems/cheapest-flights-within-k-stops/) |
-| 16 | Graph Valid Tree | Union-Find / DFS | Medium | [LeetCode →](https://leetcode.com/problems/graph-valid-tree/) |
-| 17 | Redundant Connection | Union-Find | Medium | [LeetCode →](https://leetcode.com/problems/redundant-connection/) |
+| 16 | Graph Valid Tree | Union-Find / DFS | Medium | [Solve →](/dsa/problem/graph-valid-tree) |
+| 17 | Redundant Connection | Union-Find | Medium | [Solve →](/dsa/problem/redundant-connection) |
 
 ### Dynamic Programming — Google's #2 Topic
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---|---|---|---|
-| 18 | Longest Increasing Subsequence | DP + Binary Search | Medium | [LeetCode →](https://leetcode.com/problems/longest-increasing-subsequence/) |
-| 19 | Word Break | DP | Medium | [LeetCode →](https://leetcode.com/problems/word-break/) |
-| 20 | Coin Change | Unbounded Knapsack | Medium | [LeetCode →](https://leetcode.com/problems/coin-change/) |
-| 21 | Edit Distance | 2D DP | Medium | [LeetCode →](https://leetcode.com/problems/edit-distance/) |
-| 22 | Unique Paths | Grid DP | Medium | [LeetCode →](https://leetcode.com/problems/unique-paths/) |
-| 23 | Burst Balloons | Interval DP | Hard | [LeetCode →](https://leetcode.com/problems/burst-balloons/) |
-| 24 | Decode Ways | Linear DP | Medium | [LeetCode →](https://leetcode.com/problems/decode-ways/) |
-| 25 | Maximum Product Subarray | DP | Medium | [LeetCode →](https://leetcode.com/problems/maximum-product-subarray/) |
-| 26 | Longest Common Subsequence | 2D DP | Medium | [LeetCode →](https://leetcode.com/problems/longest-common-subsequence/) |
-| 27 | Jump Game II | Greedy | Medium | [LeetCode →](https://leetcode.com/problems/jump-game-ii/) |
-| 28 | Regular Expression Matching | 2D DP | Hard | [LeetCode →](https://leetcode.com/problems/regular-expression-matching/) |
+| 18 | Longest Increasing Subsequence | DP + Binary Search | Medium | [Solve →](/dsa/problem/longest-increasing-subsequence) |
+| 19 | Word Break | DP | Medium | [Solve →](/dsa/problem/word-break) |
+| 20 | Coin Change | Unbounded Knapsack | Medium | [Solve →](/dsa/problem/coin-change) |
+| 21 | Edit Distance | 2D DP | Medium | [Solve →](/dsa/problem/edit-distance) |
+| 22 | Unique Paths | Grid DP | Medium | [Solve →](/dsa/problem/unique-paths) |
+| 23 | Burst Balloons | Interval DP | Hard | [Solve →](/dsa/problem/burst-balloons) |
+| 24 | Decode Ways | Linear DP | Medium | [Solve →](/dsa/problem/decode-ways) |
+| 25 | Maximum Product Subarray | DP | Medium | [Solve →](/dsa/problem/maximum-product-subarray) |
+| 26 | Longest Common Subsequence | 2D DP | Medium | [Solve →](/dsa/problem/longest-common-subsequence) |
+| 27 | Jump Game II | Greedy | Medium | [Solve →](/dsa/problem/jump-game-ii) |
+| 28 | Regular Expression Matching | 2D DP | Hard | [Solve →](/dsa/problem/regular-expression-matching) |
 
 ### Trees
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---|---|---|---|
-| 29 | Binary Tree Maximum Path Sum | DFS | Hard | [LeetCode →](https://leetcode.com/problems/binary-tree-maximum-path-sum/) |
+| 29 | Binary Tree Maximum Path Sum | DFS | Hard | [Solve →](/dsa/problem/binary-tree-maximum-path-sum) |
 | 30 | Serialize and Deserialize Binary Tree | BFS/DFS | Hard | [LeetCode →](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/) |
 | 31 | Lowest Common Ancestor | DFS | Medium | [LeetCode →](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/) |
-| 32 | Validate BST | DFS + Range | Medium | [LeetCode →](https://leetcode.com/problems/validate-binary-search-tree/) |
-| 33 | Binary Tree Level Order Traversal | BFS | Medium | [LeetCode →](https://leetcode.com/problems/binary-tree-level-order-traversal/) |
+| 32 | Validate BST | DFS + Range | Medium | [Solve →](/dsa/problem/validate-binary-search-tree) |
+| 33 | Binary Tree Level Order Traversal | BFS | Medium | [Solve →](/dsa/problem/binary-tree-level-order-traversal) |
 | 34 | Construct Binary Tree from Preorder and Inorder | Recursion | Medium | [LeetCode →](https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/) |
-| 35 | Count Good Nodes | DFS | Medium | [LeetCode →](https://leetcode.com/problems/count-good-nodes-in-binary-tree/) |
-| 36 | Kth Smallest Element in BST | Inorder | Medium | [LeetCode →](https://leetcode.com/problems/kth-smallest-element-in-a-bst/) |
+| 35 | Count Good Nodes | DFS | Medium | [Solve →](/dsa/problem/count-good-nodes-in-binary-tree) |
+| 36 | Kth Smallest Element in BST | Inorder | Medium | [Solve →](/dsa/problem/kth-smallest-element-in-a-bst) |
 
 ### Binary Search
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---|---|---|---|
-| 37 | Search in Rotated Sorted Array | Modified BS | Medium | [LeetCode →](https://leetcode.com/problems/search-in-rotated-sorted-array/) |
+| 37 | Search in Rotated Sorted Array | Modified BS | Medium | [Solve →](/dsa/problem/search-in-rotated-sorted-array) |
 | 38 | Median of Two Sorted Arrays | Binary Search | Hard | [LeetCode →](https://leetcode.com/problems/median-of-two-sorted-arrays/) |
-| 39 | Koko Eating Bananas | BS on Answer | Medium | [LeetCode →](https://leetcode.com/problems/koko-eating-bananas/) |
+| 39 | Koko Eating Bananas | BS on Answer | Medium | [Solve →](/dsa/problem/koko-eating-bananas) |
 | 40 | Split Array Largest Sum | BS + Greedy | Hard | [LeetCode →](https://leetcode.com/problems/split-array-largest-sum/) |
-| 41 | Time Based Key-Value Store | HashMap + BS | Medium | [LeetCode →](https://leetcode.com/problems/time-based-key-value-store/) |
+| 41 | Time Based Key-Value Store | HashMap + BS | Medium | [Solve →](/dsa/problem/time-based-key-value-store) |
 
 ### Sliding Window / Two Pointers
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---|---|---|---|
 | 42 | Minimum Window Substring | Sliding Window | Hard | [LeetCode →](https://leetcode.com/problems/minimum-window-substring/) |
-| 43 | Longest Substring Without Repeating Characters | Sliding Window | Medium | [LeetCode →](https://leetcode.com/problems/longest-substring-without-repeating-characters/) |
-| 44 | 3Sum | Two Pointers + Sort | Medium | [LeetCode →](https://leetcode.com/problems/3sum/) |
-| 45 | Container With Most Water | Two Pointers | Medium | [LeetCode →](https://leetcode.com/problems/container-with-most-water/) |
-| 46 | Trapping Rain Water | Two Pointers / Stack | Hard | [LeetCode →](https://leetcode.com/problems/trapping-rain-water/) |
-| 47 | Sliding Window Maximum | Monotonic Deque | Hard | [LeetCode →](https://leetcode.com/problems/sliding-window-maximum/) |
+| 43 | Longest Substring Without Repeating Characters | Sliding Window | Medium | [Solve →](/dsa/problem/longest-substring-without-repeating-characters) |
+| 44 | 3Sum | Two Pointers + Sort | Medium | [Solve →](/dsa/problem/3sum) |
+| 45 | Container With Most Water | Two Pointers | Medium | [Solve →](/dsa/problem/container-with-most-water) |
+| 46 | Trapping Rain Water | Two Pointers / Stack | Hard | [Solve →](/dsa/problem/trapping-rain-water) |
+| 47 | Sliding Window Maximum | Monotonic Deque | Hard | [Solve →](/dsa/problem/sliding-window-maximum) |
 
 ### Stack / Monotonic Stack
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---|---|---|---|
-| 48 | Largest Rectangle in Histogram | Monotonic Stack | Hard | [LeetCode →](https://leetcode.com/problems/largest-rectangle-in-histogram/) |
+| 48 | Largest Rectangle in Histogram | Monotonic Stack | Hard | [Solve →](/dsa/problem/largest-rectangle-in-histogram) |
 | 49 | Basic Calculator | Stack + Recursion | Hard | [LeetCode →](https://leetcode.com/problems/basic-calculator/) |
-| 50 | Daily Temperatures | Monotonic Stack | Medium | [LeetCode →](https://leetcode.com/problems/daily-temperatures/) |
+| 50 | Daily Temperatures | Monotonic Stack | Medium | [Solve →](/dsa/problem/daily-temperatures) |
 
 ### Heap / Priority Queue
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---|---|---|---|
 | 51 | Find Median from Data Stream | Two Heaps | Hard | [LeetCode →](https://leetcode.com/problems/find-median-from-data-stream/) |
-| 52 | Merge K Sorted Lists | Min-Heap | Hard | [LeetCode →](https://leetcode.com/problems/merge-k-sorted-lists/) |
-| 53 | Kth Largest Element | QuickSelect / Heap | Medium | [LeetCode →](https://leetcode.com/problems/kth-largest-element-in-an-array/) |
-| 54 | Top K Frequent Elements | Heap / Bucket Sort | Medium | [LeetCode →](https://leetcode.com/problems/top-k-frequent-elements/) |
-| 55 | Task Scheduler | Greedy / Heap | Medium | [LeetCode →](https://leetcode.com/problems/task-scheduler/) |
+| 52 | Merge K Sorted Lists | Min-Heap | Hard | [Solve →](/dsa/problem/merge-k-sorted-lists) |
+| 53 | Kth Largest Element | QuickSelect / Heap | Medium | [Solve →](/dsa/problem/kth-largest-element-in-an-array) |
+| 54 | Top K Frequent Elements | Heap / Bucket Sort | Medium | [Solve →](/dsa/problem/top-k-frequent-elements) |
+| 55 | Task Scheduler | Greedy / Heap | Medium | [Solve →](/dsa/problem/task-scheduler) |
 
 ### Design (Coding)
 
 | # | Problem | Pattern | Difficulty | Link |
 |---|---|---|---|---|
-| 56 | LRU Cache | HashMap + DLL | Medium | [LeetCode →](https://leetcode.com/problems/lru-cache/) |
-| 57 | Implement Trie | Trie | Medium | [LeetCode →](https://leetcode.com/problems/implement-trie-prefix-tree/) |
+| 56 | LRU Cache | HashMap + DLL | Medium | [Solve →](/dsa/problem/lru-cache) |
+| 57 | Implement Trie | Trie | Medium | [Solve →](/dsa/problem/implement-trie-prefix-tree) |
 | 58 | Design Search Autocomplete | Trie + Heap | Hard | [LeetCode →](https://leetcode.com/problems/design-search-autocomplete-system/) |
 | 59 | Snapshot Array | Binary Search | Medium | [LeetCode →](https://leetcode.com/problems/snapshot-array/) |
 
@@ -180,10 +180,10 @@ Same as L4 but adds:
 | # | Problem | Pattern | Difficulty | Link |
 |---|---|---|---|---|
 | 60 | Word Search II | Trie + Backtrack | Hard | [LeetCode →](https://leetcode.com/problems/word-search-ii/) |
-| 61 | Permutations | Backtracking | Medium | [LeetCode →](https://leetcode.com/problems/permutations/) |
-| 62 | Combination Sum | Backtracking | Medium | [LeetCode →](https://leetcode.com/problems/combination-sum/) |
+| 61 | Permutations | Backtracking | Medium | [Solve →](/dsa/problem/permutations) |
+| 62 | Combination Sum | Backtracking | Medium | [Solve →](/dsa/problem/combination-sum) |
 | 63 | N-Queens | Backtracking | Hard | [LeetCode →](https://leetcode.com/problems/n-queens/) |
-| 64 | Generate Parentheses | Backtracking | Medium | [LeetCode →](https://leetcode.com/problems/generate-parentheses/) |
+| 64 | Generate Parentheses | Backtracking | Medium | [Solve →](/dsa/problem/generate-parentheses) |
 
 ---
 

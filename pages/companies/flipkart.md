@@ -59,16 +59,16 @@ Flipkart's interview process for SDE-2+ includes 2 DSA rounds, 1 machine coding 
 
 | # | Problem | Pattern | Link |
 |---|---------|---------|------|
-| 1 | Merge K Sorted Lists | Heap / Divide & Conquer | [LeetCode →](https://leetcode.com/problems/merge-k-sorted-lists/) |
-| 2 | Longest Substring Without Repeating | Sliding Window | [LeetCode →](https://leetcode.com/problems/longest-substring-without-repeating-characters/) |
-| 3 | Coin Change | Dynamic Programming | [LeetCode →](https://leetcode.com/problems/coin-change/) |
-| 4 | Kth Largest Element | Quick Select / Heap | [LeetCode →](https://leetcode.com/problems/kth-largest-element-in-an-array/) |
-| 5 | Rotting Oranges | BFS on Grid | [LeetCode →](https://leetcode.com/problems/rotting-oranges/) |
+| 1 | Merge K Sorted Lists | Heap / Divide & Conquer | [Solve →](/dsa/problem/merge-k-sorted-lists) |
+| 2 | Longest Substring Without Repeating | Sliding Window | [Solve →](/dsa/problem/longest-substring-without-repeating-characters) |
+| 3 | Coin Change | Dynamic Programming | [Solve →](/dsa/problem/coin-change) |
+| 4 | Kth Largest Element | Quick Select / Heap | [Solve →](/dsa/problem/kth-largest-element-in-an-array) |
+| 5 | Rotting Oranges | BFS on Grid | [Solve →](/dsa/problem/rotting-oranges) |
 | 6 | Clone Graph | BFS/DFS + HashMap | [LeetCode →](https://leetcode.com/problems/clone-graph/) |
-| 7 | Word Break | DP + Trie | [LeetCode →](https://leetcode.com/problems/word-break/) |
+| 7 | Word Break | DP + Trie | [Solve →](/dsa/problem/word-break) |
 | 8 | Next Greater Element | Monotonic Stack | [LeetCode →](https://leetcode.com/problems/next-greater-element-i/) |
 | 9 | Flatten Nested List Iterator | Stack / Recursion | [LeetCode →](https://leetcode.com/problems/flatten-nested-list-iterator/) |
-| 10 | Edit Distance | 2D DP | [LeetCode →](https://leetcode.com/problems/edit-distance/) |
+| 10 | Edit Distance | 2D DP | [Solve →](/dsa/problem/edit-distance) |
 
 ---
 
