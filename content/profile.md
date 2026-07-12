@@ -49,10 +49,10 @@ hide_toc: true
 .pf-streakline b { color:#f59e0b; }
 
 .pf-heat-card { background:var(--bg-card,rgba(25,25,35,0.55)); border:1px solid var(--border); border-radius:16px; padding:1.1rem 1.25rem; margin-bottom:1.2rem; }
-.pf-heat { display:flex; gap:11px; width:max-content; }
-.pf-mgroup { display:flex; gap:3px; }
-.pf-week { display:flex; flex-direction:column; gap:3px; }
-.pf-day { width:12px; height:12px; border-radius:2px; background:var(--border); }
+.pf-heat { display:flex; gap:8px; width:max-content; }
+.pf-mgroup { display:flex; gap:2px; }
+.pf-week { display:flex; flex-direction:column; gap:2px; }
+.pf-day { width:10px; height:10px; border-radius:2px; background:var(--border); }
 .pf-day.l1{background:#9be9a8;} .pf-day.l2{background:#40c463;} .pf-day.l3{background:#30a14e;} .pf-day.l4{background:#216e39;}
 [data-theme="dark"] .pf-day.l1{background:#0e4429;} [data-theme="dark"] .pf-day.l2{background:#006d32;} [data-theme="dark"] .pf-day.l3{background:#26a641;} [data-theme="dark"] .pf-day.l4{background:#39d353;}
 .pf-heat-scroll { overflow-x:auto; padding-bottom:0.2rem; }
@@ -62,7 +62,7 @@ hide_toc: true
 .pf-info { display:inline-flex; width:15px; height:15px; align-items:center; justify-content:center; border-radius:50%; border:1px solid var(--text-dim); color:var(--text-dim); font-size:0.62rem; font-style:normal; font-weight:700; cursor:help; vertical-align:middle; margin-left:2px; }
 .pf-heat-stats { display:inline-flex; align-items:center; gap:1rem; flex-wrap:wrap; }
 .pf-year-pill { display:inline-flex; align-items:center; gap:0.35rem; font-size:0.76rem; color:var(--text); background:var(--glass,rgba(255,255,255,0.04)); border:1px solid var(--border); border-radius:8px; padding:0.3rem 0.7rem; }
-.pf-months { display:flex; gap:11px; font-size:0.68rem; color:var(--text-dim); margin-top:6px; width:max-content; }
+.pf-months { display:flex; gap:8px; font-size:0.66rem; color:var(--text-dim); margin-top:6px; width:max-content; }
 .pf-mon { display:inline-block; text-align:left; overflow:visible; white-space:nowrap; flex-shrink:0; }
 .pf-day.fut { background:transparent; }
 .pf-day.blank { background:transparent; }
@@ -190,7 +190,7 @@ hide_toc: true
         }).join('')+'</div>';
       }).join('');
       blocks.push('<div class="pf-mgroup">'+colHtml+'</div>');
-      monthLabels.push('<span class="pf-mon" style="width:'+(cols.length*15-3)+'px">'+MON[mo]+'</span>');
+      monthLabels.push('<span class="pf-mon" style="width:'+(cols.length*12-2)+'px">'+MON[mo]+'</span>');
       mIter.setMonth(mIter.getMonth()+1);
     }
     var gridHtml=blocks.join('');
