@@ -47,12 +47,15 @@ permalink: /profile
 .pf-streakline { font-size:0.8rem; color:var(--text-muted); margin:-0.4rem 0 0.8rem; }
 .pf-streakline b { color:#f59e0b; }
 
-.pf-heat { display:flex; gap:3px; overflow-x:auto; padding-bottom:0.4rem; }
+.pf-heat { display:flex; gap:3px; width:max-content; }
 .pf-week { display:flex; flex-direction:column; gap:3px; }
 .pf-day { width:12px; height:12px; border-radius:3px; background:var(--border); }
 .pf-day.l1{background:rgba(34,197,94,0.35);} .pf-day.l2{background:rgba(34,197,94,0.55);} .pf-day.l3{background:rgba(34,197,94,0.78);} .pf-day.l4{background:#22c55e;}
-.pf-months { display:flex; gap:3px; font-size:0.62rem; color:var(--text-dim); margin-bottom:3px; }
-.pf-mon { width:12px; display:inline-block; overflow:visible; white-space:nowrap; }
+.pf-heat-scroll { overflow-x:auto; padding-bottom:0.4rem; }
+.pf-heat-head { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:0.4rem; font-size:0.82rem; color:var(--text-muted); margin:-0.4rem 0 0.6rem; }
+.pf-heat-head b { color:var(--text); font-weight:700; }
+.pf-months { display:flex; gap:3px; font-size:0.64rem; color:var(--text-dim); margin-bottom:4px; width:max-content; }
+.pf-mon { display:inline-block; text-align:left; overflow:hidden; white-space:nowrap; flex-shrink:0; }
 .pf-day.fut { background:transparent; }
 .pf-legend { font-size:0.7rem; color:var(--text-dim); margin-top:0.5rem; display:flex; align-items:center; gap:0.4rem; }
 
@@ -159,21 +162,25 @@ permalink: /profile
     '</div>';
 
     // heatmap with month labels + streak line
-    // rolling 1-year window (53 weeks), aligned to week start
+    // rolling 1-year window (53 weeks), aligned to week start — LeetCode style
     var WEEKS=53;
     var today=new Date(); today.setHours(0,0,0,0);
     var start=new Date(today); start.setDate(start.getDate()-((WEEKS-1)*7+today.getDay()));
-    var cur=new Date(start), weeks=[], monthRow=[], lastMon=-1;
+    var cur=new Date(start), weeks=[], monthGroups=[], yearSubs=0, activeDays=0;
     for(var w=0;w<WEEKS;w++){
       var col=[]; var wkMonth=cur.getMonth();
-      for(var dd=0;dd<7;dd++){ var k2=dayKey(cur); var c=byDay[k2]||0; var future=cur>today; var lv=future?'fut':(c===0?'':(c>=8?'l4':c>=4?'l3':c>=2?'l2':'l1')); col.push('<div class="pf-day '+lv+'" title="'+c+' submissions on '+k2+'"></div>'); cur.setDate(cur.getDate()+1); }
+      for(var dd=0;dd<7;dd++){ var k2=dayKey(cur); var c=byDay[k2]||0; var future=cur>today; if(!future&&c>0){yearSubs+=c;activeDays++;} var lv=future?'fut':(c===0?'':(c>=8?'l4':c>=4?'l3':c>=2?'l2':'l1')); col.push('<div class="pf-day '+lv+'" title="'+c+' submission'+(c===1?'':'s')+' on '+k2+'"></div>'); cur.setDate(cur.getDate()+1); }
       weeks.push('<div class="pf-week">'+col.join('')+'</div>');
-      // label a column only when its month differs from the previous column's
-      monthRow.push('<span class="pf-mon">'+(wkMonth!==lastMon?MON[wkMonth]:'')+'</span>'); lastMon=wkMonth;
+      // group consecutive week-columns by month so the label can center over its block
+      if(monthGroups.length && monthGroups[monthGroups.length-1].mon===wkMonth) monthGroups[monthGroups.length-1].count++;
+      else monthGroups.push({mon:wkMonth,count:1});
     }
+    var monthRow=monthGroups.map(function(g){ return '<span class="pf-mon" style="width:'+(g.count*15-3)+'px">'+(g.count>=2?MON[g.mon]:'')+'</span>'; }).join('');
+
     html+='<div class="pf-sec">🔥 Submission Activity</div>';
-    html+='<div class="pf-streakline">Current streak <b>'+sk.cur+'</b> day'+(sk.cur===1?'':'s')+' · Longest <b>'+sk.max+'</b> · '+subs.length+' total submissions</div>';
-    html+='<div class="pf-months">'+monthRow.join('')+'</div><div class="pf-heat">'+weeks.join('')+'</div>';
+    html+='<div class="pf-heat-head"><span><b>'+yearSubs+'</b> submission'+(yearSubs===1?'':'s')+' in the past one year</span>'+
+      '<span>Total active days: <b>'+activeDays+'</b> &nbsp;&middot;&nbsp; Max streak: <b>'+sk.max+'</b></span></div>';
+    html+='<div class="pf-heat-scroll"><div class="pf-months">'+monthRow+'</div><div class="pf-heat">'+weeks.join('')+'</div></div>';
     html+='<div class="pf-legend">Less <span class="pf-day"></span><span class="pf-day l1"></span><span class="pf-day l2"></span><span class="pf-day l3"></span><span class="pf-day l4"></span> More</div>';
 
     // languages
