@@ -204,7 +204,7 @@ fs.writeFileSync(path.join(__dirname, '..', 'content', 'problemset.md'), idx);
 
 // Catalog: slug -> { title, difficulty } for the profile difficulty breakdown.
 var catalog = {};
-indexRows.forEach(function (r) { catalog[r.slug] = { title: r.title, difficulty: r.difficulty }; });
+indexRows.forEach(function (r) { catalog[r.slug] = { title: r.title, difficulty: r.difficulty, topics: r.topics || [] }; });
 fs.writeFileSync(path.join(__dirname, '..', '_includes', 'sc-catalog.html'),
   '<script>window.SC_CATALOG = ' + JSON.stringify(catalog) + ';</script>\n');
 

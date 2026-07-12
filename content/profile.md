@@ -125,6 +125,9 @@ permalink: /profile
     var totalAll=(td.easy+td.medium+td.hard)||1, solvedAll=dc.easy+dc.medium+dc.hard;
     var byDay={}; subs.forEach(function(s){byDay[dayKey(new Date(s.ts))]=(byDay[dayKey(new Date(s.ts))]||0)+1;});
     var sk=streaks(byDay);
+    var weekAgo=Date.now()-7*86400000, solvedWeek={};
+    subs.forEach(function(s){ if(s.status==='Accepted' && s.ts>=weekAgo) solvedWeek[s.slug]=1; });
+    var solvedWeekN=Object.keys(solvedWeek).length;
     var name=user?(user.name||user.displayName||'You'):'Guest';
     var photo=user?(user.photo||user.photoURL):null;
     var avatar=photo?'<img src="'+esc(photo)+'" alt="">':'<div class="pf-hero-fallback">'+esc(name.charAt(0).toUpperCase())+'</div>';
@@ -165,7 +168,7 @@ permalink: /profile
     var monthRow=monthGroups.map(function(g){ return '<span class="pf-mon" style="width:'+(g.count*15-3)+'px">'+(g.count>=2?MON[g.mon]:'')+'</span>'; }).join('');
 
     html+='<div class="pf-sec">🔥 Submission Activity</div>';
-    html+='<div class="pf-heat-head"><span><b>'+yearSubs+'</b> submission'+(yearSubs===1?'':'s')+' in the past one year</span>'+
+    html+='<div class="pf-heat-head"><span><b>'+yearSubs+'</b> submission'+(yearSubs===1?'':'s')+' in the past one year &nbsp;&middot;&nbsp; <b>'+solvedWeekN+'</b> solved this week</span>'+
       '<span>Total active days: <b>'+activeDays+'</b> &nbsp;&middot;&nbsp; Max streak: <b>'+sk.max+'</b></span></div>';
     html+='<div class="pf-heat-scroll"><div class="pf-months">'+monthRow+'</div><div class="pf-heat">'+weeks.join('')+'</div></div>';
     html+='<div class="pf-legend">Less <span class="pf-day"></span><span class="pf-day l1"></span><span class="pf-day l2"></span><span class="pf-day l3"></span><span class="pf-day l4"></span> More</div>';
@@ -177,6 +180,16 @@ permalink: /profile
       var maxL=langCount[langs[0]];
       html+='<div class="pf-sec">💻 Languages Used</div><div class="pf-bars">';
       langs.forEach(function(l){ var v=langCount[l], pct=Math.round(v/maxL*100); html+='<div class="pf-bar-row"><span class="lbl">'+esc(l)+'</span><div class="pf-bar-track"><div class="pf-bar-fill" style="width:'+pct+'%"></div></div><span class="val">'+v+'</span></div>'; });
+      html+='</div>';
+    }
+
+    // topics solved (LeetCode-style skills breakdown)
+    var topicCount={}; solved.forEach(function(sl){ var c=CAT[sl]; if(c&&c.topics) c.topics.forEach(function(t){ topicCount[t]=(topicCount[t]||0)+1; }); });
+    var topics=Object.keys(topicCount).sort(function(a,b){return topicCount[b]-topicCount[a];});
+    if(topics.length){
+      var maxT=topicCount[topics[0]];
+      html+='<div class="pf-sec">🏷️ Topics Solved</div><div class="pf-bars">';
+      topics.slice(0,12).forEach(function(t){ var v=topicCount[t], pct=Math.round(v/maxT*100); html+='<div class="pf-bar-row"><span class="lbl" title="'+esc(t)+'">'+esc(t)+'</span><div class="pf-bar-track"><div class="pf-bar-fill" style="width:'+pct+'%"></div></div><span class="val">'+v+'</span></div>'; });
       html+='</div>';
     }
 
