@@ -95,7 +95,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 |---|---|---|---|---|
 | 37 | [Implement Trie](https://leetcode.com/problems/implement-trie-prefix-tree/) | Trie | TrieNode with children[26] + isEnd flag | O(L) per op |
 | 38 | [Add and Search Word](https://leetcode.com/problems/design-add-and-search-words-data-structure/) | Trie + DFS | On '.', branch to all children | O(26^L) worst |
-| 39 | [Word Search II](https://leetcode.com/problems/word-search-ii/) | Trie + Backtracking | Build trie of words, DFS grid matching trie paths | O(m×n×4^L) |
+| 39 | [Word Search II](/dsa/problem/word-search-ii/) | Trie + Backtracking | Build trie of words, DFS grid matching trie paths | O(m×n×4^L) |
 
 ## Heap / Priority Queue (3)
 
@@ -110,7 +110,7 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
 | 43 | [Combination Sum](/dsa/problem/combination-sum) | Backtracking | DFS with remaining target, include/skip each candidate | O(2^t) |
-| 44 | [Word Search](https://leetcode.com/problems/word-search/) | Backtracking | DFS from each cell, mark visited, backtrack | O(m×n×4^L) |
+| 44 | [Word Search](/dsa/problem/word-search) | Backtracking | DFS from each cell, mark visited, backtrack | O(m×n×4^L) |
 
 ## Graphs (8)
 

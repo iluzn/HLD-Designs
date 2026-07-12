@@ -29,7 +29,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 5 | [Top K Frequent Elements](/dsa/problem/top-k-frequent-elements) | HashMap + min-heap K or bucket sort | O(n log k) |
 | 6 | [Encode and Decode Strings](https://leetcode.com/problems/encode-and-decode-strings/) | Length-prefix: `"4#word"` | O(n) |
 | 7 | [Product of Array Except Self](/dsa/problem/product-of-array-except-self) | Left prefix × right suffix | O(n) |
-| 8 | [Valid Sudoku](https://leetcode.com/problems/valid-sudoku/) | HashSet per row + col + box | O(81) |
+| 8 | [Valid Sudoku](/dsa/problem/valid-sudoku) | HashSet per row + col + box | O(81) |
 | 9 | [Longest Consecutive Sequence](/dsa/problem/longest-consecutive-sequence) | HashSet, only start if num-1 absent | O(n) |
 
 ## Two Pointers (5)
@@ -119,7 +119,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 |---|---|---|---|
 | 61 | [Implement Trie](https://leetcode.com/problems/implement-trie-prefix-tree/) | children[26] + isEnd per node | O(L) |
 | 62 | [Add and Search Word](https://leetcode.com/problems/design-add-and-search-words-data-structure/) | DFS on '.' wildcard | O(26^L) worst |
-| 63 | [Word Search II](https://leetcode.com/problems/word-search-ii/) | Trie of words + DFS grid | O(m×n×4^L) |
+| 63 | [Word Search II](/dsa/problem/word-search-ii/) | Trie of words + DFS grid | O(m×n×4^L) |
 
 ## Heap / Priority Queue (7)
 
@@ -128,7 +128,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 64 | [Kth Largest Element](/dsa/problem/kth-largest-element-in-an-array) | Min-heap of size K or quickselect | O(n) avg |
 | 65 | [Last Stone Weight](/dsa/problem/last-stone-weight) | Max-heap, smash top two | O(n log n) |
 | 66 | [K Closest Points to Origin](https://leetcode.com/problems/k-closest-points-to-origin/) | Min-heap by distance or quickselect | O(n log k) |
-| 67 | [Task Scheduler](https://leetcode.com/problems/task-scheduler/) | Count max-freq, compute idle slots | O(n) |
+| 67 | [Task Scheduler](/dsa/problem/task-scheduler) | Count max-freq, compute idle slots | O(n) |
 | 68 | [Design Twitter](https://leetcode.com/problems/design-twitter/) | HashMap + merge K sorted (heap of recent 10) | O(k log k) |
 | 69 | [Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/) | Max-heap left + min-heap right | O(log n) |
 | 70 | [Top K Frequent Elements](/dsa/problem/top-k-frequent-elements) | (dup - see #5) | O(n log k) |
@@ -142,7 +142,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 73 | [Permutations](/dsa/problem/permutations) | Swap-based or used[] array | O(n!) |
 | 74 | [Subsets II (with dups)](/dsa/problem/subsets-ii/) | Sort + skip duplicates at same level | O(2^n) |
 | 75 | [Combination Sum II](/dsa/problem/combination-sum-ii/) | Sort + skip same value at same depth | O(2^n) |
-| 76 | [Word Search](https://leetcode.com/problems/word-search/) | DFS from each cell, backtrack | O(m×n×4^L) |
+| 76 | [Word Search](/dsa/problem/word-search) | DFS from each cell, backtrack | O(m×n×4^L) |
 | 77 | [Palindrome Partitioning](/dsa/problem/palindrome-partitioning) | DFS + isPalin check at each split | O(n×2^n) |
 | 78 | [Letter Combinations of Phone](/dsa/problem/letter-combinations-of-a-phone-number) | DFS through digit→letters mapping | O(4^n) |
 | 79 | [N-Queens](https://leetcode.com/problems/n-queens/) | Place row-by-row, check col/diag conflicts | O(n!) |
@@ -200,7 +200,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 111 | [Best Time Buy/Sell with Cooldown](/dsa/problem/best-time-to-buy-and-sell-stock-with-cooldown) | States: hold, sold, rest | O(n) |
 | 112 | [Coin Change II (count ways)](/dsa/problem/coin-change-ii) | `dp[i] += dp[i-coin]` | O(amount×coins) |
 | 113 | [Target Sum](/dsa/problem/target-sum) | 0/1 knapsack on (sum+total)/2 | O(n×sum) |
-| 114 | [Interleaving String](https://leetcode.com/problems/interleaving-string/) | 2D dp[i][j] = can form s3[0..i+j] from s1[0..i] + s2[0..j] | O(m×n) |
+| 114 | [Interleaving String](/dsa/problem/interleaving-string) | 2D dp[i][j] = can form s3[0..i+j] from s1[0..i] + s2[0..j] | O(m×n) |
 | 115 | [Longest Increasing Path in Matrix](/dsa/problem/longest-increasing-path-in-a-matrix) | DFS + memo on grid | O(m×n) |
 | 116 | [Distinct Subsequences](/dsa/problem/distinct-subsequences) | `dp[i][j] = dp[i-1][j] + (match ? dp[i-1][j-1] : 0)` | O(m×n) |
 | 117 | [Edit Distance](/dsa/problem/edit-distance) | Insert/delete/replace dp table | O(m×n) |
@@ -215,7 +215,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | 121 | [Jump Game](/dsa/problem/jump-game) | Track farthest reachable | O(n) |
 | 122 | [Jump Game II](/dsa/problem/jump-game-ii) | BFS-style levels (current reach, next reach) | O(n) |
 | 123 | [Gas Station](https://leetcode.com/problems/gas-station/) | If total gas >= total cost, solution exists; find start via running sum | O(n) |
-| 124 | [Hand of Straights](https://leetcode.com/problems/hand-of-straights/) | Sort + greedily form groups with HashMap | O(n log n) |
+| 124 | [Hand of Straights](/dsa/problem/hand-of-straights) | Sort + greedily form groups with HashMap | O(n log n) |
 | 125 | [Merge Triplets to Form Target](https://leetcode.com/problems/merge-triplets-to-form-target-triplet/) | For each triplet, check if any coordinate matches without exceeding | O(n) |
 | 126 | [Partition Labels](/dsa/problem/partition-labels) | Last occurrence of each char; extend end, split when i == end | O(n) |
 | 127 | [Valid Parenthesis String](/dsa/problem/valid-parenthesis-string) | Track min/max open count range | O(n) |

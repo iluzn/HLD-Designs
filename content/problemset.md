@@ -142,6 +142,11 @@ Solve problems in your browser — pick a language, implement the function, and 
 | 129 | [Walls and Gates](/dsa/problem/walls-and-gates){:data-slug="walls-and-gates"} | 🟡 Medium | Graph, BFS, Matrix |
 | 130 | [Surrounded Regions](/dsa/problem/surrounded-regions){:data-slug="surrounded-regions"} | 🟡 Medium | Graph, DFS, BFS, Matrix |
 | 131 | [Word Ladder](/dsa/problem/word-ladder){:data-slug="word-ladder"} | 🔴 Hard | Graph, BFS, Hash Table |
+| 132 | [Valid Sudoku](/dsa/problem/valid-sudoku){:data-slug="valid-sudoku"} | 🟡 Medium | Array, Hash Table, Matrix |
+| 133 | [Hand of Straights](/dsa/problem/hand-of-straights){:data-slug="hand-of-straights"} | 🟡 Medium | Array, Greedy, Hash Table, Sorting |
+| 134 | [Interleaving String](/dsa/problem/interleaving-string){:data-slug="interleaving-string"} | 🟡 Medium | String, Dynamic Programming |
+| 135 | [Word Search](/dsa/problem/word-search){:data-slug="word-search"} | 🟡 Medium | Array, Backtracking, Matrix |
+| 136 | [Task Scheduler](/dsa/problem/task-scheduler){:data-slug="task-scheduler"} | 🟡 Medium | Array, Greedy, Heap, Hash Table |
 
 {% include judge-firebase.html %}
 <script>(function(){function mark(){try{var s=(window._scJudge&&window._scJudge.solved)||[];document.querySelectorAll("a[data-slug]").forEach(function(a){var done=s.indexOf(a.getAttribute("data-slug"))!==-1;if(done&&!a.dataset.scMarked){a.dataset.scMarked="1";a.insertAdjacentHTML("beforebegin","<span style=\"color:#22c55e;font-weight:700\">\u2713</span> ");}});}catch(e){}}if(window._scJudgeReady)mark();document.addEventListener("sc-judge-ready",mark);})();</script>

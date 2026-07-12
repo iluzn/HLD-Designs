@@ -116,7 +116,7 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 | 47 | [Meeting Rooms II](/dsa/problem/meeting-rooms-ii/) | Sort starts + ends separately, sweep with counter | O(n log n) | O(n) |
 | 48 | [Jump Game](/dsa/problem/jump-game) | Track farthest reachable index | O(n) | O(1) |
 | 49 | [Non-Overlapping Intervals](/dsa/problem/non-overlapping-intervals) | Sort by end, greedily keep earliest-ending | O(n log n) | O(1) |
-| 50 | [Task Scheduler](https://leetcode.com/problems/task-scheduler/) | Count max-freq task, compute idle slots | O(n) | O(26) |
+| 50 | [Task Scheduler](/dsa/problem/task-scheduler) | Count max-freq task, compute idle slots | O(n) | O(26) |
 
 ---
 

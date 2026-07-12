@@ -760,4 +760,60 @@ T.TREE_INT_INT_INT = function (fn) {
   };
 };
 
+// (char[][] board) -> boolean   (whitespace: R, C, then R row-strings)
+T.CHARGRID_BOOL = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, board):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _R=int(_d[_p]);_p+=1', '    _C=int(_d[_p]);_p+=1', '    _g=[]', '    for _r in range(_R):', '        _g.append(list(_d[_p]));_p+=1', "    _o.append('true' if Solution()." + fn + "(_g) else 'false')", "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {character[][]} board', ' * @return {boolean}', ' */', 'var ' + fn + ' = function(board) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _R=+_d[_p++];const _C=+_d[_p++];const _g=[];for(let _r=0;_r<_R;_r++){_g.push(_d[_p++].split(''));}_o.push(" + fn + "(_g)?'true':'false');}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    bool ' + fn + '(vector<vector<char>>& board) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int R,C;cin>>R>>C;vector<vector<char>> g(R);for(int i=0;i<R;i++){string s;cin>>s;g[i]=vector<char>(s.begin(),s.end());}cout<<(Solution().' + fn + '(g)?"true":"false")<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public boolean ' + fn + '(char[][] board) {', '        // Write your code here', '        return false;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int R=sc.nextInt();int C=sc.nextInt();char[][] g=new char[R][];for(int i=0;i<R;i++)g[i]=sc.next().toCharArray();sb.append(new Solution().' + fn + '(g)?"true":"false").append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (int[] nums, int k) -> boolean   (whitespace: n, nums, k)
+T.ARR_INT_BOOL = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, hand, k):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _n=int(_d[_p]);_p+=1', '    _nums=list(map(int,_d[_p:_p+_n]));_p+=_n', '    _k=int(_d[_p]);_p+=1', "    _o.append('true' if Solution()." + fn + "(_nums,_k) else 'false')", "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number[]} hand', ' * @param {number} k', ' * @return {boolean}', ' */', 'var ' + fn + ' = function(hand, k) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _n=+_d[_p++];const _nums=_d.slice(_p,_p+_n).map(Number);_p+=_n;const _k=+_d[_p++];_o.push(" + fn + "(_nums,_k)?'true':'false');}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    bool ' + fn + '(vector<int>& hand, int k) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int n;cin>>n;vector<int> hand(n);for(int i=0;i<n;i++)cin>>hand[i];int k;cin>>k;cout<<(Solution().' + fn + '(hand,k)?"true":"false")<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public boolean ' + fn + '(int[] hand, int k) {', '        // Write your code here', '        return false;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int n=sc.nextInt();int[] hand=new int[n];for(int i=0;i<n;i++)hand[i]=sc.nextInt();int k=sc.nextInt();sb.append(new Solution().' + fn + '(hand,k)?"true":"false").append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (string s1, string s2, string s3) -> boolean   (line-based: T then 3 lines per case)
+T.STR_STR_STR_BOOL = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, s1, s2, s3):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', "_l=sys.stdin.read().split('\\n')", '_T=int(_l[0]);_o=[]', 'for _i in range(_T):', '    _a=_l[1+3*_i] if 1+3*_i<len(_l) else ""', '    _b=_l[2+3*_i] if 2+3*_i<len(_l) else ""', '    _c=_l[3+3*_i] if 3+3*_i<len(_l) else ""', "    _o.append('true' if Solution()." + fn + "(_a,_b,_c) else 'false')", "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {string} s1', ' * @param {string} s2', ' * @param {string} s3', ' * @return {boolean}', ' */', 'var ' + fn + ' = function(s1, s2, s3) {', '    // Write your code here', '};'),
+      harness: ln("const _l=require('fs').readFileSync(0,'utf8').split('\\n');const _T=+_l[0];const _o=[];", "for(let _i=0;_i<_T;_i++){const _a=(_l[1+3*_i]||'').replace(/\\r$/,'');const _b=(_l[2+3*_i]||'').replace(/\\r$/,'');const _c=(_l[3+3*_i]||'').replace(/\\r$/,'');_o.push(" + fn + "(_a,_b,_c)?'true':'false');}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    bool ' + fn + '(string s1, string s2, string s3) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){string l;getline(cin,l);int T=stoi(l);string a,b,c;for(int i=0;i<T;i++){if(!getline(cin,a))a="";if(!getline(cin,b))b="";if(!getline(cin,c))c="";cout<<(Solution().' + fn + '(a,b,c)?"true":"false")<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public boolean ' + fn + '(String s1, String s2, String s3) {', '        // Write your code here', '        return false;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=Integer.parseInt(sc.nextLine().trim());StringBuilder sb=new StringBuilder();for(int i=0;i<T;i++){String x=sc.hasNextLine()?sc.nextLine():"";String y=sc.hasNextLine()?sc.nextLine():"";String z=sc.hasNextLine()?sc.nextLine():"";sb.append(new Solution().' + fn + '(x,y,z)?"true":"false").append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (char[][] board, string word) -> boolean   (whitespace: R, C, R rows, word)
+T.CHARGRID_STR_BOOL = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, board, word):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', 'sys.setrecursionlimit(100000)', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _R=int(_d[_p]);_p+=1', '    _C=int(_d[_p]);_p+=1', '    _g=[]', '    for _r in range(_R):', '        _g.append(list(_d[_p]));_p+=1', '    _w=_d[_p];_p+=1', "    _o.append('true' if Solution()." + fn + "(_g,_w) else 'false')", "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {character[][]} board', ' * @param {string} word', ' * @return {boolean}', ' */', 'var ' + fn + ' = function(board, word) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _R=+_d[_p++];const _C=+_d[_p++];const _g=[];for(let _r=0;_r<_R;_r++){_g.push(_d[_p++].split(''));}const _w=_d[_p++];_o.push(" + fn + "(_g,_w)?'true':'false');}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    bool ' + fn + '(vector<vector<char>>& board, string word) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int R,C;cin>>R>>C;vector<vector<char>> g(R);for(int i=0;i<R;i++){string s;cin>>s;g[i]=vector<char>(s.begin(),s.end());}string w;cin>>w;cout<<(Solution().' + fn + '(g,w)?"true":"false")<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public boolean ' + fn + '(char[][] board, String word) {', '        // Write your code here', '        return false;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int R=sc.nextInt();int C=sc.nextInt();char[][] g=new char[R][];for(int i=0;i<R;i++)g[i]=sc.next().toCharArray();String w=sc.next();sb.append(new Solution().' + fn + '(g,w)?"true":"false").append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
 module.exports = { T, randInt, randArr, arrStr, ln };
