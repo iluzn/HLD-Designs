@@ -112,10 +112,10 @@ The 50 problems that show up most in FAANG + Indian tech interviews (Amazon, Goo
 
 | # | Problem | Approach | Time | Space |
 |---|---|---|---|---|
-| 46 | [Merge Intervals](https://leetcode.com/problems/merge-intervals/) | Sort by start, extend end if overlapping | O(n log n) | O(n) |
-| 47 | [Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/) | Sort starts + ends separately, sweep with counter | O(n log n) | O(n) |
+| 46 | [Merge Intervals](/dsa/problem/merge-intervals) | Sort by start, extend end if overlapping | O(n log n) | O(n) |
+| 47 | [Meeting Rooms II](/dsa/problem/meeting-rooms-ii/) | Sort starts + ends separately, sweep with counter | O(n log n) | O(n) |
 | 48 | [Jump Game](/dsa/problem/jump-game) | Track farthest reachable index | O(n) | O(1) |
-| 49 | [Non-Overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/) | Sort by end, greedily keep earliest-ending | O(n log n) | O(1) |
+| 49 | [Non-Overlapping Intervals](/dsa/problem/non-overlapping-intervals) | Sort by end, greedily keep earliest-ending | O(n log n) | O(1) |
 | 50 | [Task Scheduler](https://leetcode.com/problems/task-scheduler/) | Count max-freq task, compute idle slots | O(n) | O(26) |
 
 ---
@@ -166,7 +166,7 @@ If you only have 3 days, solve these - they cover the most patterns with the lea
 2. [Best Time to Buy/Sell Stock](/dsa/problem/best-time-to-buy-and-sell-stock) (Greedy/Kadane)
 3. [Longest Substring Without Repeating](/dsa/problem/longest-substring-without-repeating-characters) (Sliding Window)
 4. [3Sum](https://leetcode.com/problems/3sum/) (Two Pointers + Sort)
-5. [Merge Intervals](https://leetcode.com/problems/merge-intervals/) (Sort + Sweep)
+5. [Merge Intervals](/dsa/problem/merge-intervals) (Sort + Sweep)
 6. [Number of Islands](/dsa/problem/number-of-islands) (BFS/DFS)
 7. [Coin Change](/dsa/problem/coin-change) (DP)
 8. [LRU Cache](https://leetcode.com/problems/lru-cache/) (HashMap + DLL)

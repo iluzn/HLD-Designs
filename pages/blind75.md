@@ -146,10 +146,10 @@ description: "75 essential coding problems with LeetCode links, pattern tags, an
 | # | Problem | Pattern | Approach | Time |
 |---|---|---|---|---|
 | 64 | [Insert Interval](https://leetcode.com/problems/insert-interval/) | Merge | Find overlap range, merge, collect rest | O(n) |
-| 65 | [Merge Intervals](https://leetcode.com/problems/merge-intervals/) | Sort + Sweep | Sort by start, extend end if overlapping | O(n log n) |
-| 66 | [Non-Overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/) | Greedy | Sort by end, greedily keep earliest-ending | O(n log n) |
-| 67 | [Meeting Rooms](https://leetcode.com/problems/meeting-rooms/) | Sort | Sort by start, check any overlap | O(n log n) |
-| 68 | [Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/) | Sweep / Heap | Sort starts+ends separately, sweep counter (or min-heap) | O(n log n) |
+| 65 | [Merge Intervals](/dsa/problem/merge-intervals) | Sort + Sweep | Sort by start, extend end if overlapping | O(n log n) |
+| 66 | [Non-Overlapping Intervals](/dsa/problem/non-overlapping-intervals) | Greedy | Sort by end, greedily keep earliest-ending | O(n log n) |
+| 67 | [Meeting Rooms](/dsa/problem/meeting-rooms) | Sort | Sort by start, check any overlap | O(n log n) |
+| 68 | [Meeting Rooms II](/dsa/problem/meeting-rooms-ii/) | Sweep / Heap | Sort starts+ends separately, sweep counter (or min-heap) | O(n log n) |
 
 ## Greedy (2)
 

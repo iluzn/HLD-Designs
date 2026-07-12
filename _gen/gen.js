@@ -446,6 +446,34 @@ T.GRID_TGT_BOOL = function (fn) {
   };
 };
 
+// (int[][] grid) -> boolean   (whitespace: R, C, then R*C ints)
+T.GRID_BOOL = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, intervals):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _R=int(_d[_p]);_p+=1', '    _C=int(_d[_p]);_p+=1', '    _g=[]', '    for _r in range(_R):', '        _g.append(list(map(int,_d[_p:_p+_C])));_p+=_C', "    _o.append('true' if Solution()." + fn + "(_g) else 'false')", "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number[][]} intervals', ' * @return {boolean}', ' */', 'var ' + fn + ' = function(intervals) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _R=+_d[_p++];const _C=+_d[_p++];const _g=[];for(let _r=0;_r<_R;_r++){_g.push(_d.slice(_p,_p+_C).map(Number));_p+=_C;}_o.push(" + fn + "(_g)?'true':'false');}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    bool ' + fn + '(vector<vector<int>>& intervals) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int R,C;cin>>R>>C;vector<vector<int>> g(R,vector<int>(C));for(int i=0;i<R;i++)for(int j=0;j<C;j++)cin>>g[i][j];cout<<(Solution().' + fn + '(g)?"true":"false")<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public boolean ' + fn + '(int[][] intervals) {', '        // Write your code here', '        return false;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int R=sc.nextInt();int C=sc.nextInt();int[][] g=new int[R][C];for(int i=0;i<R;i++)for(int j=0;j<C;j++)g[i][j]=sc.nextInt();sb.append(new Solution().' + fn + '(g)?"true":"false").append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
+// (int[][] grid) -> int[][]   (input R C then R*C ints; output rows joined by | )
+T.GRID_GRID = function (fn) {
+  return {
+    python: { stub: ln('class Solution:', '    def ' + fn + '(self, grid):', '        # Write your code here', '        pass'),
+      harness: ln('import sys', '_d=sys.stdin.read().split();_p=0', '_T=int(_d[_p]);_p+=1;_o=[]', 'for _ in range(_T):', '    _R=int(_d[_p]);_p+=1', '    _C=int(_d[_p]);_p+=1', '    _g=[]', '    for _r in range(_R):', '        _g.append(list(map(int,_d[_p:_p+_C])));_p+=_C', '    _res=Solution().' + fn + '(_g)', "    _o.append('|'.join(' '.join(str(x) for x in row) for row in _res))", "print('\\n'.join(_o))") },
+    javascript: { stub: ln('/**', ' * @param {number[][]} grid', ' * @return {number[][]}', ' */', 'var ' + fn + ' = function(grid) {', '    // Write your code here', '};'),
+      harness: ln("const _d=require('fs').readFileSync(0,'utf8').split(/\\s+/).filter(x=>x.length);let _p=0;const _T=+_d[_p++];const _o=[];", "for(let _i=0;_i<_T;_i++){const _R=+_d[_p++];const _C=+_d[_p++];const _g=[];for(let _r=0;_r<_R;_r++){_g.push(_d.slice(_p,_p+_C).map(Number));_p+=_C;}const _res=" + fn + "(_g)||_g;_o.push(_res.map(function(row){return row.join(' ');}).join('|'));}", "console.log(_o.join('\\n'));") },
+    cpp: { stub: ln('#include <bits/stdc++.h>', 'using namespace std;', '', 'class Solution {', 'public:', '    vector<vector<int>> ' + fn + '(vector<vector<int>>& grid) {', '        // Write your code here', '    }', '};'),
+      harness: ln('int main(){int T;cin>>T;while(T--){int R,C;cin>>R>>C;vector<vector<int>> g(R,vector<int>(C));for(int i=0;i<R;i++)for(int j=0;j<C;j++)cin>>g[i][j];auto res=Solution().' + fn + '(g);string s;for(size_t i=0;i<res.size();i++){if(i)s+="|";for(size_t j=0;j<res[i].size();j++){if(j)s+=" ";s+=to_string(res[i][j]);}}cout<<s<<"\\n";}}') },
+    java: { stub: ln('import java.util.*;', '', 'class Solution {', '    public int[][] ' + fn + '(int[][] grid) {', '        // Write your code here', '        return grid;', '    }', '}'),
+      harness: ln('public class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);int T=sc.nextInt();StringBuilder sb=new StringBuilder();while(T-->0){int R=sc.nextInt();int C=sc.nextInt();int[][] g=new int[R][C];for(int i=0;i<R;i++)for(int j=0;j<C;j++)g[i][j]=sc.nextInt();int[][] res=new Solution().' + fn + '(g);if(res==null)res=g;StringBuilder s=new StringBuilder();for(int i=0;i<res.length;i++){if(i>0)s.append("|");for(int j=0;j<res[i].length;j++){if(j>0)s.append(" ");s.append(res[i][j]);}}sb.append(s).append("\\n");}System.out.print(sb);}}') },
+  };
+};
+
 // (char[][] grid) -> int   (whitespace: R, C, then R row-strings of length C)
 T.CHARGRID_INT = function (fn) {
   return {

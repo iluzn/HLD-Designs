@@ -126,7 +126,7 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | # | Problem | Approach | Time |
 |---|---|---|---|
 | 64 | [Kth Largest Element](/dsa/problem/kth-largest-element-in-an-array) | Min-heap of size K or quickselect | O(n) avg |
-| 65 | [Last Stone Weight](https://leetcode.com/problems/last-stone-weight/) | Max-heap, smash top two | O(n log n) |
+| 65 | [Last Stone Weight](/dsa/problem/last-stone-weight) | Max-heap, smash top two | O(n log n) |
 | 66 | [K Closest Points to Origin](https://leetcode.com/problems/k-closest-points-to-origin/) | Min-heap by distance or quickselect | O(n log k) |
 | 67 | [Task Scheduler](https://leetcode.com/problems/task-scheduler/) | Count max-freq, compute idle slots | O(n) |
 | 68 | [Design Twitter](https://leetcode.com/problems/design-twitter/) | HashMap + merge K sorted (heap of recent 10) | O(k log k) |
@@ -225,18 +225,18 @@ The expanded interview prep list - 150 problems covering every pattern in depth.
 | # | Problem | Approach | Time |
 |---|---|---|---|
 | 128 | [Insert Interval](https://leetcode.com/problems/insert-interval/) | Collect before + merge overlap + collect after | O(n) |
-| 129 | [Merge Intervals](https://leetcode.com/problems/merge-intervals/) | Sort by start, extend end if overlap | O(n log n) |
-| 130 | [Non-Overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/) | Sort by end, greedily keep earliest | O(n log n) |
-| 131 | [Meeting Rooms](https://leetcode.com/problems/meeting-rooms/) | Sort, check any overlap | O(n log n) |
-| 132 | [Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/) | Sweep (sort starts+ends) or min-heap | O(n log n) |
+| 129 | [Merge Intervals](/dsa/problem/merge-intervals) | Sort by start, extend end if overlap | O(n log n) |
+| 130 | [Non-Overlapping Intervals](/dsa/problem/non-overlapping-intervals) | Sort by end, greedily keep earliest | O(n log n) |
+| 131 | [Meeting Rooms](/dsa/problem/meeting-rooms) | Sort, check any overlap | O(n log n) |
+| 132 | [Meeting Rooms II](/dsa/problem/meeting-rooms-ii/) | Sweep (sort starts+ends) or min-heap | O(n log n) |
 
 ## Math & Geometry (8)
 
 | # | Problem | Approach | Time |
 |---|---|---|---|
-| 133 | [Rotate Image](https://leetcode.com/problems/rotate-image/) | Transpose + reverse each row | O(n²) |
+| 133 | [Rotate Image](/dsa/problem/rotate-image) | Transpose + reverse each row | O(n²) |
 | 134 | [Spiral Matrix](/dsa/problem/spiral-matrix) | Boundary tracking (top/bottom/left/right) | O(m×n) |
-| 135 | [Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes/) | Use first row/col as markers | O(m×n) |
+| 135 | [Set Matrix Zeroes](/dsa/problem/set-matrix-zeroes) | Use first row/col as markers | O(m×n) |
 | 136 | [Happy Number](/dsa/problem/happy-number) | Fast/slow (Floyd's) on digit-sum sequence | O(log n) |
 | 137 | [Plus One](/dsa/problem/plus-one) | Add from last digit, handle carry | O(n) |
 | 138 | [Pow(x, n)](https://leetcode.com/problems/powx-n/) | Fast exponentiation (square-and-multiply) | O(log n) |
