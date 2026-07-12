@@ -56,6 +56,7 @@
           loadJs(CM_BASE + '/mode/clike/clike.min.js'), loadJs(CM_BASE + '/mode/python/python.min.js'),
           loadJs(CM_BASE + '/mode/javascript/javascript.min.js'), loadJs(CM_BASE + '/addon/edit/closebrackets.min.js'),
           loadJs(CM_BASE + '/addon/edit/matchbrackets.min.js'),
+          loadCss(CM_BASE + '/addon/hint/show-hint.min.css'), loadJs(CM_BASE + '/addon/hint/show-hint.min.js'),
         ]);
       });
   }
@@ -382,15 +383,51 @@
   }
 
   // ---- boot ----
+  // Per-language keywords + common builtins/methods to seed autocomplete,
+  // combined with identifiers already present in the user's code.
+  var HINT_WORDS = {
+    java: ['int', 'long', 'double', 'boolean', 'char', 'String', 'void', 'return', 'if', 'else', 'for', 'while', 'switch', 'case', 'break', 'continue', 'new', 'class', 'public', 'private', 'static', 'final', 'true', 'false', 'null', 'this', 'List', 'ArrayList', 'Map', 'HashMap', 'Set', 'HashSet', 'Deque', 'ArrayDeque', 'Queue', 'LinkedList', 'Stack', 'PriorityQueue', 'TreeMap', 'Arrays', 'Collections', 'Math', 'Integer', 'Long', 'Double', 'Character', 'StringBuilder', 'add', 'get', 'put', 'size', 'length', 'contains', 'containsKey', 'remove', 'push', 'pop', 'peek', 'poll', 'offer', 'isEmpty', 'sort', 'charAt', 'substring', 'toCharArray', 'equals', 'getOrDefault', 'computeIfAbsent', 'merge', 'Math.max', 'Math.min', 'Math.abs'],
+    python: ['def', 'return', 'if', 'elif', 'else', 'for', 'while', 'in', 'not', 'and', 'or', 'True', 'False', 'None', 'class', 'import', 'from', 'lambda', 'range', 'len', 'enumerate', 'zip', 'sorted', 'sort', 'append', 'pop', 'insert', 'set', 'dict', 'list', 'tuple', 'map', 'filter', 'min', 'max', 'abs', 'sum', 'int', 'str', 'float', 'collections', 'deque', 'defaultdict', 'Counter', 'heapq', 'heappush', 'heappop', 'bisect', 'print', 'self', 'keys', 'values', 'items', 'get', 'setdefault'],
+    cpp: ['int', 'long', 'double', 'bool', 'char', 'void', 'return', 'if', 'else', 'for', 'while', 'switch', 'case', 'break', 'continue', 'auto', 'const', 'class', 'struct', 'public', 'private', 'vector', 'string', 'map', 'unordered_map', 'set', 'unordered_set', 'pair', 'queue', 'deque', 'stack', 'priority_queue', 'push_back', 'pop_back', 'emplace_back', 'size', 'empty', 'begin', 'end', 'front', 'back', 'push', 'pop', 'top', 'sort', 'max', 'min', 'abs', 'make_pair', 'first', 'second', 'cout', 'cin', 'endl', 'true', 'false', 'nullptr', 'to_string', 'substr'],
+    javascript: ['var', 'let', 'const', 'function', 'return', 'if', 'else', 'for', 'while', 'switch', 'case', 'break', 'continue', 'new', 'class', 'this', 'true', 'false', 'null', 'undefined', 'Math', 'Array', 'Map', 'Set', 'Object', 'String', 'Number', 'push', 'pop', 'shift', 'unshift', 'slice', 'splice', 'length', 'indexOf', 'includes', 'map', 'filter', 'reduce', 'forEach', 'sort', 'join', 'split', 'charAt', 'charCodeAt', 'substring', 'keys', 'values', 'has', 'get', 'set', 'add', 'delete', 'Math.max', 'Math.min', 'Math.abs', 'Math.floor', 'console.log', 'parseInt'],
+  };
+
+  // Completion source: identifiers from the buffer + language words, filtered
+  // by the prefix under the cursor.
+  function scHint(cm) {
+    var cur = cm.getCursor(), line = cm.getLine(cur.line);
+    var start = cur.ch, end = cur.ch;
+    while (start > 0 && /[\w$]/.test(line.charAt(start - 1))) start--;
+    var word = line.slice(start, end);
+    if (word.length < 1) return null;
+    var lw = word.toLowerCase(), lang = curLang(), seen = {}, list = [];
+    var re = /[A-Za-z_$][\w$]*/g, m, text = cm.getValue();
+    while ((m = re.exec(text))) seen[m[0]] = 1;
+    (HINT_WORDS[lang] || []).forEach(function (w) { seen[w] = 1; });
+    Object.keys(seen).forEach(function (w) {
+      if (w !== word && w.toLowerCase().indexOf(lw) === 0) list.push(w);
+    });
+    list.sort(function (a, b) { return a.length - b.length || (a < b ? -1 : 1); });
+    if (!list.length) return null;
+    return { list: list.slice(0, 40), from: CodeMirror.Pos(cur.line, start), to: CodeMirror.Pos(cur.line, end) };
+  }
+  function triggerHint() { if (cm && cm.showHint) cm.showHint({ hint: scHint, completeSingle: false }); }
+
   function initEditor() {
     var lang = curLang();
     cm = CodeMirror(editorHost, { value: stubFor(lang), mode: META[lang].mode, theme: themeName(), lineNumbers: true, indentUnit: 4, tabSize: 4, autoCloseBrackets: true, matchBrackets: true });
     cm.setSize('100%', '100%');
     cm.on('change', function () { persistCode(curLang(), cm.getValue()); });
+    // Auto-open suggestions while typing an identifier (IDE-style).
+    cm.on('inputRead', function (editor, change) {
+      var t = change.text && change.text[0];
+      if (t && /[A-Za-z_$]/.test(t) && !editor.state.completionActive) triggerHint();
+    });
     new MutationObserver(function () { cm.setOption('theme', themeName()); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     cm.setOption('extraKeys', {
       'Cmd-Enter': function () { submitBtn.click(); }, 'Ctrl-Enter': function () { submitBtn.click(); },
       "Cmd-'": function () { runBtn.click(); }, "Ctrl-'": function () { runBtn.click(); },
+      'Ctrl-Space': triggerHint, 'Cmd-Space': triggerHint,
     });
     runBtn.disabled = false; submitBtn.disabled = false;
   }
