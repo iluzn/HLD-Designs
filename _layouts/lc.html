@@ -121,6 +121,9 @@
     .lc-kbd { font-size: 0.68rem; color: var(--text-dim); }
     .lc-kbd b { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text-muted); }
     .lc-editor-wrap { flex: 1; min-height: 0; position: relative; }
+    .lc-shuffle-hdr { background: none; border: 1px solid var(--border); color: var(--text-muted); border-radius: 20px; padding: 0.28rem 0.7rem; margin-left: 0.35rem; cursor: pointer; font-size: 0.78rem; font-weight: 600; white-space: nowrap; transition: all 0.2s; }
+    .lc-shuffle-hdr:hover { border-color: var(--accent); color: var(--text); background: rgba(129,140,248,0.06); }
+    @media (max-width: 600px) { .lc-shuffle-hdr { padding: 0.28rem 0.5rem; } }
     .lc-editor-wrap .CodeMirror { height: 100%; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
     /* Autocomplete popup — !important overrides the addon's default white CSS
        which loads dynamically after this block. */
@@ -213,6 +216,7 @@
                 <button class="theme-toggle" id="theme-btn" title="Toggle theme">🌙</button>
                 {% include daily-data.html %}
                 {% include streak-daily.html %}
+                <button id="lc-shuffle" class="lc-shuffle-hdr" type="button" title="Jump to a random problem">🔀 Shuffle</button>
                 {% include auth-button.html %}
                 <div class="nav-links" id="nav-links">
                     <a href="/problemset">Problemset</a>
@@ -242,7 +246,6 @@
                 <span class="lc-spacer"></span>
                 <button class="lc-timer" id="lc-timer" type="button" title="Timer — click to pause/resume, double-click to reset">00:00</button>
                 <button class="lc-reset" id="lc-reset" type="button">Reset</button>
-                <button class="lc-reset" id="lc-shuffle" type="button" title="Jump to a random problem">🔀 Shuffle</button>
                 <button class="lc-reset" id="lc-autosuggest" type="button" title="Toggle code autosuggestions">💡 Suggest: On</button>
                 <button class="lc-btn lc-run" id="lc-run" type="button" disabled>Run</button>
                 <button class="lc-btn lc-submit" id="lc-submit" type="button" disabled>Submit</button>
@@ -269,6 +272,7 @@
     {% include celebration.html %}
     {% include firebase-auth.html %}
     {% include judge-firebase.html %}
+    {% include search-palette.html %}
     {% include lc-judge.html %}
 </body>
 </html>
