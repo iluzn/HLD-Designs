@@ -15,7 +15,7 @@ MORE.push({ slug: 'move-zeroes', title: 'Move Zeroes', difficulty: 'easy', topic
   gen: function () { var o = [[[0, 1, 0, 3, 12]], [[0]], [[1, 2, 3]], [[0, 0, 1]]]; for (var k = 0; k < 40; k++) o.push([randArr(randInt(1, 10), 0, 5)]); return o; },
   ref: function (a) { var nz = a[0].filter(function (x) { return x !== 0; }); while (nz.length < a[0].length) nz.push(0); return nz; } });
 
-MORE.push({ slug: 'container-with-most-water', title: 'Container With Most Water', difficulty: 'medium', topics: ['Array', 'Two Pointers', 'Greedy'], type: 'ARR_INT', langsrc: T.ARR_INT('maxArea'),
+MORE.push({ slug: 'container-with-most-water', title: 'Container With Most Water', difficulty: 'medium', topics: ['Array', 'Two Pointers', 'Greedy'], type: 'ARR_INT', diagram: 'CONTAINER', langsrc: T.ARR_INT('maxArea'),
   desc: '<p>Given an integer array <code>height</code> of length n, find two lines that together with the x-axis form a container holding the most water. Return the maximum area.</p>',
   examples: [{ in: 'height = [1,8,6,2,5,4,8,3,7]', out: '49' }, { in: 'height = [1,1]', out: '1' }],
   constraints: ['2 &lt;= height.length &lt;= 10^5', '0 &lt;= height[i] &lt;= 10^4'],
@@ -23,7 +23,7 @@ MORE.push({ slug: 'container-with-most-water', title: 'Container With Most Water
   gen: function () { var o = [[[1, 8, 6, 2, 5, 4, 8, 3, 7]], [[1, 1]], [[4, 3, 2, 1, 4]], [[1, 2, 1]]]; for (var k = 0; k < 40; k++) o.push([randArr(randInt(2, 10), 0, 12)]); return o; },
   ref: function (a) { var h = a[0], l = 0, r = h.length - 1, best = 0; while (l < r) { best = Math.max(best, (r - l) * Math.min(h[l], h[r])); if (h[l] < h[r]) l++; else r--; } return best; } });
 
-MORE.push({ slug: 'trapping-rain-water', title: 'Trapping Rain Water', difficulty: 'hard', topics: ['Array', 'Two Pointers', 'Stack'], type: 'ARR_INT', langsrc: T.ARR_INT('trap'),
+MORE.push({ slug: 'trapping-rain-water', title: 'Trapping Rain Water', difficulty: 'hard', topics: ['Array', 'Two Pointers', 'Stack'], type: 'ARR_INT', diagram: 'WATER', langsrc: T.ARR_INT('trap'),
   desc: '<p>Given <code>n</code> non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.</p>',
   examples: [{ in: 'height = [0,1,0,2,1,0,1,3,2,1,2,1]', out: '6' }, { in: 'height = [4,2,0,3,2,5]', out: '9' }],
   constraints: ['1 &lt;= n &lt;= 2*10^4', '0 &lt;= height[i] &lt;= 10^5'],

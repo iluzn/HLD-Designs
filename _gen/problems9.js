@@ -41,7 +41,7 @@ MORE9.push({ slug: 'evaluate-reverse-polish-notation', title: 'Evaluate Reverse 
   ref: function (a) { var st = []; a[0].forEach(function (tok) { if ((tok === '+' || tok === '-' || tok === '*' || tok === '/')) { var b = st.pop(), x = st.pop(), r; if (tok === '+') r = x + b; else if (tok === '-') r = x - b; else if (tok === '*') r = x * b; else r = Math.trunc(x / b); st.push(r); } else st.push(parseInt(tok, 10)); }); return st[0]; } });
 
 // ---- Largest Rectangle in Histogram (ARR_INT) ----
-MORE9.push({ slug: 'largest-rectangle-in-histogram', title: 'Largest Rectangle in Histogram', difficulty: 'hard', topics: ['Array', 'Stack', 'Monotonic Stack'], type: 'ARR_INT', langsrc: T.ARR_INT('largestRectangleArea'),
+MORE9.push({ slug: 'largest-rectangle-in-histogram', title: 'Largest Rectangle in Histogram', difficulty: 'hard', topics: ['Array', 'Stack', 'Monotonic Stack'], type: 'ARR_INT', diagram: 'HIST', langsrc: T.ARR_INT('largestRectangleArea'),
   desc: '<p>Given an array <code>heights</code> of bar heights (each width 1), return the area of the largest rectangle that fits in the histogram.</p>',
   examples: [{ in: 'heights = [2,1,5,6,2,3]', out: '10' }, { in: 'heights = [2,4]', out: '4' }],
   constraints: ['1 &lt;= heights.length &lt;= 10^5', '0 &lt;= heights[i] &lt;= 10^4'],

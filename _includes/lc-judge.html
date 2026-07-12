@@ -192,13 +192,43 @@
     }
     return '<svg class="lc-dg" width="' + (pad * 2 + C * cs) + '" height="' + (pad * 2 + R * cs) + '" viewBox="0 0 ' + (pad * 2 + C * cs) + ' ' + (pad * 2 + R * cs) + '">' + parts + '</svg>';
   }
+  function scHistSVG(arr, mode) {
+    if (!arr || !arr.length) return '<div class="lc-dg-empty">empty</div>';
+    var n = arr.length, bw = 22, gap = 4, pad = 18, maxH = Math.max.apply(null, arr.concat([1]));
+    var unit = Math.min(20, Math.max(7, Math.floor(130 / maxH)));
+    var H = maxH * unit + pad + 16, W = n * (bw + gap) + pad * 2;
+    function bx(i) { return pad + i * (bw + gap); } function topY(h) { return pad + (maxH - h) * unit; }
+    var lvl = [];
+    if (mode === 'water') { var lm = [], rm = [], mx = 0, i; for (i = 0; i < n; i++) { mx = Math.max(mx, arr[i]); lm[i] = mx; } mx = 0; for (i = n - 1; i >= 0; i--) { mx = Math.max(mx, arr[i]); rm[i] = mx; } for (i = 0; i < n; i++) lvl[i] = Math.min(lm[i], rm[i]); }
+    var extra = '', water = '', bars = '', labels = '';
+    if (mode === 'container') { var l = 0, r = n - 1, best = 0, bl = 0, br = n - 1; while (l < r) { var area = (r - l) * Math.min(arr[l], arr[r]); if (area > best) { best = area; bl = l; br = r; } if (arr[l] < arr[r]) l++; else r--; } var wl = Math.min(arr[bl], arr[br]); extra = '<rect class="lc-dg-water" x="' + (bx(bl) + bw / 2) + '" y="' + topY(wl) + '" width="' + ((br - bl) * (bw + gap)) + '" height="' + (wl * unit) + '"/>'; }
+    for (var i = 0; i < n; i++) {
+      var h = arr[i];
+      if (mode === 'water' && lvl[i] > h) water += '<rect class="lc-dg-water" x="' + bx(i) + '" y="' + topY(lvl[i]) + '" width="' + bw + '" height="' + ((lvl[i] - h) * unit) + '"/>';
+      bars += '<rect class="lc-dg-bar" x="' + bx(i) + '" y="' + topY(h) + '" width="' + bw + '" height="' + (h * unit) + '"/>';
+      labels += '<text class="lc-dg-text" x="' + (bx(i) + bw / 2) + '" y="' + (H - 5) + '" text-anchor="middle">' + h + '</text>';
+    }
+    return '<svg class="lc-dg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">' + extra + water + bars + labels + '</svg>';
+  }
   function scDiagram(type, disp) {
     if (!disp) return '';
     var svg = '';
-    if (/^TREE/.test(type)) { var k = disp.root !== undefined ? 'root' : (disp.p !== undefined ? 'p' : null); if (k) svg = scTreeSVG(scParse(disp[k])); }
+    if (P.diagram === 'WATER') svg = scHistSVG(scParse(disp.nums), 'water');
+    else if (P.diagram === 'CONTAINER') svg = scHistSVG(scParse(disp.nums), 'container');
+    else if (P.diagram === 'HIST') svg = scHistSVG(scParse(disp.nums), 'plain');
+    else if (/^TREE/.test(type)) { var k = disp.root !== undefined ? 'root' : (disp.p !== undefined ? 'p' : null); if (k) svg = scTreeSVG(scParse(disp[k])); }
     else if (/^LIST/.test(type)) { var k2 = disp.head !== undefined ? 'head' : (disp.l1 !== undefined ? 'l1' : null); if (k2) svg = scListSVG(scParse(disp[k2])); }
     else if (/GRID/.test(type) && disp.grid !== undefined) { svg = scGridSVG(scParse(disp.grid)); }
     return svg ? '<div class="lc-diagram">' + svg + '</div>' : '';
+  }
+  // Visual examples block shown in the Description tab (LeetCode-style).
+  function scDescExtras() {
+    var html = '', diagrams = '', cs = P.cases.slice(0, 3);
+    cs.forEach(function (c, i) { var d = scDiagram(P.type, c.display); if (d) diagrams += '<div class="lc-ex-dg"><div class="lc-ex-cap">Example ' + (i + 1) + '</div>' + d + '</div>'; });
+    if (diagrams) html += '<div class="lc-vis"><h2>Visualized Examples</h2>' + diagrams + '</div>';
+    var note = scFormatNote(P.type);
+    if (note) html += '<div class="lc-fmt-note lc-fmt-desc">' + note + '</div>';
+    return html;
   }
   function scFormatNote(type) {
     if (/^TREE/.test(type)) return 'Tree given in level-order (breadth-first); <code>null</code> marks a missing child.';
@@ -217,9 +247,6 @@
     }).join('');
     var c = cs[activeCase] || cs[0]; var body = '';
     if (c) {
-      body += scDiagram(P.type, c.display);
-      var note = scFormatNote(P.type);
-      if (note) body += '<div class="lc-fmt-note">' + note + '</div>';
       body += '<div class="lc-io-label">Input</div><div class="lc-io-box">' + esc(caseInputStr(c)) + '</div>';
       body += '<div class="lc-io-label">Expected</div><div class="lc-io-box">' + esc(c.expected) + '</div>';
       var res = lastResults && lastResults.results[activeCase];
@@ -274,7 +301,7 @@
 
   function showLeftTab(tab) {
     leftTabs.forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-ltab') === tab); });
-    if (tab === 'description') { leftBody.innerHTML = descHtml; paintSolved(); return; }
+    if (tab === 'description') { leftBody.innerHTML = descHtml + scDescExtras(); paintSolved(); return; }
     if (tab === 'editorial') {
       leftBody.innerHTML = P.editorial ? '<div class="lc-editorial">' + P.editorial + '</div>' : '<div class="lc-empty">Editorial coming soon.</div>';
       return;
@@ -336,6 +363,7 @@
     if (!langSel || !editorHost || !leftBody) return;
 
     descHtml = leftBody.innerHTML;
+    leftBody.innerHTML = descHtml + scDescExtras();
     paintSolved();
     // Progress loads async once auth resolves; re-paint when it's ready or changes.
     document.addEventListener('sc-judge-ready', function () {
