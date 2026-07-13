@@ -1123,12 +1123,12 @@ function closeCelebration() {
 </script>
 
 <style>
-.sim-chip{position:absolute;top:12px;left:12px;z-index:4;display:inline-flex;align-items:center;gap:5px;
-  font-size:0.7rem;font-weight:600;padding:4px 10px;border-radius:20px;cursor:pointer;
+.sim-chip{display:inline-flex;align-items:center;gap:5px;
+  font-size:0.68rem;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer;
   background:rgba(108,99,255,0.12);color:var(--accent);border:1px solid rgba(108,99,255,0.35);
-  text-decoration:none;transition:background .15s,transform .15s;}
+  text-decoration:none;transition:background .15s,transform .15s;white-space:nowrap;}
+.sim-chip::before{content:"▸";font-size:0.7rem;}
 .sim-chip:hover{background:var(--accent);color:#fff;transform:translateY(-1px);}
-.problem-card{position:relative;}
 </style>
 <script>
 // Add a "Simulate" chip to each HLD problem card, deep-linking to the builder.
@@ -1149,7 +1149,8 @@ function closeCelebration() {
       e.preventDefault(); e.stopPropagation();
       window.location.href = '/simulator/?c=' + slug;
     });
-    card.appendChild(chip);
+    var top = card.querySelector('.card-top');
+    if (top) top.appendChild(chip); else card.appendChild(chip);
   });
 })();
 </script>
