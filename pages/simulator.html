@@ -1,7 +1,7 @@
 ---
 layout: none
 title: "System Design Simulator — SystemCraft"
-description: "Interactive system design canvas with drag-and-drop components, traffic simulation, and bottleneck detection. Practice designing distributed systems visually."
+description: "Challenge-based system design simulator. Pick a scenario, build the architecture, run traffic, get scored against an interview rubric, and compare to the reference design."
 permalink: /simulator/
 ---
 <!DOCTYPE html>
@@ -15,11 +15,12 @@ permalink: /simulator/
 <title>System Design Simulator — SystemCraft</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-:root{--bg:#111118;--surface:#1a1a24;--border:#2a2a3a;--text:#e8edf3;--dim:#8892a4;
+:root{--bg:#111118;--surface:#1a1a24;--surface2:#22222e;--border:#2a2a3a;--text:#e8edf3;--dim:#8892a4;
 --accent:#6c63ff;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--blue:#3b82f6;
---sidebar-w:260px;--header-h:48px;}
-html[data-theme="light"]{--bg:#fafbff;--surface:#fff;--border:#e2e8f0;--text:#0f172a;--dim:#64748b;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+--sidebar-w:240px;--header-h:52px;}
+html[data-theme="light"]{--bg:#fafbff;--surface:#fff;--surface2:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--dim:#64748b;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;}
+button{font-family:inherit;}
 </style>
 </head>
 <body>
@@ -27,488 +28,561 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </html>
 
 <script>
-// ═══════════════════════════════════════════════════════════
-// SYSTEM DESIGN SIMULATOR — SystemCraft
-// Canvas-based drag-drop architecture builder with traffic sim
-// ═══════════════════════════════════════════════════════════
-
-// ── Component Library ──
+// ═══════════════ COMPONENT LIBRARY ═══════════════
 const LIBRARY = {
-  'Clients': [
-    {id:'web-client',label:'Web Client',icon:'🌐',maxRPS:Infinity,latency:0,color:'#f97316'},
-    {id:'mobile-client',label:'Mobile Client',icon:'📱',maxRPS:Infinity,latency:0,color:'#f97316'},
+  'Clients':[
+    {id:'client',label:'Client',icon:'🌐',maxRPS:Infinity,latency:0,cat:'client'},
   ],
-  'Load Balancers': [
-    {id:'load-balancer',label:'Load Balancer',icon:'⚖️',maxRPS:500000,latency:2,color:'#3b82f6'},
-    {id:'api-gateway',label:'API Gateway',icon:'🚪',maxRPS:200000,latency:5,color:'#3b82f6'},
-    {id:'cdn',label:'CDN',icon:'🌍',maxRPS:1000000,latency:1,color:'#3b82f6'},
+  'Edge / LB':[
+    {id:'load-balancer',label:'Load Balancer',icon:'⚖️',maxRPS:500000,latency:2,cat:'lb'},
+    {id:'api-gateway',label:'API Gateway',icon:'🚪',maxRPS:200000,latency:5,cat:'lb'},
+    {id:'cdn',label:'CDN',icon:'🌍',maxRPS:1000000,latency:1,cat:'cdn'},
   ],
-  'Compute': [
-    {id:'app-server',label:'App Server',icon:'🖥️',maxRPS:10000,latency:5,color:'#22c55e'},
-    {id:'microservice',label:'Microservice',icon:'⚙️',maxRPS:8000,latency:8,color:'#22c55e'},
-    {id:'serverless',label:'Serverless Fn',icon:'λ',maxRPS:50000,latency:50,color:'#22c55e'},
-    {id:'worker',label:'Worker',icon:'👷',maxRPS:5000,latency:20,color:'#22c55e'},
+  'Compute':[
+    {id:'app-server',label:'App Server',icon:'🖥️',maxRPS:10000,latency:5,cat:'compute'},
+    {id:'microservice',label:'Microservice',icon:'⚙️',maxRPS:8000,latency:8,cat:'compute'},
+    {id:'worker',label:'Worker',icon:'👷',maxRPS:5000,latency:20,cat:'compute'},
   ],
-  'Databases': [
-    {id:'postgresql',label:'PostgreSQL',icon:'🐘',maxRPS:5000,latency:10,color:'#eab308'},
-    {id:'mysql',label:'MySQL',icon:'🐬',maxRPS:6000,latency:8,color:'#eab308'},
-    {id:'mongodb',label:'MongoDB',icon:'🍃',maxRPS:20000,latency:5,color:'#eab308'},
-    {id:'dynamodb',label:'DynamoDB',icon:'⚡',maxRPS:100000,latency:5,color:'#eab308'},
-    {id:'cassandra',label:'Cassandra',icon:'👁️',maxRPS:50000,latency:4,color:'#eab308'},
+  'Databases':[
+    {id:'postgresql',label:'PostgreSQL',icon:'🐘',maxRPS:5000,latency:10,cat:'db'},
+    {id:'mysql',label:'MySQL',icon:'🐬',maxRPS:6000,latency:8,cat:'db'},
+    {id:'mongodb',label:'MongoDB',icon:'🍃',maxRPS:20000,latency:5,cat:'db'},
+    {id:'dynamodb',label:'DynamoDB',icon:'⚡',maxRPS:100000,latency:5,cat:'db'},
+    {id:'cassandra',label:'Cassandra',icon:'👁️',maxRPS:50000,latency:4,cat:'db'},
+    {id:'db-replica',label:'DB Read Replica',icon:'🗄️',maxRPS:8000,latency:8,cat:'replica'},
   ],
-  'Cache': [
-    {id:'redis',label:'Redis',icon:'🔴',maxRPS:100000,latency:1,color:'#ef4444'},
-    {id:'memcached',label:'Memcached',icon:'🟢',maxRPS:120000,latency:1,color:'#ef4444'},
-    {id:'cdn-cache',label:'CDN Cache',icon:'💨',maxRPS:500000,latency:0.5,color:'#ef4444'},
+  'Cache':[
+    {id:'redis',label:'Redis',icon:'🔴',maxRPS:100000,latency:1,cat:'cache'},
+    {id:'memcached',label:'Memcached',icon:'🟢',maxRPS:120000,latency:1,cat:'cache'},
   ],
-  'Message Queues': [
-    {id:'kafka',label:'Kafka',icon:'📨',maxRPS:100000,latency:3,color:'#a855f7'},
-    {id:'rabbitmq',label:'RabbitMQ',icon:'🐇',maxRPS:30000,latency:5,color:'#a855f7'},
-    {id:'sqs',label:'SQS',icon:'📬',maxRPS:50000,latency:10,color:'#a855f7'},
+  'Async':[
+    {id:'kafka',label:'Kafka',icon:'📨',maxRPS:100000,latency:3,cat:'queue'},
+    {id:'rabbitmq',label:'RabbitMQ',icon:'🐇',maxRPS:30000,latency:5,cat:'queue'},
+    {id:'sqs',label:'SQS',icon:'📬',maxRPS:50000,latency:10,cat:'queue'},
   ],
-  'Storage': [
-    {id:'s3',label:'S3 / Blob',icon:'🪣',maxRPS:5000,latency:50,color:'#06b6d4'},
-    {id:'elasticsearch',label:'Elasticsearch',icon:'🔍',maxRPS:20000,latency:10,color:'#06b6d4'},
+  'Storage / Search':[
+    {id:'s3',label:'Object Store',icon:'🪣',maxRPS:5000,latency:50,cat:'blob'},
+    {id:'elasticsearch',label:'Elasticsearch',icon:'🔍',maxRPS:20000,latency:10,cat:'search'},
   ],
 };
+function findComp(type){var f=null;Object.keys(LIBRARY).forEach(function(c){LIBRARY[c].forEach(function(x){if(x.id===type)f=x;});});return f;}
 </script>
 
 <script>
-// ── State ──
-let nodes = [];        // {id, type, label, icon, x, y, maxRPS, latency, color, load, status}
-let edges = [];        // {from, to}
-let nextId = 1;
-let dragging = null;   // node being moved
-let connecting = null; // node being wired from
-let simRunning = false;
-let selectedNode = null;
-
-// ── DOM Setup ──
-document.addEventListener('DOMContentLoaded', function() {
-  document.body.insertAdjacentHTML('afterbegin', `
-  <header class="sim-hdr">
-    <a href="/" class="sim-logo">⚡ SystemCraft</a>
-    <span class="sim-title">System Design Simulator</span>
-    <div class="sim-hdr-actions">
-      <button id="btn-clear" title="Clear canvas">🗑️ Clear</button>
-      <button id="btn-sim" title="Run simulation">▶️ Simulate</button>
-      <button id="btn-export" title="Export as PNG">📷 Export</button>
-    </div>
-  </header>
-  <div class="sim-body">
-    <aside class="sim-sidebar" id="sidebar"></aside>
-    <main class="sim-canvas-wrap">
-      <svg id="sim-edges" class="sim-edges"></svg>
-      <div id="sim-canvas" class="sim-canvas"></div>
-      <div id="sim-results" class="sim-results" style="display:none;"></div>
-    </main>
-    <aside class="sim-config" id="sim-config">
-      <h3>Traffic Config</h3>
-      <label>Input RPS<input id="cfg-rps" type="number" value="10000" min="100" max="10000000"></label>
-      <label>Read %<input id="cfg-read" type="number" value="80" min="0" max="100"></label>
-      <label>Cache Hit %<input id="cfg-cache" type="number" value="85" min="0" max="100"></label>
-      <hr>
-      <div id="node-props"></div>
-    </aside>
-  </div>`);
-  buildSidebar();
-  attachEvents();
-});
+// ═══════════════ CHALLENGES ═══════════════
+// Each rubric check receives helper `has(cats...)` and the sim result.
+const CHALLENGES = [
+  {
+    id:'url-shortener', title:'URL Shortener', emoji:'🔗', difficulty:'Easy',
+    prompt:'Design a service like TinyURL that turns long URLs into short codes and redirects users. Redirects vastly outnumber creates.',
+    scale:{rps:100000, readPct:95, cacheHit:90},
+    reqs:['Redirect latency < 50ms P99','Handle 100K RPS (95% reads)','Durable storage of URL mappings'],
+    rubric:[
+      {label:'Load balancer to spread traffic', test:function(h){return h.has('lb');}},
+      {label:'Cache for hot short-codes (reads dominate)', test:function(h){return h.has('cache','cdn');}},
+      {label:'Durable database for mappings', test:function(h){return h.has('db');}},
+      {label:'Compute tier between edge and data', test:function(h){return h.has('compute');}},
+      {label:'Survives target load with no red bottleneck', test:function(h){return h.simPassed;}},
+    ],
+    ref:{stack:['CDN','Load Balancer','App Server','Redis','DynamoDB'], link:'/hld/URLShortner/',
+      note:'Reads dominate 20:1, so a CDN + Redis cache absorb almost all redirects. Writes (create) go to a KV store like DynamoDB. The app tier only handles cache misses and creates.'}
+  },
+  {
+    id:'twitter-feed', title:'Twitter News Feed', emoji:'🐦', difficulty:'Hard',
+    prompt:'Design the home timeline for a social network. Users follow others and see a merged, ranked feed. Celebrities have millions of followers.',
+    scale:{rps:300000, readPct:90, cacheHit:80},
+    reqs:['Feed loads < 200ms P99','Handle 300K RPS','Fan-out writes for most users, pull for celebrities'],
+    rubric:[
+      {label:'Load balancer / API gateway at the edge', test:function(h){return h.has('lb');}},
+      {label:'Cache for precomputed timelines', test:function(h){return h.has('cache');}},
+      {label:'Async queue for fan-out on write', test:function(h){return h.has('queue');}},
+      {label:'Database for tweets and social graph', test:function(h){return h.has('db');}},
+      {label:'Compute/worker tier for fan-out', test:function(h){return h.has('compute');}},
+      {label:'Handles target load without bottleneck', test:function(h){return h.simPassed;}},
+    ],
+    ref:{stack:['Load Balancer','App Server','Kafka','Worker','Redis','Cassandra'], link:'/hld/TwitterFeed/',
+      note:'Hybrid fan-out: for normal users, a worker pushes new tweets into follower timeline caches (Redis) via Kafka. For celebrities, timelines are pulled at read time and merged. Cassandra stores tweets durably.'}
+  },
+  {
+    id:'rate-limiter', title:'Rate Limiter', emoji:'🚦', difficulty:'Medium',
+    prompt:'Design a distributed rate limiter that caps each API key to N requests/sec across many app servers.',
+    scale:{rps:200000, readPct:50, cacheHit:0},
+    reqs:['Decision < 5ms P99','Consistent counts across all servers','Handle 200K RPS'],
+    rubric:[
+      {label:'Edge / gateway where limiting is enforced', test:function(h){return h.has('lb');}},
+      {label:'Shared fast counter store (Redis)', test:function(h){return h.has('cache');}},
+      {label:'Compute tier running the limiter logic', test:function(h){return h.has('compute');}},
+      {label:'Handles target load without bottleneck', test:function(h){return h.simPassed;}},
+    ],
+    ref:{stack:['API Gateway','App Server','Redis'], link:'/hld/RateLimiter/',
+      note:'A centralized Redis holds per-key counters (token bucket or sliding window). Every app server checks/decrements atomically. Redis handles 100K+ ops/sec; shard by key if you exceed one node.'}
+  },
+  {
+    id:'chat', title:'Chat / Messaging', emoji:'💬', difficulty:'Hard',
+    prompt:'Design a real-time 1:1 and group chat system with delivery guarantees and online presence.',
+    scale:{rps:150000, readPct:60, cacheHit:40},
+    reqs:['Message delivery < 100ms','Handle 150K messages/sec','Durable message history'],
+    rubric:[
+      {label:'Gateway / LB for connection handling', test:function(h){return h.has('lb');}},
+      {label:'Async queue for reliable delivery', test:function(h){return h.has('queue');}},
+      {label:'Database for message history', test:function(h){return h.has('db');}},
+      {label:'Cache for presence / recent messages', test:function(h){return h.has('cache');}},
+      {label:'Compute tier for chat services', test:function(h){return h.has('compute');}},
+      {label:'Handles target load without bottleneck', test:function(h){return h.simPassed;}},
+    ],
+    ref:{stack:['Load Balancer','App Server','Kafka','Redis','Cassandra'], link:'/hld/ChatSystem/',
+      note:'WebSocket servers hold connections; messages flow through Kafka for durability and fan-out. Cassandra stores history (write-heavy, time-ordered). Redis tracks presence and routes to the right connection server.'}
+  },
+  {
+    id:'uber', title:'Ride Sharing (Uber)', emoji:'🚗', difficulty:'Hard',
+    prompt:'Design ride matching: riders request, drivers broadcast location, match nearby driver, track trip live.',
+    scale:{rps:250000, readPct:70, cacheHit:50},
+    reqs:['Match < 2s','Handle 250K location updates/sec','Low-latency geo queries'],
+    rubric:[
+      {label:'Load balancer at the edge', test:function(h){return h.has('lb');}},
+      {label:'Geo cache / in-memory index (Redis)', test:function(h){return h.has('cache');}},
+      {label:'Queue for high-volume location pings', test:function(h){return h.has('queue');}},
+      {label:'Database for trips and users', test:function(h){return h.has('db');}},
+      {label:'Compute tier for matching', test:function(h){return h.has('compute');}},
+      {label:'Handles target load without bottleneck', test:function(h){return h.simPassed;}},
+    ],
+    ref:{stack:['Load Balancer','App Server','Kafka','Redis','Cassandra'], link:'/hld/Uber/',
+      note:'Driver location pings (2M/sec class) go through Kafka into a Redis geo-index (or S2/geohash). Matching service queries nearby drivers from Redis. Trip state lives in a durable store. The main DB never sees the raw ping firehose.'}
+  },
+  {
+    id:'leaderboard', title:'Gaming Leaderboard', emoji:'🏆', difficulty:'Medium',
+    prompt:'Design a real-time leaderboard showing top players and a user\'s rank among millions.',
+    scale:{rps:120000, readPct:85, cacheHit:70},
+    reqs:['Rank query < 50ms','Handle 120K RPS','Live updates on score change'],
+    rubric:[
+      {label:'Load balancer at the edge', test:function(h){return h.has('lb');}},
+      {label:'Sorted-set store for rankings (Redis)', test:function(h){return h.has('cache');}},
+      {label:'Database for durable scores', test:function(h){return h.has('db');}},
+      {label:'Compute tier for the API', test:function(h){return h.has('compute');}},
+      {label:'Handles target load without bottleneck', test:function(h){return h.simPassed;}},
+    ],
+    ref:{stack:['Load Balancer','App Server','Redis','PostgreSQL'], link:'/hld/Leaderboard/',
+      note:'Redis Sorted Sets (ZADD/ZRANK) give O(log n) rank queries and top-K in one call. The relational DB is the source of truth for scores; Redis is rebuilt from it and serves all reads.'}
+  },
+];
 </script>
 
 <script>
-// ── Sidebar ──
-function buildSidebar() {
-  var sb = document.getElementById('sidebar');
-  var html = '<h3>Components</h3>';
-  Object.keys(LIBRARY).forEach(function(cat) {
-    html += '<div class="sb-cat">' + cat + '</div>';
-    LIBRARY[cat].forEach(function(c) {
-      html += '<div class="sb-item" draggable="true" data-type="'+c.id+'" data-label="'+c.label+'" data-icon="'+c.icon+'" data-rps="'+c.maxRPS+'" data-lat="'+c.latency+'" data-color="'+c.color+'">';
-      html += '<span class="sb-icon">'+c.icon+'</span> '+c.label+'</div>';
-    });
+// ═══════════════ STATE ═══════════════
+let nodes = [], edges = [], nextId = 1;
+let dragging = null, connecting = null;
+let challenge = null;   // active challenge object
+let simResult = null;   // last simulation summary
+
+document.addEventListener('DOMContentLoaded', function(){ showHome(); });
+
+// ═══════════════ HOME / CHALLENGE PICKER ═══════════════
+function showHome(){
+  var cards = CHALLENGES.map(function(c){
+    var reqs = c.reqs.map(function(r){return '<li>'+r+'</li>';}).join('');
+    return '<button class="ch-card" data-id="'+c.id+'">'+
+      '<div class="ch-emoji">'+c.emoji+'</div>'+
+      '<div class="ch-body"><div class="ch-top"><span class="ch-title">'+c.title+'</span><span class="ch-diff '+c.difficulty.toLowerCase()+'">'+c.difficulty+'</span></div>'+
+      '<p class="ch-prompt">'+c.prompt+'</p>'+
+      '<div class="ch-scale">🎯 '+fmt(c.scale.rps)+' RPS · '+c.scale.readPct+'% reads</div>'+
+      '</div></button>';
+  }).join('');
+  document.body.innerHTML =
+    '<div class="home">'+
+      '<header class="home-hdr"><a href="/" class="home-logo">⚡ SystemCraft</a><a href="/hld/" class="home-back">← All Designs</a></header>'+
+      '<div class="home-hero"><h1>System Design Simulator</h1>'+
+      '<p>Pick a challenge. Build the architecture on a canvas. Run production-scale traffic. Get scored like an interviewer would — then compare to the real reference design.</p></div>'+
+      '<div class="home-grid">'+cards+'</div>'+
+      '<div class="home-foot">A free interactive tool · no login · runs entirely in your browser</div>'+
+    '</div>';
+  document.querySelectorAll('.ch-card').forEach(function(b){
+    b.onclick = function(){ startChallenge(b.dataset.id); };
   });
-  html += '<div class="sb-help"><b>Usage:</b><br>• Drag components to canvas<br>• Right-click a node → "Connect" → click target<br>• Click Simulate to run traffic</div>';
-  sb.innerHTML = html;
+}
+function fmt(v){ if(v>=1e6)return (v/1e6).toFixed(1).replace('.0','')+'M'; if(v>=1e3)return (v/1e3).toFixed(0)+'K'; return ''+Math.round(v); }
+</script>
+
+<script>
+// ═══════════════ START A CHALLENGE (builder view) ═══════════════
+function startChallenge(id){
+  challenge = CHALLENGES.find(function(c){return c.id===id;});
+  nodes=[]; edges=[]; nextId=1; connecting=null; simResult=null;
+  // Seed a client node so the canvas isn't blank
+  addNode('client', 60, 200);
+  renderBuilder();
 }
 
-// ── Events ──
-function attachEvents() {
-  var canvas = document.getElementById('sim-canvas');
-  // Drop from sidebar
-  canvas.addEventListener('dragover', function(e) { e.preventDefault(); });
-  canvas.addEventListener('drop', function(e) {
+function renderBuilder(){
+  var reqs = challenge.reqs.map(function(r){return '<li>'+r+'</li>';}).join('');
+  document.body.innerHTML =
+  '<header class="bd-hdr">'+
+    '<a href="/" class="bd-logo">⚡</a>'+
+    '<button class="bd-back" id="bd-back">← Challenges</button>'+
+    '<span class="bd-title">'+challenge.emoji+' '+challenge.title+'</span>'+
+    '<div class="bd-actions">'+
+      '<button id="btn-clear">Reset</button>'+
+      '<button id="btn-sim" class="primary">▶ Run Traffic</button>'+
+      '<button id="btn-eval" class="accent">✓ Evaluate</button>'+
+    '</div>'+
+  '</header>'+
+  '<div class="bd-body">'+
+    '<aside class="bd-lib" id="lib"></aside>'+
+    '<main class="bd-canvas-wrap">'+
+      '<div class="bd-brief"><b>'+challenge.prompt+'</b><ul>'+reqs+'</ul>'+
+        '<span class="bd-hint">Drag components in · drag from a node\'s ● handle to connect · then Run Traffic and Evaluate</span></div>'+
+      '<svg id="edges" class="bd-edges"></svg>'+
+      '<div id="canvas" class="bd-canvas"></div>'+
+    '</main>'+
+    '<aside class="bd-side" id="side"></aside>'+
+  '</div>';
+  buildLib();
+  renderSidePanel();
+  renderNodes(); renderEdges();
+  document.getElementById('bd-back').onclick = showHome;
+  document.getElementById('btn-clear').onclick = function(){ startChallenge(challenge.id); };
+  document.getElementById('btn-sim').onclick = runSimulation;
+  document.getElementById('btn-eval').onclick = evaluate;
+  var canvas = document.getElementById('canvas');
+  canvas.addEventListener('dragover', function(e){e.preventDefault();});
+  canvas.addEventListener('drop', function(e){
     e.preventDefault();
-    var type = e.dataTransfer.getData('text/type');
-    if (!type) return;
-    var rect = canvas.getBoundingClientRect();
-    addNode(type, e.clientX - rect.left - 40, e.clientY - rect.top - 20);
+    var type = e.dataTransfer.getData('text/type'); if(!type) return;
+    var r = canvas.getBoundingClientRect();
+    addNode(type, e.clientX-r.left-45, e.clientY-r.top-25);
   });
-  // Sidebar drag start
-  document.getElementById('sidebar').addEventListener('dragstart', function(e) {
-    var el = e.target.closest('.sb-item');
-    if (!el) return;
+  document.getElementById('lib').addEventListener('dragstart', function(e){
+    var el = e.target.closest('.lib-item'); if(!el) return;
     e.dataTransfer.setData('text/type', el.dataset.type);
   });
-  // Buttons
-  document.getElementById('btn-clear').onclick = clearCanvas;
-  document.getElementById('btn-sim').onclick = runSimulation;
-  document.getElementById('btn-export').onclick = exportPNG;
+}
+
+function buildLib(){
+  var html='';
+  Object.keys(LIBRARY).forEach(function(cat){
+    html+='<div class="lib-cat">'+cat+'</div>';
+    LIBRARY[cat].forEach(function(c){
+      html+='<div class="lib-item" draggable="true" data-type="'+c.id+'"><span>'+c.icon+'</span>'+c.label+'</div>';
+    });
+  });
+  document.getElementById('lib').innerHTML = html;
 }
 </script>
 
 <script>
-// ── Node Management ──
-function findComponent(type) {
-  var found = null;
-  Object.keys(LIBRARY).forEach(function(cat) {
-    LIBRARY[cat].forEach(function(c) { if (c.id === type) found = c; });
-  });
-  return found;
-}
-
-function addNode(type, x, y) {
-  var c = findComponent(type);
-  if (!c) return;
-  var node = {id: nextId++, type: c.id, label: c.label, icon: c.icon, x: x, y: y,
-    maxRPS: c.maxRPS, latency: c.latency, color: c.color, load: 0, status: 'idle'};
-  nodes.push(node);
+// ═══════════════ NODES ═══════════════
+function addNode(type,x,y){
+  var c=findComp(type); if(!c) return;
+  nodes.push({id:nextId++,type:c.id,label:c.label,icon:c.icon,x:x,y:y,maxRPS:c.maxRPS,latency:c.latency,cat:c.cat,load:0,status:'idle'});
   renderNodes();
 }
-
-function clearCanvas() {
-  nodes = []; edges = []; nextId = 1; connecting = null; selectedNode = null;
-  renderNodes(); renderEdges();
-  document.getElementById('sim-results').style.display = 'none';
-}
-
-function removeNode(id) {
-  nodes = nodes.filter(function(n) { return n.id !== id; });
-  edges = edges.filter(function(e) { return e.from !== id && e.to !== id; });
-  if (selectedNode === id) selectedNode = null;
+function removeNode(id){
+  nodes=nodes.filter(function(n){return n.id!==id;});
+  edges=edges.filter(function(e){return e.from!==id&&e.to!==id;});
   renderNodes(); renderEdges();
 }
-
-// ── Rendering ──
-function renderNodes() {
-  var canvas = document.getElementById('sim-canvas');
-  canvas.innerHTML = '';
-  nodes.forEach(function(n) {
-    var cls = 'sim-node';
-    if (n.status === 'bottleneck') cls += ' bottleneck';
-    else if (n.status === 'warning') cls += ' warning';
-    else if (n.status === 'healthy') cls += ' healthy';
-    if (selectedNode === n.id) cls += ' selected';
-    var el = document.createElement('div');
-    el.className = cls;
-    el.style.left = n.x + 'px';
-    el.style.top = n.y + 'px';
-    el.style.borderColor = n.color;
-    el.dataset.id = n.id;
-    el.innerHTML = '<span class="sim-node-icon">' + n.icon + '</span><span class="sim-node-label">' + n.label + '</span>' +
-      (n.load > 0 ? '<span class="sim-node-load">' + formatRPS(n.load) + '</span>' : '') +
-      (n.status === 'bottleneck' ? '<span class="sim-node-alert">⚠️ ' + Math.round(n.load/n.maxRPS*100) + '% capacity</span>' : '');
-    // Drag to move
-    el.addEventListener('mousedown', function(e) {
-      if (e.button !== 0) return;
-      if (connecting) { finishConnection(n.id); return; }
-      dragging = {node: n, offX: e.clientX - n.x, offY: e.clientY - n.y};
-      e.preventDefault();
+function renderNodes(){
+  var canvas=document.getElementById('canvas'); if(!canvas) return;
+  canvas.innerHTML='';
+  nodes.forEach(function(n){
+    var cls='node'+(n.status!=='idle'?' '+n.status:'');
+    var el=document.createElement('div');
+    el.className=cls; el.style.left=n.x+'px'; el.style.top=n.y+'px'; el.dataset.id=n.id;
+    el.innerHTML='<span class="node-icon">'+n.icon+'</span><span class="node-label">'+n.label+'</span>'+
+      (n.load>0?'<span class="node-load">'+fmt(n.load)+' RPS</span>':'')+
+      (n.status==='bottleneck'?'<span class="node-alert">'+Math.round(n.load/n.maxRPS*100)+'%</span>':'')+
+      '<span class="node-handle" title="Drag to connect">●</span>'+
+      (n.type!=='client'?'<span class="node-x" title="Delete">×</span>':'');
+    // move
+    el.addEventListener('mousedown',function(e){
+      if(e.target.classList.contains('node-handle')||e.target.classList.contains('node-x')) return;
+      dragging={node:n,offX:e.clientX-n.x,offY:e.clientY-n.y}; e.preventDefault();
     });
-    // Right click context
-    el.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-      showNodeMenu(n, e.clientX, e.clientY);
+    // delete
+    var xb=el.querySelector('.node-x'); if(xb) xb.onclick=function(e){e.stopPropagation();removeNode(n.id);};
+    // connect via handle
+    el.querySelector('.node-handle').addEventListener('mousedown',function(e){
+      e.stopPropagation(); e.preventDefault(); connecting={from:n.id,x:e.clientX,y:e.clientY}; renderTempEdge(e);
     });
     canvas.appendChild(el);
   });
 }
-</script>
 
-<script>
-// ── Mouse move / up for dragging ──
-document.addEventListener('mousemove', function(e) {
-  if (!dragging) return;
-  var canvas = document.getElementById('sim-canvas');
-  var rect = canvas.getBoundingClientRect();
-  dragging.node.x = e.clientX - dragging.offX;
-  dragging.node.y = e.clientY - dragging.offY;
-  renderNodes(); renderEdges();
+document.addEventListener('mousemove',function(e){
+  if(dragging){var c=document.getElementById('canvas');dragging.node.x=e.clientX-dragging.offX;dragging.node.y=e.clientY-dragging.offY;renderNodes();renderEdges();}
+  else if(connecting){renderTempEdge(e);}
 });
-document.addEventListener('mouseup', function() { dragging = null; });
-
-// ── Edges ──
-function renderEdges() {
-  var svg = document.getElementById('sim-edges');
-  var html = '<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--dim)"/></marker></defs>';
-  edges.forEach(function(e) {
-    var from = nodes.find(function(n) { return n.id === e.from; });
-    var to = nodes.find(function(n) { return n.id === e.to; });
-    if (!from || !to) return;
-    var x1 = from.x + 50, y1 = from.y + 25, x2 = to.x + 50, y2 = to.y + 25;
-    var color = 'var(--dim)';
-    if (to.status === 'bottleneck') color = 'var(--red)';
-    else if (to.status === 'healthy') color = 'var(--green)';
-    html += '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+color+'" stroke-width="2" marker-end="url(#arrow)"/>';
-  });
-  svg.innerHTML = html;
-}
-
-// ── Connection ──
-function startConnection(id) {
-  connecting = id;
-  document.getElementById('sim-canvas').style.cursor = 'crosshair';
-}
-function finishConnection(targetId) {
-  if (connecting && connecting !== targetId) {
-    var exists = edges.some(function(e) { return e.from === connecting && e.to === targetId; });
-    if (!exists) edges.push({from: connecting, to: targetId});
+document.addEventListener('mouseup',function(e){
+  if(connecting){
+    var el=document.elementFromPoint(e.clientX,e.clientY);
+    var nodeEl=el?el.closest('.node'):null;
+    if(nodeEl){var tid=parseInt(nodeEl.dataset.id);
+      if(tid!==connecting.from && !edges.some(function(x){return x.from===connecting.from&&x.to===tid;})) edges.push({from:connecting.from,to:tid});}
+    connecting=null; renderEdges();
   }
-  connecting = null;
-  document.getElementById('sim-canvas').style.cursor = '';
-  renderEdges();
-}
-
-// ── Context Menu ──
-function showNodeMenu(node, cx, cy) {
-  var old = document.getElementById('ctx-menu');
-  if (old) old.remove();
-  var menu = document.createElement('div');
-  menu.id = 'ctx-menu';
-  menu.className = 'ctx-menu';
-  menu.style.left = cx + 'px'; menu.style.top = cy + 'px';
-  menu.innerHTML = '<div class="ctx-item" data-action="connect">🔗 Connect from here</div><div class="ctx-item" data-action="delete">🗑️ Delete</div>';
-  menu.addEventListener('click', function(e) {
-    var action = e.target.dataset.action;
-    if (action === 'connect') startConnection(node.id);
-    else if (action === 'delete') removeNode(node.id);
-    menu.remove();
-  });
-  document.body.appendChild(menu);
-  setTimeout(function() { document.addEventListener('click', function rm() { menu.remove(); document.removeEventListener('click', rm); }); }, 10);
-}
+  dragging=null;
+});
 </script>
 
 <script>
-// ═══════════════════════════════════════════════════
-// TRAFFIC SIMULATION ENGINE
-// ═══════════════════════════════════════════════════
-function runSimulation() {
-  var inputRPS = parseInt(document.getElementById('cfg-rps').value) || 10000;
-  var readPct = parseInt(document.getElementById('cfg-read').value) / 100;
-  var cacheHit = parseInt(document.getElementById('cfg-cache').value) / 100;
-
-  // Reset all nodes
-  nodes.forEach(function(n) { n.load = 0; n.status = 'idle'; });
-
-  // Find source nodes (no incoming edges)
-  var hasIncoming = {};
-  edges.forEach(function(e) { hasIncoming[e.to] = true; });
-  var sources = nodes.filter(function(n) { return !hasIncoming[n.id]; });
-
-  if (!sources.length) {
-    alert('Add at least one source node (a node with no incoming edges).');
-    return;
-  }
-
-  // Distribute input RPS to sources equally
-  var perSource = inputRPS / sources.length;
-  sources.forEach(function(n) { n.load = perSource; });
-
-  // BFS to propagate load
-  var queue = sources.map(function(n) { return n.id; });
-  var visited = {};
-  sources.forEach(function(n) { visited[n.id] = true; });
-
-  while (queue.length) {
-    var curr = queue.shift();
-    var currNode = nodes.find(function(n) { return n.id === curr; });
-    // Find outgoing edges
-    var outEdges = edges.filter(function(e) { return e.from === curr; });
-    if (!outEdges.length) continue;
-
-    // Determine load to pass downstream
-    var loadToPass = currNode.load;
-
-    // If this is a cache, only pass misses downstream
-    if (currNode.type === 'redis' || currNode.type === 'memcached' || currNode.type === 'cdn-cache') {
-      loadToPass = currNode.load * (1 - cacheHit);
-    }
-
-    // Split equally among children
-    var perChild = loadToPass / outEdges.length;
-    outEdges.forEach(function(e) {
-      var child = nodes.find(function(n) { return n.id === e.to; });
-      if (!child) return;
-      child.load += perChild;
-      if (!visited[child.id]) { visited[child.id] = true; queue.push(child.id); }
-    });
-  }
-
-  // Compute status and latency
-  var totalLatencyP50 = 0, totalLatencyP99 = 0;
-  var bottlenecks = [];
-
-  nodes.forEach(function(n) {
-    if (n.load === 0) { n.status = 'idle'; return; }
-    var util = n.maxRPS === Infinity ? 0 : n.load / n.maxRPS;
-    if (util > 1.0) {
-      n.status = 'bottleneck';
-      bottlenecks.push({node: n, util: util});
-    } else if (util > 0.7) {
-      n.status = 'warning';
-    } else {
-      n.status = 'healthy';
-    }
+// ═══════════════ EDGES ═══════════════
+function edgeColor(to){ if(to.status==='bottleneck')return 'var(--red)'; if(to.status==='warning')return 'var(--yellow)'; if(to.status==='healthy')return 'var(--green)'; return 'var(--dim)'; }
+function renderEdges(){
+  var svg=document.getElementById('edges'); if(!svg) return;
+  var h='<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--dim)"/></marker></defs>';
+  edges.forEach(function(e){
+    var a=nodes.find(function(n){return n.id===e.from;}), b=nodes.find(function(n){return n.id===e.to;});
+    if(!a||!b) return;
+    var x1=a.x+50,y1=a.y+30,x2=b.x+50,y2=b.y+30;
+    h+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+edgeColor(b)+'" stroke-width="2.5" marker-end="url(#arr)"/>';
   });
-
-  // Calculate latency along longest path
-  var pathLatency = calcPathLatency();
-
-  // Show results
-  showResults(inputRPS, bottlenecks, pathLatency);
-  renderNodes();
+  if(connecting&&connecting.tempX!=null){
+    var a=nodes.find(function(n){return n.id===connecting.from;});
+    if(a) h+='<line x1="'+(a.x+50)+'" y1="'+(a.y+30)+'" x2="'+connecting.tempX+'" y2="'+connecting.tempY+'" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4"/>';
+  }
+  svg.innerHTML=h;
+}
+function renderTempEdge(e){
+  var wrap=document.querySelector('.bd-canvas-wrap'); if(!wrap) return;
+  var r=wrap.getBoundingClientRect();
+  connecting.tempX=e.clientX-r.left; connecting.tempY=e.clientY-r.top;
   renderEdges();
 }
 </script>
 
 <script>
-function calcPathLatency() {
-  // Find longest latency path (critical path)
-  var memo = {};
-  function dfs(id) {
-    if (memo[id] !== undefined) return memo[id];
-    var node = nodes.find(function(n) { return n.id === id; });
-    if (!node) return 0;
-    var base = node.latency;
-    // If overloaded, multiply latency
-    if (node.maxRPS !== Infinity && node.load > node.maxRPS) {
-      base *= Math.min(node.load / node.maxRPS, 5);
-    }
-    var outEdges = edges.filter(function(e) { return e.from === id; });
-    var maxChild = 0;
-    outEdges.forEach(function(e) { maxChild = Math.max(maxChild, dfs(e.to)); });
-    memo[id] = base + maxChild;
-    return memo[id];
+// ═══════════════ TRAFFIC SIMULATION ═══════════════
+function runSimulation(){
+  var sc=challenge.scale;
+  nodes.forEach(function(n){n.load=0;n.status='idle';});
+  var hasIn={}; edges.forEach(function(e){hasIn[e.to]=true;});
+  var sources=nodes.filter(function(n){return !hasIn[n.id];});
+  if(!sources.length){ toast('Add components and connect them from the Client first.'); return; }
+  var per=sc.rps/sources.length;
+  sources.forEach(function(n){n.load=per;});
+  // BFS propagate
+  var q=sources.map(function(n){return n.id;}), seen={}; sources.forEach(function(n){seen[n.id]=1;});
+  var guard=0;
+  while(q.length && guard++<10000){
+    var cur=q.shift(), cn=nodes.find(function(n){return n.id===cur;});
+    var outs=edges.filter(function(e){return e.from===cur;});
+    if(!outs.length) continue;
+    var pass=cn.load;
+    if(cn.cat==='cache'||cn.cat==='cdn') pass=cn.load*(1-sc.cacheHit/100);
+    var each=pass/outs.length;
+    outs.forEach(function(e){
+      var ch=nodes.find(function(n){return n.id===e.to;}); if(!ch) return;
+      ch.load+=each; if(!seen[ch.id]){seen[ch.id]=1;q.push(ch.id);}
+    });
   }
-  // Start from sources
-  var hasIncoming = {};
-  edges.forEach(function(e) { hasIncoming[e.to] = true; });
-  var maxLat = 0;
-  nodes.forEach(function(n) { if (!hasIncoming[n.id]) maxLat = Math.max(maxLat, dfs(n.id)); });
-  return maxLat;
+  var bottlenecks=[];
+  nodes.forEach(function(n){
+    if(n.load<=0){n.status='idle';return;}
+    var u=n.maxRPS===Infinity?0:n.load/n.maxRPS;
+    if(u>1){n.status='bottleneck';bottlenecks.push(n);} else if(u>0.7){n.status='warning';} else {n.status='healthy';}
+  });
+  var lat=calcLatency();
+  simResult={passed:bottlenecks.length===0 && nodes.length>1, bottlenecks:bottlenecks, p50:Math.round(lat), p99:Math.round(lat*2.5), rps:sc.rps};
+  renderNodes(); renderEdges(); renderSidePanel();
+}
+function calcLatency(){
+  var memo={};
+  function dfs(id){
+    if(memo[id]!=null)return memo[id];
+    var n=nodes.find(function(x){return x.id===id;}); if(!n)return 0;
+    var base=n.latency; if(n.maxRPS!==Infinity&&n.load>n.maxRPS) base*=Math.min(n.load/n.maxRPS,5);
+    var outs=edges.filter(function(e){return e.from===id;}), mx=0;
+    outs.forEach(function(e){mx=Math.max(mx,dfs(e.to));});
+    return memo[id]=base+mx;
+  }
+  var hasIn={}; edges.forEach(function(e){hasIn[e.to]=true;});
+  var mx=0; nodes.forEach(function(n){if(!hasIn[n.id])mx=Math.max(mx,dfs(n.id));});
+  return mx;
+}
+</script>
+
+<script>
+// ═══════════════ EVALUATE (rubric scoring) ═══════════════
+function evaluate(){
+  if(!simResult) runSimulation();
+  var cats={}; nodes.forEach(function(n){cats[n.cat]=true;});
+  var helper={ has:function(){for(var i=0;i<arguments.length;i++){if(cats[arguments[i]])return true;}return false;}, simPassed:!!(simResult&&simResult.passed) };
+  var results=challenge.rubric.map(function(r){return {label:r.label, pass:!!r.test(helper)};});
+  var passed=results.filter(function(r){return r.pass;}).length;
+  var total=results.length;
+  var pct=Math.round(passed/total*100);
+  var verdict = pct>=90?{t:'Strong Hire',c:'var(--green)'}:pct>=70?{t:'Hire',c:'var(--green)'}:pct>=50?{t:'Lean No Hire',c:'var(--yellow)'}:{t:'No Hire',c:'var(--red)'};
+  showReport(results, passed, total, verdict);
 }
 
-function showResults(inputRPS, bottlenecks, pathLatency) {
-  var panel = document.getElementById('sim-results');
-  var achievedRPS = inputRPS;
-  if (bottlenecks.length) {
-    var worstUtil = Math.max.apply(null, bottlenecks.map(function(b) { return b.util; }));
-    achievedRPS = Math.round(inputRPS / worstUtil);
-  }
-  var p99 = Math.round(pathLatency * 2.5);
-  var p50 = Math.round(pathLatency);
+function showReport(results, passed, total, verdict){
+  var items=results.map(function(r){return '<li class="'+(r.pass?'ok':'no')+'">'+(r.pass?'✓':'✗')+' '+r.label+'</li>';}).join('');
+  var ref=challenge.ref;
+  var stack=ref.stack.map(function(s){return '<span class="ref-chip">'+s+'</span>';}).join('');
+  var sim = simResult ? ('<div class="rep-sim">Traffic '+fmt(simResult.rps)+' RPS → P50 '+simResult.p50+'ms · P99 '+simResult.p99+'ms · '+(simResult.passed?'<span style="color:var(--green)">no bottlenecks</span>':'<span style="color:var(--red)">'+simResult.bottlenecks.length+' bottleneck(s)</span>')+'</div>') : '';
+  var ov=document.createElement('div');
+  ov.className='report-ov'; ov.id='report-ov';
+  ov.innerHTML=
+    '<div class="report">'+
+      '<button class="report-close" id="rep-close">×</button>'+
+      '<div class="report-score" style="color:'+verdict.c+'"><span class="rs-pct">'+Math.round(passed/total*100)+'%</span><span class="rs-verdict">'+verdict.t+'</span><span class="rs-sub">'+passed+' / '+total+' criteria met</span></div>'+
+      sim+
+      '<h4>Interview Rubric</h4><ul class="rep-rubric">'+items+'</ul>'+
+      '<div class="rep-ref"><h4>Reference Architecture</h4><div class="ref-stack">'+stack+'</div><p>'+ref.note+'</p>'+
+      '<a class="ref-link" href="'+ref.link+'">Read the full '+challenge.title+' design →</a></div>'+
+      '<button class="rep-retry" id="rep-retry">Keep improving</button>'+
+    '</div>';
+  document.body.appendChild(ov);
+  document.getElementById('rep-close').onclick=function(){ov.remove();};
+  document.getElementById('rep-retry').onclick=function(){ov.remove();};
+}
 
-  var html = '<h3>📊 Simulation Results</h3>';
-  html += '<div class="res-grid">';
-  html += '<div class="res-card"><span class="res-val">' + formatRPS(inputRPS) + '</span><span class="res-lbl">Input RPS</span></div>';
-  html += '<div class="res-card"><span class="res-val">' + formatRPS(achievedRPS) + '</span><span class="res-lbl">Achieved RPS</span></div>';
-  html += '<div class="res-card"><span class="res-val">' + p50 + 'ms</span><span class="res-lbl">P50 Latency</span></div>';
-  html += '<div class="res-card"><span class="res-val">' + p99 + 'ms</span><span class="res-lbl">P99 Latency</span></div>';
-  html += '</div>';
+function toast(msg){
+  var t=document.createElement('div'); t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t); setTimeout(function(){t.remove();},3000);
+}
 
-  if (bottlenecks.length) {
-    html += '<div class="res-bottlenecks"><h4>⚠️ Bottlenecks Detected</h4><ul>';
-    bottlenecks.forEach(function(b) {
-      var pct = Math.round(b.util * 100);
-      var suggestion = getSuggestion(b.node);
-      html += '<li><strong>' + b.node.icon + ' ' + b.node.label + '</strong> at ' + pct + '% capacity (' + formatRPS(b.node.load) + ' / ' + formatRPS(b.node.maxRPS) + ' RPS)<br><em>→ ' + suggestion + '</em></li>';
-    });
-    html += '</ul></div>';
+// ═══════════════ SIDE PANEL (live sim results) ═══════════════
+function renderSidePanel(){
+  var side=document.getElementById('side'); if(!side) return;
+  var sc=challenge.scale;
+  var html='<h3>Target Load</h3><div class="sp-scale">'+fmt(sc.rps)+' RPS<br><span>'+sc.readPct+'% reads · '+sc.cacheHit+'% cache hit</span></div>';
+  if(simResult){
+    html+='<h3>Last Run</h3><div class="sp-grid">'+
+      '<div><b>'+simResult.p50+'ms</b><span>P50</span></div>'+
+      '<div><b>'+simResult.p99+'ms</b><span>P99</span></div>'+
+      '</div>';
+    if(simResult.bottlenecks.length){
+      html+='<div class="sp-bn"><b>⚠ Bottlenecks</b><ul>'+simResult.bottlenecks.map(function(n){return '<li>'+n.icon+' '+n.label+' — '+Math.round(n.load/n.maxRPS*100)+'%<br><em>'+suggest(n)+'</em></li>';}).join('')+'</ul></div>';
+    } else if(nodes.length>1){
+      html+='<div class="sp-ok">✅ Handles the load cleanly</div>';
+    }
   } else {
-    html += '<div class="res-ok">✅ No bottlenecks — system handles the load!</div>';
+    html+='<div class="sp-tip">Build your design, then <b>Run Traffic</b> to see where it breaks.</div>';
   }
-  panel.innerHTML = html;
-  panel.style.display = 'block';
+  side.innerHTML=html;
 }
-
-function getSuggestion(node) {
-  var t = node.type;
-  if (t === 'postgresql' || t === 'mysql') return 'Add read replicas, enable connection pooling, or shard writes.';
-  if (t === 'mongodb' || t === 'cassandra') return 'Add more shards or increase replica set size.';
-  if (t === 'app-server' || t === 'microservice') return 'Scale horizontally — add more instances behind the load balancer.';
-  if (t === 'load-balancer' || t === 'api-gateway') return 'Upgrade to a higher tier or add regional LBs.';
-  if (t === 'redis' || t === 'memcached') return 'Add cache cluster nodes or use consistent hashing.';
-  if (t === 'kafka' || t === 'rabbitmq' || t === 'sqs') return 'Add more partitions/consumers to increase throughput.';
-  return 'Scale this component horizontally or upgrade capacity.';
-}
-
-function formatRPS(v) {
-  if (v >= 1000000) return (v/1000000).toFixed(1) + 'M';
-  if (v >= 1000) return (v/1000).toFixed(1) + 'K';
-  return Math.round(v) + '';
-}
-
-function exportPNG() {
-  alert('Export coming soon! For now, use your browser screenshot tool (Cmd+Shift+4 on Mac).');
+function suggest(n){
+  if(n.cat==='db')return 'Add read replicas, cache, or shard.';
+  if(n.cat==='compute')return 'Scale out — add more instances.';
+  if(n.cat==='cache')return 'Add cache cluster nodes.';
+  if(n.cat==='lb')return 'Add regional load balancers.';
+  if(n.cat==='queue')return 'Add partitions / consumers.';
+  return 'Scale this tier horizontally.';
 }
 </script>
 
-<style>
-/* Header */
-.sim-hdr{height:var(--header-h);display:flex;align-items:center;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--border);gap:16px;z-index:10;}
-.sim-logo{text-decoration:none;color:var(--text);font-weight:700;font-size:1rem;}
-.sim-title{font-size:0.85rem;color:var(--dim);}
-.sim-hdr-actions{margin-left:auto;display:flex;gap:8px;}
-.sim-hdr-actions button{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.8rem;}
-.sim-hdr-actions button:hover{border-color:var(--accent);}
-/* Layout */
-.sim-body{display:flex;flex:1;overflow:hidden;}
-.sim-sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:12px;flex-shrink:0;}
-.sim-sidebar h3{font-size:0.8rem;color:var(--dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;}
-.sb-cat{font-size:0.7rem;color:var(--accent);margin-top:12px;margin-bottom:4px;text-transform:uppercase;font-weight:600;}
-.sb-item{padding:6px 8px;border-radius:6px;cursor:grab;font-size:0.8rem;display:flex;align-items:center;gap:6px;transition:background .15s;}
-.sb-item:hover{background:var(--bg);}
-.sb-icon{font-size:1rem;}
-.sb-help{margin-top:20px;padding:10px;background:var(--bg);border-radius:8px;font-size:0.7rem;color:var(--dim);line-height:1.5;}
-/* Canvas */
-.sim-canvas-wrap{flex:1;position:relative;overflow:hidden;background:var(--bg);background-image:radial-gradient(circle,var(--border) 1px,transparent 1px);background-size:24px 24px;}
-.sim-canvas{position:absolute;inset:0;z-index:2;}
-.sim-edges{position:absolute;inset:0;z-index:1;pointer-events:none;width:100%;height:100%;}
-/* Nodes */
-.sim-node{position:absolute;background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:8px 14px;cursor:grab;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:90px;transition:border-color .2s,box-shadow .2s;user-select:none;z-index:3;}
-.sim-node:hover{box-shadow:0 0 12px rgba(108,99,255,0.3);}
-.sim-node.selected{border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(108,99,255,0.2);}
-.sim-node.healthy{border-color:var(--green)!important;box-shadow:0 0 8px rgba(34,197,94,0.3);}
-.sim-node.warning{border-color:var(--yellow)!important;box-shadow:0 0 8px rgba(234,179,8,0.3);}
-.sim-node.bottleneck{border-color:var(--red)!important;box-shadow:0 0 12px rgba(239,68,68,0.4);animation:pulse-red 1s infinite alternate;}
-@keyframes pulse-red{from{box-shadow:0 0 8px rgba(239,68,68,0.3);}to{box-shadow:0 0 20px rgba(239,68,68,0.6);}}
-.sim-node-icon{font-size:1.4rem;}
-.sim-node-label{font-size:0.7rem;color:var(--dim);white-space:nowrap;}
-.sim-node-load{font-size:0.65rem;color:var(--accent);font-weight:600;margin-top:2px;}
-.sim-node-alert{font-size:0.6rem;color:var(--red);font-weight:600;}
-/* Config panel */
-.sim-config{width:220px;background:var(--surface);border-left:1px solid var(--border);padding:16px;overflow-y:auto;flex-shrink:0;}
-.sim-config h3{font-size:0.8rem;color:var(--dim);margin-bottom:12px;text-transform:uppercase;}
-.sim-config label{display:flex;flex-direction:column;gap:4px;font-size:0.75rem;color:var(--dim);margin-bottom:12px;}
-.sim-config input{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-size:0.8rem;width:100%;}
-.sim-config hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
-/* Results */
-.sim-results{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 24px;z-index:10;max-width:600px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.4);}
-.sim-results h3{font-size:0.9rem;margin-bottom:10px;}
-.res-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
-.res-card{text-align:center;padding:8px;background:var(--bg);border-radius:8px;}
-.res-val{display:block;font-size:1.1rem;font-weight:700;color:var(--accent);}
-.res-lbl{font-size:0.65rem;color:var(--dim);}
-.res-bottlenecks h4{color:var(--red);font-size:0.8rem;margin-bottom:6px;}
-.res-bottlenecks ul{list-style:none;padding:0;}
-.res-bottlenecks li{font-size:0.75rem;margin-bottom:8px;padding:8px;background:rgba(239,68,68,0.08);border-radius:6px;border-left:3px solid var(--red);}
-.res-bottlenecks em{color:var(--dim);font-size:0.7rem;}
-.res-ok{padding:8px;background:rgba(34,197,94,0.08);border-radius:6px;color:var(--green);font-size:0.8rem;}
-/* Context Menu */
-.ctx-menu{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:4px;z-index:100;box-shadow:0 4px 16px rgba(0,0,0,0.3);}
-.ctx-item{padding:8px 14px;font-size:0.8rem;cursor:pointer;border-radius:4px;}
-.ctx-item:hover{background:var(--bg);}
-/* Responsive */
-@media(max-width:768px){.sim-sidebar{width:180px;}.sim-config{width:180px;}.res-grid{grid-template-columns:repeat(2,1fr);}}
-</style>
+<script>
+// Inject all styles into <head> so re-rendering body never wipes them.
+(function(){
+var css = `
+/* HOME */
+.home{max-width:1000px;margin:0 auto;padding:0 20px 60px;}
+.home-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 0;}
+.home-logo{font-weight:700;text-decoration:none;color:var(--text);font-size:1.1rem;}
+.home-back{text-decoration:none;color:var(--dim);font-size:0.85rem;}
+.home-back:hover{color:var(--accent);}
+.home-hero{text-align:center;padding:36px 0 30px;}
+.home-hero h1{font-size:2rem;margin-bottom:12px;}
+.home-hero p{color:var(--dim);max-width:620px;margin:0 auto;line-height:1.6;font-size:0.95rem;}
+.home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.ch-card{display:flex;gap:14px;text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;cursor:pointer;transition:transform .15s,border-color .15s;color:var(--text);}
+.ch-card:hover{transform:translateY(-3px);border-color:var(--accent);}
+.ch-emoji{font-size:2rem;flex-shrink:0;}
+.ch-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.ch-title{font-weight:700;font-size:1.05rem;}
+.ch-diff{font-size:0.65rem;padding:2px 8px;border-radius:20px;font-weight:600;text-transform:uppercase;}
+.ch-diff.easy{background:rgba(34,197,94,.15);color:var(--green);}
+.ch-diff.medium{background:rgba(234,179,8,.15);color:var(--yellow);}
+.ch-diff.hard{background:rgba(239,68,68,.15);color:var(--red);}
+.ch-prompt{color:var(--dim);font-size:0.82rem;line-height:1.5;margin-bottom:8px;}
+.ch-scale{font-size:0.75rem;color:var(--accent);font-weight:600;}
+.home-foot{text-align:center;color:var(--dim);font-size:0.8rem;margin-top:40px;}
+/* BUILDER */
+.bd-hdr{height:var(--header-h);display:flex;align-items:center;gap:14px;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--border);}
+.bd-logo{text-decoration:none;font-size:1.2rem;}
+.bd-back{background:none;border:1px solid var(--border);color:var(--dim);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:0.8rem;}
+.bd-back:hover{color:var(--text);border-color:var(--accent);}
+.bd-title{font-weight:600;}
+.bd-actions{margin-left:auto;display:flex;gap:8px;}
+.bd-actions button{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:7px;cursor:pointer;font-size:0.82rem;font-weight:600;}
+.bd-actions button:hover{border-color:var(--accent);}
+.bd-actions .primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+.bd-actions .accent{background:var(--accent);border-color:var(--accent);color:#fff;}
+.bd-body{display:flex;height:calc(100vh - var(--header-h));}
+.bd-lib{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:12px;flex-shrink:0;}
+.lib-cat{font-size:0.68rem;color:var(--accent);text-transform:uppercase;font-weight:700;margin:12px 0 5px;letter-spacing:.5px;}
+.lib-item{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:7px;cursor:grab;font-size:0.82rem;transition:background .12s;}
+.lib-item:hover{background:var(--bg);}
+.lib-item span{font-size:1.05rem;}
+.bd-canvas-wrap{flex:1;position:relative;overflow:hidden;background:var(--bg);background-image:radial-gradient(circle,var(--border) 1px,transparent 1px);background-size:22px 22px;}
+.bd-brief{position:absolute;top:12px;left:12px;right:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;z-index:5;font-size:0.85rem;}
+.bd-brief ul{margin:8px 0 6px 18px;color:var(--dim);font-size:0.78rem;}
+.bd-brief .bd-hint{color:var(--accent);font-size:0.72rem;}
+.bd-edges{position:absolute;inset:0;z-index:1;pointer-events:none;width:100%;height:100%;}
+.bd-canvas{position:absolute;inset:0;z-index:2;}
+.bd-side{width:220px;background:var(--surface);border-left:1px solid var(--border);padding:16px;overflow-y:auto;flex-shrink:0;}
+.bd-side h3{font-size:0.72rem;text-transform:uppercase;color:var(--dim);margin:14px 0 6px;letter-spacing:.5px;}
+.bd-side h3:first-child{margin-top:0;}
+.sp-scale{font-size:1.3rem;font-weight:700;color:var(--accent);}
+.sp-scale span{font-size:0.72rem;color:var(--dim);font-weight:400;}
+.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sp-grid div{background:var(--bg);border-radius:8px;padding:8px;text-align:center;}
+.sp-grid b{display:block;font-size:1.1rem;color:var(--accent);}
+.sp-grid span{font-size:0.65rem;color:var(--dim);}
+.sp-bn{margin-top:10px;font-size:0.78rem;}
+.sp-bn ul{list-style:none;margin-top:6px;}
+.sp-bn li{background:rgba(239,68,68,.08);border-left:3px solid var(--red);padding:7px;border-radius:5px;margin-bottom:6px;font-size:0.75rem;}
+.sp-bn em{color:var(--dim);font-size:0.7rem;}
+.sp-ok{margin-top:10px;background:rgba(34,197,94,.1);color:var(--green);padding:8px;border-radius:6px;font-size:0.8rem;}
+.sp-tip{color:var(--dim);font-size:0.8rem;line-height:1.5;background:var(--bg);padding:10px;border-radius:8px;}
+`;
+var s=document.createElement('style'); s.textContent=css; document.head.appendChild(s);
+})();
+</script>
+
+<script>
+// Node + report + toast styles
+(function(){
+var css = `
+/* NODES */
+.node{position:absolute;width:100px;background:var(--surface);border:2px solid var(--border);border-radius:11px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:grab;user-select:none;z-index:3;transition:border-color .2s,box-shadow .2s;}
+.node:hover{box-shadow:0 0 10px rgba(108,99,255,.3);}
+.node:hover .node-x,.node:hover .node-handle{opacity:1;}
+.node.healthy{border-color:var(--green);box-shadow:0 0 8px rgba(34,197,94,.3);}
+.node.warning{border-color:var(--yellow);box-shadow:0 0 8px rgba(234,179,8,.3);}
+.node.bottleneck{border-color:var(--red);animation:pr 1s infinite alternate;}
+@keyframes pr{from{box-shadow:0 0 6px rgba(239,68,68,.3);}to{box-shadow:0 0 18px rgba(239,68,68,.65);}}
+.node-icon{font-size:1.4rem;}
+.node-label{font-size:0.68rem;color:var(--dim);text-align:center;line-height:1.1;}
+.node-load{font-size:0.62rem;color:var(--accent);font-weight:700;}
+.node-alert{font-size:0.6rem;color:var(--red);font-weight:700;}
+.node-handle{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);color:var(--accent);font-size:0.9rem;cursor:crosshair;opacity:0;transition:opacity .15s;background:var(--bg);border-radius:50%;line-height:1;}
+.node-x{position:absolute;top:-8px;right:-8px;width:18px;height:18px;background:var(--red);color:#fff;border-radius:50%;font-size:0.8rem;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .15s;}
+/* REPORT */
+.report-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.report{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;position:relative;}
+.report-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--dim);font-size:1.5rem;cursor:pointer;line-height:1;}
+.report-score{text-align:center;margin-bottom:16px;}
+.rs-pct{display:block;font-size:2.6rem;font-weight:800;line-height:1;}
+.rs-verdict{display:block;font-size:1.1rem;font-weight:700;margin-top:4px;}
+.rs-sub{display:block;font-size:0.78rem;color:var(--dim);margin-top:2px;}
+.rep-sim{text-align:center;font-size:0.8rem;color:var(--dim);background:var(--bg);padding:8px;border-radius:8px;margin-bottom:16px;}
+.report h4{font-size:0.9rem;margin:16px 0 8px;}
+.rep-rubric{list-style:none;}
+.rep-rubric li{padding:7px 10px;border-radius:7px;margin-bottom:5px;font-size:0.83rem;}
+.rep-rubric li.ok{background:rgba(34,197,94,.1);color:var(--green);}
+.rep-rubric li.no{background:rgba(239,68,68,.1);color:var(--red);}
+.rep-ref{margin-top:18px;padding-top:16px;border-top:1px solid var(--border);}
+.ref-stack{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.ref-chip{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:3px 11px;font-size:0.75rem;}
+.rep-ref p{color:var(--dim);font-size:0.82rem;line-height:1.6;margin-bottom:12px;}
+.ref-link{display:inline-block;color:var(--accent);text-decoration:none;font-weight:600;font-size:0.85rem;}
+.ref-link:hover{text-decoration:underline;}
+.rep-retry{width:100%;margin-top:18px;background:var(--accent);color:#fff;border:none;padding:11px;border-radius:9px;font-weight:700;cursor:pointer;font-size:0.9rem;}
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--red);color:var(--text);padding:12px 20px;border-radius:10px;z-index:200;font-size:0.85rem;box-shadow:0 6px 24px rgba(0,0,0,.4);}
+@media(max-width:768px){.bd-lib{width:150px;}.bd-side{width:150px;}}
+`;
+var s=document.createElement('style'); s.textContent=css; document.head.appendChild(s);
+})();
+</script>
