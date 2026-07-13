@@ -250,14 +250,27 @@ function startChallenge(id){
   challenge._slug = id;
   nodes=[]; edges=[]; nextId=1; connecting=null; simResult=null; selectedId=null;
   var saved = loadSaved(id);
-  if(saved){ nodes=saved.nodes; edges=saved.edges; nextId=saved.nextId; }
+  if(saved){ hydrateInto(saved); }
   else { addNode('client', 60, 220); }  // seed a client so the canvas isn't blank
   history=[snapshotState()]; histIdx=0;
   renderBuilder();
 }
 
 // ── Persistence + history ──
-function snapshotState(){ return JSON.stringify({nodes:nodes,edges:edges,nextId:nextId}); }
+// We serialize only the DESIGN (type, position, instances), never runtime
+// fields (load/status) or non-JSON values like Infinity. Component specs
+// (capacity, latency, icon) are re-derived from the library on load.
+function nodeToRaw(n){ return {id:n.id,type:n.type,x:Math.round(n.x),y:Math.round(n.y),instances:n.instances||1}; }
+function rawToNode(r){
+  var c=findComp(r.type)||{label:r.type,icon:'?',maxRPS:Infinity,latency:0,cat:'compute'};
+  return {id:r.id,type:r.type,label:c.label,icon:c.icon,x:r.x,y:r.y,maxRPS:c.maxRPS,latency:c.latency,cat:c.cat,load:0,status:'idle',instances:r.instances||1};
+}
+function hydrateInto(obj){
+  nodes=(obj.nodes||[]).map(rawToNode);
+  edges=(obj.edges||[]).slice();
+  nextId=obj.nextId||(nodes.reduce(function(m,n){return Math.max(m,n.id);},0)+1);
+}
+function snapshotState(){ return JSON.stringify({nodes:nodes.map(nodeToRaw),edges:edges,nextId:nextId}); }
 function pushHistory(){
   history=history.slice(0,histIdx+1);
   history.push(snapshotState());
@@ -266,7 +279,7 @@ function pushHistory(){
   saveNow();
 }
 function restoreState(str){
-  try{ var s=JSON.parse(str); nodes=s.nodes; edges=s.edges; nextId=s.nextId; selectedId=null;
+  try{ hydrateInto(JSON.parse(str)); selectedId=null; simResult=null;
     renderNodes(); renderEdges(); renderSidePanel(); saveNow(); }catch(e){}
 }
 function undo(){ if(histIdx>0){ histIdx--; restoreState(history[histIdx]); } }
@@ -277,7 +290,8 @@ function clearSaved(id){ try{ localStorage.removeItem('scsim:'+id); }catch(e){} 
 
 // ── Export / Import ──
 function exportJSON(){
-  var data=JSON.stringify({challenge:challenge._slug,nodes:nodes,edges:edges,nextId:nextId},null,2);
+  var payload={challenge:challenge._slug,nodes:nodes.map(nodeToRaw),edges:edges,nextId:nextId};
+  var data=JSON.stringify(payload,null,2);
   var blob=new Blob([data],{type:'application/json'});
   var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
   a.download='systemcraft-'+challenge._slug+'.json'; a.click();
@@ -287,7 +301,7 @@ function importJSON(e){
   var f=e.target.files[0]; if(!f) return;
   var r=new FileReader();
   r.onload=function(){ try{ var s=JSON.parse(r.result);
-    if(s.nodes&&s.edges){ nodes=s.nodes; edges=s.edges; nextId=s.nextId||(Math.max.apply(null,nodes.map(function(n){return n.id;}))+1);
+    if(s.nodes&&s.edges){ hydrateInto(s);
       simResult=null; selectedId=null; pushHistory(); renderNodes(); renderEdges(); renderSidePanel(); }
     else toast('That file is not a valid design export.');
   }catch(err){ toast('Could not read that file.'); } e.target.value=''; };
