@@ -318,6 +318,7 @@
                 <a href="/">Home</a> &rsaquo; <span>{{ page.title }}</span>
             </div>
             {{ content }}
+            {% unless page.url contains '/profile' or page.hide_author %}
             <div class="author-byline">
                 <img class="author-byline-avatar" src="{{ site.author.image }}" alt="{{ site.author.name }}" width="48" height="48" loading="lazy">
                 <div class="author-byline-body">
@@ -327,6 +328,7 @@
                     <p class="author-byline-bio">{{ site.author.bio }}</p>
                 </div>
             </div>
+            {% endunless %}
         </div>
         {% unless page.hide_toc %}
         <aside class="toc">
