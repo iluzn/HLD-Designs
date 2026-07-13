@@ -1122,6 +1122,38 @@ function closeCelebration() {
 })();
 </script>
 
+<style>
+.sim-chip{position:absolute;top:12px;left:12px;z-index:4;display:inline-flex;align-items:center;gap:5px;
+  font-size:0.7rem;font-weight:600;padding:4px 10px;border-radius:20px;cursor:pointer;
+  background:rgba(108,99,255,0.12);color:var(--accent);border:1px solid rgba(108,99,255,0.35);
+  text-decoration:none;transition:background .15s,transform .15s;}
+.sim-chip:hover{background:var(--accent);color:#fff;transform:translateY(-1px);}
+.problem-card{position:relative;}
+</style>
+<script>
+// Add a "Simulate" chip to each HLD problem card, deep-linking to the builder.
+(function(){
+  var VALID = {'URLShortner':1,'Leaderboard':1,'RateLimiter':1,'Pastebin':1,'UniqueIDGenerator':1,
+    'KeyValueStore':1,'TwitterFeed':1,'ChatSystem':1,'NotificationSystem':1,'Instagram':1,
+    'BookMyShow':1,'NewsAggregator':1,'JobScheduler':1,'DelayedTriggerService':1,'DigitalWallet':1,
+    'Zomato':1,'StockBroker':1,'Uber':1,'Netflix':1,'GoogleDocs':1};
+  document.querySelectorAll('.problem-card:not(.coming-soon)').forEach(function(card){
+    var href = card.getAttribute('href') || '';
+    var slug = href.split('/').filter(function(s){return s.length;}).pop();
+    if (!slug || !VALID[slug]) return;
+    var chip = document.createElement('span');
+    chip.className = 'sim-chip';
+    chip.textContent = 'Simulate';
+    chip.title = 'Build and stress-test this design in the simulator';
+    chip.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      window.location.href = '/simulator/?c=' + slug;
+    });
+    card.appendChild(chip);
+  });
+})();
+</script>
+
 <!-- Firebase Auth (HLD page) -->
 {% include firebase-auth.html %}
 {% include search-palette.html %}

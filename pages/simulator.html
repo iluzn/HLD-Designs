@@ -71,100 +71,151 @@ function findComp(type){var f=null;Object.keys(LIBRARY).forEach(function(c){LIBR
 <script>
 // ═══════════════ CHALLENGES ═══════════════
 // Each rubric check receives helper `has(cats...)` and the sim result.
-const CHALLENGES = [
-  {
-    id:'url-shortener', title:'URL Shortener', difficulty:'Easy',
-    prompt:'Design a service like TinyURL that turns long URLs into short codes and redirects users. Redirects vastly outnumber creates.',
+// Keyed by HLD slug (matches /hld/<slug>). rubric tests receive helper with has(cat...) and simPassed.
+function R(label, cats){ return {label:label, test:function(h){return h.has.apply(h,cats);}}; }
+function RSIM(){ return {label:'Handles the target load with no red bottleneck', test:function(h){return h.simPassed;}}; }
+const CHALLENGES = {
+  'URLShortner':{ title:'URL Shortener', difficulty:'Beginner',
+    prompt:'Design TinyURL: turn long URLs into short codes and redirect. Redirects vastly outnumber creates.',
     scale:{rps:100000, readPct:95, cacheHit:90},
-    reqs:['Redirect latency < 50ms P99','Handle 100K RPS (95% reads)','Durable storage of URL mappings'],
-    rubric:[
-      {label:'Load balancer to spread traffic', test:function(h){return h.has('lb');}},
-      {label:'Cache for hot short-codes (reads dominate)', test:function(h){return h.has('cache','cdn');}},
-      {label:'Durable database for mappings', test:function(h){return h.has('db');}},
-      {label:'Compute tier between edge and data', test:function(h){return h.has('compute');}},
-      {label:'Survives target load with no red bottleneck', test:function(h){return h.simPassed;}},
-    ],
+    reqs:['Redirect < 50ms P99','100K RPS (95% reads)','Durable URL mappings'],
+    rubric:[R('Load balancer to spread traffic',['lb']),R('Cache/CDN for hot redirects',['cache','cdn']),R('Durable database for mappings',['db']),R('Compute tier between edge and data',['compute']),RSIM()],
     ref:{stack:['CDN','Load Balancer','App Server','Redis','DynamoDB'], link:'/hld/URLShortner/',
-      note:'Reads dominate 20:1, so a CDN + Redis cache absorb almost all redirects. Writes (create) go to a KV store like DynamoDB. The app tier only handles cache misses and creates.'}
-  },
-  {
-    id:'twitter-feed', title:'Twitter News Feed', difficulty:'Hard',
-    prompt:'Design the home timeline for a social network. Users follow others and see a merged, ranked feed. Celebrities have millions of followers.',
-    scale:{rps:300000, readPct:90, cacheHit:80},
-    reqs:['Feed loads < 200ms P99','Handle 300K RPS','Fan-out writes for most users, pull for celebrities'],
-    rubric:[
-      {label:'Load balancer / API gateway at the edge', test:function(h){return h.has('lb');}},
-      {label:'Cache for precomputed timelines', test:function(h){return h.has('cache');}},
-      {label:'Async queue for fan-out on write', test:function(h){return h.has('queue');}},
-      {label:'Database for tweets and social graph', test:function(h){return h.has('db');}},
-      {label:'Compute/worker tier for fan-out', test:function(h){return h.has('compute');}},
-      {label:'Handles target load without bottleneck', test:function(h){return h.simPassed;}},
-    ],
-    ref:{stack:['Load Balancer','App Server','Kafka','Worker','Redis','Cassandra'], link:'/hld/TwitterFeed/',
-      note:'Hybrid fan-out: for normal users, a worker pushes new tweets into follower timeline caches (Redis) via Kafka. For celebrities, timelines are pulled at read time and merged. Cassandra stores tweets durably.'}
-  },
-  {
-    id:'rate-limiter', title:'Rate Limiter', difficulty:'Medium',
-    prompt:'Design a distributed rate limiter that caps each API key to N requests/sec across many app servers.',
-    scale:{rps:200000, readPct:50, cacheHit:0},
-    reqs:['Decision < 5ms P99','Consistent counts across all servers','Handle 200K RPS'],
-    rubric:[
-      {label:'Edge / gateway where limiting is enforced', test:function(h){return h.has('lb');}},
-      {label:'Shared fast counter store (Redis)', test:function(h){return h.has('cache');}},
-      {label:'Compute tier running the limiter logic', test:function(h){return h.has('compute');}},
-      {label:'Handles target load without bottleneck', test:function(h){return h.simPassed;}},
-    ],
-    ref:{stack:['API Gateway','App Server','Redis'], link:'/hld/RateLimiter/',
-      note:'A centralized Redis holds per-key counters (token bucket or sliding window). Every app server checks/decrements atomically. Redis handles 100K+ ops/sec; shard by key if you exceed one node.'}
-  },
-  {
-    id:'chat', title:'Chat / Messaging', difficulty:'Hard',
-    prompt:'Design a real-time 1:1 and group chat system with delivery guarantees and online presence.',
-    scale:{rps:150000, readPct:60, cacheHit:40},
-    reqs:['Message delivery < 100ms','Handle 150K messages/sec','Durable message history'],
-    rubric:[
-      {label:'Gateway / LB for connection handling', test:function(h){return h.has('lb');}},
-      {label:'Async queue for reliable delivery', test:function(h){return h.has('queue');}},
-      {label:'Database for message history', test:function(h){return h.has('db');}},
-      {label:'Cache for presence / recent messages', test:function(h){return h.has('cache');}},
-      {label:'Compute tier for chat services', test:function(h){return h.has('compute');}},
-      {label:'Handles target load without bottleneck', test:function(h){return h.simPassed;}},
-    ],
-    ref:{stack:['Load Balancer','App Server','Kafka','Redis','Cassandra'], link:'/hld/ChatSystem/',
-      note:'WebSocket servers hold connections; messages flow through Kafka for durability and fan-out. Cassandra stores history (write-heavy, time-ordered). Redis tracks presence and routes to the right connection server.'}
-  },
-  {
-    id:'uber', title:'Ride Sharing (Uber)', difficulty:'Hard',
-    prompt:'Design ride matching: riders request, drivers broadcast location, match nearby driver, track trip live.',
-    scale:{rps:250000, readPct:70, cacheHit:50},
-    reqs:['Match < 2s','Handle 250K location updates/sec','Low-latency geo queries'],
-    rubric:[
-      {label:'Load balancer at the edge', test:function(h){return h.has('lb');}},
-      {label:'Geo cache / in-memory index (Redis)', test:function(h){return h.has('cache');}},
-      {label:'Queue for high-volume location pings', test:function(h){return h.has('queue');}},
-      {label:'Database for trips and users', test:function(h){return h.has('db');}},
-      {label:'Compute tier for matching', test:function(h){return h.has('compute');}},
-      {label:'Handles target load without bottleneck', test:function(h){return h.simPassed;}},
-    ],
-    ref:{stack:['Load Balancer','App Server','Kafka','Redis','Cassandra'], link:'/hld/Uber/',
-      note:'Driver location pings (2M/sec class) go through Kafka into a Redis geo-index (or S2/geohash). Matching service queries nearby drivers from Redis. Trip state lives in a durable store. The main DB never sees the raw ping firehose.'}
-  },
-  {
-    id:'leaderboard', title:'Gaming Leaderboard', difficulty:'Medium',
-    prompt:'Design a real-time leaderboard showing top players and a user\'s rank among millions.',
+      note:'Reads dominate ~20:1, so CDN + Redis absorb almost all redirects. Creates go to a KV store. The app tier only handles cache misses and writes.'} },
+  'Leaderboard':{ title:'Real-Time Leaderboard', difficulty:'Beginner',
+    prompt:'Show top players and a user\'s rank among millions, updating live as scores change.',
     scale:{rps:120000, readPct:85, cacheHit:70},
-    reqs:['Rank query < 50ms','Handle 120K RPS','Live updates on score change'],
-    rubric:[
-      {label:'Load balancer at the edge', test:function(h){return h.has('lb');}},
-      {label:'Sorted-set store for rankings (Redis)', test:function(h){return h.has('cache');}},
-      {label:'Database for durable scores', test:function(h){return h.has('db');}},
-      {label:'Compute tier for the API', test:function(h){return h.has('compute');}},
-      {label:'Handles target load without bottleneck', test:function(h){return h.simPassed;}},
-    ],
+    reqs:['Rank query < 50ms','120K RPS','Live updates on score change'],
+    rubric:[R('Load balancer at the edge',['lb']),R('Sorted-set store for rankings (Redis)',['cache']),R('Durable database for scores',['db']),R('Compute tier for the API',['compute']),RSIM()],
     ref:{stack:['Load Balancer','App Server','Redis','PostgreSQL'], link:'/hld/Leaderboard/',
-      note:'Redis Sorted Sets (ZADD/ZRANK) give O(log n) rank queries and top-K in one call. The relational DB is the source of truth for scores; Redis is rebuilt from it and serves all reads.'}
-  },
-];
+      note:'Redis Sorted Sets (ZADD/ZRANK) give O(log n) rank and top-K in one call. The relational DB is source of truth; Redis serves all reads.'} },
+  'RateLimiter':{ title:'Rate Limiter', difficulty:'Beginner',
+    prompt:'Cap each API key to N requests/sec consistently across many app servers.',
+    scale:{rps:200000, readPct:50, cacheHit:0},
+    reqs:['Decision < 5ms P99','Consistent counts across servers','200K RPS'],
+    rubric:[R('Edge/gateway where limiting is enforced',['lb']),R('Shared fast counter store (Redis)',['cache']),R('Compute tier running limiter logic',['compute']),RSIM()],
+    ref:{stack:['API Gateway','App Server','Redis'], link:'/hld/RateLimiter/',
+      note:'A central Redis holds per-key counters (token bucket / sliding window). Every server checks atomically via Lua. Shard by key past one node.'} },
+  'Pastebin':{ title:'Pastebin / Text Sharing', difficulty:'Beginner',
+    prompt:'Store text snippets, return a short link, serve reads cheaply with expiry.',
+    scale:{rps:80000, readPct:90, cacheHit:80},
+    reqs:['Read < 80ms P99','Durable blob storage','CDN-cached reads'],
+    rubric:[R('CDN/LB at the edge',['cdn','lb']),R('Compute tier for the API',['compute']),R('Object store for paste bodies',['blob','db']),R('Cache for hot pastes',['cache','cdn']),RSIM()],
+    ref:{stack:['CDN','Load Balancer','App Server','Object Store','PostgreSQL'], link:'/hld/Pastebin/',
+      note:'Metadata (id, expiry) in a DB; large bodies in object storage. CDN caches hot pastes so the app tier only handles writes and misses.'} },
+  'UniqueIDGenerator':{ title:'Unique ID Generator', difficulty:'Beginner',
+    prompt:'Generate unique, roughly-sortable 64-bit IDs across many nodes with no coordination on the hot path.',
+    scale:{rps:150000, readPct:0, cacheHit:0},
+    reqs:['ID gen < 5ms P99','No global lock on hot path','Monotonic-ish ordering'],
+    rubric:[R('Load balancer at the edge',['lb']),R('Compute tier issuing IDs (Snowflake-style)',['compute']),R('Store for range/segment allocation',['db','cache']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','Redis'], link:'/hld/UniqueIDGenerator/',
+      note:'Snowflake = timestamp + machine id + sequence, generated locally with no coordination. Range/segment allocators lease blocks of IDs from a store to avoid per-ID DB hits.'} },
+  'KeyValueStore':{ title:'Distributed Key-Value Store', difficulty:'Beginner',
+    prompt:'Design a Dynamo-style KV store: consistent hashing, replication, tunable quorum reads/writes.',
+    scale:{rps:200000, readPct:60, cacheHit:0},
+    reqs:['Get/Put < 10ms P99','Replicated for durability','No single point of failure'],
+    rubric:[R('Load balancer / coordinator',['lb']),R('Compute/coordinator tier',['compute']),R('Primary data nodes',['db']),R('Replicas for durability (no SPOF)',['replica','db']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','Cassandra','DB Read Replica'], link:'/hld/KeyValueStore/',
+      note:'Consistent hashing places keys on a ring; each key replicated to N nodes. Quorum (R+W>N) tunes consistency vs latency. LSM-tree storage underneath.'} },
+  'TwitterFeed':{ title:'Twitter / Social Feed', difficulty:'Intermediate',
+    prompt:'Home timeline: users follow others and see a merged feed. Celebrities have millions of followers.',
+    scale:{rps:300000, readPct:90, cacheHit:80},
+    reqs:['Feed < 200ms P99','300K RPS','Fan-out on write, pull for celebrities'],
+    rubric:[R('LB / API gateway at the edge',['lb']),R('Cache for precomputed timelines',['cache']),R('Async queue for fan-out on write',['queue']),R('Database for tweets and graph',['db']),R('Worker/compute tier for fan-out',['compute']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','Kafka','Worker','Redis','Cassandra'], link:'/hld/TwitterFeed/',
+      note:'Hybrid fan-out: workers push tweets into follower timeline caches via Kafka for normal users; celebrity timelines are pulled and merged at read time.'} },
+  'ChatSystem':{ title:'Chat / Messaging', difficulty:'Intermediate',
+    prompt:'Real-time 1:1 and group chat with delivery guarantees, offline delivery, and presence.',
+    scale:{rps:150000, readPct:60, cacheHit:40},
+    reqs:['Delivery < 100ms','150K msgs/sec','Durable history'],
+    rubric:[R('Gateway/LB for connections',['lb']),R('Async queue for reliable delivery',['queue']),R('Database for message history',['db']),R('Cache for presence / recent msgs',['cache']),R('Compute tier for chat services',['compute']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','Kafka','Redis','Cassandra'], link:'/hld/ChatSystem/',
+      note:'WebSocket servers hold connections; messages flow through Kafka for durability and fan-out. Cassandra stores time-ordered history; Redis tracks presence and routing.'} },
+  'NotificationSystem':{ title:'Notification System', difficulty:'Intermediate',
+    prompt:'Send push/email/SMS across channels at scale with templates, retries, and rate control.',
+    scale:{rps:120000, readPct:20, cacheHit:0},
+    reqs:['Enqueue < 50ms','Retry + dead-letter','Multi-channel fan-out'],
+    rubric:[R('LB / API gateway at the edge',['lb']),R('Async queue decoupling send from request',['queue']),R('Worker/compute tier per channel',['compute']),R('Database for templates and status',['db']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','Kafka','Worker','PostgreSQL'], link:'/hld/NotificationSystem/',
+      note:'Requests enqueue to Kafka; per-channel workers render templates and call providers. Retries and DLQ handle provider failures. Never send synchronously in the request path.'} },
+  'Instagram':{ title:'Photo Sharing (Instagram)', difficulty:'Intermediate',
+    prompt:'Upload photos, deliver via CDN, and generate a fan-out news feed of followed accounts.',
+    scale:{rps:250000, readPct:92, cacheHit:85},
+    reqs:['Feed/media < 150ms P99','CDN media delivery','Fan-out feed'],
+    rubric:[R('CDN for media delivery',['cdn']),R('LB at the edge',['lb']),R('Compute tier for upload + feed',['compute']),R('Object store for photos',['blob','db']),R('Cache for feeds',['cache']),RSIM()],
+    ref:{stack:['CDN','Load Balancer','App Server','Object Store','Redis','Cassandra'], link:'/hld/Instagram/',
+      note:'Originals in object storage, variants pushed to CDN. Feed fan-out into Redis timelines. Metadata in a wide-column store. The app tier never serves image bytes directly.'} },
+  'BookMyShow':{ title:'Ticket Booking (BookMyShow)', difficulty:'Intermediate',
+    prompt:'Seat selection with temporary holds, no double-booking, and payment integration.',
+    scale:{rps:90000, readPct:70, cacheHit:50},
+    reqs:['No double booking','Seat hold TTL','Handle booking bursts'],
+    rubric:[R('LB at the edge',['lb']),R('Compute tier for booking logic',['compute']),R('Database as source of truth for seats',['db']),R('Cache/lock store for holds',['cache']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','Redis','PostgreSQL'], link:'/hld/BookMyShow/',
+      note:'Seats held with a Redis lock + TTL so abandoned carts auto-release. The relational DB commits the booking transactionally to guarantee no double-booking.'} },
+  'NewsAggregator':{ title:'News Aggregator (Google News)', difficulty:'Intermediate',
+    prompt:'Crawl thousands of sources, cluster stories, and serve a personalized ranked feed.',
+    scale:{rps:120000, readPct:88, cacheHit:75},
+    reqs:['Feed < 200ms','Fresh crawl pipeline','Full-text search'],
+    rubric:[R('LB at the edge',['lb']),R('Async queue for the crawl pipeline',['queue']),R('Search index for stories',['search']),R('Compute tier for ranking',['compute']),R('Database for articles/metadata',['db']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','Kafka','Elasticsearch','PostgreSQL'], link:'/hld/NewsAggregator/',
+      note:'Crawlers feed Kafka; workers dedupe and cluster with embeddings. Elasticsearch powers query + facets. Ranking service personalizes the feed at read time.'} },
+  'JobScheduler':{ title:'Distributed Job Scheduler', difficulty:'Advanced',
+    prompt:'Schedule and run millions of jobs at a target time with retries and exactly-once execution.',
+    scale:{rps:100000, readPct:30, cacheHit:0},
+    reqs:['Fire within 1s of due time','Retries + DLQ','No duplicate execution'],
+    rubric:[R('LB / API for job submission',['lb']),R('Hot-window store (Redis ZSET)',['cache']),R('Async queue to dispatch due jobs',['queue']),R('Worker/compute tier to execute',['compute']),R('Database for job definitions',['db']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','Redis','Kafka','Worker','PostgreSQL'], link:'/hld/JobScheduler/',
+      note:'A Redis ZSET holds the near-term window keyed by run-time; a poller moves due jobs onto Kafka for workers. Durable definitions live in the DB; leader election avoids double-dispatch.'} },
+  'DelayedTriggerService':{ title:'Delayed Trigger Service', difficulty:'Advanced',
+    prompt:'Fire a callback after an arbitrary delay (seconds to months) reliably at massive scale.',
+    scale:{rps:120000, readPct:20, cacheHit:0},
+    reqs:['Fire near due time','Survive restarts','At-least-once delivery'],
+    rubric:[R('LB / API to register triggers',['lb']),R('Queue to dispatch fired triggers',['queue']),R('Compute tier (timing wheel)',['compute']),R('Durable store for pending triggers',['db']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','SQS','Cassandra'], link:'/hld/DelayedTriggerService/',
+      note:'Hierarchical timing wheels bucket triggers by due time; long delays persist in Cassandra and get promoted into the wheel as they approach. SQS delivers fired events with retries.'} },
+  'DigitalWallet':{ title:'Digital Wallet (PhonePe / Venmo)', difficulty:'Advanced',
+    prompt:'Money transfers with a correct ledger, idempotency, and reconciliation. Correctness over speed.',
+    scale:{rps:80000, readPct:50, cacheHit:0},
+    reqs:['No lost/double money','Idempotent writes','Strong consistency'],
+    rubric:[R('LB at the edge',['lb']),R('Compute tier for transaction logic',['compute']),R('Strongly-consistent ledger DB',['db']),R('Async queue for async settlement',['queue']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','PostgreSQL','Kafka'], link:'/hld/DigitalWallet/',
+      note:'Double-entry ledger in a strongly-consistent relational DB. Idempotency keys dedupe retries. A saga coordinates external payment steps; reconciliation catches drift.'} },
+  'Zomato':{ title:'Food Delivery (Zomato)', difficulty:'Advanced',
+    prompt:'Restaurant search, order placement, delivery-partner dispatch, and live order tracking.',
+    scale:{rps:200000, readPct:75, cacheHit:60},
+    reqs:['Search < 100ms','Geo dispatch','Live tracking'],
+    rubric:[R('LB at the edge',['lb']),R('Search index for restaurants',['search']),R('Geo cache for proximity',['cache']),R('Compute tier for dispatch',['compute']),R('Database for orders',['db']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','Elasticsearch','Redis','Cassandra'], link:'/hld/Zomato/',
+      note:'Elasticsearch powers restaurant search + facets. Redis Geo finds nearby partners for dispatch. Orders persist durably; live location streams over WebSockets.'} },
+  'StockBroker':{ title:'Stock Broker (Robinhood / Zerodha)', difficulty:'Advanced',
+    prompt:'Place orders into a matching engine with exactly-once processing and real-time updates.',
+    scale:{rps:180000, readPct:60, cacheHit:40},
+    reqs:['Order ack < 50ms','Exactly-once processing','Real-time fills'],
+    rubric:[R('LB / gateway at the edge',['lb']),R('Compute tier (matching engine)',['compute']),R('Event log for orders (Kafka)',['queue']),R('Database for positions/trades',['db']),R('Cache for market data',['cache']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','Kafka','Redis','PostgreSQL'], link:'/hld/StockBroker/',
+      note:'Orders are appended to a Kafka log (event sourcing) and consumed by a single-writer matching engine for determinism. CQRS splits the write path from real-time read views.'} },
+  'Uber':{ title:'Ride Sharing (Uber)', difficulty:'Advanced',
+    prompt:'Match riders to nearby drivers, ingest a firehose of location pings, and track trips live.',
+    scale:{rps:250000, readPct:70, cacheHit:50},
+    reqs:['Match < 2s','250K location pings/sec','Low-latency geo queries'],
+    rubric:[R('LB at the edge',['lb']),R('Geo cache / index (Redis)',['cache']),R('Queue for the location firehose',['queue']),R('Database for trips and users',['db']),R('Compute tier for matching',['compute']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','Kafka','Redis','Cassandra'], link:'/hld/Uber/',
+      note:'Location pings flow through Kafka into a Redis geo-index (S2/geohash). Matching queries nearby drivers from Redis; the main DB never sees the raw ping firehose.'} },
+  'Netflix':{ title:'Video Streaming (Netflix)', difficulty:'Advanced',
+    prompt:'Ingest and transcode video, then stream adaptively to millions via CDN edge caches.',
+    scale:{rps:400000, readPct:98, cacheHit:95},
+    reqs:['Start < 2s','CDN edge delivery','Adaptive bitrate'],
+    rubric:[R('CDN for segment delivery',['cdn']),R('LB at the edge',['lb']),R('Compute tier for the API',['compute']),R('Object store for encoded variants',['blob','db']),RSIM()],
+    ref:{stack:['CDN','Load Balancer','App Server','Object Store','PostgreSQL'], link:'/hld/Netflix/',
+      note:'Uploads are transcoded into per-resolution HLS/DASH segments stored in object storage and pushed to CDN edges. Playback is almost entirely served from CDN; the app tier only handles manifests and metadata.'} },
+  'GoogleDocs':{ title:'Collaborative Editing (Google Docs)', difficulty:'Advanced',
+    prompt:'Real-time multi-user editing with conflict resolution (OT/CRDT), presence, and version history.',
+    scale:{rps:150000, readPct:55, cacheHit:40},
+    reqs:['Edit propagation < 100ms','Conflict-free merges','Durable history'],
+    rubric:[R('LB / gateway for connections',['lb']),R('Compute tier for OT/CRDT logic',['compute']),R('Cache for live document sessions',['cache']),R('Database for document + history',['db']),R('Queue for change broadcast',['queue']),RSIM()],
+    ref:{stack:['Load Balancer','App Server','Redis','Kafka','PostgreSQL'], link:'/hld/GoogleDocs/',
+      note:'A per-doc server applies OT/CRDT ops in order and broadcasts to collaborators over WebSockets. Redis holds live session state; ops persist to the DB for history and recovery.'} },
+};
 </script>
 
 <script>
@@ -174,37 +225,19 @@ let dragging = null, connecting = null;
 let challenge = null;   // active challenge object
 let simResult = null;   // last simulation summary
 
-document.addEventListener('DOMContentLoaded', function(){ showHome(); });
-
-// ═══════════════ HOME / CHALLENGE PICKER ═══════════════
-function showHome(){
-  var cards = CHALLENGES.map(function(c){
-    var reqs = c.reqs.map(function(r){return '<li>'+r+'</li>';}).join('');
-    return '<button class="ch-card" data-id="'+c.id+'">'+
-      '<div class="ch-body"><div class="ch-top"><span class="ch-title">'+c.title+'</span><span class="ch-diff '+c.difficulty.toLowerCase()+'">'+c.difficulty+'</span></div>'+
-      '<p class="ch-prompt">'+c.prompt+'</p>'+
-      '<div class="ch-scale">Target: '+fmt(c.scale.rps)+' RPS · '+c.scale.readPct+'% reads</div>'+
-      '</div></button>';
-  }).join('');
-  document.body.innerHTML =
-    '<div class="home">'+
-      '<header class="home-hdr"><a href="/" class="home-logo">SystemCraft</a><a href="/hld/" class="home-back">← All Designs</a></header>'+
-      '<div class="home-hero"><h1>System Design Simulator</h1>'+
-      '<p>Pick a challenge. Build the architecture on a canvas. Run production-scale traffic. Get scored like an interviewer would — then compare to the real reference design.</p></div>'+
-      '<div class="home-grid">'+cards+'</div>'+
-      '<div class="home-foot">A free interactive tool · no login · runs entirely in your browser</div>'+
-    '</div>';
-  document.querySelectorAll('.ch-card').forEach(function(b){
-    b.onclick = function(){ startChallenge(b.dataset.id); };
-  });
-}
+document.addEventListener('DOMContentLoaded', function(){
+  var slug = new URLSearchParams(location.search).get('c');
+  if (slug && CHALLENGES[slug]) { startChallenge(slug); }
+  else { location.replace('/hld'); }  // no picker page — always launched per-problem from HLD
+});
 function fmt(v){ if(v>=1e6)return (v/1e6).toFixed(1).replace('.0','')+'M'; if(v>=1e3)return (v/1e3).toFixed(0)+'K'; return ''+Math.round(v); }
 </script>
 
 <script>
 // ═══════════════ START A CHALLENGE (builder view) ═══════════════
 function startChallenge(id){
-  challenge = CHALLENGES.find(function(c){return c.id===id;});
+  challenge = CHALLENGES[id];
+  challenge._slug = id;
   nodes=[]; edges=[]; nextId=1; connecting=null; simResult=null;
   // Seed a client node so the canvas isn't blank
   addNode('client', 60, 200);
@@ -216,7 +249,7 @@ function renderBuilder(){
   document.body.innerHTML =
   '<header class="bd-hdr">'+
     '<a href="/" class="bd-logo">SystemCraft</a>'+
-    '<button class="bd-back" id="bd-back">← Challenges</button>'+
+    '<a class="bd-back" href="'+challenge.ref.link+'">← Back to design</a>'+
     '<span class="bd-title">'+challenge.title+'</span>'+
     '<div class="bd-actions">'+
       '<button id="btn-clear">Reset</button>'+
@@ -237,8 +270,7 @@ function renderBuilder(){
   buildLib();
   renderSidePanel();
   renderNodes(); renderEdges();
-  document.getElementById('bd-back').onclick = showHome;
-  document.getElementById('btn-clear').onclick = function(){ startChallenge(challenge.id); };
+  document.getElementById('btn-clear').onclick = function(){ startChallenge(challenge._slug); };
   document.getElementById('btn-sim').onclick = runSimulation;
   document.getElementById('btn-eval').onclick = evaluate;
   var canvas = document.getElementById('canvas');
@@ -499,7 +531,7 @@ var css = `
 /* BUILDER */
 .bd-hdr{height:var(--header-h);display:flex;align-items:center;gap:14px;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--border);}
 .bd-logo{text-decoration:none;font-size:1.2rem;}
-.bd-back{background:none;border:1px solid var(--border);color:var(--dim);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:0.8rem;}
+.bd-back{background:none;border:1px solid var(--border);color:var(--dim);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:0.8rem;text-decoration:none;display:inline-block;}
 .bd-back:hover{color:var(--text);border-color:var(--accent);}
 .bd-title{font-weight:600;}
 .bd-actions{margin-left:auto;display:flex;gap:8px;}
