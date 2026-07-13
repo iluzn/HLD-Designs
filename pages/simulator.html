@@ -31,38 +31,38 @@ button{font-family:inherit;}
 // ═══════════════ COMPONENT LIBRARY ═══════════════
 const LIBRARY = {
   'Clients':[
-    {id:'client',label:'Client',icon:'🌐',maxRPS:Infinity,latency:0,cat:'client'},
+    {id:'client',label:'Client',icon:'CLI',maxRPS:Infinity,latency:0,cat:'client'},
   ],
   'Edge / LB':[
-    {id:'load-balancer',label:'Load Balancer',icon:'⚖️',maxRPS:500000,latency:2,cat:'lb'},
-    {id:'api-gateway',label:'API Gateway',icon:'🚪',maxRPS:200000,latency:5,cat:'lb'},
-    {id:'cdn',label:'CDN',icon:'🌍',maxRPS:1000000,latency:1,cat:'cdn'},
+    {id:'load-balancer',label:'Load Balancer',icon:'LB',maxRPS:500000,latency:2,cat:'lb'},
+    {id:'api-gateway',label:'API Gateway',icon:'GW',maxRPS:200000,latency:5,cat:'lb'},
+    {id:'cdn',label:'CDN',icon:'CDN',maxRPS:1000000,latency:1,cat:'cdn'},
   ],
   'Compute':[
-    {id:'app-server',label:'App Server',icon:'🖥️',maxRPS:10000,latency:5,cat:'compute'},
-    {id:'microservice',label:'Microservice',icon:'⚙️',maxRPS:8000,latency:8,cat:'compute'},
-    {id:'worker',label:'Worker',icon:'👷',maxRPS:5000,latency:20,cat:'compute'},
+    {id:'app-server',label:'App Server',icon:'APP',maxRPS:10000,latency:5,cat:'compute'},
+    {id:'microservice',label:'Microservice',icon:'SVC',maxRPS:8000,latency:8,cat:'compute'},
+    {id:'worker',label:'Worker',icon:'WRK',maxRPS:5000,latency:20,cat:'compute'},
   ],
   'Databases':[
-    {id:'postgresql',label:'PostgreSQL',icon:'🐘',maxRPS:5000,latency:10,cat:'db'},
-    {id:'mysql',label:'MySQL',icon:'🐬',maxRPS:6000,latency:8,cat:'db'},
-    {id:'mongodb',label:'MongoDB',icon:'🍃',maxRPS:20000,latency:5,cat:'db'},
-    {id:'dynamodb',label:'DynamoDB',icon:'⚡',maxRPS:100000,latency:5,cat:'db'},
-    {id:'cassandra',label:'Cassandra',icon:'👁️',maxRPS:50000,latency:4,cat:'db'},
-    {id:'db-replica',label:'DB Read Replica',icon:'🗄️',maxRPS:8000,latency:8,cat:'replica'},
+    {id:'postgresql',label:'PostgreSQL',icon:'PG',maxRPS:5000,latency:10,cat:'db'},
+    {id:'mysql',label:'MySQL',icon:'SQL',maxRPS:6000,latency:8,cat:'db'},
+    {id:'mongodb',label:'MongoDB',icon:'MDB',maxRPS:20000,latency:5,cat:'db'},
+    {id:'dynamodb',label:'DynamoDB',icon:'DDB',maxRPS:100000,latency:5,cat:'db'},
+    {id:'cassandra',label:'Cassandra',icon:'CAS',maxRPS:50000,latency:4,cat:'db'},
+    {id:'db-replica',label:'DB Read Replica',icon:'REP',maxRPS:8000,latency:8,cat:'replica'},
   ],
   'Cache':[
-    {id:'redis',label:'Redis',icon:'🔴',maxRPS:100000,latency:1,cat:'cache'},
-    {id:'memcached',label:'Memcached',icon:'🟢',maxRPS:120000,latency:1,cat:'cache'},
+    {id:'redis',label:'Redis',icon:'RDS',maxRPS:100000,latency:1,cat:'cache'},
+    {id:'memcached',label:'Memcached',icon:'MEM',maxRPS:120000,latency:1,cat:'cache'},
   ],
   'Async':[
-    {id:'kafka',label:'Kafka',icon:'📨',maxRPS:100000,latency:3,cat:'queue'},
-    {id:'rabbitmq',label:'RabbitMQ',icon:'🐇',maxRPS:30000,latency:5,cat:'queue'},
-    {id:'sqs',label:'SQS',icon:'📬',maxRPS:50000,latency:10,cat:'queue'},
+    {id:'kafka',label:'Kafka',icon:'KAF',maxRPS:100000,latency:3,cat:'queue'},
+    {id:'rabbitmq',label:'RabbitMQ',icon:'MQ',maxRPS:30000,latency:5,cat:'queue'},
+    {id:'sqs',label:'SQS',icon:'SQS',maxRPS:50000,latency:10,cat:'queue'},
   ],
   'Storage / Search':[
-    {id:'s3',label:'Object Store',icon:'🪣',maxRPS:5000,latency:50,cat:'blob'},
-    {id:'elasticsearch',label:'Elasticsearch',icon:'🔍',maxRPS:20000,latency:10,cat:'search'},
+    {id:'s3',label:'Object Store',icon:'OBJ',maxRPS:5000,latency:50,cat:'blob'},
+    {id:'elasticsearch',label:'Elasticsearch',icon:'ES',maxRPS:20000,latency:10,cat:'search'},
   ],
 };
 function findComp(type){var f=null;Object.keys(LIBRARY).forEach(function(c){LIBRARY[c].forEach(function(x){if(x.id===type)f=x;});});return f;}
@@ -73,7 +73,7 @@ function findComp(type){var f=null;Object.keys(LIBRARY).forEach(function(c){LIBR
 // Each rubric check receives helper `has(cats...)` and the sim result.
 const CHALLENGES = [
   {
-    id:'url-shortener', title:'URL Shortener', emoji:'🔗', difficulty:'Easy',
+    id:'url-shortener', title:'URL Shortener', difficulty:'Easy',
     prompt:'Design a service like TinyURL that turns long URLs into short codes and redirects users. Redirects vastly outnumber creates.',
     scale:{rps:100000, readPct:95, cacheHit:90},
     reqs:['Redirect latency < 50ms P99','Handle 100K RPS (95% reads)','Durable storage of URL mappings'],
@@ -88,7 +88,7 @@ const CHALLENGES = [
       note:'Reads dominate 20:1, so a CDN + Redis cache absorb almost all redirects. Writes (create) go to a KV store like DynamoDB. The app tier only handles cache misses and creates.'}
   },
   {
-    id:'twitter-feed', title:'Twitter News Feed', emoji:'🐦', difficulty:'Hard',
+    id:'twitter-feed', title:'Twitter News Feed', difficulty:'Hard',
     prompt:'Design the home timeline for a social network. Users follow others and see a merged, ranked feed. Celebrities have millions of followers.',
     scale:{rps:300000, readPct:90, cacheHit:80},
     reqs:['Feed loads < 200ms P99','Handle 300K RPS','Fan-out writes for most users, pull for celebrities'],
@@ -104,7 +104,7 @@ const CHALLENGES = [
       note:'Hybrid fan-out: for normal users, a worker pushes new tweets into follower timeline caches (Redis) via Kafka. For celebrities, timelines are pulled at read time and merged. Cassandra stores tweets durably.'}
   },
   {
-    id:'rate-limiter', title:'Rate Limiter', emoji:'🚦', difficulty:'Medium',
+    id:'rate-limiter', title:'Rate Limiter', difficulty:'Medium',
     prompt:'Design a distributed rate limiter that caps each API key to N requests/sec across many app servers.',
     scale:{rps:200000, readPct:50, cacheHit:0},
     reqs:['Decision < 5ms P99','Consistent counts across all servers','Handle 200K RPS'],
@@ -118,7 +118,7 @@ const CHALLENGES = [
       note:'A centralized Redis holds per-key counters (token bucket or sliding window). Every app server checks/decrements atomically. Redis handles 100K+ ops/sec; shard by key if you exceed one node.'}
   },
   {
-    id:'chat', title:'Chat / Messaging', emoji:'💬', difficulty:'Hard',
+    id:'chat', title:'Chat / Messaging', difficulty:'Hard',
     prompt:'Design a real-time 1:1 and group chat system with delivery guarantees and online presence.',
     scale:{rps:150000, readPct:60, cacheHit:40},
     reqs:['Message delivery < 100ms','Handle 150K messages/sec','Durable message history'],
@@ -134,7 +134,7 @@ const CHALLENGES = [
       note:'WebSocket servers hold connections; messages flow through Kafka for durability and fan-out. Cassandra stores history (write-heavy, time-ordered). Redis tracks presence and routes to the right connection server.'}
   },
   {
-    id:'uber', title:'Ride Sharing (Uber)', emoji:'🚗', difficulty:'Hard',
+    id:'uber', title:'Ride Sharing (Uber)', difficulty:'Hard',
     prompt:'Design ride matching: riders request, drivers broadcast location, match nearby driver, track trip live.',
     scale:{rps:250000, readPct:70, cacheHit:50},
     reqs:['Match < 2s','Handle 250K location updates/sec','Low-latency geo queries'],
@@ -150,7 +150,7 @@ const CHALLENGES = [
       note:'Driver location pings (2M/sec class) go through Kafka into a Redis geo-index (or S2/geohash). Matching service queries nearby drivers from Redis. Trip state lives in a durable store. The main DB never sees the raw ping firehose.'}
   },
   {
-    id:'leaderboard', title:'Gaming Leaderboard', emoji:'🏆', difficulty:'Medium',
+    id:'leaderboard', title:'Gaming Leaderboard', difficulty:'Medium',
     prompt:'Design a real-time leaderboard showing top players and a user\'s rank among millions.',
     scale:{rps:120000, readPct:85, cacheHit:70},
     reqs:['Rank query < 50ms','Handle 120K RPS','Live updates on score change'],
@@ -181,15 +181,14 @@ function showHome(){
   var cards = CHALLENGES.map(function(c){
     var reqs = c.reqs.map(function(r){return '<li>'+r+'</li>';}).join('');
     return '<button class="ch-card" data-id="'+c.id+'">'+
-      '<div class="ch-emoji">'+c.emoji+'</div>'+
       '<div class="ch-body"><div class="ch-top"><span class="ch-title">'+c.title+'</span><span class="ch-diff '+c.difficulty.toLowerCase()+'">'+c.difficulty+'</span></div>'+
       '<p class="ch-prompt">'+c.prompt+'</p>'+
-      '<div class="ch-scale">🎯 '+fmt(c.scale.rps)+' RPS · '+c.scale.readPct+'% reads</div>'+
+      '<div class="ch-scale">Target: '+fmt(c.scale.rps)+' RPS · '+c.scale.readPct+'% reads</div>'+
       '</div></button>';
   }).join('');
   document.body.innerHTML =
     '<div class="home">'+
-      '<header class="home-hdr"><a href="/" class="home-logo">⚡ SystemCraft</a><a href="/hld/" class="home-back">← All Designs</a></header>'+
+      '<header class="home-hdr"><a href="/" class="home-logo">SystemCraft</a><a href="/hld/" class="home-back">← All Designs</a></header>'+
       '<div class="home-hero"><h1>System Design Simulator</h1>'+
       '<p>Pick a challenge. Build the architecture on a canvas. Run production-scale traffic. Get scored like an interviewer would — then compare to the real reference design.</p></div>'+
       '<div class="home-grid">'+cards+'</div>'+
@@ -216,13 +215,13 @@ function renderBuilder(){
   var reqs = challenge.reqs.map(function(r){return '<li>'+r+'</li>';}).join('');
   document.body.innerHTML =
   '<header class="bd-hdr">'+
-    '<a href="/" class="bd-logo">⚡</a>'+
+    '<a href="/" class="bd-logo">SystemCraft</a>'+
     '<button class="bd-back" id="bd-back">← Challenges</button>'+
-    '<span class="bd-title">'+challenge.emoji+' '+challenge.title+'</span>'+
+    '<span class="bd-title">'+challenge.title+'</span>'+
     '<div class="bd-actions">'+
       '<button id="btn-clear">Reset</button>'+
-      '<button id="btn-sim" class="primary">▶ Run Traffic</button>'+
-      '<button id="btn-eval" class="accent">✓ Evaluate</button>'+
+      '<button id="btn-sim" class="primary">Run Traffic</button>'+
+      '<button id="btn-eval" class="accent">Evaluate</button>'+
     '</div>'+
   '</header>'+
   '<div class="bd-body">'+
@@ -452,9 +451,9 @@ function renderSidePanel(){
       '<div><b>'+simResult.p99+'ms</b><span>P99</span></div>'+
       '</div>';
     if(simResult.bottlenecks.length){
-      html+='<div class="sp-bn"><b>⚠ Bottlenecks</b><ul>'+simResult.bottlenecks.map(function(n){return '<li>'+n.icon+' '+n.label+' — '+Math.round(n.load/n.maxRPS*100)+'%<br><em>'+suggest(n)+'</em></li>';}).join('')+'</ul></div>';
+      html+='<div class="sp-bn"><b>Bottlenecks</b><ul>'+simResult.bottlenecks.map(function(n){return '<li>'+n.label+' — '+Math.round(n.load/n.maxRPS*100)+'%<br><em>'+suggest(n)+'</em></li>';}).join('')+'</ul></div>';
     } else if(nodes.length>1){
-      html+='<div class="sp-ok">✅ Handles the load cleanly</div>';
+      html+='<div class="sp-ok">Handles the load cleanly</div>';
     }
   } else {
     html+='<div class="sp-tip">Build your design, then <b>Run Traffic</b> to see where it breaks.</div>';
@@ -513,7 +512,7 @@ var css = `
 .lib-cat{font-size:0.68rem;color:var(--accent);text-transform:uppercase;font-weight:700;margin:12px 0 5px;letter-spacing:.5px;}
 .lib-item{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:7px;cursor:grab;font-size:0.82rem;transition:background .12s;}
 .lib-item:hover{background:var(--bg);}
-.lib-item span{font-size:1.05rem;}
+.lib-item span{font-size:0.62rem;font-weight:800;color:var(--accent);background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:2px 5px;min-width:34px;text-align:center;}
 .bd-canvas-wrap{flex:1;position:relative;overflow:hidden;background:var(--bg);background-image:radial-gradient(circle,var(--border) 1px,transparent 1px);background-size:22px 22px;}
 .bd-brief{position:absolute;top:12px;left:12px;right:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;z-index:5;font-size:0.85rem;}
 .bd-brief ul{margin:8px 0 6px 18px;color:var(--dim);font-size:0.78rem;}
@@ -552,7 +551,7 @@ var css = `
 .node.warning{border-color:var(--yellow);box-shadow:0 0 8px rgba(234,179,8,.3);}
 .node.bottleneck{border-color:var(--red);animation:pr 1s infinite alternate;}
 @keyframes pr{from{box-shadow:0 0 6px rgba(239,68,68,.3);}to{box-shadow:0 0 18px rgba(239,68,68,.65);}}
-.node-icon{font-size:1.4rem;}
+.node-icon{font-size:0.72rem;font-weight:800;letter-spacing:.5px;color:var(--accent);background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:2px 7px;}
 .node-label{font-size:0.68rem;color:var(--dim);text-align:center;line-height:1.1;}
 .node-load{font-size:0.62rem;color:var(--accent);font-weight:700;}
 .node-alert{font-size:0.6rem;color:var(--red);font-weight:700;}
