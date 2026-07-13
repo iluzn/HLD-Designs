@@ -13,13 +13,21 @@ permalink: /simulator/
 <script>(function(){var t=localStorage.getItem("theme")||"dark";document.documentElement.setAttribute("data-theme",t);})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>System Design Simulator — SystemCraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-:root{--bg:#111118;--surface:#1a1a24;--surface2:#22222e;--border:#2a2a3a;--text:#e8edf3;--dim:#8892a4;
---accent:#6c63ff;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--blue:#3b82f6;
---sidebar-w:240px;--header-h:52px;}
-html[data-theme="light"]{--bg:#fafbff;--surface:#fff;--surface2:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--dim:#64748b;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;}
+/* Match SystemCraft design tokens (see hld.html) */
+:root,html[data-theme="dark"]{--bg:#111118;--surface:#191923;--surface2:#15151d;--border:rgba(255,255,255,0.08);
+--text:#e8edf3;--muted:#9ba3b0;--dim:#6b7280;--accent:#818cf8;--accent2:#c4b5fd;
+--green:#34d399;--yellow:#fbbf24;--red:#f87171;--blue:#818cf8;
+--sidebar-w:240px;--header-h:56px;}
+html[data-theme="light"]{--bg:#f9fafb;--surface:#ffffff;--surface2:#f3f4f8;--border:rgba(0,0,0,0.08);
+--text:#0f172a;--muted:#374151;--dim:#6b7280;--accent:#4f46e5;--accent2:#6366f1;
+--green:#16a34a;--yellow:#d97706;--red:#dc2626;--blue:#4f46e5;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;}
 button{font-family:inherit;}
 </style>
 </head>
@@ -248,7 +256,9 @@ function renderBuilder(){
   var reqs = challenge.reqs.map(function(r){return '<span class="req-pill">'+r+'</span>';}).join('');
   document.body.innerHTML =
   '<header class="bd-hdr">'+
-    '<a href="/" class="bd-logo">SystemCraft</a>'+
+    '<a href="/" class="bd-logo">'+
+      '<svg width="20" height="20" viewBox="0 0 64 64" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c4b5fd"/></linearGradient></defs><rect width="64" height="64" rx="14" fill="url(#lg)"/><line x1="22" y1="20" x2="42" y2="20" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="42" y1="20" x2="32" y2="40" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="22" y1="20" x2="32" y2="40" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="22" cy="20" r="5" fill="#fff"/><circle cx="42" cy="20" r="5" fill="#fff"/><circle cx="32" cy="40" r="5" fill="#fff"/></svg>'+
+      '<span class="bd-wordmark">System<b>Craft</b></span></a>'+
     '<a class="bd-back" href="'+challenge.ref.link+'">← Back to design</a>'+
     '<span class="bd-title">'+challenge.title+'</span>'+
     '<div class="bd-actions">'+
@@ -270,6 +280,7 @@ function renderBuilder(){
       '</div>'+
       '<svg id="edges" class="bd-edges"></svg>'+
       '<div id="canvas" class="bd-canvas"></div>'+
+      '<div class="bd-status" id="status"></div>'+
     '</main>'+
     '<aside class="bd-side" id="side"></aside>'+
   '</div>';
@@ -287,10 +298,23 @@ function renderBuilder(){
     var r = canvas.getBoundingClientRect();
     addNode(type, e.clientX-r.left-45, e.clientY-r.top-25);
   });
-  document.getElementById('lib').addEventListener('dragstart', function(e){
+  var lib = document.getElementById('lib');
+  lib.addEventListener('dragstart', function(e){
     var el = e.target.closest('.lib-item'); if(!el) return;
     e.dataTransfer.setData('text/type', el.dataset.type);
   });
+  // Click a component to drop it on the canvas (cascading placement)
+  lib.addEventListener('click', function(e){
+    var el = e.target.closest('.lib-item'); if(!el) return;
+    var k = nodes.length;
+    addNode(el.dataset.type, 200 + (k%5)*26, 120 + (k%7)*30);
+  });
+  updateStatus();
+}
+
+function updateStatus(){
+  var s = document.getElementById('status'); if(!s) return;
+  s.innerHTML = '<b>'+nodes.length+'</b> nodes · <b>'+edges.length+'</b> edges &nbsp;·&nbsp; click or drag a component to add · drag a node\u2019s right port \u25B8 to another node to connect';
 }
 
 function buildLib(){
@@ -319,6 +343,7 @@ function removeNode(id){
 }
 function renderNodes(){
   var canvas=document.getElementById('canvas'); if(!canvas) return;
+  updateStatus();
   canvas.innerHTML='';
   nodes.forEach(function(n){
     var cls='node'+(n.status!=='idle'?' '+n.status:'');
@@ -619,15 +644,19 @@ var css = `
 .home-foot{text-align:center;color:var(--dim);font-size:0.8rem;margin-top:40px;}
 /* BUILDER */
 .bd-hdr{height:var(--header-h);display:flex;align-items:center;gap:14px;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--border);}
-.bd-logo{text-decoration:none;font-size:1.2rem;}
+.bd-logo{text-decoration:none;display:inline-flex;align-items:center;gap:7px;}
+.bd-wordmark{font-size:1rem;font-weight:700;color:var(--text);letter-spacing:-.2px;}
+.bd-wordmark b{color:var(--accent);font-weight:700;}
 .bd-back{background:none;border:1px solid var(--border);color:var(--dim);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:0.8rem;text-decoration:none;display:inline-block;}
 .bd-back:hover{color:var(--text);border-color:var(--accent);}
 .bd-title{font-weight:600;}
 .bd-actions{margin-left:auto;display:flex;gap:8px;}
 .bd-actions button{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:7px;cursor:pointer;font-size:0.82rem;font-weight:600;}
 .bd-actions button:hover{border-color:var(--accent);}
-.bd-actions .primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+.bd-actions .primary{background:rgba(129,140,248,0.14);border-color:var(--accent);color:var(--accent);}
+.bd-actions .primary:hover{background:rgba(129,140,248,0.24);}
 .bd-actions .accent{background:var(--accent);border-color:var(--accent);color:#fff;}
+.bd-actions .accent:hover{filter:brightness(1.08);}
 .bd-body{display:flex;height:calc(100vh - var(--header-h));}
 .bd-lib{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:12px;flex-shrink:0;}
 .lib-cat{font-size:0.68rem;color:var(--accent);text-transform:uppercase;font-weight:700;margin:12px 0 5px;letter-spacing:.5px;}
@@ -681,7 +710,9 @@ var css = `
 .node-label{font-size:0.7rem;color:var(--text);font-weight:600;text-align:center;line-height:1.15;}
 .node-load{font-size:0.62rem;color:var(--dim);font-weight:700;font-variant-numeric:tabular-nums;}
 .node-alert{font-size:0.6rem;color:var(--red);font-weight:700;}
-.node-handle{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);color:var(--accent);font-size:0.9rem;cursor:crosshair;opacity:0;transition:opacity .15s;background:var(--bg);border-radius:50%;line-height:1;}
+.node-handle{position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:15px;height:15px;font-size:0;cursor:crosshair;opacity:.6;transition:opacity .15s,transform .15s;background:var(--accent);border:2px solid var(--surface);border-radius:50%;}
+.node:hover .node-handle{opacity:1;}
+.node-handle:hover{transform:translateY(-50%) scale(1.3);}
 .node-x{position:absolute;top:-8px;right:-8px;width:18px;height:18px;background:var(--red);color:#fff;border-radius:50%;font-size:0.8rem;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .15s;}
 /* REPORT */
 .report-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;}
@@ -704,6 +735,9 @@ var css = `
 .ref-link{display:inline-block;color:var(--accent);text-decoration:none;font-weight:600;font-size:0.85rem;}
 .ref-link:hover{text-decoration:underline;}
 .rep-retry{width:100%;margin-top:18px;background:var(--accent);color:#fff;border:none;padding:11px;border-radius:9px;font-weight:700;cursor:pointer;font-size:0.9rem;}
+/* STATUS BAR */
+.bd-status{position:absolute;bottom:14px;left:14px;z-index:6;font-size:0.71rem;color:var(--dim);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;max-width:calc(100% - 28px);}
+.bd-status b{color:var(--text);}
 /* METRICS BAR */
 .bd-metrics{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:6;display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.35);}
 .mx{padding:9px 18px;text-align:center;border-right:1px solid var(--border);}
