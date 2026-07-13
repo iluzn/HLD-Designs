@@ -85,7 +85,7 @@ let selectedNode = null;
 
 // ── DOM Setup ──
 document.addEventListener('DOMContentLoaded', function() {
-  document.body.innerHTML = `
+  document.body.insertAdjacentHTML('afterbegin', `
   <header class="sim-hdr">
     <a href="/" class="sim-logo">⚡ SystemCraft</a>
     <span class="sim-title">System Design Simulator</span>
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <hr>
       <div id="node-props"></div>
     </aside>
-  </div>`;
+  </div>`);
   buildSidebar();
   attachEvents();
 });
