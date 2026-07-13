@@ -333,8 +333,15 @@ function buildLib(){
 // ═══════════════ NODES ═══════════════
 function addNode(type,x,y){
   var c=findComp(type); if(!c) return;
-  nodes.push({id:nextId++,type:c.id,label:c.label,icon:c.icon,x:x,y:y,maxRPS:c.maxRPS,latency:c.latency,cat:c.cat,load:0,status:'idle'});
+  nodes.push({id:nextId++,type:c.id,label:c.label,icon:c.icon,x:x,y:y,maxRPS:c.maxRPS,latency:c.latency,cat:c.cat,load:0,status:'idle',instances:1});
   renderNodes();
+}
+// Effective capacity = per-instance capacity × number of instances.
+function effCap(n){ return n.maxRPS===Infinity?Infinity:n.maxRPS*(n.instances||1); }
+function setInstances(id,delta){
+  var n=nodes.find(function(x){return x.id===id;}); if(!n) return;
+  n.instances=Math.max(1,Math.min(20,(n.instances||1)+delta));
+  if(simResult) runSimulation(); else renderNodes();
 }
 function removeNode(id){
   nodes=nodes.filter(function(n){return n.id!==id;});
@@ -349,18 +356,23 @@ function renderNodes(){
     var cls='node'+(n.status!=='idle'?' '+n.status:'');
     var el=document.createElement('div');
     el.className=cls; el.style.left=n.x+'px'; el.style.top=n.y+'px'; el.dataset.id=n.id;
+    var scalable = n.maxRPS!==Infinity;
     el.innerHTML='<span class="node-icon">'+n.icon+'</span><span class="node-label">'+n.label+'</span>'+
+      (scalable?'<span class="node-inst"><button class="ni-btn ni-dec" title="Remove instance">−</button><span class="ni-n">×'+(n.instances||1)+'</span><button class="ni-btn ni-inc" title="Add instance">+</button></span>':'')+
       (n.load>0?'<span class="node-load">'+fmt(n.load)+' RPS</span>':'')+
-      (n.status==='bottleneck'?'<span class="node-alert">'+Math.round(n.load/n.maxRPS*100)+'%</span>':'')+
+      (n.status==='bottleneck'?'<span class="node-alert">'+Math.round(n.load/effCap(n)*100)+'%</span>':'')+
       '<span class="node-handle" title="Drag to connect">●</span>'+
       (n.type!=='client'?'<span class="node-x" title="Delete">×</span>':'');
     // move
     el.addEventListener('mousedown',function(e){
-      if(e.target.classList.contains('node-handle')||e.target.classList.contains('node-x')) return;
+      if(e.target.classList.contains('node-handle')||e.target.classList.contains('node-x')||e.target.classList.contains('ni-btn')) return;
       dragging={node:n,offX:e.clientX-n.x,offY:e.clientY-n.y}; e.preventDefault();
     });
     // delete
     var xb=el.querySelector('.node-x'); if(xb) xb.onclick=function(e){e.stopPropagation();removeNode(n.id);};
+    // instance steppers
+    var inc=el.querySelector('.ni-inc'); if(inc) inc.onclick=function(e){e.stopPropagation();setInstances(n.id,1);};
+    var dec=el.querySelector('.ni-dec'); if(dec) dec.onclick=function(e){e.stopPropagation();setInstances(n.id,-1);};
     // connect via handle
     el.querySelector('.node-handle').addEventListener('mousedown',function(e){
       e.stopPropagation(); e.preventDefault(); connecting={from:n.id,x:e.clientX,y:e.clientY}; renderTempEdge(e);
@@ -443,16 +455,17 @@ function runSimulation(){
   var bottlenecks=[];
   nodes.forEach(function(n){
     if(n.load<=0){n.status='idle';return;}
-    var u=n.maxRPS===Infinity?0:n.load/n.maxRPS;
+    var cap=effCap(n);
+    var u=cap===Infinity?0:n.load/cap;
     if(u>1){n.status='bottleneck';bottlenecks.push(n);} else if(u>0.7){n.status='warning';} else {n.status='healthy';}
   });
   var lat=calcLatency();
   var modes=detectFailureModes(sc, bottlenecks);
   // Error rate: share of traffic hitting saturated nodes
   var dropped=0, totalHit=0;
-  nodes.forEach(function(n){ if(n.load>0 && n.maxRPS!==Infinity){ totalHit+=n.load; if(n.load>n.maxRPS) dropped+=(n.load-n.maxRPS); } });
+  nodes.forEach(function(n){ var cap=effCap(n); if(n.load>0 && cap!==Infinity){ totalHit+=n.load; if(n.load>cap) dropped+=(n.load-cap); } });
   var errRate=totalHit>0?Math.min(100, Math.round(dropped/totalHit*100)):0;
-  var achieved=bottlenecks.length?Math.round(sc.rps/Math.max.apply(null,bottlenecks.map(function(n){return n.load/n.maxRPS;}))):sc.rps;
+  var achieved=bottlenecks.length?Math.round(sc.rps/Math.max.apply(null,bottlenecks.map(function(n){return n.load/effCap(n);}))):sc.rps;
   simResult={passed:bottlenecks.length===0 && nodes.length>1, bottlenecks:bottlenecks, modes:modes,
     p50:Math.round(lat), p99:Math.round(lat*2.5), rps:sc.rps, achieved:achieved, errRate:errRate, cacheHit:sc.cacheHit};
   renderNodes(); renderEdges(); renderSidePanel();
@@ -467,26 +480,27 @@ function detectFailureModes(sc, bottlenecks){
   var critical={lb:'load balancer',db:'database'};
   Object.keys(critical).forEach(function(cat){
     var live=(byCat[cat]||[]);
-    if(live.length===1 && live[0].load>0){
+    // A single instance (×1) of the tier is a SPOF; ×2+ or multiple nodes is redundant.
+    if(live.length===1 && live[0].load>0 && (live[0].instances||1)<2){
       modes.push({kind:'Single Point of Failure', node:live[0],
-        detail:'Only one '+critical[cat]+' on the critical path. If it dies, the whole system goes down.',
-        fix:'Add a second '+live[0].label+' (redundancy) so load is shared and failure is survivable.'});
+        detail:'Only one '+critical[cat]+' instance on the critical path. If it dies, the whole system goes down.',
+        fix:'Raise its instance count to 2+ (the ×/+ control) or add a second '+live[0].label+' for redundancy.'});
     }
   });
   // 2. Database Saturation
-  (byCat.db||[]).forEach(function(n){ if(n.load>n.maxRPS){ modes.push({kind:'Database Saturation', node:n,
-    detail:n.label+' receives '+fmt(n.load)+' RPS but tops out near '+fmt(n.maxRPS)+'. Queries queue faster than they drain.',
-    fix:'Add read replicas, a cache in front, or shard the data.'}); }});
+  (byCat.db||[]).forEach(function(n){ if(n.load>effCap(n)){ modes.push({kind:'Database Saturation', node:n,
+    detail:n.label+' receives '+fmt(n.load)+' RPS but tops out near '+fmt(effCap(n))+'. Queries queue faster than they drain.',
+    fix:'Add read replicas, a cache in front, shard the data, or raise instances.'}); }});
   // 3. Missing Cache (read-heavy workload, DB directly overloaded, no cache anywhere)
-  if(sc.readPct>=70 && !(byCat.cache||[]).length && !(byCat.cdn||[]).length && (byCat.db||[]).some(function(n){return n.load>n.maxRPS;})){
+  if(sc.readPct>=70 && !(byCat.cache||[]).length && !(byCat.cdn||[]).length && (byCat.db||[]).some(function(n){return n.load>effCap(n);})){
     modes.push({kind:'Missing Cache', node:null,
       detail:'Workload is '+sc.readPct+'% reads but every read hits the database. No cache layer exists.',
       fix:'Put a Redis/CDN cache in front of the database to absorb hot reads.'});
   }
   // 4. Queue Overload
-  (byCat.queue||[]).forEach(function(n){ if(n.load>n.maxRPS){ modes.push({kind:'Queue Overload', node:n,
-    detail:n.label+' ingests '+fmt(n.load)+' RPS but drains near '+fmt(n.maxRPS)+'. Backpressure cascades upstream.',
-    fix:'Add partitions / more consumers to raise drain rate.'}); }});
+  (byCat.queue||[]).forEach(function(n){ if(n.load>effCap(n)){ modes.push({kind:'Queue Overload', node:n,
+    detail:n.label+' ingests '+fmt(n.load)+' RPS but drains near '+fmt(effCap(n))+'. Backpressure cascades upstream.',
+    fix:'Add partitions / more consumers (raise instances) to lift drain rate.'}); }});
   // 5. No Load Balancer (client wired straight to a single compute node)
   if(!(byCat.lb||[]).length && (byCat.compute||[]).length===1){
     modes.push({kind:'No Load Balancer', node:null,
@@ -498,8 +512,8 @@ function detectFailureModes(sc, bottlenecks){
     if(n.cat==='db'||n.cat==='queue') return; // covered above
     if(modes.some(function(m){return m.node===n;})) return;
     modes.push({kind:'Throughput Bottleneck', node:n,
-      detail:n.label+' runs at '+Math.round(n.load/n.maxRPS*100)+'% capacity ('+fmt(n.load)+' / '+fmt(n.maxRPS)+' RPS).',
-      fix:'Scale this tier horizontally — add more instances so they share the load.'});
+      detail:n.label+' runs at '+Math.round(n.load/effCap(n)*100)+'% capacity ('+fmt(n.load)+' / '+fmt(effCap(n))+' RPS across '+(n.instances||1)+' instance'+((n.instances||1)>1?'s':'')+').',
+      fix:'Raise the instance count (the + control) so instances share the load.'});
   });
   return modes;
 }
@@ -532,7 +546,7 @@ function calcLatency(){
   function dfs(id){
     if(memo[id]!=null)return memo[id];
     var n=nodes.find(function(x){return x.id===id;}); if(!n)return 0;
-    var base=n.latency; if(n.maxRPS!==Infinity&&n.load>n.maxRPS) base*=Math.min(n.load/n.maxRPS,5);
+    var cap=effCap(n); var base=n.latency; if(cap!==Infinity&&n.load>cap) base*=Math.min(n.load/cap,5);
     var outs=edges.filter(function(e){return e.from===id;}), mx=0;
     outs.forEach(function(e){mx=Math.max(mx,dfs(e.to));});
     return memo[id]=base+mx;
@@ -709,6 +723,10 @@ var css = `
 .node.bottleneck .node-icon{background:var(--red);box-shadow:0 1px 4px rgba(239,68,68,.4);}
 .node-label{font-size:0.7rem;color:var(--text);font-weight:600;text-align:center;line-height:1.15;}
 .node-load{font-size:0.62rem;color:var(--dim);font-weight:700;font-variant-numeric:tabular-nums;}
+.node-inst{display:inline-flex;align-items:center;gap:5px;}
+.ni-btn{width:17px;height:17px;line-height:1;border:1px solid var(--border);background:var(--bg);color:var(--text);border-radius:5px;font-size:0.8rem;font-weight:700;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;}
+.ni-btn:hover{border-color:var(--accent);color:var(--accent);}
+.ni-n{font-size:0.66rem;font-weight:800;color:var(--muted);min-width:22px;text-align:center;font-variant-numeric:tabular-nums;}
 .node-alert{font-size:0.6rem;color:var(--red);font-weight:700;}
 .node-handle{position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:15px;height:15px;font-size:0;cursor:crosshair;opacity:.6;transition:opacity .15s,transform .15s;background:var(--accent);border:2px solid var(--surface);border-radius:50%;}
 .node:hover .node-handle{opacity:1;}
