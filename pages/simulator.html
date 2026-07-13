@@ -262,6 +262,12 @@ function renderBuilder(){
     '<main class="bd-canvas-wrap">'+
       '<div class="bd-brief"><b>'+challenge.prompt+'</b><ul>'+reqs+'</ul>'+
         '<span class="bd-hint">Drag components in · drag from a node\'s ● handle to connect · then Run Traffic and Evaluate</span></div>'+
+      '<div class="bd-metrics" id="metrics" style="display:none;">'+
+        '<div class="mx"><span class="mx-v" id="mx-tp">—</span><span class="mx-l">Throughput</span></div>'+
+        '<div class="mx"><span class="mx-v" id="mx-p99">—</span><span class="mx-l">P99 Latency</span></div>'+
+        '<div class="mx"><span class="mx-v" id="mx-err">—</span><span class="mx-l">Error Rate</span></div>'+
+        '<div class="mx"><span class="mx-v" id="mx-cache">—</span><span class="mx-l">Cache Hit</span></div>'+
+      '</div>'+
       '<svg id="edges" class="bd-edges"></svg>'+
       '<div id="canvas" class="bd-canvas"></div>'+
     '</main>'+
@@ -364,7 +370,8 @@ function renderEdges(){
     var a=nodes.find(function(n){return n.id===e.from;}), b=nodes.find(function(n){return n.id===e.to;});
     if(!a||!b) return;
     var x1=a.x+50,y1=a.y+30,x2=b.x+50,y2=b.y+30;
-    h+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+edgeColor(b)+'" stroke-width="2.5" marker-end="url(#arr)"/>';
+    var flow = (b.load>0) ? ' class="flow'+(b.status==='bottleneck'?' flow-bad':'')+'"' : '';
+    h+='<line'+flow+' x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+edgeColor(b)+'" stroke-width="2.5" marker-end="url(#arr)"/>';
   });
   if(connecting&&connecting.tempX!=null){
     var a=nodes.find(function(n){return n.id===connecting.from;});
@@ -382,6 +389,9 @@ function renderTempEdge(e){
 
 <script>
 // ═══════════════ TRAFFIC SIMULATION ═══════════════
+// Redundancy model: nodes of the SAME category sharing the SAME set of parents
+// form a "tier" that shares load — so capacity = sum of instances. A tier with
+// a single instance on the critical path is a Single Point of Failure.
 function runSimulation(){
   var sc=challenge.scale;
   nodes.forEach(function(n){n.load=0;n.status='idle';});
@@ -390,7 +400,7 @@ function runSimulation(){
   if(!sources.length){ toast('Add components and connect them from the Client first.'); return; }
   var per=sc.rps/sources.length;
   sources.forEach(function(n){n.load=per;});
-  // BFS propagate
+  // BFS propagate — load splits evenly across all children (siblings share load)
   var q=sources.map(function(n){return n.id;}), seen={}; sources.forEach(function(n){seen[n.id]=1;});
   var guard=0;
   while(q.length && guard++<10000){
@@ -412,9 +422,86 @@ function runSimulation(){
     if(u>1){n.status='bottleneck';bottlenecks.push(n);} else if(u>0.7){n.status='warning';} else {n.status='healthy';}
   });
   var lat=calcLatency();
-  simResult={passed:bottlenecks.length===0 && nodes.length>1, bottlenecks:bottlenecks, p50:Math.round(lat), p99:Math.round(lat*2.5), rps:sc.rps};
+  var modes=detectFailureModes(sc, bottlenecks);
+  // Error rate: share of traffic hitting saturated nodes
+  var dropped=0, totalHit=0;
+  nodes.forEach(function(n){ if(n.load>0 && n.maxRPS!==Infinity){ totalHit+=n.load; if(n.load>n.maxRPS) dropped+=(n.load-n.maxRPS); } });
+  var errRate=totalHit>0?Math.min(100, Math.round(dropped/totalHit*100)):0;
+  var achieved=bottlenecks.length?Math.round(sc.rps/Math.max.apply(null,bottlenecks.map(function(n){return n.load/n.maxRPS;}))):sc.rps;
+  simResult={passed:bottlenecks.length===0 && nodes.length>1, bottlenecks:bottlenecks, modes:modes,
+    p50:Math.round(lat), p99:Math.round(lat*2.5), rps:sc.rps, achieved:achieved, errRate:errRate, cacheHit:sc.cacheHit};
   renderNodes(); renderEdges(); renderSidePanel();
+  animateMetrics(simResult); animateFlow();
 }
+
+// ── Failure-mode detection (named, with consequence + fix) ──
+function detectFailureModes(sc, bottlenecks){
+  var modes=[];
+  var byCat={}; nodes.forEach(function(n){ if(n.load>0){ (byCat[n.cat]=byCat[n.cat]||[]).push(n); } });
+  // 1. Single Point of Failure — one instance of the DB or LB tier on the critical path
+  var critical={lb:'load balancer',db:'database'};
+  Object.keys(critical).forEach(function(cat){
+    var live=(byCat[cat]||[]);
+    if(live.length===1 && live[0].load>0){
+      modes.push({kind:'Single Point of Failure', node:live[0],
+        detail:'Only one '+critical[cat]+' on the critical path. If it dies, the whole system goes down.',
+        fix:'Add a second '+live[0].label+' (redundancy) so load is shared and failure is survivable.'});
+    }
+  });
+  // 2. Database Saturation
+  (byCat.db||[]).forEach(function(n){ if(n.load>n.maxRPS){ modes.push({kind:'Database Saturation', node:n,
+    detail:n.label+' receives '+fmt(n.load)+' RPS but tops out near '+fmt(n.maxRPS)+'. Queries queue faster than they drain.',
+    fix:'Add read replicas, a cache in front, or shard the data.'}); }});
+  // 3. Missing Cache (read-heavy workload, DB directly overloaded, no cache anywhere)
+  if(sc.readPct>=70 && !(byCat.cache||[]).length && !(byCat.cdn||[]).length && (byCat.db||[]).some(function(n){return n.load>n.maxRPS;})){
+    modes.push({kind:'Missing Cache', node:null,
+      detail:'Workload is '+sc.readPct+'% reads but every read hits the database. No cache layer exists.',
+      fix:'Put a Redis/CDN cache in front of the database to absorb hot reads.'});
+  }
+  // 4. Queue Overload
+  (byCat.queue||[]).forEach(function(n){ if(n.load>n.maxRPS){ modes.push({kind:'Queue Overload', node:n,
+    detail:n.label+' ingests '+fmt(n.load)+' RPS but drains near '+fmt(n.maxRPS)+'. Backpressure cascades upstream.',
+    fix:'Add partitions / more consumers to raise drain rate.'}); }});
+  // 5. No Load Balancer (client wired straight to a single compute node)
+  if(!(byCat.lb||[]).length && (byCat.compute||[]).length===1){
+    modes.push({kind:'No Load Balancer', node:null,
+      detail:'Traffic hits a single compute node with no load balancer to spread or fail over.',
+      fix:'Add a Load Balancer in front of the compute tier and run 2+ instances.'});
+  }
+  // 6. Other saturated tiers (compute/lb) not already covered
+  bottlenecks.forEach(function(n){
+    if(n.cat==='db'||n.cat==='queue') return; // covered above
+    if(modes.some(function(m){return m.node===n;})) return;
+    modes.push({kind:'Throughput Bottleneck', node:n,
+      detail:n.label+' runs at '+Math.round(n.load/n.maxRPS*100)+'% capacity ('+fmt(n.load)+' / '+fmt(n.maxRPS)+' RPS).',
+      fix:'Scale this tier horizontally — add more instances so they share the load.'});
+  });
+  return modes;
+}
+
+// ── Live metrics bar (count-up animation) ──
+function animateMetrics(r){
+  var bar=document.getElementById('metrics'); if(!bar) return;
+  bar.style.display='flex';
+  var tp=document.getElementById('mx-tp'), p99=document.getElementById('mx-p99'), er=document.getElementById('mx-err'), ch=document.getElementById('mx-cache');
+  var steps=24, i=0;
+  clearInterval(window._mxT);
+  window._mxT=setInterval(function(){
+    i++; var f=i/steps;
+    tp.textContent=fmt(Math.round(r.achieved*f))+' RPS';
+    p99.textContent=Math.round(r.p99*f)+' ms';
+    er.textContent=(r.errRate*f).toFixed(1)+' %';
+    ch.textContent=Math.round(r.cacheHit*f)+' %';
+    p99.className='mx-v'+(r.p99>300?' bad':'');
+    er.className='mx-v'+(r.errRate>1?' bad':'');
+    if(i>=steps){ clearInterval(window._mxT);
+      tp.textContent=fmt(r.achieved)+' RPS'; p99.textContent=r.p99+' ms'; er.textContent=r.errRate.toFixed(1)+' %'; ch.textContent=r.cacheHit+' %';
+    }
+  },18);
+}
+
+// ── Animated traffic flow on edges (marching dashes) ──
+function animateFlow(){ renderEdges(); }
 function calcLatency(){
   var memo={};
   function dfs(id){
@@ -449,7 +536,8 @@ function showReport(results, passed, total, verdict){
   var items=results.map(function(r){return '<li class="'+(r.pass?'ok':'no')+'">'+(r.pass?'✓':'✗')+' '+r.label+'</li>';}).join('');
   var ref=challenge.ref;
   var stack=ref.stack.map(function(s){return '<span class="ref-chip">'+s+'</span>';}).join('');
-  var sim = simResult ? ('<div class="rep-sim">Traffic '+fmt(simResult.rps)+' RPS → P50 '+simResult.p50+'ms · P99 '+simResult.p99+'ms · '+(simResult.passed?'<span style="color:var(--green)">no bottlenecks</span>':'<span style="color:var(--red)">'+simResult.bottlenecks.length+' bottleneck(s)</span>')+'</div>') : '';
+  var sim = simResult ? ('<div class="rep-sim">Traffic '+fmt(simResult.rps)+' RPS → P50 '+simResult.p50+'ms · P99 '+simResult.p99+'ms · err '+simResult.errRate.toFixed(1)+'% · '+(simResult.passed?'<span style="color:var(--green)">healthy</span>':'<span style="color:var(--red)">'+simResult.modes.length+' issue(s)</span>')+'</div>') : '';
+  var modesHtml = (simResult && simResult.modes && simResult.modes.length) ? ('<h4>Failure Modes</h4><ul class="rep-modes">'+simResult.modes.map(function(m){return '<li><b>'+m.kind+'</b>'+(m.node?' — '+m.node.label:'')+'<br>'+m.detail+'<br><em>Fix: '+m.fix+'</em></li>';}).join('')+'</ul>') : '';
   var ov=document.createElement('div');
   ov.className='report-ov'; ov.id='report-ov';
   ov.innerHTML=
@@ -458,6 +546,7 @@ function showReport(results, passed, total, verdict){
       '<div class="report-score" style="color:'+verdict.c+'"><span class="rs-pct">'+Math.round(passed/total*100)+'%</span><span class="rs-verdict">'+verdict.t+'</span><span class="rs-sub">'+passed+' / '+total+' criteria met</span></div>'+
       sim+
       '<h4>Interview Rubric</h4><ul class="rep-rubric">'+items+'</ul>'+
+      modesHtml+
       '<div class="rep-ref"><h4>Reference Architecture</h4><div class="ref-stack">'+stack+'</div><p>'+ref.note+'</p>'+
       '<a class="ref-link" href="'+ref.link+'">Read the full '+challenge.title+' design →</a></div>'+
       '<button class="rep-retry" id="rep-retry">Keep improving</button>'+
@@ -482,10 +571,10 @@ function renderSidePanel(){
       '<div><b>'+simResult.p50+'ms</b><span>P50</span></div>'+
       '<div><b>'+simResult.p99+'ms</b><span>P99</span></div>'+
       '</div>';
-    if(simResult.bottlenecks.length){
-      html+='<div class="sp-bn"><b>Bottlenecks</b><ul>'+simResult.bottlenecks.map(function(n){return '<li>'+n.label+' — '+Math.round(n.load/n.maxRPS*100)+'%<br><em>'+suggest(n)+'</em></li>';}).join('')+'</ul></div>';
+    if(simResult.modes && simResult.modes.length){
+      html+='<div class="sp-bn"><b>'+simResult.modes.length+' issue'+(simResult.modes.length>1?'s':'')+' found</b><ul>'+simResult.modes.map(function(m){return '<li><span class="sp-kind">'+m.kind+'</span>'+(m.node?' · '+m.node.label:'')+'<br>'+m.detail+'<br><em>Fix: '+m.fix+'</em></li>';}).join('')+'</ul></div>';
     } else if(nodes.length>1){
-      html+='<div class="sp-ok">Handles the load cleanly</div>';
+      html+='<div class="sp-ok">Handles the load cleanly — no bottlenecks or single points of failure</div>';
     }
   } else {
     html+='<div class="sp-tip">Build your design, then <b>Run Traffic</b> to see where it breaks.</div>';
@@ -610,6 +699,23 @@ var css = `
 .ref-link{display:inline-block;color:var(--accent);text-decoration:none;font-weight:600;font-size:0.85rem;}
 .ref-link:hover{text-decoration:underline;}
 .rep-retry{width:100%;margin-top:18px;background:var(--accent);color:#fff;border:none;padding:11px;border-radius:9px;font-weight:700;cursor:pointer;font-size:0.9rem;}
+/* METRICS BAR */
+.bd-metrics{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:6;display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.35);}
+.mx{padding:9px 18px;text-align:center;border-right:1px solid var(--border);}
+.mx:last-child{border-right:none;}
+.mx-v{display:block;font-size:1.05rem;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;}
+.mx-v.bad{color:var(--red);}
+.mx-l{font-size:0.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;}
+/* EDGE FLOW */
+.bd-edges line.flow{stroke-dasharray:7 6;animation:flow 0.6s linear infinite;}
+.bd-edges line.flow-bad{animation-duration:0.28s;}
+@keyframes flow{to{stroke-dashoffset:-13;}}
+/* FAILURE MODES (side + report) */
+.sp-kind{font-weight:700;color:var(--red);}
+.rep-modes{list-style:none;}
+.rep-modes li{background:rgba(239,68,68,.08);border-left:3px solid var(--red);padding:9px 11px;border-radius:6px;margin-bottom:7px;font-size:0.8rem;line-height:1.5;}
+.rep-modes b{color:var(--red);}
+.rep-modes em{color:var(--dim);}
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--red);color:var(--text);padding:12px 20px;border-radius:10px;z-index:200;font-size:0.85rem;box-shadow:0 6px 24px rgba(0,0,0,.4);}
 @media(max-width:768px){.bd-lib{width:150px;}.bd-side{width:150px;}}
