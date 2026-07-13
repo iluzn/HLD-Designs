@@ -1,14 +1,31 @@
 <!-- Header widget: Daily Challenge (same problem for everyone each UTC day)
      + current streak flame when signed in. Depends on window.SC_DAILY
      (daily-data.html) and window._scJudge (judge-firebase.html). -->
-<a href="/problemset" id="sc-daily-btn" class="sc-daily-btn" title="Daily Challenge">
+<a href="/problemset" id="sc-daily-btn" class="sc-daily-btn dull" title="Daily Challenge">
     <span class="sc-daily-flame">🔥</span><span id="sc-daily-count" class="sc-daily-count"></span>
 </a>
+<style>
+/* Flame is dull until today's challenge is solved; lit (full colour) once done. */
+.sc-daily-btn .sc-daily-flame{transition:filter .2s,opacity .2s;}
+.sc-daily-btn.dull .sc-daily-flame{filter:grayscale(1);opacity:.5;}
+.sc-daily-btn.lit .sc-daily-flame{filter:none;opacity:1;}
+</style>
 <script>
 (function () {
     var btn = document.getElementById('sc-daily-btn');
     var countEl = document.getElementById('sc-daily-count');
     if (!btn) return;
+
+    // Paint cached streak instantly so the count doesn't pop in after Firebase loads.
+    try {
+        var cached = JSON.parse(localStorage.getItem('scStreakCache') || 'null');
+        if (cached && cached.count > 0) {
+            countEl.textContent = cached.count;
+            btn.classList.add('has-streak');
+            btn.classList.toggle('lit', !!cached.lit);
+            btn.classList.toggle('dull', !cached.lit);
+        }
+    } catch (e) {}
 
     // Pick today's problem deterministically from a UTC day index so every
     // user worldwide sees the same problem on the same day.
@@ -24,31 +41,38 @@
 
     // Current-streak: count consecutive days up to today with a submission.
     function dayKey(d) { return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
-    function currentStreak() {
+    function streakInfo() {
         var j = window._scJudge;
-        if (!j || !j.subs) return 0;
+        if (!j || !j.subs) return { count: 0, doneToday: false };
         var set = {};
         Object.keys(j.subs).forEach(function (sl) {
             (j.subs[sl] || []).forEach(function (s) { if (s && s.ts) set[dayKey(new Date(s.ts))] = 1; });
         });
+        var today = new Date(); today.setHours(0, 0, 0, 0);
+        var doneToday = !!set[dayKey(today)];
         var cur = 0, d = new Date(); d.setHours(0, 0, 0, 0);
-        if (!set[dayKey(d)]) d.setDate(d.getDate() - 1); // today not done yet is fine
+        if (!set[dayKey(d)]) d.setDate(d.getDate() - 1); // today not done yet is fine — streak continues
         while (set[dayKey(d)]) { cur++; d.setDate(d.getDate() - 1); }
-        return cur;
+        return { count: cur, doneToday: doneToday };
     }
 
     function refreshStreak() {
         var signedIn = !!(window._scUser || window._firebaseUser);
-        if (!signedIn) { countEl.textContent = ''; btn.classList.remove('has-streak'); return; }
-        var s = currentStreak();
-        if (s > 0) {
-            countEl.textContent = s;
+        if (!signedIn) { countEl.textContent = ''; btn.classList.remove('has-streak', 'lit'); btn.classList.add('dull'); return; }
+        var info = streakInfo();
+        if (info.count > 0) {
+            countEl.textContent = info.count;
             btn.classList.add('has-streak');
-            btn.title = 'Current streak: ' + s + ' day' + (s === 1 ? '' : 's') + ' · click for the Daily Challenge';
+            btn.classList.toggle('lit', info.doneToday);
+            btn.classList.toggle('dull', !info.doneToday);
+            btn.title = 'Current streak: ' + info.count + ' day' + (info.count === 1 ? '' : 's') +
+                (info.doneToday ? ' · solved today' : ' · solve today to keep it lit');
         } else {
             countEl.textContent = '';
-            btn.classList.remove('has-streak');
+            btn.classList.remove('has-streak', 'lit');
+            btn.classList.add('dull');
         }
+        try { localStorage.setItem('scStreakCache', JSON.stringify({ count: info.count, lit: info.doneToday })); } catch (e) {}
     }
 
     function ready(fn) { if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
