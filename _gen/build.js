@@ -171,6 +171,16 @@ require('./problems22.js').MORE22.forEach(function (p) { P.push(p); });
 require('./problems23.js').MORE23.forEach(function (p) { P.push(p); });
 require('./problems24.js').MORE24.forEach(function (p) { P.push(p); });
 require('./problems25.js').MORE25.forEach(function (p) { P.push(p); });
+require('./problems26.js').MORE26.forEach(function (p) { P.push(p); });
+require('./problems27.js').MORE27.forEach(function (p) { P.push(p); });
+require('./problems28.js').MORE28.forEach(function (p) { P.push(p); });
+require('./problems29.js').MORE29.forEach(function (p) { P.push(p); });
+require('./problems30.js').MORE30.forEach(function (p) { P.push(p); });
+
+// Deduplicate by slug (keep first occurrence)
+var _seen = {}; var _deduped = [];
+P.forEach(function (p) { if (!_seen[p.slug]) { _seen[p.slug] = 1; _deduped.push(p); } });
+P.length = 0; _deduped.forEach(function (p) { P.push(p); });
 
 // ---------- write ----------
 var indexRows = [];

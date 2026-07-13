@@ -3,6 +3,27 @@ description: High-Level System Design notes for tech interviews
 url: "https://systemcraft.in"
 baseurl: ""
 
+# ---------------------------------------------------------------------------
+# Author / E-E-A-T identity. Google rewards demonstrated human expertise, so
+# these fields power the Person author schema (JSON-LD) and the visible byline
+# rendered on every content page.
+#
+# ACTION REQUIRED: replace the placeholder values below with your real name,
+# a one-line credential, and your real profile links. The more concrete and
+# verifiable this is, the more authorship trust it earns.
+# ---------------------------------------------------------------------------
+author:
+  name: "Your Name"                       # <-- replace with your real name
+  job_title: "Software Engineer"          # e.g. "Senior Software Engineer, ex-Amazon"
+  bio: "Software engineer who went through the interview grind at Indian and international tech companies and built SystemCraft as the free system design resource that should have existed."
+  url: "https://systemcraft.in/about/"
+  email: "systemcraft.in@gmail.com"
+  image: "https://systemcraft.in/favicon-192x192.png"  # <-- replace with a real headshot for best E-E-A-T
+  sameas:                                 # <-- add your real profile links (strengthens authorship)
+    - "https://www.linkedin.com/company/systemcraft"
+    - "https://x.com/systemcraft"
+    - "https://github.com/systemcraft"
+
 markdown: kramdown
 kramdown:
   input: GFM

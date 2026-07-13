@@ -19,6 +19,12 @@
     <meta property="og:url" content="https://systemcraft.in{{ page.url }}">
     <meta property="og:type" content="article">
     <meta property="og:image" content="https://systemcraft.in/og-default.png">
+    <script type="application/ld+json">
+    { "@context": "https://schema.org", "@type": "TechArticle", "headline": "{{ page.title }}", "description": "{{ page.description }}", "image": "https://systemcraft.in/og-default.png", "author": { "@type": "Person", "name": "{{ site.author.name }}", "jobTitle": "{{ site.author.job_title }}", "description": "{{ site.author.bio }}", "url": "{{ site.author.url }}", "image": "{{ site.author.image }}", "sameAs": [{% for s in site.author.sameas %}"{{ s }}"{% unless forloop.last %},{% endunless %}{% endfor %}] }, "publisher": { "@type": "Organization", "name": "SystemCraft", "url": "https://systemcraft.in", "logo": { "@type": "ImageObject", "url": "https://systemcraft.in/favicon.svg" } }, "url": "https://systemcraft.in{{ page.url }}" }
+    </script>
+    <script type="application/ld+json">
+    { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [ { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://systemcraft.in/" }, { "@type": "ListItem", "position": 2, "name": "DSA", "item": "https://systemcraft.in/dsa" }, { "@type": "ListItem", "position": 3, "name": "{{ page.title }}", "item": "https://systemcraft.in{{ page.url }}" } ] }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     {% include auth-styles.html %}
