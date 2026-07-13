@@ -13,7 +13,7 @@ permalink: /system-design-interview-guide/
 
 ## Who Is This For?
 
-Whether you're a mid-level engineer preparing for your first system design round or a senior engineer targeting Staff+ roles, this guide gives you the exact roadmap to prepare efficiently.
+Whether you're a mid-level engineer preparing for your first interview loop or a senior engineer targeting Staff+ roles, this guide gives you the exact roadmap to prepare efficiently across all three technical rounds: **high-level design (HLD)**, **low-level design / machine coding (LLD)**, and **data structures & algorithms (DSA)**. Most loops test two or three of these — jump to whichever you need from the Practice step below.
 
 ---
 
@@ -46,13 +46,20 @@ Follow these steps in order. Each builds on the previous.
 </div>
 </a>
 <div class="path-connector">↓</div>
-<a class="path-step" href="/hld">
+<div class="path-step" style="flex-direction:column;align-items:flex-start;">
+<div style="display:flex;align-items:center;gap:1rem;width:100%;">
 <div class="step-number">4</div>
 <div class="step-content">
-<strong>Practice Problems</strong>
-<p>20 system designs, beginner to advanced. Start solving.</p>
+<strong>Practice by Round</strong>
+<p>Pick the rounds you're facing and start solving. Most loops test two or three of these.</p>
 </div>
-</a>
+</div>
+<div class="practice-tracks">
+<a href="/hld">HLD — 20 System Designs →</a>
+<a href="/lld">LLD — Machine Coding →</a>
+<a href="/dsa">DSA — 360+ Problems →</a>
+</div>
+</div>
 </div>
 
 <style>
@@ -64,6 +71,10 @@ Follow these steps in order. Each builds on the previous.
 .step-content strong { font-size: 0.95rem; color: var(--text); }
 .step-content p { font-size: 0.82rem; color: var(--text-muted); margin: 0.2rem 0 0; }
 .path-connector { color: var(--accent); font-size: 1.2rem; margin: 0.3rem 0; opacity: 0.6; }
+.practice-tracks { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.9rem; padding-left: 3rem; width: 100%; }
+.practice-tracks a { font-size: 0.82rem; font-weight: 600; padding: 0.45rem 0.9rem; border-radius: 8px; text-decoration: none; color: var(--accent); background: rgba(129,140,248,0.1); border: 1px solid rgba(129,140,248,0.3); transition: background 0.2s, transform 0.2s; }
+.practice-tracks a:hover { background: var(--accent); color: #fff; transform: translateY(-2px); }
+@media (max-width: 560px) { .practice-tracks { padding-left: 0; } }
 </style>
 
 ---
