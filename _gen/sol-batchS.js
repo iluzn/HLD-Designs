@@ -231,6 +231,68 @@ public:
     }
 }`,
   },
+  'find-median-from-data-stream': {
+    python: `import heapq
+
+class MedianFinder:
+    def __init__(self):
+        self.lo = []  # max-heap via negation (lower half)
+        self.hi = []  # min-heap (upper half)
+    def addNum(self, num):
+        heapq.heappush(self.lo, -num)
+        heapq.heappush(self.hi, -heapq.heappop(self.lo))
+        if len(self.hi) > len(self.lo):
+            heapq.heappush(self.lo, -heapq.heappop(self.hi))
+    def findMedian(self):
+        if len(self.lo) > len(self.hi):
+            return float(-self.lo[0])
+        return (-self.lo[0] + self.hi[0]) / 2.0`,
+    javascript: `// JavaScript has no built-in heap, so this keeps a sorted array via
+// binary-search insertion. The two-heap approach (see Python/C++/Java) is
+// the O(log n) optimum you'd mention in an interview.
+class MedianFinder {
+    constructor() { this.a = []; }
+    addNum(num) {
+        let lo = 0, hi = this.a.length;
+        while (lo < hi) { const m = (lo + hi) >> 1; if (this.a[m] < num) lo = m + 1; else hi = m; }
+        this.a.splice(lo, 0, num);
+    }
+    findMedian() {
+        const n = this.a.length;
+        if (n % 2 === 1) return this.a[(n - 1) / 2];
+        return (this.a[n / 2 - 1] + this.a[n / 2]) / 2;
+    }
+}`,
+    cpp: `class MedianFinder {
+public:
+    priority_queue<int> lo;                                  // max-heap (lower half)
+    priority_queue<int, vector<int>, greater<int>> hi;       // min-heap (upper half)
+    MedianFinder() {}
+    void addNum(int num) {
+        lo.push(num);
+        hi.push(lo.top()); lo.pop();
+        if (hi.size() > lo.size()) { lo.push(hi.top()); hi.pop(); }
+    }
+    double findMedian() {
+        if (lo.size() > hi.size()) return lo.top();
+        return (lo.top() + hi.top()) / 2.0;
+    }
+};`,
+    java: `class MedianFinder {
+    private PriorityQueue<Integer> lo = new PriorityQueue<>(Collections.reverseOrder()); // lower half
+    private PriorityQueue<Integer> hi = new PriorityQueue<>();                            // upper half
+    public MedianFinder() {}
+    public void addNum(int num) {
+        lo.offer(num);
+        hi.offer(lo.poll());
+        if (hi.size() > lo.size()) lo.offer(hi.poll());
+    }
+    public double findMedian() {
+        if (lo.size() > hi.size()) return lo.peek();
+        return (lo.peek() + hi.peek()) / 2.0;
+    }
+}`,
+  },
 };
 module.exports = { SOL, FULL };
 // (continued below)
