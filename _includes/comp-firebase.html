@@ -22,6 +22,11 @@ const db = getFirestore(app);
 window._scCompTrack = null;   // Firestore-loaded map { s1:{...}, s2:{...}, s3:{...} }
 window._scCompUser = null;
 
+// One-time cleanup: the old build mirrored everyone's data to a shared key
+// (sc-comptrack-<level>), which leaked a signed-in user's data to the next
+// signed-out viewer on the same browser. Remove it.
+try { ['s1', 's2', 's3'].forEach(function (l) { localStorage.removeItem('sc-comptrack-' + l); }); } catch (e) {}
+
 onAuthStateChanged(auth, async function (user) {
   if (user) {
     window._scCompUser = user.uid;
@@ -31,20 +36,26 @@ onAuthStateChanged(auth, async function (user) {
     } catch (e) { window._scCompTrack = window._scCompTrack || {}; }
   } else {
     window._scCompUser = null;
-    window._scCompTrack = null;   // signed out → widget uses localStorage
+    window._scCompTrack = null;   // signed out → widget uses the anon bucket only
   }
   document.dispatchEvent(new CustomEvent('sc-comp-ready'));
 });
 
-// Persist a level's tracker map. Always mirrors to localStorage (cache);
-// also writes to Firestore when signed in (deep-merged, preserving other levels).
+// Persist a level's tracker map. Storage is scoped so a signed-in user's data
+// is never shown to a later signed-out viewer:
+//   signed in  -> Firestore + cache key 'sc-comptrack-<uid>-<level>'
+//   signed out -> 'sc-comptrack-anon-<level>' only
 window.scCompSave = async function (level, data) {
-  try { localStorage.setItem('sc-comptrack-' + level, JSON.stringify(data)); } catch (e) {}
-  if (window._scCompUser) {
+  var uid = window._scCompUser;
+  try {
+    if (uid) localStorage.setItem('sc-comptrack-' + uid + '-' + level, JSON.stringify(data));
+    else localStorage.setItem('sc-comptrack-anon-' + level, JSON.stringify(data));
+  } catch (e) {}
+  if (uid) {
     try {
       const payload = { compTrack: {} };
       payload.compTrack[level] = data;
-      await setDoc(doc(db, 'users', window._scCompUser), payload, { merge: true });
+      await setDoc(doc(db, 'users', uid), payload, { merge: true });
     } catch (e) { console.error('comp track save failed', e); }
   }
 };

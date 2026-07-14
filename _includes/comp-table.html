@@ -46,19 +46,21 @@ function boot() {
   var LEVEL = window.SC_LEVEL || 's2';
   var ALL = (window.SC_COMP_ALL || []).filter(function (r) { return r[LEVEL]; });
   var STATUSES = ['Not started', 'Interested', 'Applied', 'Referral', 'Interviewing', 'Offer', 'Rejected'];
-  var LSKEY = 'sc-comptrack-' + LEVEL;
+  function readLS(key) { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; } }
   function loadTrack() {
-    var local = {};
-    try { local = JSON.parse(localStorage.getItem(LSKEY) || '{}'); } catch (e) {}
-    // When signed in, Firestore data (window._scCompTrack) wins per company,
-    // merged over any local edits made while signed out.
-    if (window._scCompTrack) return Object.assign({}, local, window._scCompTrack[LEVEL] || {});
-    return local;
+    var uid = window._scCompUser;
+    if (uid) {
+      // signed in: prefer Firestore data, else the uid-scoped cache
+      if (window._scCompTrack) return window._scCompTrack[LEVEL] || {};
+      return readLS('sc-comptrack-' + uid + '-' + LEVEL);
+    }
+    // signed out / anonymous: only ever read the anon bucket
+    return readLS('sc-comptrack-anon-' + LEVEL);
   }
   var track = loadTrack();
   function save() {
     if (typeof window.scCompSave === 'function') window.scCompSave(LEVEL, track);
-    else { try { localStorage.setItem(LSKEY, JSON.stringify(track)); } catch (e) {} }
+    else { try { localStorage.setItem('sc-comptrack-anon-' + LEVEL, JSON.stringify(track)); } catch (e) {} }
   }
   // When Firebase finishes loading (or auth changes), reload and re-render.
   document.addEventListener('sc-comp-ready', function () { track = loadTrack(); render(); });
