@@ -56,10 +56,15 @@
     nav { display: flex; align-items: center; gap: 0.15rem; position: relative; }
     nav a { color: var(--text-muted); text-decoration: none; padding: 0.35rem 0.7rem; font-size: 0.82rem; font-weight: 500; border-radius: 6px; transition: all 0.2s; }
     nav a:hover { color: var(--text); background: rgba(129,140,248,0.06); }
-    .theme-toggle { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; padding: 0.3rem 0.5rem; border-radius: 6px; margin-left: 0.4rem; }
-    .hamburger { display: none; }
+    .theme-toggle { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; padding: 0.4rem 0.55rem; border-radius: 6px; margin-left: 0.4rem; }
+    .hamburger { display: none; background: none; border: 1px solid var(--border); color: var(--text); cursor: pointer; padding: 0.4rem 0.6rem; font-size: 1.1rem; line-height: 1; border-radius: 8px; margin-left: 0.3rem; }
     .nav-links { display: flex; align-items: center; gap: 0.15rem; }
-    @media (max-width: 820px) { .nav-links { display: none; } }
+    @media (max-width: 820px) {
+        .hamburger { display: block; }
+        .nav-links { display: none; position: absolute; top: calc(100% + 0.6rem); right: 0; background: var(--header-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 12px; padding: 0.4rem; flex-direction: column; align-items: stretch; min-width: 180px; box-shadow: 0 16px 48px rgba(0,0,0,0.4); z-index: 200; }
+        .nav-links.open { display: flex; }
+        .nav-links a { padding: 0.65rem 1rem; font-size: 0.9rem; border-radius: 8px; }
+    }
     </style>
     <style>
     /* ---- IDE shell ---- */
@@ -213,6 +218,12 @@
         .lc-divider { display: none; }
         .lc-right { min-height: 80vh; border-left: none; border-top: 1px solid var(--border); }
     }
+    /* ---- Mobile: declutter the editor toolbar so it fits one row ---- */
+    @media (max-width: 600px) {
+        .lc-editor-bar { gap: 0.3rem; }
+        .lc-editor-bar .lc-reset, .lc-editor-bar .lc-btn { padding: 0.35rem 0.6rem; font-size: 0.78rem; }
+        #lc-autosuggest, #lc-timer { display: none; }
+    }
     </style>
 </head>
 <body>
@@ -227,6 +238,7 @@
                 {% include daily-data.html %}
                 {% include streak-daily.html %}
                 {% include auth-button.html %}
+                <button class="hamburger" id="hamburger-btn" aria-label="Menu" type="button">&#9776;</button>
                 <div class="nav-links" id="nav-links">
                     <a href="/problemset">Problemset</a>
                     <a href="/dsa">DSA</a>
@@ -237,6 +249,15 @@
             </nav>
         </div>
     </header>
+    <script>
+    (function () {
+        var hb = document.getElementById('hamburger-btn'), nl = document.getElementById('nav-links');
+        if (!hb || !nl) return;
+        hb.addEventListener('click', function (e) { e.stopPropagation(); nl.classList.toggle('open'); });
+        nl.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { nl.classList.remove('open'); }); });
+        document.addEventListener('click', function (e) { if (!hb.contains(e.target) && !nl.contains(e.target)) nl.classList.remove('open'); });
+    })();
+    </script>
 
     <div class="lc-shell">
         <div class="lc-left">
