@@ -837,6 +837,24 @@
     })();
     </script>
 
+    <!-- Code language tabs: resilient delegated handler (works regardless of init order or DOM changes) -->
+    <script>
+    document.addEventListener('click', function (e) {
+        var btn = e.target && e.target.closest ? e.target.closest('.code-tabs .tab-btn') : null;
+        if (!btn) return;
+        var group = btn.closest('.code-tabs');
+        if (!group) return;
+        var buttons = group.querySelectorAll('.tab-buttons .tab-btn');
+        var contents = group.querySelectorAll('.tab-content');
+        var idx = Array.prototype.indexOf.call(buttons, btn);
+        if (idx < 0) return;
+        buttons.forEach(function (b) { b.classList.remove('active'); });
+        contents.forEach(function (c) { c.classList.remove('active'); });
+        btn.classList.add('active');
+        if (contents[idx]) contents[idx].classList.add('active');
+    });
+    </script>
+
     <!-- Cloudflare Web Analytics -->
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "46af7c683dec42ceb435ae3e97b8d9a1"}'></script>
 
