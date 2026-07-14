@@ -1,0 +1,137 @@
+<!-- Interactive salary-band table. Reads window.SC_COMP = [{c,cat,loc:[],lo,hi,url}] -->
+<style>
+.ct-wrap { margin: 1.2rem 0 2rem; }
+.ct-controls { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: flex-start; margin-bottom: 1rem; }
+.ct-search { flex: 1; min-width: 200px; }
+.ct-search input { width: 100%; padding: 0.55rem 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 0.9rem; }
+.ct-facet { border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.7rem; background: var(--card-bg); }
+.ct-facet-title { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-dim); margin-bottom: 0.4rem; font-weight: 700; }
+.ct-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; max-width: 520px; }
+.ct-chip { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); cursor: pointer; user-select: none; transition: all 0.15s; }
+.ct-chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.ct-minrow { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); }
+.ct-minrow input { width: 70px; padding: 0.35rem 0.5rem; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); }
+.ct-meta { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0.5rem; }
+.ct-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.ct-table th { text-align: left; padding: 0.6rem 0.7rem; border-bottom: 2px solid var(--border); color: var(--text-muted); font-weight: 700; cursor: pointer; white-space: nowrap; user-select: none; }
+.ct-table th:hover { color: var(--accent); }
+.ct-table th .arrow { opacity: 0.5; font-size: 0.7rem; }
+.ct-table td { padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+.ct-table tr:hover td { background: var(--card-bg); }
+.ct-company { font-weight: 700; color: var(--text); }
+.ct-cat { display: inline-block; font-size: 0.68rem; padding: 2px 8px; border-radius: 20px; background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--accent); }
+.ct-loc { color: var(--text-muted); font-size: 0.8rem; }
+.ct-comp { font-weight: 700; color: var(--text); white-space: nowrap; }
+.ct-apply { color: var(--accent); text-decoration: none; font-size: 0.82rem; font-weight: 600; }
+.ct-apply:hover { text-decoration: underline; }
+.ct-empty { padding: 1.5rem; text-align: center; color: var(--text-dim); }
+.ct-reset { font-size: 0.75rem; color: var(--accent); background: none; border: none; cursor: pointer; padding: 0; }
+@media (max-width: 640px) { .ct-hide-sm { display: none; } .ct-controls { flex-direction: column; } }
+</style>
+<div class="ct-wrap" id="ct-wrap">
+  <div class="ct-controls">
+    <div class="ct-search"><input id="ct-q" type="text" placeholder="Search company…"></div>
+    <div class="ct-facet"><div class="ct-facet-title">Location</div><div class="ct-chips" id="ct-loc"></div></div>
+    <div class="ct-facet"><div class="ct-facet-title">Category</div><div class="ct-chips" id="ct-cat"></div></div>
+    <div class="ct-facet"><div class="ct-facet-title">Min comp</div><div class="ct-minrow"><input id="ct-min" type="number" min="0" step="5" placeholder="0"> LPA+</div></div>
+  </div>
+  <div class="ct-meta"><span id="ct-count"></span> &middot; <button class="ct-reset" id="ct-reset">Reset filters</button></div>
+  <table class="ct-table"><thead><tr>
+    <th data-k="c">Company <span class="arrow"></span></th>
+    <th data-k="cat" class="ct-hide-sm">Category <span class="arrow"></span></th>
+    <th data-k="loc" class="ct-hide-sm">Locations <span class="arrow"></span></th>
+    <th data-k="hi">Est. Comp (LPA) <span class="arrow">▼</span></th>
+    <th class="ct-hide-sm">Careers</th>
+  </tr></thead><tbody id="ct-body"></tbody></table>
+</div>
+
+<script>
+(function () {
+  var DATA = window.SC_COMP || [];
+  var state = { q: '', loc: {}, cat: {}, min: 0, sortK: 'hi', sortDir: -1 };
+
+  var body = document.getElementById('ct-body');
+  var countEl = document.getElementById('ct-count');
+  var qEl = document.getElementById('ct-q');
+  var minEl = document.getElementById('ct-min');
+
+  // Build facet chips from the data
+  function uniq(arr) { var s = {}; arr.forEach(function (x) { s[x] = 1; }); return Object.keys(s).sort(); }
+  var allLoc = uniq([].concat.apply([], DATA.map(function (r) { return r.loc; })));
+  var allCat = uniq(DATA.map(function (r) { return r.cat; }));
+
+  function chips(containerId, values, bucket) {
+    var el = document.getElementById(containerId);
+    el.innerHTML = values.map(function (v) {
+      return '<span class="ct-chip" data-v="' + v + '">' + v + '</span>';
+    }).join('');
+    el.addEventListener('click', function (e) {
+      var c = e.target.closest('.ct-chip'); if (!c) return;
+      var v = c.dataset.v;
+      if (state[bucket][v]) { delete state[bucket][v]; c.classList.remove('on'); }
+      else { state[bucket][v] = 1; c.classList.add('on'); }
+      render();
+    });
+  }
+  chips('ct-loc', allLoc, 'loc');
+  chips('ct-cat', allCat, 'cat');
+
+  function activeKeys(o) { return Object.keys(o); }
+
+  function pass(r) {
+    if (state.q && r.c.toLowerCase().indexOf(state.q.toLowerCase()) < 0) return false;
+    var locs = activeKeys(state.loc);
+    if (locs.length && !locs.some(function (l) { return r.loc.indexOf(l) >= 0; })) return false;
+    var cats = activeKeys(state.cat);
+    if (cats.length && cats.indexOf(r.cat) < 0) return false;
+    if (state.min && r.hi < state.min) return false;
+    return true;
+  }
+
+  function render() {
+    var rows = DATA.filter(pass);
+    rows.sort(function (a, b) {
+      var k = state.sortK, av, bv;
+      if (k === 'loc') { av = a.loc.join(','); bv = b.loc.join(','); }
+      else if (k === 'hi') { av = a.hi; bv = b.hi; }
+      else { av = ('' + a[k]).toLowerCase(); bv = ('' + b[k]).toLowerCase(); }
+      if (av < bv) return -1 * state.sortDir;
+      if (av > bv) return 1 * state.sortDir;
+      return 0;
+    });
+    countEl.textContent = rows.length + ' of ' + DATA.length + ' companies';
+    if (!rows.length) { body.innerHTML = '<tr><td colspan="5" class="ct-empty">No companies match these filters.</td></tr>'; return; }
+    body.innerHTML = rows.map(function (r) {
+      var comp = r.lo + '–' + r.hi + 'L';
+      var url = r.url.indexOf('http') === 0 ? r.url : 'https://' + r.url;
+      return '<tr>' +
+        '<td class="ct-company">' + r.c + '</td>' +
+        '<td class="ct-hide-sm"><span class="ct-cat">' + r.cat + '</span></td>' +
+        '<td class="ct-hide-sm ct-loc">' + r.loc.join(', ') + '</td>' +
+        '<td class="ct-comp">' + comp + '</td>' +
+        '<td class="ct-hide-sm"><a class="ct-apply" href="' + url + '" target="_blank" rel="noopener">Careers ↗</a></td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  qEl.addEventListener('input', function () { state.q = qEl.value; render(); });
+  minEl.addEventListener('input', function () { state.min = +minEl.value || 0; render(); });
+  document.querySelectorAll('.ct-table th[data-k]').forEach(function (th) {
+    th.addEventListener('click', function () {
+      var k = th.dataset.k;
+      if (state.sortK === k) state.sortDir *= -1; else { state.sortK = k; state.sortDir = (k === 'hi') ? -1 : 1; }
+      document.querySelectorAll('.ct-table th .arrow').forEach(function (a) { a.textContent = ''; });
+      th.querySelector('.arrow').textContent = state.sortDir < 0 ? '▼' : '▲';
+      render();
+    });
+  });
+  document.getElementById('ct-reset').addEventListener('click', function () {
+    state = { q: '', loc: {}, cat: {}, min: 0, sortK: 'hi', sortDir: -1 };
+    qEl.value = ''; minEl.value = '';
+    document.querySelectorAll('.ct-chip.on').forEach(function (c) { c.classList.remove('on'); });
+    render();
+  });
+
+  render();
+})();
+</script>
