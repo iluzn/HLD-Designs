@@ -7,9 +7,10 @@ hide_author: true
 hide_toc: true
 ---
 
+<div class="tc-bg"></div>
 <div class="tc-hero">
   <span class="tc-hero-badge">India · 2026</span>
-  <h1>Software Engineer Salaries in India</h1>
+  <h1>Software Engineer <em>Salaries</em> in India</h1>
   <p>Estimated total-compensation bands across <strong>120+ companies</strong>, broken down by level. Filter by location and category, sort by pay, and track where you're applying.</p>
   <div class="tc-stats">
     <div class="tc-stat"><strong>120+</strong><span>Companies</span></div>
@@ -49,9 +50,14 @@ hide_toc: true
 <p class="tc-note">Figures are approximate total compensation (base + stock + bonus) in INR LPA for India, aggregated from public sources (Levels.fyi, AmbitionBox, Glassdoor). Estimates, not offers — always confirm with the recruiter. Last compiled 2026.</p>
 
 <style>
+.breadcrumbs { display: none !important; }
+.tc-bg { position: fixed; top: 0; left: 0; right: 0; height: 640px; background: radial-gradient(var(--dot, rgba(129,140,248,0.09)) 1px, transparent 1.5px) 0 0 / 24px 24px, radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.14), transparent); -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 95%); mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 95%); pointer-events: none; z-index: 0; }
+[data-theme="light"] .tc-bg { --dot: rgba(79,70,229,0.07); }
+.tc-hero, .tc-levels, .tc-features, .tc-note { position: relative; z-index: 1; }
 .tc-hero { text-align: center; padding: 1.5rem 0 1rem; }
 .tc-hero-badge { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); background: var(--tag-bg); border: 1px solid var(--tag-border); padding: 0.25rem 0.7rem; border-radius: 20px; margin-bottom: 0.8rem; }
-.tc-hero h1 { font-size: 2.1rem; margin: 0 0 0.6rem; }
+.tc-hero h1 { font-size: 2.4rem; margin: 0 0 0.6rem; font-weight: 800; letter-spacing: -0.5px; }
+.tc-hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), #a78bfa, #f472b6, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .tc-hero p { color: var(--text-muted); max-width: 620px; margin: 0 auto; line-height: 1.6; }
 .tc-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-top: 1.3rem; }
 .tc-stat strong { display: block; font-size: 1.4rem; font-weight: 800; color: var(--accent); line-height: 1.1; }
