@@ -45,9 +45,21 @@
   var ALL = (window.SC_COMP_ALL || []).filter(function (r) { return r[LEVEL]; });
   var STATUSES = ['Not started', 'Interested', 'Applied', 'Referral', 'Interviewing', 'Offer', 'Rejected'];
   var LSKEY = 'sc-comptrack-' + LEVEL;
-  var track = {};
-  try { track = JSON.parse(localStorage.getItem(LSKEY) || '{}'); } catch (e) {}
-  function save() { try { localStorage.setItem(LSKEY, JSON.stringify(track)); } catch (e) {} }
+  function loadTrack() {
+    var local = {};
+    try { local = JSON.parse(localStorage.getItem(LSKEY) || '{}'); } catch (e) {}
+    // When signed in, Firestore data (window._scCompTrack) wins per company,
+    // merged over any local edits made while signed out.
+    if (window._scCompTrack) return Object.assign({}, local, window._scCompTrack[LEVEL] || {});
+    return local;
+  }
+  var track = loadTrack();
+  function save() {
+    if (typeof window.scCompSave === 'function') window.scCompSave(LEVEL, track);
+    else { try { localStorage.setItem(LSKEY, JSON.stringify(track)); } catch (e) {} }
+  }
+  // When Firebase finishes loading (or auth changes), reload and re-render.
+  document.addEventListener('sc-comp-ready', function () { track = loadTrack(); render(); });
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
   var cats = {}; ALL.forEach(function (r) { cats[r.cat] = 1; });

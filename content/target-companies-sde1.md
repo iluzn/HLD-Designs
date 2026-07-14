@@ -15,4 +15,5 @@ Entry level (~0–2 years). Search, filter by **location / category / minimum co
 
 <script>window.SC_LEVEL = 's1';</script>
 {% include comp-data.html %}
+{% include comp-firebase.html %}
 {% include comp-table.html %}

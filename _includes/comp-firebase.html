@@ -1,0 +1,51 @@
+<!-- Syncs the salary-tracker Status/Comment to Firestore under
+     users/{uid}.compTrack.{level}, so it follows the signed-in account across
+     devices. Falls back to localStorage when signed out. Exposes
+     window._scCompTrack, window.scCompSave(level, data), event 'sc-comp-ready'. -->
+<script type="module">
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBRZYsCxcjkug4EVGmMuhAgKM4moRH_ewA",
+  authDomain: "systemcraft-in.firebaseapp.com",
+  projectId: "systemcraft-in",
+  storageBucket: "systemcraft-in.firebasestorage.app",
+  messagingSenderId: "57513541148",
+  appId: "1:57513541148:web:f929b383e79a7bf97869d9"
+};
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+window._scCompTrack = null;   // Firestore-loaded map { s1:{...}, s2:{...}, s3:{...} }
+window._scCompUser = null;
+
+onAuthStateChanged(auth, async function (user) {
+  if (user) {
+    window._scCompUser = user.uid;
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      window._scCompTrack = (snap.exists() && snap.data().compTrack) ? snap.data().compTrack : {};
+    } catch (e) { window._scCompTrack = window._scCompTrack || {}; }
+  } else {
+    window._scCompUser = null;
+    window._scCompTrack = null;   // signed out → widget uses localStorage
+  }
+  document.dispatchEvent(new CustomEvent('sc-comp-ready'));
+});
+
+// Persist a level's tracker map. Always mirrors to localStorage (cache);
+// also writes to Firestore when signed in (deep-merged, preserving other levels).
+window.scCompSave = async function (level, data) {
+  try { localStorage.setItem('sc-comptrack-' + level, JSON.stringify(data)); } catch (e) {}
+  if (window._scCompUser) {
+    try {
+      const payload = { compTrack: {} };
+      payload.compTrack[level] = data;
+      await setDoc(doc(db, 'users', window._scCompUser), payload, { merge: true });
+    } catch (e) { console.error('comp track save failed', e); }
+  }
+};
+</script>

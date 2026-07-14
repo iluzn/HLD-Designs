@@ -15,4 +15,5 @@ Mid level (~2–5 years). Search, filter by **location / category / minimum comp
 
 <script>window.SC_LEVEL = 's2';</script>
 {% include comp-data.html %}
+{% include comp-firebase.html %}
 {% include comp-table.html %}

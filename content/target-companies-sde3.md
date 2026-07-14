@@ -15,4 +15,5 @@ Senior level (~5–8+ years). Search, filter by **location / category / minimum 
 
 <script>window.SC_LEVEL = 's3';</script>
 {% include comp-data.html %}
+{% include comp-firebase.html %}
 {% include comp-table.html %}
