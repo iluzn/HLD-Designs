@@ -20,6 +20,26 @@ const CORS = {
   'Access-Control-Max-Age': '86400',
 };
 
+// Best-effort concurrency gate. Caps simultaneous executions per Worker isolate
+// and makes excess requests WAIT briefly instead of stampeding the backend, then
+// 503s (which the frontend retries). Not a globally exact limit — Cloudflare may
+// run several isolates — but it smooths the common "everyone clicks at once at the
+// same edge" spike, which is exactly the failure mode under load.
+let inFlight = 0;
+const MAX_INFLIGHT = 12;   // simultaneous executions allowed per isolate
+const MAX_WAIT_MS = 4000;  // how long a queued request waits for a slot before 503
+function sleepMs(ms) { return new Promise((r) => setTimeout(r, ms)); }
+async function acquireSlot() {
+  const start = Date.now();
+  while (inFlight >= MAX_INFLIGHT) {
+    if (Date.now() - start > MAX_WAIT_MS) return false;
+    await sleepMs(120);
+  }
+  inFlight++;
+  return true;
+}
+function releaseSlot() { inFlight = Math.max(0, inFlight - 1); }
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -101,9 +121,20 @@ async function handleExecute(request, env) {
   const totalSize = files.reduce((n, f) => n + (f && f.content ? f.content.length : 0), 0);
   if (totalSize > 60000) return jsonResponse({ error: 'Source too large (60KB max)' }, 413);
 
-  if (env && env.GLOT_TOKEN) return execViaGlot(env, payload, files);
-  if (pistonBase(env)) return execViaPiston(env, payload, files);
-  return jsonResponse({ error: 'Execution backend not configured' }, 503);
+  const backend = (env && env.GLOT_TOKEN)
+    ? () => execViaGlot(env, payload, files)
+    : (pistonBase(env) ? () => execViaPiston(env, payload, files) : null);
+  if (!backend) return jsonResponse({ error: 'Execution backend not configured' }, 503);
+
+  // Admission control: wait for a free slot (up to MAX_WAIT_MS), else tell the
+  // client we're busy so it retries with backoff instead of overloading the backend.
+  const gotSlot = await acquireSlot();
+  if (!gotSlot) return jsonResponse({ error: 'Execution service busy — please retry' }, 503);
+  try {
+    return await backend();
+  } finally {
+    releaseSlot();
+  }
 }
 
 async function execViaGlot(env, payload, files) {
