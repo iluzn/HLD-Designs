@@ -1,0 +1,46 @@
+<!-- Level hero for target-companies level pages. Usage: {% include comp-hero.html level="s2" %} -->
+{% assign lv = include.level %}
+{% if lv == "s1" %}
+  {% assign lvName = "SDE-1" %}{% assign lvSub = "Entry level" %}{% assign lvYrs = "~0–2 yrs" %}{% assign lvRange = "≈ 20–55 LPA" %}{% assign lvClass = "lvl1" %}
+{% elsif lv == "s3" %}
+  {% assign lvName = "SDE-3 / Senior" %}{% assign lvSub = "Senior level" %}{% assign lvYrs = "~5–8+ yrs" %}{% assign lvRange = "≈ 50–160 LPA" %}{% assign lvClass = "lvl3" %}
+{% else %}
+  {% assign lvName = "SDE-2" %}{% assign lvSub = "Mid level" %}{% assign lvYrs = "~2–5 yrs" %}{% assign lvRange = "≈ 35–110 LPA" %}{% assign lvClass = "lvl2" %}
+{% endif %}
+
+<div class="ch-bg"></div>
+<div class="ch-hero {{ lvClass }}">
+  <span class="ch-badge">India · 2026 · {{ lvSub }}</span>
+  <h1><em>{{ lvName }}</em> Salaries by Company</h1>
+  <p>Estimated total compensation across <strong>120+ companies</strong> in India for {{ lvName }} ({{ lvYrs }}). Search, filter by location and category, sort any column, and track your applications.</p>
+  <div class="ch-stats">
+    <div class="ch-stat"><strong>{{ lvRange }}</strong><span>Typical Range</span></div>
+    <div class="ch-stat"><strong>120+</strong><span>Companies</span></div>
+    <div class="ch-stat"><strong>8</strong><span>Categories</span></div>
+  </div>
+  <nav class="ch-tabs">
+    <a href="/target-companies/" class="ch-tab">Overview</a>
+    <a href="/target-companies/sde-1/" class="ch-tab{% if lv == 's1' %} on{% endif %}">SDE-1</a>
+    <a href="/target-companies/sde-2/" class="ch-tab{% if lv == 's2' %} on{% endif %}">SDE-2</a>
+    <a href="/target-companies/sde-3/" class="ch-tab{% if lv == 's3' %} on{% endif %}">SDE-3</a>
+  </nav>
+</div>
+
+<style>
+.breadcrumbs { display: none !important; }
+.ch-bg { position: fixed; top: 0; left: 0; right: 0; height: 640px; background: radial-gradient(var(--dot, rgba(129,140,248,0.09)) 1px, transparent 1.5px) 0 0 / 24px 24px, radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.14), transparent); -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 95%); mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 95%); pointer-events: none; z-index: 0; }
+[data-theme="light"] .ch-bg { --dot: rgba(79,70,229,0.07); }
+.ch-hero { position: relative; z-index: 1; text-align: center; padding: 1.5rem 0 0.5rem; }
+.ch-badge { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); background: var(--tag-bg); border: 1px solid var(--tag-border); padding: 0.25rem 0.7rem; border-radius: 20px; margin-bottom: 0.8rem; }
+.ch-hero h1 { font-size: 2.3rem; margin: 0 0 0.6rem; font-weight: 800; letter-spacing: -0.5px; }
+.ch-hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), #a78bfa, #f472b6, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.ch-hero p { color: var(--text-muted); max-width: 640px; margin: 0 auto; line-height: 1.6; }
+.ch-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-top: 1.3rem; }
+.ch-stat strong { display: block; font-size: 1.3rem; font-weight: 800; color: var(--accent); line-height: 1.1; }
+.ch-stat span { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.4px; }
+.ch-tabs { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; margin-top: 1.4rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 0.35rem; }
+.ch-tab { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); text-decoration: none; padding: 0.45rem 0.95rem; border-radius: 9px; transition: all 0.15s; }
+.ch-tab:hover { color: var(--text); background: var(--tag-bg); }
+.ch-tab.on { background: var(--accent); color: #fff; }
+@media (max-width: 600px) { .ch-hero h1 { font-size: 1.7rem; } .ch-stats { gap: 1rem; } }
+</style>
