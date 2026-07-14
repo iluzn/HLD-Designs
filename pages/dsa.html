@@ -63,7 +63,7 @@ permalink: /dsa/
     <p>Pattern-based problems with Java, Python, and C++ solutions. Curated lists, progress tracking, and company tags. Built for Amazon, Google, Meta, and top startups.</p>
     <div class="hero-stats">
         <div class="hero-stat"><strong>360+</strong><span>Problems</span></div>
-        <div class="hero-stat"><strong>14</strong><span>Patterns</span></div>
+        <div class="hero-stat"><strong>16</strong><span>Patterns</span></div>
         <div class="hero-stat"><strong>4</strong><span>Languages</span></div>
     </div>
 </section>
@@ -82,7 +82,16 @@ permalink: /dsa/
     <div class="quick-browse" id="dsa-quick"></div>
 </div>
 
-<!-- Start here callout -->
+<!-- Practice by Pattern -->
+<div class="section">
+    <h2 class="section-title">Practice by Pattern</h2>
+    <p class="section-sub">The fastest way in: pick a pattern and start solving. Counts are live, and once you sign in each card shows how many you've cleared.</p>
+    <div class="diff-chips" id="dsa-diff-chips"></div>
+    <div class="pattern-grid" id="dsa-patterns">
+        <div class="pat-skeleton"></div><div class="pat-skeleton"></div><div class="pat-skeleton"></div><div class="pat-skeleton"></div>
+    </div>
+</div>
+
 <!-- Where to start -->
 <div class="section">
     <h2 class="section-title">Where to Start?</h2>
@@ -90,7 +99,7 @@ permalink: /dsa/
         <a class="start-card" href="/problemset" style="border-color:rgba(99,102,241,0.4);">
             <div class="start-card-body">
                 <strong>💻 Solve in the browser</strong>
-                <p>Problemset — code &amp; run against tests in Python, Java, C++, JS. Instant verdicts, saved to your profile.</p>
+                <p>Problemset — code &amp; run against tests in Python, Java, C++, JS. Every problem ships with a full editorial. Instant verdicts, saved to your profile.</p>
             </div>
             <div class="start-card-time">Judge</div>
         </a>
@@ -101,16 +110,6 @@ permalink: /dsa/
             </div>
             <div class="start-card-time">1-2 days</div>
         </a>
-    </div>
-</div>
-
-<!-- Practice by Pattern -->
-<div class="section">
-    <h2 class="section-title">Practice by Pattern</h2>
-    <p class="section-sub">The fastest way in: pick a pattern and start solving. Counts are live, and once you sign in each card shows how many you've cleared.</p>
-    <div class="diff-chips" id="dsa-diff-chips"></div>
-    <div class="pattern-grid" id="dsa-patterns">
-        <div class="pat-skeleton"></div><div class="pat-skeleton"></div><div class="pat-skeleton"></div><div class="pat-skeleton"></div>
     </div>
 </div>
 
@@ -153,13 +152,6 @@ permalink: /dsa/
             </div>
         </a>
     </div>
-</div>
-
-<!-- Solutions now live inside the judge -->
-<div class="section">
-    <h2 class="section-title">Solve & Learn in One Place</h2>
-    <p class="section-sub">Every problem ships with a full editorial — intuition, approach, complexity, and tabbed Python / Java / C++ / JavaScript solutions — right beside the in-browser judge.</p>
-    <a href="/problemset" class="solve-cta">Open the Problemset →</a>
 </div>
 
 <!-- How to practice -->
@@ -436,7 +428,8 @@ footer a:hover { text-decoration: underline; }
 .pat-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 12px 30px rgba(129,140,248,0.14); }
 .pat-card:hover::before { opacity: 1; }
 .pat-top { display: flex; align-items: center; justify-content: space-between; }
-.pat-icon { font-size: 1.35rem; line-height: 1; }
+.pat-icon { display: inline-flex; color: var(--accent); }
+.pat-icon svg { width: 22px; height: 22px; }
 .pat-count { font-size: 0.7rem; font-weight: 700; color: var(--accent-light); background: var(--tag-bg); border: 1px solid var(--tag-border); padding: 2px 9px; border-radius: 20px; }
 .pat-name { font-size: 0.94rem; font-weight: 700; line-height: 1.25; }
 .pat-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: auto; }
@@ -714,15 +707,34 @@ document.querySelectorAll('a').forEach(function(a) {
         // Practice-by-pattern grid (topic must match catalog topic names exactly)
         var patEl = document.getElementById('dsa-patterns');
         if (patEl) {
+            function svg(inner) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>'; }
+            var IC = {
+                arr: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+                tp: '<path d="M4 12h6"/><path d="M7 9l-3 3 3 3"/><path d="M20 12h-6"/><path d="M17 9l3 3-3 3"/>',
+                sw: '<path d="M7 4H4v16h3"/><path d="M17 4h3v16h-3"/><path d="M10 12h4"/>',
+                stk: '<polygon points="12 3 21 8 12 13 3 8 12 3"/><path d="M3 13l9 5 9-5"/>',
+                bs: '<circle cx="10" cy="10" r="6"/><path d="M20 20l-4-4"/>',
+                ll: '<circle cx="5" cy="12" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="19" cy="12" r="2.2"/><path d="M7.2 12h2.6"/><path d="M14.2 12h2.6"/>',
+                tree: '<circle cx="12" cy="4" r="2"/><circle cx="6" cy="14" r="2"/><circle cx="18" cy="14" r="2"/><path d="M11 6l-4 6"/><path d="M13 6l4 6"/>',
+                heap: '<path d="M3 20h18"/><path d="M6 20l6-14 6 14"/>',
+                bt: '<path d="M6 3v6a3 3 0 0 0 3 3h6"/><path d="M6 21v-6"/><path d="M15 9l3 3-3 3"/>',
+                graph: '<circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M6.6 7.4l4.8 8.9"/><path d="M17.4 7.4l-4.8 8.9"/><path d="M7 6h10"/>',
+                dp: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/>',
+                greedy: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>',
+                iv: '<path d="M3 7h10"/><path d="M8 12h13"/><path d="M5 17h9"/>',
+                trie: '<circle cx="12" cy="4" r="2"/><circle cx="7" cy="12" r="2"/><circle cx="17" cy="12" r="2"/><circle cx="17" cy="20" r="2"/><path d="M11 5.5L8 10.5"/><path d="M13 5.5l3 5"/><path d="M17 14v4"/>',
+                bit: '<rect x="2" y="7" width="20" height="10" rx="5"/><circle cx="8" cy="12" r="2.4"/>',
+                math: '<circle cx="12" cy="6.5" r="1"/><path d="M6 12h12"/><circle cx="12" cy="17.5" r="1"/>'
+            };
             var PATTERNS = [
-                ['Array', 'Arrays & Hashing', '🗃️'], ['Two Pointers', 'Two Pointers', '↔️'],
-                ['Sliding Window', 'Sliding Window', '🪟'], ['Stack', 'Stack', '📚'],
-                ['Binary Search', 'Binary Search', '🔎'], ['Linked List', 'Linked List', '🔗'],
-                ['Tree', 'Trees', '🌳'], ['Heap', 'Heap / Priority Queue', '⛰️'],
-                ['Backtracking', 'Backtracking', '🧭'], ['Graph', 'Graphs', '🕸️'],
-                ['Dynamic Programming', 'Dynamic Programming', '🧩'], ['Greedy', 'Greedy', '🎯'],
-                ['Intervals', 'Intervals', '📏'], ['Trie', 'Tries', '🌲'],
-                ['Bit Manipulation', 'Bit Manipulation', '🔢'], ['Math', 'Math & Geometry', '➗']
+                ['Array', 'Arrays & Hashing', IC.arr], ['Two Pointers', 'Two Pointers', IC.tp],
+                ['Sliding Window', 'Sliding Window', IC.sw], ['Stack', 'Stack', IC.stk],
+                ['Binary Search', 'Binary Search', IC.bs], ['Linked List', 'Linked List', IC.ll],
+                ['Tree', 'Trees', IC.tree], ['Heap', 'Heap / Priority Queue', IC.heap],
+                ['Backtracking', 'Backtracking', IC.bt], ['Graph', 'Graphs', IC.graph],
+                ['Dynamic Programming', 'Dynamic Programming', IC.dp], ['Greedy', 'Greedy', IC.greedy],
+                ['Intervals', 'Intervals', IC.iv], ['Trie', 'Tries', IC.trie],
+                ['Bit Manipulation', 'Bit Manipulation', IC.bit], ['Math', 'Math & Geometry', IC.math]
             ];
             var solvedMap = {}; solved.forEach(function (s) { solvedMap[s] = 1; });
             var html = PATTERNS.map(function (p) {
@@ -734,7 +746,7 @@ document.querySelectorAll('a').forEach(function(a) {
                     ? '<div class="pat-bar"><div class="pat-bar-fill" style="width:' + pct + '%"></div></div><div class="pat-solved">' + sol + ' / ' + tot + ' solved</div>'
                     : '';
                 return '<a class="pat-card" href="/problemset?topic=' + encodeURIComponent(topic) + '">' +
-                    '<div class="pat-top"><span class="pat-icon">' + p[2] + '</span><span class="pat-count">' + tot + '</span></div>' +
+                    '<div class="pat-top"><span class="pat-icon">' + svg(p[2]) + '</span><span class="pat-count">' + tot + '</span></div>' +
                     '<div class="pat-name">' + p[1] + '</div>' + bar + '</a>';
             }).join('');
             patEl.innerHTML = html || '<p class="section-sub">Patterns loading…</p>';
