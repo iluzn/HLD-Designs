@@ -126,6 +126,9 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
         .feature-banner { display: flex; align-items: center; gap: 1.2rem; background: linear-gradient(135deg, #4f46e5, #3b82f6, #06b6d4); border-radius: 14px; padding: 1.4rem 1.8rem; text-decoration: none; color: #fff; transition: transform 0.3s, box-shadow 0.3s; }
         .feature-banner:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(59,130,246,0.35); }
         @media (max-width: 768px) { .feature-banner { flex-direction: column; text-align: center; padding: 1.2rem; } }
+        .sim-home-link { display: block; text-align: center; font-size: 0.9rem; font-weight: 600; color: var(--accent); text-decoration: none; padding: 0.85rem 1rem; border: 1px dashed var(--border); border-radius: 12px; background: var(--card-bg); transition: border-color 0.2s; }
+        .sim-home-link:hover { border-color: var(--accent); }
+        @media (max-width: 820px) { .sim-home { display: none; } }
         .concepts-banner-icon { flex-shrink: 0; opacity: 0.9; }
         .concepts-banner-text { flex: 1; }
         .concepts-banner-text strong { display: block; font-size: 1.05rem; font-weight: 700; margin-bottom: 0.25rem; }
@@ -342,6 +345,11 @@ description: "Free interview prep: HLD system design, LLD machine coding, and DS
             <div class="meta"><span class="tag">360+ problems</span><span class="tag">Online Judge</span><span class="tag">Quick-Fire 50</span></div>
         </a>
     </div>
+</div>
+
+<!-- Simulator discoverability (desktop only — it's a drag-and-drop builder) -->
+<div class="section sim-home">
+    <a class="sim-home-link" href="/simulator/?c=URLShortner">🖥️ New — build and stress-test real architectures in the interactive System Design Simulator →</a>
 </div>
 
 <!-- NEW FEATURE — salary tracking -->

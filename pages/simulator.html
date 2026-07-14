@@ -250,8 +250,26 @@ let simResult = null;   // last simulation summary
 let selectedId = null;  // currently selected node id
 let history = [], histIdx = -1;  // undo/redo stack
 
+function showMobileNotice(slug){
+  var c = (slug && CHALLENGES[slug]) ? CHALLENGES[slug] : null;
+  var title = c ? c.title : '';
+  var href = slug ? ('/hld/' + slug) : '/hld';
+  var linkText = title ? ('Read the ' + title + ' design') : 'Browse HLD designs';
+  var body = title ? ('the <b>' + title + '</b> architecture') : 'architectures';
+  document.body.innerHTML =
+    '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;text-align:center;">' +
+      '<div style="max-width:400px;">' +
+        '<div style="font-size:2.6rem;margin-bottom:14px;">\uD83D\uDDA5\uFE0F</div>' +
+        '<h1 style="font-size:1.25rem;font-weight:800;margin:0 0 10px;">Best on a bigger screen</h1>' +
+        '<p style="color:var(--dim,#9ba3b0);line-height:1.6;font-size:0.9rem;margin:0 0 20px;">The System Design Simulator is a drag-and-drop canvas built for desktop. Open it on a laptop to build and stress-test ' + body + '.</p>' +
+        '<a href="' + href + '" style="display:inline-block;background:var(--accent,#818cf8);color:#fff;text-decoration:none;font-weight:600;padding:0.65rem 1.25rem;border-radius:10px;font-size:0.9rem;">' + linkText + ' &rarr;</a>' +
+      '</div>' +
+    '</div>';
+}
 document.addEventListener('DOMContentLoaded', function(){
   var slug = new URLSearchParams(location.search).get('c');
+  // Drag-and-drop canvas doesn't work on touch/small screens — show a desktop-only notice instead.
+  if (window.matchMedia && window.matchMedia('(max-width: 820px)').matches) { showMobileNotice(slug); return; }
   if (slug && CHALLENGES[slug]) { startChallenge(slug); }
   else { location.replace('/hld'); }  // no picker page — always launched per-problem from HLD
 });

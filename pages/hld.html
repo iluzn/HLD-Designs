@@ -1129,6 +1129,7 @@ function closeCelebration() {
   text-decoration:none;transition:background .15s,transform .15s;white-space:nowrap;}
 .sim-chip::before{content:"▸";font-size:0.7rem;}
 .sim-chip:hover{background:var(--accent);color:#fff;transform:translateY(-1px);}
+@media (max-width: 820px) { .sim-chip { display: none; } }
 </style>
 <script>
 // Add a "Simulate" chip to each HLD problem card, deep-linking to the builder.

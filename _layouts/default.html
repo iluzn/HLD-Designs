@@ -855,6 +855,31 @@
     });
     </script>
 
+    <!-- "Simulate this design" CTA on individual HLD design pages (desktop only, only for designs with a challenge) -->
+    <style>
+    .sim-design-btn { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 1.3rem; padding: 0.6rem 1.1rem; border-radius: 10px; background: linear-gradient(135deg, var(--accent), #a78bfa); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.9rem; box-shadow: 0 8px 24px rgba(129,140,248,0.2); transition: transform 0.2s, box-shadow 0.2s; }
+    .sim-design-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(129,140,248,0.3); }
+    @media (max-width: 820px) { .sim-design-btn { display: none; } }
+    </style>
+    <script>
+    (function () {
+        var parts = location.pathname.split('/').filter(function (s) { return s.length; });
+        if (parts.length !== 2 || parts[0] !== 'hld') return;
+        var slug = parts[1];
+        var SIM = { 'URLShortner':1,'Leaderboard':1,'RateLimiter':1,'Pastebin':1,'UniqueIDGenerator':1,'KeyValueStore':1,'TwitterFeed':1,'ChatSystem':1,'NotificationSystem':1,'Instagram':1,'BookMyShow':1,'NewsAggregator':1,'JobScheduler':1,'DelayedTriggerService':1,'DigitalWallet':1,'Zomato':1,'StockBroker':1,'Uber':1,'Netflix':1,'GoogleDocs':1 };
+        if (!SIM[slug]) return;
+        var content = document.querySelector('.content');
+        if (!content) return;
+        var a = document.createElement('a');
+        a.className = 'sim-design-btn';
+        a.href = '/simulator/?c=' + slug;
+        a.innerHTML = '\u25B8 Simulate this design \u2014 build it and stress-test under load';
+        var h1 = content.querySelector('h1');
+        if (h1 && h1.nextSibling) content.insertBefore(a, h1.nextSibling);
+        else content.insertBefore(a, content.firstChild);
+    })();
+    </script>
+
     <!-- Cloudflare Web Analytics -->
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "46af7c683dec42ceb435ae3e97b8d9a1"}'></script>
 
