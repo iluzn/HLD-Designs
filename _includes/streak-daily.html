@@ -58,8 +58,9 @@
     }
 
     function refreshStreak() {
-        var signedIn = !!(window._scUser || window._firebaseUser);
-        if (!signedIn) { countEl.textContent = ''; btn.classList.remove('has-streak', 'lit'); btn.classList.add('dull'); try { localStorage.removeItem('scStreakCache'); } catch (e) {} return; }
+        // Reflect the streak from whatever progress we have (anon on this device, or
+        // synced when signed in). Signing in only adds cross-device sync, so solving
+        // should always move the count — not stay blank until you log in.
         var info = streakInfo();
         if (info.count > 0) {
             countEl.textContent = info.count;
@@ -83,7 +84,9 @@
         // paint above stands, so we never flash to "dull" or overwrite the cache with a 0.
         if (window._scJudgeReady) refreshStreak();
         document.addEventListener('sc-judge-ready', refreshStreak);
-        setTimeout(function () { if (window._scJudgeReady) refreshStreak(); }, 2500);
+        // Backstop: compute from local data even if the auth-ready event never fires
+        // (the anon submissions bucket is always available synchronously).
+        setTimeout(refreshStreak, 2500);
     });
 })();
 </script>
