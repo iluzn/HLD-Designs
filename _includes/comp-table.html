@@ -33,6 +33,11 @@
 .ct-stsel[data-s="Interviewing"] { border-color: #eab308; color: #eab308; }
 .ct-stsel[data-s="Offer"] { border-color: #22c55e; color: #22c55e; }
 .ct-stsel[data-s="Rejected"] { border-color: #ef4444; color: #ef4444; }
+/* Native select/option rendering must follow the theme, else the control and its popup show white in dark mode */
+[data-theme="dark"] .ct-stsel, [data-theme="dark"] .ct-sel, [data-theme="dark"] #ct-q, [data-theme="dark"] .ct-min input, [data-theme="dark"] .ct-cmt { color-scheme: dark; background: #1c1c26; }
+[data-theme="light"] .ct-stsel, [data-theme="light"] .ct-sel, [data-theme="light"] #ct-q, [data-theme="light"] .ct-min input, [data-theme="light"] .ct-cmt { color-scheme: light; background: #ffffff; }
+[data-theme="dark"] .ct-stsel option, [data-theme="dark"] .ct-sel option { background: #1c1c26; color: #e8edf3; }
+[data-theme="light"] .ct-stsel option, [data-theme="light"] .ct-sel option { background: #ffffff; color: #0f172a; }
 .ct-cmt { width: 100%; min-width: 160px; border: 1px solid var(--border); border-radius: 7px; padding: 0.35rem 0.5rem; font-size: 0.78rem; font-family: inherit; background: var(--card-bg); color: var(--text); resize: vertical; line-height: 1.4; overflow: hidden; white-space: pre-wrap; word-break: break-word; }
 .ct-cmt:focus { border-color: var(--accent); outline: none; }
 .ct-table td:nth-child(6) { min-width: 180px; }
