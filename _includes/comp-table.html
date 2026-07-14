@@ -37,6 +37,9 @@
 .ct-table td:nth-child(6) { min-width: 180px; }
 .ct-empty { text-align: center; color: var(--text-dim); padding: 2rem; }
 .ct-note { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.6rem; }
+.ct-signin { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; background: var(--tag-bg); border: 1px solid var(--tag-border); border-radius: 10px; padding: 0.7rem 0.95rem; margin: 0 0 0.8rem; }
+.ct-signin strong { color: var(--accent); }
+.ct-stsel:disabled, .ct-cmt:disabled { opacity: 0.55; cursor: not-allowed; background: rgba(127,127,127,0.06); }
 @media (max-width: 700px) { .ct-hide-sm { display: none; } .ct-table { min-width: 560px; } }
 </style>
 <div id="ct-root"></div>
@@ -84,6 +87,7 @@ function boot() {
       '<select class="ct-sel" id="ct-st"><option value="all">All statuses</option>' + STATUSES.map(function (s) { return '<option value="' + s + '">' + s + '</option>'; }).join('') + '</select>' +
       '<span class="ct-min">min <input id="ct-min" type="number" min="0" step="5" placeholder="0"> LPA</span>' +
     '</div>' +
+    '<div id="ct-signin" class="ct-signin" style="display:none">🔒 <strong>Sign in</strong> to edit and save your Status &amp; Comments across devices. You can browse and filter freely without signing in.</div>' +
     '<div class="ct-count"><span id="ct-cnt"></span> &middot; <button class="ct-reset" id="ct-reset">Reset filters</button></div>' +
     '<div class="ct-tablewrap"><table class="ct-table"><thead><tr>' +
       '<th data-k="c">Company</th>' +
@@ -109,6 +113,10 @@ function boot() {
     return true;
   }
   function render() {
+    var signedIn = !!window._scCompUser;
+    var dis = signedIn ? '' : ' disabled title="Sign in to edit"';
+    var signinEl = document.getElementById('ct-signin');
+    if (signinEl) signinEl.style.display = signedIn ? 'none' : 'block';
     var rows = ALL.filter(pass);
     rows.sort(function (a, b) {
       var k = state.sortK, av, bv;
@@ -129,8 +137,8 @@ function boot() {
         '<td class="ct-hide-sm"><span class="ct-cat">' + esc(r.cat) + '</span></td>' +
         '<td class="ct-hide-sm ct-loc">' + r.loc.join(', ') + '</td>' +
         '<td class="ct-comp">' + comp + '</td>' +
-        '<td><select class="ct-stsel" data-c="' + esc(r.c) + '" data-s="' + st + '">' + opts + '</select></td>' +
-        '<td><textarea class="ct-cmt" data-c="' + esc(r.c) + '" placeholder="note…" rows="1">' + esc(t.comment || '') + '</textarea></td>' +
+        '<td><select class="ct-stsel" data-c="' + esc(r.c) + '" data-s="' + st + '"' + dis + '>' + opts + '</select></td>' +
+        '<td><textarea class="ct-cmt" data-c="' + esc(r.c) + '" placeholder="' + (signedIn ? 'note…' : 'sign in to add') + '" rows="1"' + dis + '>' + esc(t.comment || '') + '</textarea></td>' +
         '<td class="ct-hide-sm"><a class="ct-apply" href="' + url + '" target="_blank" rel="noopener">↗</a></td>' +
         '</tr>';
     }).join('');
@@ -162,6 +170,7 @@ function boot() {
   // Persist status/comment edits (event delegation, survives re-render)
   body.addEventListener('change', function (e) {
     var c;
+    if (!window._scCompUser) return; // only signed-in users can persist edits
     if (e.target.classList.contains('ct-stsel')) {
       c = e.target.dataset.c; track[c] = track[c] || {}; track[c].status = e.target.value; save();
       e.target.setAttribute('data-s', e.target.value);
