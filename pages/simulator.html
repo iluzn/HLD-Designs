@@ -351,6 +351,8 @@ function renderBuilder(){
     '<a class="bd-back" href="'+challenge.ref.link+'">← Back to design</a>'+
     '<span class="bd-title">'+challenge.title+'</span>'+
     '<div class="bd-actions">'+
+      '<button id="btn-help" title="How the simulator works">? Help</button>'+
+      '<button id="btn-example" title="Load a ready-made example you can run instantly">Load example</button>'+
       '<button id="btn-undo" title="Undo (Ctrl+Z)">↺</button>'+
       '<button id="btn-redo" title="Redo (Ctrl+Shift+Z)">↻</button>'+
       '<button id="btn-export" title="Download design as JSON">Export</button>'+
@@ -381,6 +383,7 @@ function renderBuilder(){
   buildLib();
   renderSidePanel();
   renderNodes(); renderEdges();
+  if (typeof maybeShowOnboarding === 'function') maybeShowOnboarding();
   document.getElementById('btn-clear').onclick = function(){ clearSaved(challenge._slug); startChallenge(challenge._slug); };
   document.getElementById('btn-sim').onclick = runSimulation;
   document.getElementById('btn-eval').onclick = evaluate;
@@ -389,6 +392,8 @@ function renderBuilder(){
   document.getElementById('btn-export').onclick = exportJSON;
   document.getElementById('btn-import').onclick = function(){ document.getElementById('import-file').click(); };
   document.getElementById('import-file').onchange = importJSON;
+  var bHelp=document.getElementById('btn-help'); if(bHelp) bHelp.onclick=function(){ showOnboarding(true); };
+  var bEx=document.getElementById('btn-example'); if(bEx) bEx.onclick=loadExample;
   var canvas = document.getElementById('canvas');
   canvas.addEventListener('dragover', function(e){e.preventDefault();});
   canvas.addEventListener('drop', function(e){
@@ -930,4 +935,90 @@ var css = `
 `;
 var s=document.createElement('style'); s.textContent=css; document.head.appendChild(s);
 })();
+</script>
+
+<script>
+// ═══════════════ ONBOARDING (first-run guide + reopen via ? Help) ═══════════════
+(function(){
+  var ONB_KEY='scsim-onboarded';
+  var css='.onb-back{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;animation:onbf .2s ease;}'+
+  '@keyframes onbf{from{opacity:0}to{opacity:1}}'+
+  '.onb-card{position:relative;max-width:430px;width:100%;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px 24px 20px;box-shadow:0 24px 60px rgba(0,0,0,.5);}'+
+  '.onb-h{font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:10px;letter-spacing:-.2px;}'+
+  '.onb-b{font-size:0.92rem;line-height:1.65;color:var(--muted);}'+
+  '.onb-b b{color:var(--text);} .onb-tip{color:var(--dim);font-size:0.85rem;}'+
+  '.onb-skip{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--dim);font-size:1.35rem;line-height:1;cursor:pointer;}'+
+  '.onb-skip:hover{color:var(--text);}'+
+  '.onb-foot{display:flex;align-items:center;justify-content:space-between;margin-top:20px;gap:12px;}'+
+  '.onb-dots{display:flex;gap:6px;} .onb-dot{width:7px;height:7px;border-radius:50%;background:var(--border);} .onb-dot.on{background:var(--accent);}'+
+  '.onb-btns{display:flex;gap:8px;}'+
+  '.onb-btns button{font-family:inherit;font-size:0.82rem;font-weight:600;border-radius:9px;padding:0.5rem 1rem;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);}'+
+  '.onb-btns .onb-next{background:var(--accent);border-color:var(--accent);color:#fff;}'+
+  '.onb-btns .onb-next:hover{filter:brightness(1.08);}'+
+  '.onb-btns .onb-prev:hover,.onb-btns .onb-skip2:hover{color:var(--text);border-color:var(--accent);}';
+  var st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);
+
+  function ev(name,extra){ if(window.gtag){ try{ gtag('event',name, Object.assign({challenge:(window.challenge&&challenge._slug)||''}, extra||{})); }catch(e){} } }
+
+  window.maybeShowOnboarding=function(){
+    var seen=false; try{ seen=localStorage.getItem(ONB_KEY)==='1'; }catch(e){}
+    if(!seen) showOnboarding(false);
+  };
+  window.showOnboarding=function(){
+    var rps=(challenge&&challenge.scale&&challenge.scale.rps)?fmt(challenge.scale.rps):'live';
+    var title=(challenge&&challenge.title)||'this system';
+    var steps=[
+      {h:'Welcome to the System Design Simulator',b:'Your goal: build an architecture for <b>'+title+'</b> that meets the requirements and survives a live traffic test.<br><br>It\u2019s the same thinking a system-design interview tests \u2014 except here you can actually <i>run</i> your design and watch where it breaks.'},
+      {h:'1 \u00b7 Add components',b:'Drag any component from the <b>left library</b> onto the canvas \u2014 load balancers, caches, databases, queues and more.<br><br><span class="onb-tip">Tip: you can also just click a component to drop it in.</span>'},
+      {h:'2 \u00b7 Connect them',b:'Hover a node and drag from its <b>\u25cf handle</b> to another node to wire them together \u2014 that\u2019s how requests flow through your system.'},
+      {h:'3 \u00b7 Run &amp; score',b:'Hit <b>Run Traffic</b> to push '+rps+' RPS through your design. <b style="color:var(--red)">Red</b> = a bottleneck; add instances with <b>+</b> or scale that tier.<br><br>Then <b>Evaluate</b> to score against the interview rubric and compare to a reference design.'},
+      {h:'Not sure where to start?',b:'Click <b>Load example</b> in the top bar to drop in a ready-made architecture you can run in one click \u2014 then tweak it, or Reset and build your own.'}
+    ];
+    var i=0;
+    var old=document.getElementById('sc-onb'); if(old) old.remove();
+    var ov=document.createElement('div'); ov.id='sc-onb'; ov.className='onb-back'; document.body.appendChild(ov);
+    ev('sim_onboarding_start');
+    function done(complete){ try{ localStorage.setItem(ONB_KEY,'1'); }catch(e){} ev(complete?'sim_onboarding_complete':'sim_onboarding_dismiss',{step:i+1}); ov.remove(); }
+    function render(){
+      var s=steps[i];
+      var dots=steps.map(function(_,k){return '<span class="onb-dot'+(k===i?' on':'')+'"></span>';}).join('');
+      ov.innerHTML='<div class="onb-card"><button class="onb-skip" title="Close">\u00d7</button>'+
+        '<div class="onb-h">'+s.h+'</div><div class="onb-b">'+s.b+'</div>'+
+        '<div class="onb-foot"><div class="onb-dots">'+dots+'</div><div class="onb-btns">'+
+        (i>0?'<button class="onb-prev">Back</button>':'<button class="onb-skip2">Skip</button>')+
+        '<button class="onb-next">'+(i===steps.length-1?'Start building':'Next')+'</button></div></div></div>';
+      ov.querySelector('.onb-skip').onclick=function(){done(false);};
+      var sk2=ov.querySelector('.onb-skip2'); if(sk2) sk2.onclick=function(){done(false);};
+      var pv=ov.querySelector('.onb-prev'); if(pv) pv.onclick=function(){i--;render();};
+      ov.querySelector('.onb-next').onclick=function(){ if(i===steps.length-1){done(true);} else { i++; ev('sim_onboarding_step',{step:i+1}); render(); } };
+      ov.onclick=function(e){ if(e.target===ov) done(false); };
+    }
+    render();
+  };
+})();
+</script>
+
+<script>
+// ═══════════════ LOAD EXAMPLE (drop in the reference architecture, ready to run) ═══════════════
+window.loadExample=function(){
+  var userNodes=nodes.filter(function(n){return n.type!=='client';}).length;
+  if(userNodes && !confirm('Replace the current canvas with the example architecture?')) return;
+  var lbl2id={}; Object.keys(LIBRARY).forEach(function(cat){ LIBRARY[cat].forEach(function(c){ lbl2id[c.label]=c.id; }); });
+  var rps=(challenge&&challenge.scale&&challenge.scale.rps)||10000;
+  nodes=[]; edges=[]; nextId=1; selectedId=null; simResult=null;
+  var x=60,y=210,gap=132;
+  addNode('client',x,y);
+  var prev=nodes[nodes.length-1].id;
+  ((challenge.ref&&challenge.ref.stack)||[]).forEach(function(lbl,k){
+    var id=lbl2id[lbl]; if(!id) return;
+    addNode(id, x+gap*(k+1), y);
+    var n=nodes[nodes.length-1];
+    if(n.maxRPS!==Infinity){ n.instances=Math.max(1,Math.min(20,Math.ceil(rps/n.maxRPS))); }
+    edges.push({from:prev,to:n.id}); prev=n.id;
+  });
+  nextId=nodes.reduce(function(m,n){return Math.max(m,n.id);},0)+1;
+  pushHistory(); renderNodes(); renderEdges(); if(typeof renderSidePanel==='function') renderSidePanel();
+  if(typeof runSimulation==='function') runSimulation();
+  if(window.gtag){ try{ gtag('event','sim_load_example',{challenge:(challenge&&challenge._slug)||''}); }catch(e){} }
+};
 </script>
