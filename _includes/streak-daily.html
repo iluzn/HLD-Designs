@@ -33,7 +33,8 @@
         var list = window.SC_DAILY;
         if (!list || !list.length) return;
         var now = new Date();
-        var dayNum = Math.floor(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) / 86400000);
+        // Local day index so the daily rolls over at the user's midnight (matches the streak's local-day logic), not UTC.
+        var dayNum = Math.floor((now.getTime() - now.getTimezoneOffset() * 60000) / 86400000);
         var d = list[((dayNum % list.length) + list.length) % list.length];
         btn.href = '/dsa/problem/' + d[0];
         btn.title = 'Daily Challenge · ' + d[1];
@@ -58,7 +59,7 @@
 
     function refreshStreak() {
         var signedIn = !!(window._scUser || window._firebaseUser);
-        if (!signedIn) { countEl.textContent = ''; btn.classList.remove('has-streak', 'lit'); btn.classList.add('dull'); return; }
+        if (!signedIn) { countEl.textContent = ''; btn.classList.remove('has-streak', 'lit'); btn.classList.add('dull'); try { localStorage.removeItem('scStreakCache'); } catch (e) {} return; }
         var info = streakInfo();
         if (info.count > 0) {
             countEl.textContent = info.count;
@@ -78,10 +79,11 @@
     function ready(fn) { if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
     ready(function () {
         pickDaily();
-        refreshStreak();
+        // Only compute the real streak once judge data is loaded. Before that the cached
+        // paint above stands, so we never flash to "dull" or overwrite the cache with a 0.
         if (window._scJudgeReady) refreshStreak();
         document.addEventListener('sc-judge-ready', refreshStreak);
-        setTimeout(refreshStreak, 2000);
+        setTimeout(function () { if (window._scJudgeReady) refreshStreak(); }, 2500);
     });
 })();
 </script>

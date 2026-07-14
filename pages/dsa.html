@@ -637,7 +637,8 @@ document.querySelectorAll('a').forEach(function(a) {
         var list = window.SC_DAILY || [];
         if (list.length) {
             var now = new Date();
-            var dayNum = Math.floor(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) / 86400000);
+            // Local day index so the daily rolls at the user's midnight, matching the header streak widget.
+            var dayNum = Math.floor((now.getTime() - now.getTimezoneOffset() * 60000) / 86400000);
             var d = list[((dayNum % list.length) + list.length) % list.length];
             var c = CAT[d[0]] || {};
             var dEl = document.getElementById('dsa-daily');

@@ -52,9 +52,11 @@ async function persist() {
   }
 }
 
+function emitUpdated() { try { document.dispatchEvent(new CustomEvent('sc-judge-ready')); } catch (e) {} }
 window.scJudgeMarkSolved = function (slug) {
   if (!window._scJudge.solved) window._scJudge.solved = [];
   if (window._scJudge.solved.indexOf(slug) === -1) { window._scJudge.solved.push(slug); persist(); }
+  emitUpdated();
 };
 window.scJudgeAddSub = function (slug, sub) {
   if (sub && sub.code && sub.code.length > 10000) sub.code = sub.code.slice(0, 10000);
@@ -64,5 +66,6 @@ window.scJudgeAddSub = function (slug, sub) {
   if (s.length > 20) s = s.slice(0, 20);
   window._scJudge.subs[slug] = s;
   persist();
+  emitUpdated();
 };
 </script>
