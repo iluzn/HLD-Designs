@@ -1343,3 +1343,65 @@ Quick reference for capacity planning:
 | 2. Fundamentals | **You're here** |
 | 3. Interview Framework | [The 45-Min Approach →](/approach) |
 | 4. Practice | [HLD Problems →](/hld) |
+
+
+<style>
+.cat-toolbar { display: flex; justify-content: flex-end; margin: 0.4rem 0 0.9rem; }
+.cat-toggle-all { font-size: 0.78rem; font-weight: 600; color: var(--accent); background: none; border: 1px solid var(--border); border-radius: 8px; padding: 0.38rem 0.85rem; cursor: pointer; font-family: inherit; transition: border-color 0.2s; }
+.cat-toggle-all:hover { border-color: var(--accent); }
+.cat-card { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 0.7rem; overflow: hidden; background: var(--card-bg); transition: border-color 0.2s; }
+.cat-card.open { border-color: rgba(129,140,248,0.35); }
+.cat-head { display: flex; align-items: center; gap: 0.6rem; width: 100%; text-align: left; background: none; border: none; color: var(--text); font-family: inherit; font-size: 0.96rem; font-weight: 700; padding: 0.85rem 1.05rem; cursor: pointer; }
+.cat-head:hover { color: var(--accent); }
+.cat-chev { display: inline-block; transition: transform 0.2s; color: var(--text-dim); font-size: 0.8rem; }
+.cat-card.open .cat-chev { transform: rotate(90deg); }
+.cat-count { margin-left: auto; font-size: 0.7rem; font-weight: 700; color: var(--accent-light); background: var(--tag-bg); border: 1px solid var(--tag-border); padding: 2px 9px; border-radius: 20px; }
+.cat-body { display: none; padding: 0 1.05rem 0.5rem; }
+.cat-card.open .cat-body { display: block; }
+.cat-body table { margin-bottom: 0.6rem; border: none; border-radius: 0; }
+</style>
+
+<script>
+(function () {
+  function run() {
+    var content = document.querySelector('.content');
+    if (!content || content.querySelector('.cat-card')) return;
+    var tracker = null;
+    content.querySelectorAll('h2').forEach(function (h) { if (/Learning Tracker/i.test(h.textContent)) tracker = h; });
+    if (!tracker) return;
+    var el = tracker.nextElementSibling, groups = [];
+    while (el && el.tagName !== 'H2') {
+      if (el.tagName === 'H3') {
+        var tbl = el.nextElementSibling;
+        while (tbl && tbl.tagName !== 'TABLE' && tbl.tagName !== 'H3' && tbl.tagName !== 'H2') tbl = tbl.nextElementSibling;
+        if (tbl && tbl.tagName === 'TABLE') groups.push({ h3: el, table: tbl });
+      }
+      el = el.nextElementSibling;
+    }
+    if (!groups.length) return;
+    groups.forEach(function (g, i) {
+      var rows = g.table.querySelectorAll('tbody tr').length || Math.max(0, g.table.querySelectorAll('tr').length - 1);
+      var card = document.createElement('div'); card.className = 'cat-card' + (i === 0 ? ' open' : '');
+      var head = document.createElement('button'); head.type = 'button'; head.className = 'cat-head';
+      head.innerHTML = '<span class="cat-chev">\u25B8</span>' + g.h3.textContent + '<span class="cat-count">' + rows + ' concepts</span>';
+      var body = document.createElement('div'); body.className = 'cat-body';
+      g.h3.parentNode.insertBefore(card, g.h3);
+      card.appendChild(head); card.appendChild(body); body.appendChild(g.table); g.h3.remove();
+      head.addEventListener('click', function () { card.classList.toggle('open'); });
+    });
+    var firstCard = content.querySelector('.cat-card');
+    var toolbar = document.createElement('div'); toolbar.className = 'cat-toolbar';
+    var toggleAll = document.createElement('button'); toggleAll.type = 'button'; toggleAll.className = 'cat-toggle-all'; toggleAll.textContent = 'Expand all';
+    toolbar.appendChild(toggleAll);
+    firstCard.parentNode.insertBefore(toolbar, firstCard);
+    toggleAll.addEventListener('click', function () {
+      var cards = content.querySelectorAll('.cat-card');
+      var anyClosed = [].some.call(cards, function (c) { return !c.classList.contains('open'); });
+      cards.forEach(function (c) { c.classList.toggle('open', anyClosed); });
+      toggleAll.textContent = anyClosed ? 'Collapse all' : 'Expand all';
+    });
+  }
+  if (document.readyState !== 'loading') setTimeout(run, 350);
+  else document.addEventListener('DOMContentLoaded', function () { setTimeout(run, 350); });
+})();
+</script>
