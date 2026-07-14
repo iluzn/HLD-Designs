@@ -7,9 +7,9 @@ hide_author: true
 hide_toc: true
 ---
 
-# SDE-3 / Senior Target Companies — India
+# SDE-3 / Senior Salaries by Company — India
 
-Senior level (~5–8+ years). Search, filter by **location / category / minimum comp / status**, sort any column, and track your applications with the **Status** dropdown and **Comment** field (saved in your browser).
+Senior level (~5–8+ years). Search, filter by **location / category / minimum comp / status**, sort any column, and track your applications with the **Status** dropdown and **Comment** field.
 
 **Levels:** [SDE-1](/target-companies/sde-1/) · [SDE-2](/target-companies/sde-2/) · [SDE-3 / Senior](/target-companies/sde-3/) · [Overview](/target-companies/)
 

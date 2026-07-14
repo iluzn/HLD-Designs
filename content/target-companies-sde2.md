@@ -7,9 +7,9 @@ hide_author: true
 hide_toc: true
 ---
 
-# SDE-2 Target Companies — India
+# SDE-2 Salaries by Company — India
 
-Mid level (~2–5 years). Search, filter by **location / category / minimum comp / status**, sort any column, and track your applications with the **Status** dropdown and **Comment** field (saved in your browser).
+Mid level (~2–5 years). Search, filter by **location / category / minimum comp / status**, sort any column, and track your applications with the **Status** dropdown and **Comment** field.
 
 **Levels:** [SDE-1](/target-companies/sde-1/) · [SDE-2](/target-companies/sde-2/) · [SDE-3 / Senior](/target-companies/sde-3/) · [Overview](/target-companies/)
 
