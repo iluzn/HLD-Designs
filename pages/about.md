@@ -3,6 +3,7 @@ permalink: /about/
 layout: default
 title: "About - SystemCraft"
 description: "About SystemCraft - free system design, LLD, and DSA interview prep trusted by 2000+ engineers."
+hide_author: true
 ---
 
 # About SystemCraft
