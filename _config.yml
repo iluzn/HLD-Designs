@@ -43,3 +43,13 @@ exclude:
   - Gemfile.lock
   - vendor/
   - node_modules/
+
+# ---------------------------------------------------------------------------
+# Carbon Ads (https://www.carbonads.net). Leave blank until approved.
+# After approval, paste the two IDs from your Carbon dashboard here and the
+# ad unit turns on site-wide automatically (via _includes/carbon-ads.html).
+#   carbon_serve:     the serve code, looks like "CE...ABC123"
+#   carbon_placement: usually your site name, e.g. "systemcraftin"
+# ---------------------------------------------------------------------------
+carbon_serve: ""
+carbon_placement: ""

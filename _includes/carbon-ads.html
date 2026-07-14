@@ -1,0 +1,21 @@
+<!-- Carbon Ads. Activates only when carbon_serve AND carbon_placement are set in _config.yml.
+     Get these two IDs from your carbonads.net dashboard after approval. -->
+{% assign _cs = site.carbon_serve %}
+{% assign _cp = site.carbon_placement %}
+{% if _cs and _cp and _cs != "" and _cp != "" %}
+<div class="carbon-wrap">
+  <script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve={{ _cs }}&placement={{ _cp }}" id="_carbonads_js"></script>
+</div>
+{% endif %}
+
+<style>
+.carbon-wrap { display: flex; justify-content: center; margin: 1.6rem 0; }
+#carbonads { display: block; max-width: 340px; overflow: hidden; font-family: inherit; font-size: 0.8rem; line-height: 1.4; background: var(--card-bg, #191923); border: 1px solid var(--border, rgba(255,255,255,0.08)); border-radius: 12px; }
+#carbonads a { color: var(--text-muted, #9ba3b0); text-decoration: none; }
+#carbonads a:hover { color: var(--text, #e8edf3); }
+#carbonads .carbon-wrap-inner { display: flex; padding: 0.9rem; gap: 0.8rem; }
+#carbonads .carbon-img { flex-shrink: 0; }
+#carbonads .carbon-img img { display: block; border-radius: 6px; }
+#carbonads .carbon-text { display: block; color: var(--text-muted, #9ba3b0); }
+#carbonads .carbon-poweredby { display: block; padding: 0.4rem 0.9rem; background: rgba(127,127,127,0.06); border-top: 1px solid var(--border, rgba(255,255,255,0.08)); color: var(--text-dim, #6b7280); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.4px; text-decoration: none; }
+</style>

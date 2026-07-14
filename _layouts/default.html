@@ -287,7 +287,6 @@
             .content h2 { font-size: 1.15rem; }
         }
     </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7164350749425405" crossorigin="anonymous"></script>
     {% include auth-styles.html %}
 </head>
 <body>
@@ -320,6 +319,7 @@
                 <a href="/">Home</a> &rsaquo; <span>{{ page.title }}</span>
             </div>
             {{ content }}
+            {% include carbon-ads.html %}
             {% unless page.url contains '/profile' or page.hide_author %}
             <div class="author-byline">
                 <img class="author-byline-avatar" src="{{ site.author.image }}" alt="{{ site.author.name }}" width="48" height="48" loading="lazy">
