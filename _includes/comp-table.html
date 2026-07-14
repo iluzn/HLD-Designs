@@ -41,6 +41,8 @@
 
 <script>
 (function () {
+function boot() {
+ try {
   var LEVEL = window.SC_LEVEL || 's2';
   var ALL = (window.SC_COMP_ALL || []).filter(function (r) { return r[LEVEL]; });
   var STATUSES = ['Not started', 'Interested', 'Applied', 'Referral', 'Interviewing', 'Offer', 'Rejected'];
@@ -165,5 +167,12 @@
     render();
   };
   render();
+ } catch (err) {
+  var r = document.getElementById('ct-root');
+  if (r) r.innerHTML = '<div style="padding:1rem;color:#f87171;border:1px solid #f87171;border-radius:8px;">Tracker failed to load: ' + (err && err.message ? err.message : err) + '</div>';
+  if (window.console) console.error('comp-table error', err);
+ }
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
 </script>
