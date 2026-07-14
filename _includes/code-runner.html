@@ -228,22 +228,31 @@
       });
     }
 
-    // POST to Piston with a single retry on 429 (global rate limit).
+    // POST to the backend, retrying transient failures (network error, timeout,
+    // 429/5xx) with exponential backoff before giving up.
     function execute(payload) {
-      function once() {
+      var MAX = 3, TIMEOUT = 12000;
+      function wait(n) { var ms = Math.min(4000, 600 * Math.pow(2, n - 1)) + Math.floor(Math.random() * 300); status.textContent = 'Busy, retrying (' + n + ')…'; return new Promise(function (r) { setTimeout(r, ms); }); }
+      function attempt(n) {
+        var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+        var to = ctrl ? setTimeout(function () { ctrl.abort(); }, TIMEOUT) : null;
         return fetch(PISTON + '/execute', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          signal: ctrl ? ctrl.signal : undefined
+        }).then(function (res) {
+          if (to) clearTimeout(to);
+          var transient = (res.status === 429 || res.status === 500 || res.status === 502 || res.status === 503 || res.status === 504);
+          if (transient && n < MAX) return wait(n).then(function () { return attempt(n + 1); });
+          return res;
+        }).catch(function (err) {
+          if (to) clearTimeout(to);
+          if (n < MAX) return wait(n).then(function () { return attempt(n + 1); });
+          throw err;
         });
       }
-      return once().then(function (res) {
-        if (res.status === 429) {
-          status.textContent = 'Busy, retrying…';
-          return new Promise(function (r) { setTimeout(r, 1200); }).then(once);
-        }
-        return res;
-      });
+      return attempt(1);
     }
 
     var running = false;
@@ -279,7 +288,8 @@
           ? '<span class="sc-ok">✓ exit 0</span>'
           : '<span class="sc-err">exit ' + esc(code) + '</span>';
       }).catch(function (err) {
-        outEl.innerHTML = '<span class="sc-err">' + esc(err.message || 'Something went wrong.') + '</span>';
+        var msg = (err && err.name === 'AbortError') ? 'The execution service timed out after several retries. It may be briefly overloaded — try again in a few seconds.' : (err && err.message ? err.message : 'Could not reach the execution service after several retries. Try again in a few seconds.');
+        outEl.innerHTML = '<span class="sc-err">' + esc(msg) + '</span>';
         status.textContent = '';
       }).then(function () {
         running = false;

@@ -63,15 +63,47 @@
   function themeName() { return document.documentElement.getAttribute('data-theme') === 'light' ? 'eclipse' : 'material-darker'; }
 
   // ---- execution ----
+  // The execution backend (proxied via the Worker) can hiccup transiently:
+  // shared-tier rate limits, a container OOM/restart, or a cold start. Rather
+  // than fail on the first blip, retry transient failures (network error,
+  // timeout, 429/5xx) with exponential backoff before surfacing an error.
+  var EXEC_MAX_ATTEMPTS = 3;   // total tries
+  var EXEC_TIMEOUT_MS = 12000; // per-attempt hard timeout
+  function execRetryMsg(n) {
+    if (!consoleBody) return;
+    consoleBody.innerHTML = '<div class="lc-verdict run"><span class="lc-spinner"></span>&nbsp;&nbsp;Execution service is busy — retrying (' + n + '/' + (EXEC_MAX_ATTEMPTS - 1) + ')…</div>';
+    if (statusEl) statusEl.textContent = 'Retrying…';
+  }
   function execute(lang, source, stdin) {
     var m = META[lang];
-    return fetch(ENDPOINT + '/execute', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ language: m.piston, version: '*', files: [{ name: m.file, content: source }], stdin: stdin || '' }),
-    }).then(function (r) {
-      if (r.status === 429) return new Promise(function (x) { setTimeout(x, 1200); }).then(function () { return execute(lang, source, stdin); });
-      return r.json();
-    });
+    var payload = JSON.stringify({ language: m.piston, version: '*', files: [{ name: m.file, content: source }], stdin: stdin || '' });
+    function backoff(n) {
+      var ms = Math.min(4000, 600 * Math.pow(2, n - 1)) + Math.floor(Math.random() * 300);
+      execRetryMsg(n);
+      return new Promise(function (x) { setTimeout(x, ms); });
+    }
+    function attempt(n) {
+      var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+      var to = ctrl ? setTimeout(function () { ctrl.abort(); }, EXEC_TIMEOUT_MS) : null;
+      return fetch(ENDPOINT + '/execute', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: payload, signal: ctrl ? ctrl.signal : undefined,
+      }).then(function (r) {
+        if (to) clearTimeout(to);
+        var transient = (r.status === 429 || r.status === 502 || r.status === 503 || r.status === 504 || r.status === 500);
+        if (transient && n < EXEC_MAX_ATTEMPTS) return backoff(n).then(function () { return attempt(n + 1); });
+        return r.json().then(function (d) {
+          // Worker returns an error-shaped body when the backend is unreachable — retry that too.
+          if (d && d.error && !d.run && !d.compile && n < EXEC_MAX_ATTEMPTS) return backoff(n).then(function () { return attempt(n + 1); });
+          return d;
+        });
+      }).catch(function (err) {
+        if (to) clearTimeout(to);
+        if (n < EXEC_MAX_ATTEMPTS) return backoff(n).then(function () { return attempt(n + 1); });
+        throw err;
+      });
+    }
+    return attempt(1);
   }
 
   var busy = false;
@@ -151,7 +183,7 @@
         finalize();
       }
     }).catch(function () {
-      consoleBody.innerHTML = '<div class="lc-verdict wa">Backend Unavailable <small>Could not reach the execution service.</small></div>';
+      consoleBody.innerHTML = '<div class="lc-verdict wa">Backend Unavailable <small>The execution service didn\'t respond after several retries. It may be briefly overloaded — wait a few seconds and try again.</small></div>';
       busy = false; runBtn.disabled = false; submitBtn.disabled = false; statusEl.textContent = '';
     });
   }
