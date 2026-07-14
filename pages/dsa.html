@@ -104,6 +104,16 @@ permalink: /dsa/
     </div>
 </div>
 
+<!-- Practice by Pattern -->
+<div class="section">
+    <h2 class="section-title">Practice by Pattern</h2>
+    <p class="section-sub">The fastest way in: pick a pattern and start solving. Counts are live, and once you sign in each card shows how many you've cleared.</p>
+    <div class="diff-chips" id="dsa-diff-chips"></div>
+    <div class="pattern-grid" id="dsa-patterns">
+        <div class="pat-skeleton"></div><div class="pat-skeleton"></div><div class="pat-skeleton"></div><div class="pat-skeleton"></div>
+    </div>
+</div>
+
 <!-- Curated Problem Lists -->
 <div class="section">
     <h2 class="section-title">Curated Problem Lists</h2>
@@ -412,10 +422,33 @@ footer a:hover { text-decoration: underline; }
 .qb-pill:hover { border-color: var(--accent); color: var(--text); }
 .qb-pill em { font-style: normal; color: var(--accent-light); font-weight: 700; margin-left: 0.15rem; }
 
+/* Difficulty quick-chips */
+.diff-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+.diff-chip { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 600; padding: 0.42rem 0.9rem; border-radius: 20px; text-decoration: none; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-muted); transition: border-color 0.2s, transform 0.2s, color 0.2s; }
+.diff-chip:hover { border-color: var(--accent); color: var(--text); transform: translateY(-1px); }
+.diff-chip b { font-weight: 800; color: var(--text); }
+.diff-chip.easy b { color: #22c55e; } .diff-chip.medium b { color: #eab308; } .diff-chip.hard b { color: #ef4444; }
+
+/* Practice-by-pattern grid */
+.pattern-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); gap: 0.8rem; }
+.pat-card { position: relative; display: flex; flex-direction: column; gap: 0.5rem; min-height: 116px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 1.05rem 1.15rem; text-decoration: none; color: var(--text); transition: border-color 0.25s, transform 0.2s, box-shadow 0.2s; overflow: hidden; }
+.pat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), #a78bfa); opacity: 0; transition: opacity 0.25s; }
+.pat-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 12px 30px rgba(129,140,248,0.14); }
+.pat-card:hover::before { opacity: 1; }
+.pat-top { display: flex; align-items: center; justify-content: space-between; }
+.pat-icon { font-size: 1.35rem; line-height: 1; }
+.pat-count { font-size: 0.7rem; font-weight: 700; color: var(--accent-light); background: var(--tag-bg); border: 1px solid var(--tag-border); padding: 2px 9px; border-radius: 20px; }
+.pat-name { font-size: 0.94rem; font-weight: 700; line-height: 1.25; }
+.pat-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: auto; }
+.pat-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #a78bfa); border-radius: 3px; width: 0%; transition: width 0.5s; }
+.pat-solved { font-size: 0.66rem; color: var(--text-dim); margin-top: 0.15rem; }
+.pat-skeleton { min-height: 116px; border-radius: 14px; border: 1px solid var(--border); background: linear-gradient(100deg, var(--card-bg) 30%, rgba(129,140,248,0.06) 50%, var(--card-bg) 70%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+
 @media (max-width: 768px) {
     .hero h1 { font-size: 2rem; }
     .hero { padding: 3rem 1.5rem 1.5rem; }
     .hero-stats { gap: 1.5rem; }
+    .pattern-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
     .dsa-live-grid { grid-template-columns: 1fr; }
     .start-grid { grid-template-columns: 1fr; }
     .lists-grid { grid-template-columns: 1fr; }
@@ -666,6 +699,45 @@ document.querySelectorAll('a').forEach(function(a) {
             slugs.forEach(function (s) { (CAT[s].topics || []).forEach(function (t) { topicCount[t] = (topicCount[t] || 0) + 1; }); });
             var topics = Object.keys(topicCount).sort(function (a, b) { return topicCount[b] - topicCount[a]; }).slice(0, 10);
             q.innerHTML = '<span class="qb-label">Popular topics:</span>' + topics.map(function (t) { return '<a class="qb-pill" href="/problemset?topic=' + encodeURIComponent(t) + '">' + esc(t) + ' <em>' + topicCount[t] + '</em></a>'; }).join('');
+        }
+
+        // Difficulty quick-chips
+        var chipsEl = document.getElementById('dsa-diff-chips');
+        if (chipsEl) {
+            chipsEl.innerHTML =
+                '<a class="diff-chip easy" href="/problemset?difficulty=easy"><b>' + byDiff.easy + '</b> Easy</a>' +
+                '<a class="diff-chip medium" href="/problemset?difficulty=medium"><b>' + byDiff.medium + '</b> Medium</a>' +
+                '<a class="diff-chip hard" href="/problemset?difficulty=hard"><b>' + byDiff.hard + '</b> Hard</a>' +
+                '<a class="diff-chip" href="/problemset"><b>' + total + '</b> All</a>';
+        }
+
+        // Practice-by-pattern grid (topic must match catalog topic names exactly)
+        var patEl = document.getElementById('dsa-patterns');
+        if (patEl) {
+            var PATTERNS = [
+                ['Array', 'Arrays & Hashing', '🗃️'], ['Two Pointers', 'Two Pointers', '↔️'],
+                ['Sliding Window', 'Sliding Window', '🪟'], ['Stack', 'Stack', '📚'],
+                ['Binary Search', 'Binary Search', '🔎'], ['Linked List', 'Linked List', '🔗'],
+                ['Tree', 'Trees', '🌳'], ['Heap', 'Heap / Priority Queue', '⛰️'],
+                ['Backtracking', 'Backtracking', '🧭'], ['Graph', 'Graphs', '🕸️'],
+                ['Dynamic Programming', 'Dynamic Programming', '🧩'], ['Greedy', 'Greedy', '🎯'],
+                ['Intervals', 'Intervals', '📏'], ['Trie', 'Tries', '🌲'],
+                ['Bit Manipulation', 'Bit Manipulation', '🔢'], ['Math', 'Math & Geometry', '➗']
+            ];
+            var solvedMap = {}; solved.forEach(function (s) { solvedMap[s] = 1; });
+            var html = PATTERNS.map(function (p) {
+                var topic = p[0], tot = 0, sol = 0;
+                slugs.forEach(function (s) { if ((CAT[s].topics || []).indexOf(topic) !== -1) { tot++; if (solvedMap[s]) sol++; } });
+                if (!tot) return '';
+                var pct = Math.round(sol / tot * 100);
+                var bar = (user && sol > 0)
+                    ? '<div class="pat-bar"><div class="pat-bar-fill" style="width:' + pct + '%"></div></div><div class="pat-solved">' + sol + ' / ' + tot + ' solved</div>'
+                    : '';
+                return '<a class="pat-card" href="/problemset?topic=' + encodeURIComponent(topic) + '">' +
+                    '<div class="pat-top"><span class="pat-icon">' + p[2] + '</span><span class="pat-count">' + tot + '</span></div>' +
+                    '<div class="pat-name">' + p[1] + '</div>' + bar + '</a>';
+            }).join('');
+            patEl.innerHTML = html || '<p class="section-sub">Patterns loading…</p>';
         }
     }
     function ready(fn) { if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
