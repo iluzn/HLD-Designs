@@ -1,7 +1,7 @@
 ---
 layout: lc
 title: "Generate Parentheses - Online Judge"
-description: "Solve Generate Parentheses like LeetCode in Python, Java, C++, or JavaScript with instant verdicts and test cases."
+description: "Generate Parentheses (Medium): Given n pairs of parentheses, return all combinations of well-formed parentheses, in any order. Solve it online in Python, Java, C++ or JavaScript with instant verdicts."
 permalink: /dsa/problem/generate-parentheses
 ---
 {% raw %}

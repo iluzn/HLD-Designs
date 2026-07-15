@@ -1,7 +1,7 @@
 ---
 layout: lc
 title: "Climbing Stairs - Online Judge"
-description: "Solve Climbing Stairs like LeetCode in Python, Java, C++, or JavaScript with instant verdicts and test cases."
+description: "Climbing Stairs (Easy): You are climbing a staircase with n steps. Each time you can climb 1 or 2 steps. In how many distinct ways can you… Solve it online in Python, Java, C++ or JavaScript with instant verdicts."
 permalink: /dsa/problem/climbing-stairs
 ---
 {% raw %}

@@ -182,6 +182,26 @@ var _seen = {}; var _deduped = [];
 P.forEach(function (p) { if (!_seen[p.slug]) { _seen[p.slug] = 1; _deduped.push(p); } });
 P.length = 0; _deduped.forEach(function (p) { P.push(p); });
 
+// ---------- unique SEO meta description per problem ----------
+// Built from the real problem statement + difficulty so no two pages share
+// the same meta description (fixes Google "crawled - currently not indexed").
+function stripHtml(s) {
+  return String(s || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/&le;/g, '<=').replace(/&ge;/g, '>=').replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ').trim();
+}
+function metaDesc(p) {
+  var snip = stripHtml(p.desc);
+  if (snip.length > 118) snip = snip.slice(0, 115).replace(/\s+\S*$/, '') + '…';
+  var d = cap(p.difficulty);
+  var desc = p.title + ' (' + d + '): ' + snip +
+    ' Solve it online in Python, Java, C++ or JavaScript with instant verdicts.';
+  return desc.replace(/\s+/g, ' ').trim().replace(/"/g, '\\"');
+}
+
 // ---------- write ----------
 var indexRows = [];
 P.forEach(function (p) {
@@ -207,7 +227,7 @@ P.forEach(function (p) {
     '<details class="lc-topics"><summary>Topics</summary><div class="lc-tags">' + topics + '</div></details>\n' +
     p.desc + '\n' + exs + '\n' + cons + '\n' +
     '<script>\nwindow.SC_LC = ' + JSON.stringify(sc) + ';\n</script>';
-  var fm = '---\nlayout: lc\ntitle: "' + p.title + ' - Online Judge"\ndescription: "Solve ' + p.title + ' like LeetCode in Python, Java, C++, or JavaScript with instant verdicts and test cases."\npermalink: /dsa/problem/' + p.slug + '\n---\n';
+  var fm = '---\nlayout: lc\ntitle: "' + p.title + ' - Online Judge"\ndescription: "' + metaDesc(p) + '"\npermalink: /dsa/problem/' + p.slug + '\n---\n';
   fs.writeFileSync(path.join(OUT, p.slug + '.md'), fm + '{% raw %}\n' + body + '\n{% endraw %}\n');
   indexRows.push({ slug: p.slug, title: p.title, difficulty: p.difficulty, topics: p.topics, n: cases.length });
 });

@@ -1,7 +1,7 @@
 ---
 layout: lc
 title: "Counting Bits - Online Judge"
-description: "Solve Counting Bits like LeetCode in Python, Java, C++, or JavaScript with instant verdicts and test cases."
+description: "Counting Bits (Easy): Given an integer n , return an array ans of length n + 1 where ans[i] is the number of 1 -bits in the binary… Solve it online in Python, Java, C++ or JavaScript with instant verdicts."
 permalink: /dsa/problem/counting-bits
 ---
 {% raw %}

@@ -1,7 +1,7 @@
 ---
 layout: lc
 title: "Fibonacci Number - Online Judge"
-description: "Solve Fibonacci Number like LeetCode in Python, Java, C++, or JavaScript with instant verdicts and test cases."
+description: "Fibonacci Number (Easy): The Fibonacci numbers satisfy F(0)=0 , F(1)=1 , and F(n)=F(n-1)+F(n-2) for n > 1. Given n , return F(n) . Solve it online in Python, Java, C++ or JavaScript with instant verdicts."
 permalink: /dsa/problem/fibonacci-number
 ---
 {% raw %}
