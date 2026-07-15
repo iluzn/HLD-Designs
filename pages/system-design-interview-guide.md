@@ -116,28 +116,28 @@ Twelve designs, in order, chosen so each one teaches a new pattern. Do these dee
   <div class="sdg-tier">
     <div class="sdg-tier-h">Foundations — one service, one pattern</div>
     <ol>
-      <li><a href="/hld/URLShortner">URL Shortener</a> — ID generation, caching, read-heavy scaling</li>
-      <li><a href="/hld/RateLimiter">Rate Limiter</a> — Redis token bucket, shared counters</li>
-      <li><a href="/hld/KeyValueStore">Key-Value Store</a> — partitioning, replication, quorum</li>
-      <li><a href="/hld/Pastebin">Pastebin</a> — object storage, CDN, TTL cleanup</li>
+      <li><a href="/hld/URLShortner/">URL Shortener</a> — ID generation, caching, read-heavy scaling</li>
+      <li><a href="/hld/RateLimiter/">Rate Limiter</a> — Redis token bucket, shared counters</li>
+      <li><a href="/hld/KeyValueStore/">Key-Value Store</a> — partitioning, replication, quorum</li>
+      <li><a href="/hld/Pastebin/">Pastebin</a> — object storage, CDN, TTL cleanup</li>
     </ol>
   </div>
   <div class="sdg-tier">
     <div class="sdg-tier-h">Core — multi-service, async, real-time</div>
     <ol start="5">
-      <li><a href="/hld/ChatSystem">Chat System</a> — WebSockets, delivery, offline queues</li>
-      <li><a href="/hld/NotificationSystem">Notification System</a> — Kafka fan-out, retries, DLQ</li>
-      <li><a href="/hld/TwitterFeed">Twitter Feed</a> — fan-out on write vs read, celebrity problem</li>
-      <li><a href="/hld/BookMyShow">BookMyShow</a> — distributed locks, seat holds, payment saga</li>
+      <li><a href="/hld/ChatSystem/">Chat System</a> — WebSockets, delivery, offline queues</li>
+      <li><a href="/hld/NotificationSystem/">Notification System</a> — Kafka fan-out, retries, DLQ</li>
+      <li><a href="/hld/TwitterFeed/">Twitter Feed</a> — fan-out on write vs read, celebrity problem</li>
+      <li><a href="/hld/BookMyShow/">BookMyShow</a> — distributed locks, seat holds, payment saga</li>
     </ol>
   </div>
   <div class="sdg-tier">
     <div class="sdg-tier-h">Advanced — correctness & deep trade-offs</div>
     <ol start="9">
-      <li><a href="/hld/DigitalWallet">Digital Wallet</a> — double-entry ledger, idempotency, saga</li>
-      <li><a href="/hld/Uber">Uber</a> — geo-indexing, real-time matching, surge</li>
-      <li><a href="/hld/StockBroker">Stock Broker</a> — order matching, event sourcing, CQRS</li>
-      <li><a href="/hld/GoogleDocs">Google Docs</a> — CRDT/OT, conflict resolution, presence</li>
+      <li><a href="/hld/DigitalWallet/">Digital Wallet</a> — double-entry ledger, idempotency, saga</li>
+      <li><a href="/hld/Uber/">Uber</a> — geo-indexing, real-time matching, surge</li>
+      <li><a href="/hld/StockBroker/">Stock Broker</a> — order matching, event sourcing, CQRS</li>
+      <li><a href="/hld/GoogleDocs/">Google Docs</a> — CRDT/OT, conflict resolution, presence</li>
     </ol>
   </div>
 </div>
