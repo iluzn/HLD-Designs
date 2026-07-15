@@ -7,7 +7,7 @@ permalink: /lld/MusicPlayer/
 
 # Designing a Music Player
 
-⚡ **Difficulty:** Medium 🏷️ **Patterns:** Strategy, Observer, State, Iterator 🏢 **Asked at:** PhonePe, Spotify, Amazon, Flipkart
+**Difficulty:** Medium **Patterns:** Strategy, Observer, State, Iterator **Asked at:** PhonePe, Spotify, Amazon, Flipkart
 
 ---
 

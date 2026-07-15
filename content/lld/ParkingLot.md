@@ -7,7 +7,7 @@ description: "Low-level design for a parking lot with multi-floor spots, strateg
 
 # Designing a Parking Lot System
 
-⚡ **Difficulty:** Beginner 🏷️ **Patterns:** Strategy, Factory, Observer, Composition 🏢 **Asked at:** Flipkart, PhonePe, Amazon, Google, Uber
+**Difficulty:** Beginner **Patterns:** Strategy, Factory, Observer, Composition **Asked at:** Flipkart, PhonePe, Amazon, Google, Uber
 
 ---
 

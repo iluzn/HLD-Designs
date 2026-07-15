@@ -7,8 +7,8 @@ description: "Notification system design (HLD): multi-channel push, email and SM
 
 # Notification System - HLD
 
-⚡ **Difficulty:** Intermediate
-📋 **Prerequisites:** [Fundamentals](/concepts) - especially [Message Queues](/concepts#message-queues), [Fan-Out Patterns](/concepts#fan-out-patterns), and [Caching](/concepts#caching)
+**Difficulty:** Intermediate
+**Prerequisites:** [Fundamentals](/concepts) - especially [Message Queues](/concepts#message-queues), [Fan-Out Patterns](/concepts#fan-out-patterns), and [Caching](/concepts#caching)
 
 ---
 

@@ -7,8 +7,8 @@ permalink: /hld/Uber/
 
 # Designing a Ride Sharing Platform (Uber / Lyft)
 
-⚡ **Difficulty:** Advanced 🏷️ **Topics:** Real-Time Matching, Location Tracking, WebSocket, Surge Pricing, Geohash 🏢 **Asked at:** Uber, Lyft, Ola, Grab, Google, Amazon
-📋 **Prerequisites:** [Fundamentals](/concepts) - especially [Geospatial Indexing](/concepts#geospatial-indexing), [Real-Time Communication](/concepts#real-time-communication-websocket-vs-sse-vs-polling), and [Message Queues](/concepts#message-queues)
+**Difficulty:** Advanced **Topics:** Real-Time Matching, Location Tracking, WebSocket, Surge Pricing, Geohash **Asked at:** Uber, Lyft, Ola, Grab, Google, Amazon
+**Prerequisites:** [Fundamentals](/concepts) - especially [Geospatial Indexing](/concepts#geospatial-indexing), [Real-Time Communication](/concepts#real-time-communication-websocket-vs-sse-vs-polling), and [Message Queues](/concepts#message-queues)
 
 ---
 

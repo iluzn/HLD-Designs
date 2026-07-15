@@ -7,7 +7,7 @@ permalink: /lld/MultilevelCache/
 
 # Designing Multilevel Cache - Hierarchical Caching System
 
-⚡ **Difficulty:** Medium-Hard 🏷️ **Patterns:** Strategy, Composition, Facade 🏢 **Asked at:** PhonePe, Flipkart, Amazon, Walmart
+**Difficulty:** Medium-Hard **Patterns:** Strategy, Composition, Facade **Asked at:** PhonePe, Flipkart, Amazon, Walmart
 
 ---
 

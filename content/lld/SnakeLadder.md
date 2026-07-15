@@ -7,7 +7,7 @@ permalink: /lld/SnakeLadder/
 
 # Designing Snake & Ladder - Turn-Based Board Game
 
-⚡ **Difficulty:** Medium 🏷️ **Patterns:** Strategy, State, Command, Observer 🏢 **Asked at:** PhonePe, Flipkart, Amazon, Swiggy
+**Difficulty:** Medium **Patterns:** Strategy, State, Command, Observer **Asked at:** PhonePe, Flipkart, Amazon, Swiggy
 
 ---
 

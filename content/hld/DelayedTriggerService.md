@@ -7,8 +7,8 @@ description: "System design for Delayed Trigger Service - architecture, deep div
 
 # HLD: Delayed Trigger Service
 
-⚡ **Difficulty:** Intermediate–Advanced
-📋 **Prerequisites:** [Fundamentals](/concepts) - especially [Message Queues](/concepts#message-queues) and [Leader Election](/concepts#leader-election)
+**Difficulty:** Intermediate–Advanced
+**Prerequisites:** [Fundamentals](/concepts) - especially [Message Queues](/concepts#message-queues) and [Leader Election](/concepts#leader-election)
 
 ---
 

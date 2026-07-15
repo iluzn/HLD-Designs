@@ -7,8 +7,8 @@ description: "System design for a gaming leaderboard - Redis sorted sets, rank q
 
 # Designing a Real-Time Leaderboard
 
-⚡ **Difficulty:** Beginner 🏷️ **Topics:** Redis Sorted Sets, Sharding, Real-Time Updates 🏢 **Asked at:** Dream11, Riot Games, Amazon, Google
-📋 **Prerequisites:** [Fundamentals](/concepts) - especially [Caching](/concepts#caching)
+**Difficulty:** Beginner **Topics:** Redis Sorted Sets, Sharding, Real-Time Updates **Asked at:** Dream11, Riot Games, Amazon, Google
+**Prerequisites:** [Fundamentals](/concepts) - especially [Caching](/concepts#caching)
 
 ---
 

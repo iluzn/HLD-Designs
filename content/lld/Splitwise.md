@@ -7,7 +7,7 @@ permalink: /lld/Splitwise/
 
 # Designing Splitwise - Expense Splitting System
 
-⚡ **Difficulty:** Medium 🏷️ **Patterns:** Strategy, Observer, Facade 🏢 **Asked at:** PhonePe, Flipkart, Amazon, Razorpay
+**Difficulty:** Medium **Patterns:** Strategy, Observer, Facade **Asked at:** PhonePe, Flipkart, Amazon, Razorpay
 
 ---
 
