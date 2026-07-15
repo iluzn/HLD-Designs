@@ -46,7 +46,7 @@ onAuthStateChanged(auth, async function (user) {
 
 async function persist() {
   if (window._scUser) {
-    try { await setDoc(doc(db, 'users', window._scUser.uid), { judge: window._scJudge }, { merge: true }); } catch (e) { console.error('judge save failed', e); }
+    try { await setDoc(doc(db, 'users', window._scUser.uid), { judge: window._scJudge }, { merge: true }); } catch (e) { console.error('judge save failed', e); if (window.scReport) scReport('judge_save_error', e && e.message); }
   } else {
     try { localStorage.setItem(ANON_KEY, JSON.stringify(window._scJudge)); } catch (e) {}
   }

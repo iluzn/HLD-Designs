@@ -184,6 +184,7 @@
       }
     }).catch(function () {
       consoleBody.innerHTML = '<div class="lc-verdict wa">Backend Unavailable <small>The execution service didn\'t respond after several retries. It may be briefly overloaded — wait a few seconds and try again.</small></div>';
+      if (window.scReport) scReport('judge_backend_error', (P && P.id ? P.id : '') + ':' + curLang());
       busy = false; runBtn.disabled = false; submitBtn.disabled = false; statusEl.textContent = '';
     });
   }

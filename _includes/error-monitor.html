@@ -1,0 +1,34 @@
+<!-- Lightweight production error monitor. Reports uncaught JS errors and unhandled
+     promise rejections to GA4 as `exception` events (visible under Reports → Events,
+     event name "exception"), plus a manual window.scReport(kind, detail) hook that
+     app code uses for feature failures (e.g. judge backend errors). Session-capped
+     and deduped so a loop can't spam your analytics. No-ops if gtag isn't loaded. -->
+<script>
+(function () {
+  var MAX = 15;            // hard cap on events per page load
+  var seen = {}, count = 0;
+  function send(name, params) {
+    if (count >= MAX) return;
+    count++;
+    try { if (window.gtag) gtag('event', name, params); } catch (e) {}
+  }
+  function report(desc, fatal) {
+    desc = String(desc == null ? 'unknown' : desc).slice(0, 300);
+    var key = desc.slice(0, 120);
+    if (seen[key]) return;   // dedupe identical messages
+    seen[key] = 1;
+    send('exception', { description: desc, fatal: !!fatal, page: location.pathname });
+  }
+  window.addEventListener('error', function (e) {
+    if (e && e.message) report(e.message + ' @ ' + (e.filename || '') + ':' + (e.lineno || 0), true);
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    var r = e && e.reason;
+    report('promise: ' + ((r && (r.message || r)) || 'rejection'), false);
+  });
+  // App code calls this for feature-level failures/successes it wants tracked.
+  window.scReport = function (kind, detail) {
+    send(kind, { detail: String(detail == null ? '' : detail).slice(0, 200), page: location.pathname });
+  };
+})();
+</script>

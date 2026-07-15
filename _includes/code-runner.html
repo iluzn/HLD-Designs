@@ -290,6 +290,7 @@
       }).catch(function (err) {
         var msg = (err && err.name === 'AbortError') ? 'The execution service timed out after several retries. It may be briefly overloaded — try again in a few seconds.' : (err && err.message ? err.message : 'Could not reach the execution service after several retries. Try again in a few seconds.');
         outEl.innerHTML = '<span class="sc-err">' + esc(msg) + '</span>';
+        if (window.scReport) scReport('exec_backend_error', (err && err.name) || 'error');
         status.textContent = '';
       }).then(function () {
         running = false;
