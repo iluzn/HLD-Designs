@@ -642,7 +642,7 @@ nav a.active { color: var(--accent); background: rgba(129,140,248,0.1); font-wei
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
-.hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), #a78bfa, #f472b6, var(--accent)); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: gradientShift 6s ease infinite; }
+.hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), var(--accent-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .hero p { color: var(--text-muted); font-size: 1.05rem; max-width: 620px; margin: 0 auto 1.5rem; }
 .hero-stats { display: flex; justify-content: center; gap: 2.5rem; margin-top: 1.5rem; }
 .hero-stat { text-align: center; }
@@ -766,7 +766,7 @@ body::after { content: ''; position: fixed; top: 0; left: 0; width: 100%; height
 /* Card border shimmer */
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 .path-card::after, .pop-card::after, .problem-card:not(.coming-soon)::after { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: linear-gradient(90deg, transparent, rgba(129,140,248,0.4), transparent); background-size: 200% 100%; -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-.path-card:hover::after, .pop-card:hover::after, .problem-card:not(.coming-soon):hover::after { opacity: 1; animation: shimmer 2s linear infinite; }
+.path-card:hover::after, .pop-card:hover::after, .problem-card:not(.coming-soon):hover::after { opacity: 0.6; }
 
 /* Footer */
 footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.82rem; }
