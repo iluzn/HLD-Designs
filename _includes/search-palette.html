@@ -41,12 +41,17 @@
 .sc-search-empty svg { opacity: 0.4; margin-bottom: 0.6rem; }
 .sc-search-foot { display: flex; gap: 1.1rem; padding: 0.6rem 1rem; border-top: 1px solid var(--border); font-size: 0.68rem; color: var(--text-dim); }
 .sc-search-foot .sc-key { display:inline-flex; align-items:center; justify-content:center; min-width:16px; height:16px; padding:0 4px; border:1px solid var(--border); border-radius:4px; color: var(--text-muted); font-weight:600; margin-right:0.25rem; }
-.sc-search-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 0.34rem 0.7rem; border-radius: 8px; margin: 0 0.25rem 0 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; transition: all 0.2s; }
+.sc-search-btn { background: var(--glass, rgba(255,255,255,0.04)); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 0.4rem 0.7rem; border-radius: 10px; margin: 0 0.25rem 0 0.5rem; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; transition: all 0.2s; min-width: 240px; justify-content: flex-start; }
 .sc-search-btn:hover { color: var(--text); border-color: var(--accent); background: rgba(129,140,248,0.06); }
 .sc-search-btn .sc-btn-label { color: var(--text-dim); font-weight: 500; }
 .sc-search-btn:hover .sc-btn-label { color: var(--text-muted); }
+.sc-search-btn .sc-btn-kbd { margin-left: auto; font-size: 0.66rem; font-weight: 600; color: var(--text-dim); border: 1px solid var(--border); border-radius: 5px; padding: 0.1rem 0.35rem; letter-spacing: 0.03em; }
+@media (max-width: 900px) {
+    .sc-search-btn { min-width: 150px; }
+    .sc-search-btn .sc-btn-kbd { display: none; }
+}
 @media (max-width: 640px) {
-    .sc-search-btn { padding: 0.35rem; border-radius: 50%; margin: 0 0.3rem; }
+    .sc-search-btn { padding: 0.35rem; border-radius: 50%; margin: 0 0.3rem; min-width: 0; justify-content: center; }
     .sc-search-btn .sc-btn-label { display: none; }
     .sc-search-foot { display: none; }
     #sc-search-overlay { padding-top: 8vh; }
@@ -249,7 +254,7 @@
         var btn = document.createElement('button');
         btn.className = 'sc-search-btn';
         btn.setAttribute('aria-label', 'Search');
-        btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="sc-btn-label">Search</span>';
+        btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="sc-btn-label">Search designs, DSA, companies…</span><span class="sc-btn-kbd">\u2318K</span>';
         btn.addEventListener('click', open);
         var themeBtn = document.getElementById('theme-btn');
         if (themeBtn) nav.insertBefore(btn, themeBtn); else nav.insertBefore(btn, nav.firstChild);
