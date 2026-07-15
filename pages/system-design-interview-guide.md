@@ -6,11 +6,18 @@ permalink: /system-design-interview-guide/
 hide_toc: true
 ---
 
-# The Interview Prep Playbook
+<div class="sdg-hero">
+  <span class="sdg-badge">Interview Prep · 2026</span>
+  <h1>The Interview Prep <em>Playbook</em></h1>
+  <p>Skip the giant reading list. This answers three questions fast — <strong>which rounds am I facing, what's my plan, and what do I do in the room</strong> — and links straight into the practice on this site.</p>
+  <div class="sdg-hero-stats">
+    <span><b>3</b> rounds</span>
+    <span><b>20</b> HLD designs</span>
+    <span><b>360+</b> DSA problems</span>
+  </div>
+</div>
 
-**Updated June 2026 · For HLD, LLD, and DSA rounds at Amazon, Google, Meta, PhonePe, Uber, Stripe, Flipkart, and startups.**
-
-Most guides hand you a giant reading list and wish you luck. This one is built to answer three questions fast: **which rounds am I facing, what's my plan, and what do I do in the room.** Everything links straight into the practice on this site.
+Built for HLD, LLD, and DSA rounds at Amazon, Google, Meta, PhonePe, Uber, Stripe, Flipkart, and startups.
 
 ---
 
@@ -182,6 +189,14 @@ Rarely for new grads, yes for SDE-2 at most top companies, and with higher depth
 - [LLD Fundamentals](/lld-fundamentals) — for machine coding rounds
 - [DSA Problemset](/dsa) — 360+ problems with an in-browser judge
 
+<a class="sdg-cta" href="/concepts">
+  <div>
+    <strong>Ready to start?</strong>
+    <span>Begin with the fundamentals, then work the curated path above.</span>
+  </div>
+  <span class="sdg-cta-go">Start with Fundamentals →</span>
+</a>
+
 <style>
 .sdg-rounds { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
 .sdg-round { display: flex; flex-direction: column; gap: 0.4rem; padding: 1.3rem; border: 1px solid var(--border); border-radius: 14px; background: var(--bg-card, rgba(25,25,35,0.6)); text-decoration: none; color: var(--text); transition: border-color 0.2s, transform 0.2s; }
@@ -210,4 +225,24 @@ Rarely for new grads, yes for SDE-2 at most top companies, and with higher depth
 .sdg-tier-h { font-size: 0.8rem; font-weight: 700; color: var(--accent); margin-bottom: 0.6rem; }
 .sdg-tier ol { margin: 0; padding-left: 1.2rem; } .sdg-tier li { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.45rem; }
 .sdg-tier a { font-weight: 600; }
+
+/* Hero */
+.breadcrumbs { display: none; }
+.sdg-hero { text-align: center; padding: 1rem 0 0.5rem; }
+.sdg-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); background: var(--tag-bg, rgba(129,140,248,0.1)); border: 1px solid var(--tag-border, rgba(129,140,248,0.25)); padding: 0.25rem 0.7rem; border-radius: 20px; margin-bottom: 0.9rem; }
+.sdg-hero h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.5px; margin: 0 0 0.7rem; border: none; padding: 0; }
+.sdg-hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), var(--accent-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.sdg-hero p { color: var(--text-muted); max-width: 640px; margin: 0 auto; line-height: 1.65; }
+.sdg-hero-stats { display: flex; justify-content: center; gap: 1.6rem; margin-top: 1.2rem; }
+.sdg-hero-stats span { font-size: 0.8rem; color: var(--text-dim); } .sdg-hero-stats b { display: block; font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+
+/* Round cards get a colored top accent */
+.sdg-round { position: relative; overflow: hidden; }
+.sdg-round::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-light)); }
+
+/* Closing CTA */
+.sdg-cta { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin: 2rem 0 1rem; padding: 1.3rem 1.6rem; border-radius: 14px; text-decoration: none; color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-light)); transition: transform 0.2s, box-shadow 0.2s; }
+.sdg-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(129,140,248,0.28); }
+.sdg-cta strong { display: block; font-size: 1.02rem; } .sdg-cta span { font-size: 0.85rem; opacity: 0.92; }
+.sdg-cta-go { font-weight: 700; font-size: 0.9rem; white-space: nowrap; background: rgba(255,255,255,0.18); padding: 0.5rem 1rem; border-radius: 9px; }
 </style>

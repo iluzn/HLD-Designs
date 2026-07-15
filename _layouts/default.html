@@ -514,6 +514,7 @@
         (function() {
             var toc = document.getElementById('toc-links');
             var mobileToc = document.getElementById('mobile-toc-drawer');
+            if (!toc || !mobileToc) return;   // hide_toc pages have no sidebar — skip safely
             var headings = document.querySelectorAll('.content h2, .content h3');
             headings.forEach(function(h, i) {
                 if (!h.id) h.id = 'section-' + i;
