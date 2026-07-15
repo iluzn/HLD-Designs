@@ -1,224 +1,213 @@
 ---
 layout: default
 title: "System Design Interview Guide 2026 - Complete Preparation Roadmap"
-description: "How to prepare for system design interviews at FAANG, startups, and top tech companies. Step-by-step guide with topics, patterns, and practice problems."
+description: "How to prepare for system design, machine coding (LLD), and DSA interviews at FAANG, fintech, and startups. An opinionated roadmap: pick your rounds, build a plan, learn the framework, follow a curated path."
 permalink: /system-design-interview-guide/
+hide_toc: true
 ---
 
-# System Design Interview Guide - Complete Preparation Roadmap
+# The Interview Prep Playbook
 
-⚡ **Updated:** June 2026 🏢 **Target:** Amazon, Google, Meta, Microsoft, Uber, Stripe, Flipkart, and startups
+**Updated June 2026 · For HLD, LLD, and DSA rounds at Amazon, Google, Meta, PhonePe, Uber, Stripe, Flipkart, and startups.**
 
----
-
-## Who Is This For?
-
-Whether you're a mid-level engineer preparing for your first interview loop or a senior engineer targeting Staff+ roles, this guide gives you the exact roadmap to prepare efficiently across all three technical rounds: **high-level design (HLD)**, **low-level design / machine coding (LLD)**, and **data structures & algorithms (DSA)**. Most loops test two or three of these — jump to whichever you need from the Practice step below.
+Most guides hand you a giant reading list and wish you luck. This one is built to answer three questions fast: **which rounds am I facing, what's my plan, and what do I do in the room.** Everything links straight into the practice on this site.
 
 ---
 
-## Your Learning Path
+## Step 1 — Which rounds are you facing?
 
-Follow these steps in order. Each builds on the previous.
+Most loops test **two or three** of these. Figure out yours from the recruiter, then commit your time to the ones that count.
 
-<div class="learning-path">
-<a class="path-step current" href="/system-design-interview-guide">
-<div class="step-number">1</div>
-<div class="step-content">
-<strong>Prep Roadmap</strong> (You're here)
-<p>What to study, in what order, how long it takes</p>
-</div>
-</a>
-<div class="path-connector">↓</div>
-<a class="path-step" href="/concepts">
-<div class="step-number">2</div>
-<div class="step-content">
-<strong>System Design Fundamentals</strong>
-<p>CAP theorem, caching, sharding, queues, databases, geospatial indexing</p>
-</div>
-</a>
-<div class="path-connector">↓</div>
-<a class="path-step" href="/approach">
-<div class="step-number">3</div>
-<div class="step-content">
-<strong>The 45-Min Interview Framework</strong>
-<p>Exact structure, timing, phases, and what interviewers score on</p>
-</div>
-</a>
-<div class="path-connector">↓</div>
-<div class="path-step" style="flex-direction:column;align-items:flex-start;">
-<div style="display:flex;align-items:center;gap:1rem;width:100%;">
-<div class="step-number">4</div>
-<div class="step-content">
-<strong>Practice by Round</strong>
-<p>Pick the rounds you're facing and start solving. Most loops test two or three of these.</p>
-</div>
-</div>
-<div class="practice-tracks">
-<a href="/hld">HLD — 20 System Designs →</a>
-<a href="/lld">LLD — Machine Coding →</a>
-<a href="/dsa">DSA — 360+ Problems →</a>
-</div>
-</div>
+<div class="sdg-rounds">
+  <a class="sdg-round" href="/hld">
+    <div class="sdg-round-tag">Round type</div>
+    <h3>HLD — System Design</h3>
+    <p>Open-ended "Design X." Tests architecture, trade-offs, and how you scale. 45–60 min, whiteboard/verbal.</p>
+    <span class="sdg-round-go">20 designs to practice →</span>
+  </a>
+  <a class="sdg-round" href="/lld">
+    <div class="sdg-round-tag">Round type</div>
+    <h3>LLD — Machine Coding</h3>
+    <p>Build a working, modular OOP system in 90–120 min. Tests clean class design, patterns, extensibility.</p>
+    <span class="sdg-round-go">Machine coding problems →</span>
+  </a>
+  <a class="sdg-round" href="/dsa">
+    <div class="sdg-round-tag">Round type</div>
+    <h3>DSA — Coding</h3>
+    <p>Algorithmic problem solving under time pressure. Tests patterns, correctness, and communication.</p>
+    <span class="sdg-round-go">360+ problems + judge →</span>
+  </a>
 </div>
 
-<style>
-.learning-path { margin: 1.5rem 0 2rem; display: flex; flex-direction: column; align-items: center; }
-.path-step { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card, rgba(25,25,35,0.6)); width: 100%; max-width: 600px; text-decoration: none; color: var(--text); transition: border-color 0.2s, transform 0.2s; cursor: pointer; }
-.path-step:hover { border-color: var(--accent); transform: translateY(-2px); }
-.path-step.current { border-color: var(--accent); background: rgba(129,140,248,0.06); }
-.step-number { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
-.step-content strong { font-size: 0.95rem; color: var(--text); }
-.step-content p { font-size: 0.82rem; color: var(--text-muted); margin: 0.2rem 0 0; }
-.path-connector { color: var(--accent); font-size: 1.2rem; margin: 0.3rem 0; opacity: 0.6; }
-.practice-tracks { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.9rem; padding-left: 3rem; width: 100%; }
-.practice-tracks a { font-size: 0.82rem; font-weight: 600; padding: 0.45rem 0.9rem; border-radius: 8px; text-decoration: none; color: var(--accent); background: rgba(129,140,248,0.1); border: 1px solid rgba(129,140,248,0.3); transition: background 0.2s, transform 0.2s; }
-.practice-tracks a:hover { background: var(--accent); color: #fff; transform: translateY(-2px); }
-@media (max-width: 560px) { .practice-tracks { padding-left: 0; } }
-</style>
+---
+
+## Step 2 — Build your plan
+
+Pick the row that matches you. The plan assumes ~1–1.5 focused hours a day.
+
+<div class="sdg-plans">
+  <div class="sdg-plan">
+    <div class="sdg-plan-h"><b>Junior</b><span>0–2 YOE</span></div>
+    <div class="sdg-plan-t">6–8 weeks</div>
+    <ul>
+      <li>Nail <a href="/concepts">fundamentals</a> first (caching, DBs, queues).</li>
+      <li>DSA is usually the main gate — spend most time there.</li>
+      <li>8 beginner/intermediate HLD designs; light LLD.</li>
+    </ul>
+  </div>
+  <div class="sdg-plan featured">
+    <div class="sdg-plan-h"><b>Mid (SDE-2)</b><span>2–5 YOE</span></div>
+    <div class="sdg-plan-t">4–6 weeks</div>
+    <ul>
+      <li>All three rounds are in play — balance them.</li>
+      <li>Master the <a href="/approach">45-min framework</a> + 12–15 HLD designs.</li>
+      <li>Practice one full LLD build end-to-end weekly.</li>
+    </ul>
+  </div>
+  <div class="sdg-plan">
+    <div class="sdg-plan-h"><b>Senior+</b><span>5+ YOE</span></div>
+    <div class="sdg-plan-t">2–4 weeks</div>
+    <ul>
+      <li>Depth over breadth — advanced deep dives and trade-offs.</li>
+      <li>Own the conversation; drive scoping and tech choices.</li>
+      <li>Be ready to defend your real production work in the HM round.</li>
+    </ul>
+  </div>
+</div>
 
 ---
 
-## How System Design Interviews Actually Work
+## Step 3 — What to do in the room (the 45-minute HLD framework)
 
-A typical system design interview is 45-60 minutes. The interviewer gives you an open-ended problem ("Design Uber" or "Design a notification system") and evaluates:
+The single biggest score driver isn't knowing more tech — it's running the interview with structure. Spend your time like this:
 
-1. **Problem scoping** - Can you ask the right clarifying questions and narrow requirements?
-2. **High-level architecture** - Can you identify the right components and how they communicate?
-3. **Deep dive ability** - Can you go deep on 2-3 technical challenges and discuss trade-offs?
-4. **Communication** - Can you drive the conversation and explain your decisions clearly?
+<div class="sdg-phases">
+  <div class="sdg-phase"><span class="sdg-min">~5 min</span><b>Scope</b><p>Clarify functional + non-functional requirements. Pin down scale (QPS, data size, read/write ratio). Write them down.</p></div>
+  <div class="sdg-phase"><span class="sdg-min">~5 min</span><b>Entities & API</b><p>List core entities and one endpoint per requirement. This anchors the whole design.</p></div>
+  <div class="sdg-phase"><span class="sdg-min">~10 min</span><b>High-level design</b><p>Draw the boxes: client → edge → services → data. Introduce components only as a requirement forces them.</p></div>
+  <div class="sdg-phase"><span class="sdg-min">~15 min</span><b>Deep dives</b><p>Go deep on 2–3 hard parts. For each: naive approach, why it breaks, the fix. This is where senior signal lives.</p></div>
+  <div class="sdg-phase"><span class="sdg-min">~5 min</span><b>Wrap</b><p>Call out bottlenecks, failure modes, and what you'd do with more time.</p></div>
+</div>
 
-You're NOT expected to design a production system. You're expected to demonstrate structured thinking and trade-off awareness.
+Full breakdown with scripts and the scoring rubric: **[The 45-Min Interview Framework →](/approach)**
 
----
+### What interviewers actually score
+1. **Scoping** — do you ask the right questions before designing?
+2. **Architecture** — right components, sensible data flow.
+3. **Depth & trade-offs** — can you defend *why*, not just *what*? (SQL vs NoSQL is asked in almost every round.)
+4. **Communication** — you drive; it's a conversation, not a monologue.
 
-## Topics to Study (Priority Order)
-
-### Must-Know (Week 1-2)
-
-| Topic | Why It Matters | Learn It | Practice It |
-|-------|---------------|----------|-------------|
-| Load balancing | Every system needs it | [Fundamentals](/concepts) | [URL Shortener](/hld/URLShortner) |
-| Caching (Redis) | 80% of designs use a cache | [Fundamentals](/concepts) | [Rate Limiter](/hld/RateLimiter) |
-| Database choice (SQL vs NoSQL) | Most common trade-off question | [Fundamentals](/concepts) | [Key-Value Store](/hld/KeyValueStore) |
-| Message queues (Kafka) | Async processing, decoupling | [Fundamentals](/concepts) | [Notification System](/hld/NotificationSystem) |
-| API design (REST) | You'll design APIs in every interview | [Fundamentals](/concepts) | [Pastebin](/hld/Pastebin) |
-
-### Important (Week 3-4)
-
-| Topic | Why It Matters | Practice It |
-|-------|---------------|-------------|
-| Consistent hashing | Distributed data placement | [Key-Value Store](/hld/KeyValueStore) |
-| WebSockets / real-time | Chat, tracking, live updates | [Chat System](/hld/ChatSystem) |
-| CDN and object storage | Media-heavy systems | [Netflix / YouTube](/hld/Netflix) |
-| Distributed locking | Preventing double-booking | [Uber](/hld/Uber) |
-| Fan-out patterns | News feeds, notifications | [Twitter Feed](/hld/TwitterFeed) |
-
-### Advanced (Week 5+)
-
-| Topic | Why It Matters | Practice It |
-|-------|---------------|-------------|
-| Event sourcing / CQRS | Financial systems, audit trails | [Stock Broker](/hld/StockBroker) |
-| Saga pattern | Distributed transactions | [Digital Wallet](/hld/DigitalWallet) |
-| Conflict resolution (CRDT/OT) | Collaborative editing | [Google Docs](/hld/GoogleDocs) |
-| Geo-indexing (Geohash, H3) | Location-based systems | [Uber](/hld/Uber) |
-| Search (Elasticsearch) | Discovery, catalogs | [Zomato](/hld/Zomato) |
+You are *not* expected to design a production system. You're expected to show structured thinking and trade-off awareness.
 
 ---
 
-## Recommended Practice Problems (By Difficulty)
+## Step 4 — A curated path (not a reading list)
 
-### Beginner (Start Here)
+Twelve designs, in order, chosen so each one teaches a new pattern. Do these deeply — patterns transfer to any "Design X" you're handed.
 
-1. [URL Shortener (Bitly)](/hld/URLShortner) - ID generation, caching, redirects
-2. [Pastebin](/hld/Pastebin) - Object storage, metadata, TTL
-3. [Rate Limiter](/hld/RateLimiter) - Redis patterns, token bucket, sliding window
-4. [Key-Value Store](/hld/KeyValueStore) - Partitioning, replication, consistency
-5. [Unique ID Generator](/hld/UniqueIDGenerator) - Snowflake, UUID, range allocation
+<div class="sdg-track">
+  <div class="sdg-tier">
+    <div class="sdg-tier-h">Foundations — one service, one pattern</div>
+    <ol>
+      <li><a href="/hld/URLShortner">URL Shortener</a> — ID generation, caching, read-heavy scaling</li>
+      <li><a href="/hld/RateLimiter">Rate Limiter</a> — Redis token bucket, shared counters</li>
+      <li><a href="/hld/KeyValueStore">Key-Value Store</a> — partitioning, replication, quorum</li>
+      <li><a href="/hld/Pastebin">Pastebin</a> — object storage, CDN, TTL cleanup</li>
+    </ol>
+  </div>
+  <div class="sdg-tier">
+    <div class="sdg-tier-h">Core — multi-service, async, real-time</div>
+    <ol start="5">
+      <li><a href="/hld/ChatSystem">Chat System</a> — WebSockets, delivery, offline queues</li>
+      <li><a href="/hld/NotificationSystem">Notification System</a> — Kafka fan-out, retries, DLQ</li>
+      <li><a href="/hld/TwitterFeed">Twitter Feed</a> — fan-out on write vs read, celebrity problem</li>
+      <li><a href="/hld/BookMyShow">BookMyShow</a> — distributed locks, seat holds, payment saga</li>
+    </ol>
+  </div>
+  <div class="sdg-tier">
+    <div class="sdg-tier-h">Advanced — correctness & deep trade-offs</div>
+    <ol start="9">
+      <li><a href="/hld/DigitalWallet">Digital Wallet</a> — double-entry ledger, idempotency, saga</li>
+      <li><a href="/hld/Uber">Uber</a> — geo-indexing, real-time matching, surge</li>
+      <li><a href="/hld/StockBroker">Stock Broker</a> — order matching, event sourcing, CQRS</li>
+      <li><a href="/hld/GoogleDocs">Google Docs</a> — CRDT/OT, conflict resolution, presence</li>
+    </ol>
+  </div>
+</div>
 
-### Intermediate
-
-5. [Chat System (WhatsApp)](/hld/ChatSystem) - WebSockets, message delivery, offline handling
-6. [Notification System](/hld/NotificationSystem) - Multi-channel, Kafka, templating
-7. [Twitter Feed](/hld/TwitterFeed) - Fan-out, timeline, caching
-8. [Instagram](/hld/Instagram) - Photo upload, CDN, news feed
-9. [Leaderboard](/hld/Leaderboard) - Redis sorted sets, real-time ranking
-10. [Netflix / YouTube](/hld/Netflix) - Video encoding, adaptive streaming, recommendations
-11. [News Aggregator (Google News)](/hld/NewsAggregator) - Crawling, story clustering, personalized feed
-
-### Advanced
-
-11. [Uber / Lyft](/hld/Uber) - Real-time matching, Redis Geo, surge pricing
-12. [Zomato / Uber Eats](/hld/Zomato) - Search, dispatch, live tracking
-13. [BookMyShow](/hld/BookMyShow) - Seat booking, distributed locks, payment
-14. [Stock Broker (Robinhood)](/hld/StockBroker) - Order matching, event sourcing, CQRS
-15. [Digital Wallet (PhonePe)](/hld/DigitalWallet) - Double-entry ledger, saga, idempotency
-16. [Google Docs](/hld/GoogleDocs) - Collaborative editing, CRDT, real-time sync
-17. [Distributed Job Scheduler](/hld/JobScheduler) - Leader election, exactly-once, retries
-18. [Delayed Trigger Service](/hld/DelayedTriggerService) - Timing wheels, scheduled execution
-
----
-
-## How Long Does Preparation Take?
-
-| Your Level | Time Needed | Focus |
-|-----------|-------------|-------|
-| Junior (0-2 YOE) | 6-8 weeks | [Fundamentals](/concepts) + 8 beginner/intermediate problems |
-| Mid (2-5 YOE) | 4-6 weeks | All topics + 12-15 problems + [framework](/approach) mastery |
-| Senior (5+ YOE) | 2-4 weeks | Advanced topics + deep dive practice |
+Need the fundamentals behind these first? Start at **[System Design Fundamentals →](/concepts)**. Targeting a specific company? See **[Company-Specific Prep →](/companies)**.
 
 ---
 
-## Common Mistakes to Avoid
+## The 6 mistakes that sink interviews
 
-1. **Jumping to solutions** - Always spend 3-5 minutes on requirements first
-2. **Over-engineering** - A URL shortener doesn't need Kafka and microservices
-3. **Ignoring scale** - "Just use a database" isn't a design answer at 100K QPS
-4. **Not discussing trade-offs** - Every choice has downsides. Name them.
-5. **Monologuing** - The interview is a conversation. Pause and check in with the interviewer.
-6. **Solving random problems** - Study by pattern, not by difficulty. See [the framework](/approach).
+1. **Jumping to a solution** before scoping requirements. Spend the first 5 minutes clarifying.
+2. **Over-engineering** — a URL shortener doesn't need Kafka and 8 microservices.
+3. **Hand-waving scale** — "just use a database" is not an answer at 100K QPS.
+4. **Skipping trade-offs** — every choice has a downside. Name it before the interviewer does.
+5. **Monologuing** — pause, check in, let the interviewer steer.
+6. **Grinding random problems** — study by pattern, not by count. 12 deep beats 30 skimmed.
 
 ---
 
-## Frequently Asked Questions
+## FAQ
 
 **How many problems should I practice?**
+12–15 studied deeply. Understand the patterns; don't memorize solutions.
 
-12-15 problems, studied deeply, is better than 30 problems skimmed. Understand the patterns, not memorize solutions.
+**Do I need exact numbers?**
+No — just orders of magnitude: one Postgres ≈ 10K QPS, Redis ≈ 100K ops/sec, Kafka ≈ millions of events/sec. See [back-of-envelope estimation](/concepts#back-of-envelope-estimation).
 
-**Do I need to memorize exact numbers?**
+**Diagrams or text?**
+Always draw. A simple box-and-arrow diagram communicates more than five minutes of talking.
 
-No. But know orders of magnitude: "a single Postgres handles ~10K QPS," "Redis does 100K ops/sec," "Kafka handles millions of events/sec." See [back-of-envelope estimation](/concepts#back-of-envelope-estimation).
+**They asked a system I didn't prepare — now what?**
+The patterns transfer. Caching, queues, DB choice, and real-time delivery show up everywhere. Apply what you practiced.
 
-**Should I draw diagrams or use text?**
-
-Always draw. Interviewers are visual. Even a simple box-and-arrow diagram communicates better than 5 minutes of talking.
-
-**What if the interviewer asks about a system I haven't prepared?**
-
-The patterns transfer. If you've done 12 designs, you've seen caching, queues, databases, and real-time delivery. Apply those patterns to the new problem. The [cheat sheet in the approach page](/approach) helps here.
-
-**Is system design asked at all levels?**
-
-- Junior/New grad: Rarely (some companies ask simplified versions)
-- Mid-level (SDE-2): Yes, at most top companies
-- Senior+ (SDE-3, Staff): Yes, with higher depth expectations
+**Is system design asked at my level?**
+Rarely for new grads, yes for SDE-2 at most top companies, and with higher depth expectations for senior/staff.
 
 ---
 
-## The Complete Prep Roadmap
+## Your daily routine
 
-**Daily routine:**
-- 30 min: Read one concept from [fundamentals](/concepts)
-- 60 min: Solve one HLD problem (timer: 45 min attempt, 15 min review)
-- 15 min: Review the [approach framework](/approach) patterns table
+- **30 min** — read one concept from [Fundamentals](/concepts)
+- **60 min** — one HLD design (45-min timed attempt, 15-min review)
+- **15 min** — review the [framework](/approach) patterns, or solve one [DSA](/dsa) problem
 
----
+## Keep going
+- [System Design Fundamentals](/concepts) — CAP, caching, sharding, queues, DBs
+- [The 45-Min Interview Framework](/approach) — structure, scripts, scoring
+- [Company-Specific Prep](/companies) — Amazon, Google, Uber, Flipkart, PhonePe
+- [LLD Fundamentals](/lld-fundamentals) — for machine coding rounds
+- [DSA Problemset](/dsa) — 360+ problems with an in-browser judge
 
-## Related Resources
+<style>
+.sdg-rounds { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.sdg-round { display: flex; flex-direction: column; gap: 0.4rem; padding: 1.3rem; border: 1px solid var(--border); border-radius: 14px; background: var(--bg-card, rgba(25,25,35,0.6)); text-decoration: none; color: var(--text); transition: border-color 0.2s, transform 0.2s; }
+.sdg-round:hover { border-color: var(--accent); transform: translateY(-3px); }
+.sdg-round-tag { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); font-weight: 700; }
+.sdg-round h3 { font-size: 1.05rem; font-weight: 700; margin: 0; }
+.sdg-round p { font-size: 0.84rem; color: var(--text-muted); line-height: 1.55; margin: 0; flex: 1; }
+.sdg-round-go { font-size: 0.82rem; font-weight: 600; color: var(--accent); margin-top: 0.3rem; }
 
-- [System Design Fundamentals](/concepts) - CAP, caching, sharding, queues, DBs
-- [The 45-Min Interview Framework](/approach) - Exact structure and scoring criteria
-- [Quick-Fire 50 Cheatsheet](/cheatsheet) - DSA patterns at a glance
-- [Company-Specific Prep](/companies) - Amazon, Google, Uber, Flipkart
-- [LLD Fundamentals](/lld-fundamentals) - For machine coding rounds
+.sdg-plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.sdg-plan { border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem; background: var(--bg-card, rgba(25,25,35,0.6)); }
+.sdg-plan.featured { border-color: var(--accent); background: rgba(129,140,248,0.06); }
+.sdg-plan-h { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+.sdg-plan-h b { font-size: 1rem; } .sdg-plan-h span { font-size: 0.72rem; color: var(--text-dim); }
+.sdg-plan-t { font-size: 1.3rem; font-weight: 800; color: var(--accent); margin: 0.3rem 0 0.6rem; }
+.sdg-plan ul { margin: 0; padding-left: 1.1rem; } .sdg-plan li { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.35rem; }
+
+.sdg-phases { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.7rem; margin: 1.3rem 0; }
+.sdg-phase { border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem 1rem; background: var(--bg-card, rgba(25,25,35,0.6)); }
+.sdg-phase .sdg-min { display: inline-block; font-size: 0.68rem; font-weight: 700; color: var(--accent); background: var(--tag-bg, rgba(129,140,248,0.1)); border: 1px solid var(--tag-border, rgba(129,140,248,0.25)); padding: 1px 8px; border-radius: 20px; margin-bottom: 0.4rem; }
+.sdg-phase b { display: block; font-size: 0.9rem; margin-bottom: 0.2rem; }
+.sdg-phase p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin: 0; }
+
+.sdg-track { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.3rem 0; }
+.sdg-tier { border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.2rem; background: var(--bg-card, rgba(25,25,35,0.6)); }
+.sdg-tier-h { font-size: 0.8rem; font-weight: 700; color: var(--accent); margin-bottom: 0.6rem; }
+.sdg-tier ol { margin: 0; padding-left: 1.2rem; } .sdg-tier li { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.45rem; }
+.sdg-tier a { font-weight: 600; }
+</style>
