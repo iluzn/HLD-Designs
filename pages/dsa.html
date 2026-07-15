@@ -640,7 +640,9 @@ document.querySelectorAll('a').forEach(function(a) {
             var now = new Date();
             // Local day index so the daily rolls at the user's midnight, matching the header streak widget.
             var dayNum = Math.floor((now.getTime() - now.getTimezoneOffset() * 60000) / 86400000);
-            var d = list[((dayNum % list.length) + list.length) % list.length];
+            // Golden-ratio scatter so consecutive days mix easy/medium/hard (matches the header widget).
+            var df = (dayNum * 0.61803398875) % 1; if (df < 0) df += 1;
+            var d = list[Math.floor(df * list.length)];
             var c = CAT[d[0]] || {};
             var dEl = document.getElementById('dsa-daily');
             if (dEl) {

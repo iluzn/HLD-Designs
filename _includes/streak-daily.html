@@ -35,7 +35,10 @@
         var now = new Date();
         // Local day index so the daily rolls over at the user's midnight (matches the streak's local-day logic), not UTC.
         var dayNum = Math.floor((now.getTime() - now.getTimezoneOffset() * 60000) / 86400000);
-        var d = list[((dayNum % list.length) + list.length) % list.length];
+        // Golden-ratio low-discrepancy scatter: consecutive days jump across the whole
+        // list (mixing easy/medium/hard) instead of walking adjacent easy entries.
+        var f = (dayNum * 0.61803398875) % 1; if (f < 0) f += 1;
+        var d = list[Math.floor(f * list.length)];
         btn.href = '/dsa/problem/' + d[0];
         btn.title = 'Daily Challenge · ' + d[1];
     }
