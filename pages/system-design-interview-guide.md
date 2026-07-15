@@ -189,13 +189,12 @@ Rarely for new grads, yes for SDE-2 at most top companies, and with higher depth
 - [LLD Fundamentals](/lld-fundamentals) — for machine coding rounds
 - [DSA Problemset](/dsa) — 360+ problems with an in-browser judge
 
+<div class="sdg-cta-wrap">
 <a class="sdg-cta" href="/concepts">
-  <div>
-    <strong>Ready to start?</strong>
-    <span>Begin with the fundamentals, then work the curated path above.</span>
-  </div>
-  <span class="sdg-cta-go">Start with Fundamentals →</span>
+<span class="sdg-cta-text"><strong>Ready to start?</strong> Begin with the fundamentals, then work the curated path above.</span>
+<span class="sdg-cta-go">Start with Fundamentals →</span>
 </a>
+</div>
 
 <style>
 .sdg-rounds { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
@@ -243,6 +242,6 @@ Rarely for new grads, yes for SDE-2 at most top companies, and with higher depth
 /* Closing CTA */
 .sdg-cta { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin: 2rem 0 1rem; padding: 1.3rem 1.6rem; border-radius: 14px; text-decoration: none; color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-light)); transition: transform 0.2s, box-shadow 0.2s; }
 .sdg-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(129,140,248,0.28); }
-.sdg-cta strong { display: block; font-size: 1.02rem; } .sdg-cta span { font-size: 0.85rem; opacity: 0.92; }
+.sdg-cta-text { font-size: 0.9rem; opacity: 0.95; } .sdg-cta-text strong { display: block; font-size: 1.02rem; opacity: 1; margin-bottom: 0.1rem; }
 .sdg-cta-go { font-weight: 700; font-size: 0.9rem; white-space: nowrap; background: rgba(255,255,255,0.18); padding: 0.5rem 1rem; border-radius: 9px; }
 </style>
