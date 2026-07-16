@@ -301,7 +301,6 @@
                 <button class="theme-toggle" id="theme-btn" title="Toggle theme">🌙</button>
                 {% include daily-data.html %}
                 {% include streak-daily.html %}
-                {% include auth-button.html %}
                 <button class="hamburger" id="hamburger-btn" aria-label="Menu">&#9776;</button>
                 <div class="nav-links" id="nav-links">
                     <a href="/hld">HLD</a>
@@ -310,6 +309,7 @@
                     <a href="/target-companies/">Job Hunt</a>
                     <div class="nav-more"><button class="nav-more-btn" type="button">More <span class="nav-more-caret">▾</span></button><div class="nav-more-menu"><a href="/problemset">Problemset</a><a href="/companies/">Companies</a><a href="/system-design-interview-guide">SD Guide</a><a href="/about">About</a></div></div>
                 </div>
+                {% include auth-button.html %}
             </nav>
         </div>
     </header>

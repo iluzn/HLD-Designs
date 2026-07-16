@@ -9,10 +9,14 @@ hide_toc: true
 {% include sc-catalog.html %}
 
 {% raw %}
-<div id="pf-root" class="pf-root">Loading your dashboard…</div>
+<div id="pf-root" class="pf-root"><div class="pf-loading"><div class="pf-loading-pulse"></div><span>Loading your dashboard…</span></div></div>
 
 <style>
 .pf-root { max-width: 100%; }
+.pf-loading { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4rem 1rem; gap:1rem; }
+.pf-loading span { font-size:0.88rem; color:var(--text-muted); }
+.pf-loading-pulse { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--accent),#a78bfa); animation:pf-pulse 1.2s ease-in-out infinite; }
+@keyframes pf-pulse { 0%,100%{transform:scale(0.85);opacity:0.5;} 50%{transform:scale(1.1);opacity:1;} }
 .pf-hero { display:flex; align-items:center; gap:1rem; margin:0.4rem 0 1.4rem; }
 .pf-hero img { width:60px; height:60px; border-radius:50%; border:2px solid var(--border); }
 .pf-hero-fallback { width:60px; height:60px; border-radius:50%; background:linear-gradient(135deg,var(--accent),#a78bfa); display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:800; color:#fff; }
