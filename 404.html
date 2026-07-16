@@ -36,22 +36,37 @@ layout: none
         .links a.primary:hover { opacity: 0.9; }
         .path { margin-top: 2.5rem; font-size: 0.75rem; color: var(--text-dim); word-break: break-all; }
         .path code { background: var(--bg-card); border: 1px solid var(--border); padding: 0.2rem 0.5rem; border-radius: 4px; }
+        .snark { font-size: 0.82rem; color: var(--text-dim); font-style: italic; margin-top: 1.5rem; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="code">404</div>
-        <h1>Page not found</h1>
-        <p>The page you're looking for doesn't exist or has been moved. Here are some places to get started:</p>
+        <h1>Well, this is awkward.</h1>
+        <p>You just typed a URL that doesn't exist. Bold move. The confidence is inspiring, but the page isn't here. Maybe it never was. Maybe it's in another universe where you also passed your system design round.</p>
         <div class="links">
-            <a class="primary" href="/">Home</a>
+            <a class="primary" href="/">Take me home</a>
             <a href="/hld">HLD Designs</a>
             <a href="/lld">LLD Problems</a>
             <a href="/dsa">DSA Practice</a>
             <a href="/problemset">Problemset</a>
         </div>
-        <div class="path">Requested: <code id="path"></code></div>
+        <p class="snark" id="snark"></p>
+        <div class="path">You tried: <code id="path"></code></div>
     </div>
-    <script>document.getElementById('path').textContent = window.location.pathname;</script>
+    <script>
+        document.getElementById('path').textContent = window.location.pathname;
+        var snarks = [
+            "Pro tip: URLs work better when they actually exist.",
+            "This page has the same availability as your interviewer's patience.",
+            "404: Not Found. Kind of like your offer letter after that last round.",
+            "Even consistent hashing couldn't find this page.",
+            "This URL has worse uptime than your side project.",
+            "Looks like this page got rejected. It knows how that feels.",
+            "The page you're looking for has been garbage collected.",
+            "This link is as dead as your motivation after a 5-round interview loop."
+        ];
+        document.getElementById('snark').textContent = snarks[Math.floor(Math.random() * snarks.length)];
+    </script>
 </body>
 </html>
