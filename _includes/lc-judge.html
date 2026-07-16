@@ -107,9 +107,25 @@
   }
 
   var busy = false;
+  // Gate execution behind sign-in
+  function requireAuth() {
+    if (window._firebaseUser) return true;
+    // Show sign-in prompt in the console area
+    curTab = 'result'; syncConsoleTabs();
+    consoleBody.innerHTML = '<div class="lc-verdict wa" style="flex-direction:column;align-items:flex-start;gap:0.5rem;">' +
+      '<span>Sign in to run or submit code</span>' +
+      '<small style="color:var(--text-muted)">Free account — saves your progress and submissions across devices.</small>' +
+      '</div>';
+    statusEl.textContent = '';
+    // Trigger the auth button click if it exists
+    var ab = document.querySelector('.auth-btn:not(.signed-in)');
+    if (ab) ab.click();
+    return false;
+  }
   // All cases run in ONE execution: the harness reads T then loops, printing
   // one output line per case. We compare stdout line-by-line to expected.
   function runCases(cases, isSubmit) {
+    if (!requireAuth()) return;
     if (busy || !cm) return;
     busy = true; runBtn.disabled = true; submitBtn.disabled = true;
     statusEl.textContent = isSubmit ? 'Judging…' : 'Running…';
