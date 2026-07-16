@@ -25,7 +25,7 @@ You're building a game or competition with millions of players. Players earn sco
 ```mermaid
 flowchart LR
     GAME["Game Server"]:::client
-    DB[("Postgres<br/>players table")]:::data
+    DB[("DB<br/>players table")]:::data
     USER["Player"]:::client
 
     GAME --> DB
@@ -203,14 +203,14 @@ sequenceDiagram
 
 **New component:**
 
-4. **Postgres** - durable source of truth. Every score update is also written to Postgres. If Redis goes down, we rebuild the Sorted Set from the database.
+4. **Durable Store (Postgres / DynamoDB)** - source of truth. Every score update is also written here. If Redis goes down, we rebuild the Sorted Set from this store.
 
 ```mermaid
 flowchart LR
     GAME["Game Server"]:::client
     API["Leaderboard Service"]:::service
     REDIS[("Redis Sorted Set<br/>live rankings")]:::data
-    DB[("Postgres<br/>score history")]:::data
+    DB[("Durable Store<br/>Postgres or DynamoDB")]:::data
     USER["Player"]:::client
 
     GAME --> API
@@ -223,7 +223,7 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-**Why two stores?** Redis gives microsecond rank lookups (essential for 100K QPS). Postgres gives durability and SQL flexibility (for "show me all scores from last Tuesday"). Together: speed for live rankings, permanence for history.
+**Why two stores?** Redis gives microsecond rank lookups (essential for 100K QPS). The durable store (Postgres or DynamoDB) gives persistence — if Redis restarts, we rebuild from it. Pick Postgres if you need ad-hoc SQL queries over history; pick DynamoDB if you want zero-ops and infinite scale with simple key-value access patterns.
 
 ---
 
@@ -251,7 +251,7 @@ O(log N). For 10M players: ~23 operations internally. Microseconds.
 ZREVRANGE leaderboard 1541 1551 WITHSCORES  → 11 players around rank 1547
 ```
 
-This completes all three core functional requirements with just Redis + Postgres. Now let's address scale.
+This completes all three core functional requirements with just Redis + a durable store. Now let's address scale.
 
 ---
 
@@ -264,7 +264,7 @@ sequenceDiagram
     participant G as Game Server
     participant API as Leaderboard Service
     participant R as Redis
-    participant DB as Postgres
+    participant DB as Durable Store
 
     G->>API: POST /scores playerId=42 score=1500
     API->>R: ZADD leaderboard 1500 player_42
@@ -276,7 +276,7 @@ sequenceDiagram
     API-->>G: 200 newRank=1547
 ```
 
-**Non-obvious failure:** What if the Redis write succeeds but Postgres insert fails? The live leaderboard shows the new score, but if Redis restarts later, this score is lost during rebuild. Solution: log failed DB writes to a dead-letter queue and retry. Or make the DB write synchronous (acceptable at 50K WPS for a single INSERT).
+**Non-obvious failure:** What if the Redis write succeeds but the DB insert fails? The live leaderboard shows the new score, but if Redis restarts later, this score is lost during rebuild. Solution: log failed DB writes to a dead-letter queue and retry. Or make the DB write synchronous (acceptable at 50K WPS for a single INSERT).
 
 ---
 
@@ -363,7 +363,7 @@ Redis stores scores as float64 - this works for scores up to ~100M with millisec
 RENAME leaderboard:current leaderboard:archive:2026-W25
 ```
 
-This is atomic - zero gap. In a single operation: the current leaderboard becomes the archive, and a new empty `leaderboard:current` can be created immediately. Persist the archive to Postgres for historical queries, then delete from Redis after a day.
+This is atomic - zero gap. In a single operation: the current leaderboard becomes the archive, and a new empty `leaderboard:current` can be created immediately. Persist the archive to the durable store for historical queries, then delete from Redis after a day.
 
 ---
 
@@ -392,7 +392,7 @@ This is atomic - zero gap. In a single operation: the current leaderboard become
 | Question | Answer |
 |---|---|
 | Hot key problem? | The leaderboard IS a single key. But Redis ZSET handles 100K+ ops/sec per key. For extreme load, cache top-N results. |
-| Redis goes down? | Rebuild from Postgres. Takes minutes for 10M entries. During rebuild, serve stale data from a read replica or return "temporarily unavailable." |
+| Redis goes down? | Rebuild from the durable store (Postgres or DynamoDB). Takes minutes for 10M entries. During rebuild, serve stale data from a read replica or return "temporarily unavailable." |
 | Memory budget? | 10M entries × ~600 bytes = ~6GB in Redis. Comfortable for any cloud Redis instance. |
 | Anti-cheat? | Only game servers (authenticated) can submit scores. Never trust client-submitted scores. |
 
@@ -405,7 +405,7 @@ flowchart LR
     GAME["Game Servers"]:::client
     API["Leaderboard Service"]:::service
     REDIS[("Redis Sorted Set<br/>live rankings")]:::data
-    DB[("Postgres<br/>score history")]:::data
+    DB[("Durable Store<br/>Postgres or DynamoDB")]:::data
     CACHE["Top-K Cache<br/>1s TTL"]:::service
     USER["Players"]:::client
 
@@ -438,11 +438,11 @@ flowchart LR
 
 ### Mid-level
 
-Propose Redis Sorted Set for real-time ranking. Understand ZADD for updates and ZREVRANK for rank queries. Explain why SQL `ORDER BY` doesn't scale - it's O(N log N) per query vs O(log N) in Redis. Know that Redis is in-memory and needs a persistent backup (Postgres).
+Propose Redis Sorted Set for real-time ranking. Understand ZADD for updates and ZREVRANK for rank queries. Explain why SQL `ORDER BY` doesn't scale - it's O(N log N) per query vs O(log N) in Redis. Know that Redis is in-memory and needs a persistent backup (Postgres or DynamoDB).
 
 ### Senior
 
-Discuss regional sharding - local Redis per geography for low-latency writes. Explain tie-breaking with timestamp encoding. Propose dual-store (Redis for speed, Postgres for durability). Discuss the "1M viewers asking for top 100" problem and how application-level caching with short TTL solves it.
+Discuss regional sharding - local Redis per geography for low-latency writes. Explain tie-breaking with timestamp encoding. Propose dual-store (Redis for speed, Postgres/DynamoDB for durability). Discuss the "1M viewers asking for top 100" problem and how application-level caching with short TTL solves it.
 
 ### Staff+
 
@@ -454,7 +454,7 @@ Design the tiered architecture for global live events: regional Redis + Kafka + 
 
 - **Redis Sorted Set** gives O(log N) rank queries and updates - microseconds for millions of players
 - **ZREVRANGE** for top-N, **ZREVRANK** for "my rank" - both sub-millisecond
-- **Separate hot store (Redis) from cold store (Postgres)** for speed + durability
+- **Separate hot store (Redis) from durable store (Postgres or DynamoDB)** for speed + durability
 - **Cache the top-K** during live events to handle millions of identical reads
 
 ---
