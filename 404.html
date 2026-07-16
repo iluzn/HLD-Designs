@@ -37,9 +37,12 @@ layout: none
         .path { margin-top: 2.5rem; font-size: 0.75rem; color: var(--text-dim); word-break: break-all; }
         .path code { background: var(--bg-card); border: 1px solid var(--border); padding: 0.2rem 0.5rem; border-radius: 4px; }
         .snark { font-size: 0.82rem; color: var(--text-dim); font-style: italic; margin-top: 1.5rem; }
+        .theme-btn { position: fixed; top: 1.2rem; right: 1.2rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 0.5rem 0.65rem; border-radius: 8px; transition: all 0.2s; line-height: 1; }
+        .theme-btn:hover { color: var(--text); border-color: var(--accent); }
     </style>
 </head>
 <body>
+    <button class="theme-btn" id="theme-btn" title="Toggle theme">🌙</button>
     <div class="container">
         <div class="code">404</div>
         <h1>Well, this is awkward.</h1>
@@ -67,6 +70,17 @@ layout: none
             "This link is as dead as your motivation after a 5-round interview loop."
         ];
         document.getElementById('snark').textContent = snarks[Math.floor(Math.random() * snarks.length)];
+        // Theme toggle
+        var tb = document.getElementById('theme-btn');
+        function setTheme(t) {
+            document.documentElement.setAttribute('data-theme', t);
+            localStorage.setItem('theme', t);
+            tb.textContent = t === 'dark' ? '☀️' : '🌙';
+        }
+        setTheme(localStorage.getItem('theme') || 'dark');
+        tb.addEventListener('click', function() {
+            setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
     </script>
 </body>
 </html>
