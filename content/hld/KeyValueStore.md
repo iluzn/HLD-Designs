@@ -8,7 +8,7 @@ description: "System design for a distributed key-value store like Redis or Dyna
 # Designing a Distributed Key-Value Store
 
 **Difficulty:** Beginner–Intermediate **Topics:** Consistent Hashing, Replication, LSM Tree, Quorum **Asked at:** Amazon, Google, Meta, Microsoft, Databricks
-**Prerequisites:**[Consistent Hashing](/concepts/consistent-hashing/), [CAP Theorem](/concepts/cap-theorem/), and [Merkle Trees](/concepts/merkle-trees/)
+**Prerequisites:** [Fundamentals](/concepts) - especially [Consistent Hashing](/concepts#consistent-hashing), [CAP Theorem](/concepts#cap-theorem), and [Merkle Trees](/concepts#merkle-trees)
 
 ---
 
@@ -441,7 +441,7 @@ flowchart LR
 
 **Read Repair** - when a read hits multiple replicas and detects version mismatch, the router pushes the latest version to the stale replica. Passive healing on every read.
 
-**Anti-Entropy ([Merkle Trees](/concepts/merkle-trees/))** - for long outages where hints might overflow, a background process compares Merkle tree hashes between replicas.<br>💡 *A Merkle tree hashes data in a tree structure - if the root hashes differ, you recursively check children to find exactly which keys diverged. This minimizes data transfer during repair. [Learn more →](/concepts#merkle-trees)*
+**Anti-Entropy ([Merkle Trees](/concepts#merkle-trees))** - for long outages where hints might overflow, a background process compares Merkle tree hashes between replicas.<br>💡 *A Merkle tree hashes data in a tree structure - if the root hashes differ, you recursively check children to find exactly which keys diverged. This minimizes data transfer during repair. [Learn more →](/concepts#merkle-trees)*
 
 ```mermaid
 sequenceDiagram

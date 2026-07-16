@@ -8,7 +8,7 @@ description: "System design for a text-sharing service like Pastebin - unique ID
 # Designing Pastebin
 
 **Difficulty:** Beginner **Topics:** Object Storage, ID Generation, CDN, TTL **Asked at:** Google, Amazon, Meta
-**Prerequisites:**[Caching](/concepts/caching/) and [CDN](/concepts/cdn/)
+**Prerequisites:** [Fundamentals](/concepts) - especially [Caching](/concepts#caching) and [CDN](/concepts#cdn-content-delivery-network)
 
 ---
 

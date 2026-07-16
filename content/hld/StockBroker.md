@@ -10,7 +10,7 @@ permalink: /hld/StockBroker/
 # Designing a Stock Broker Platform (Robinhood / Zerodha)
 
 **Difficulty:** Advanced **Topics:** Order Matching, Event Sourcing, CQRS, Kafka, Delivery Semantics **Asked at:** Robinhood, Zerodha, Groww, Upstox, Goldman Sachs
-**Prerequisites:**[Event Sourcing](/concepts/event-sourcing/), [Message Queues](/concepts/message-queues/), and [Idempotency](/concepts/idempotency/)
+**Prerequisites:** [Fundamentals](/concepts) - especially [Event Sourcing](/concepts#event-sourcing--cqrs), [Message Queues](/concepts#message-queues), and [Idempotency](/concepts#idempotency)
 
 **In simple terms:** Your app's network drops mid-trade. It retries. Without protection, you buy the same stock twice. We need to guarantee that retrying a request never causes double-execution.
 

@@ -8,7 +8,7 @@ description: "System design for Distributed Job Scheduler - HLD - architecture, 
 # Distributed Job Scheduler - HLD
 
 **Difficulty:** Intermediate–Advanced
-**Prerequisites:**[Message Queues](/concepts/message-queues/), [Leader Election](/concepts/leader-election/), and [Database Indexing](/concepts/database-indexing/)
+**Prerequisites:** [Fundamentals](/concepts) - especially [Message Queues](/concepts#message-queues), [Leader Election](/concepts#leader-election), and [Database Indexing](/concepts#database-indexing)
 
 ---
 

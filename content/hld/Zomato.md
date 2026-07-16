@@ -8,7 +8,7 @@ description: "Food delivery system design (Zomato, Uber Eats, DoorDash): restaur
 # Designing a Food Delivery Service Like Zomato / Uber Eats / DoorDash
 
 **Difficulty:** Intermediate–Advanced
-**Prerequisites:**[Geospatial Indexing](/concepts/geospatial/), [Message Queues](/concepts/message-queues/), and [WebSockets](/concepts/websockets/)
+**Prerequisites:** [Fundamentals](/concepts) - especially [Geospatial Indexing](/concepts#geospatial-indexing), [Message Queues](/concepts#message-queues), and [Real-Time Communication](/concepts#real-time-communication-websocket-vs-sse-vs-polling)
 
 ---
 

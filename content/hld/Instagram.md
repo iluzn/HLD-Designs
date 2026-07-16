@@ -8,7 +8,7 @@ permalink: /hld/Instagram/
 # Designing Instagram / Pinterest - Photo Sharing Platform
 
 **Difficulty:** Intermediate **Topics:** CDN, Object Storage, Fan-out, Media Processing, Feed Ranking **Asked at:** Meta, Pinterest, Snap, Google, Amazon
-**Prerequisites:**[CDN](/concepts/cdn/), [Caching](/concepts/caching/), and [Fan-Out](/concepts/fan-out/)
+**Prerequisites:** [Fundamentals](/concepts) - especially [CDN](/concepts#cdn-content-delivery-network), [Caching](/concepts#caching), and [Fan-Out Patterns](/concepts#fan-out-patterns)
 
 ---
 

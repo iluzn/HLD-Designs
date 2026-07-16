@@ -8,7 +8,7 @@ description: "System design for a real-time messaging platform like WhatsApp or 
 # Designing a Chat System Like WhatsApp / iMessage
 
 **Difficulty:** Intermediate
-**Prerequisites:**[Message Queues](/concepts/message-queues/), [Caching](/concepts/caching/), and [WebSockets](/concepts/websockets/)
+**Prerequisites:** [Fundamentals](/concepts) - especially [Message Queues](/concepts#message-queues), [Caching](/concepts#caching), and [Real-Time Communication](/concepts#real-time-communication-websocket-vs-sse-vs-polling)
 
 ---
 
