@@ -15,7 +15,7 @@ permalink: /hld
     <style>html{background:#111118;color:#e8edf3;}html[data-theme="light"]{background:#fafbff;color:#0f172a;}</style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Free High Level Design (HLD) Problems - System Design Interview Preparation</title>
-    <meta name="description" content="Best free resources for high level design interview preparation. 19 system design problems with architecture diagrams, deep dives, and trade-offs. Beginner to advanced.">
+    <meta name="description" content="Best free resources for high level design interview preparation. 27 system design problems with architecture diagrams, deep dives, and trade-offs. Beginner to advanced.">
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -65,7 +65,7 @@ permalink: /hld
     <h1>High-Level Design <em>Problems</em></h1>
     <p>Distributed architectures with diagrams, technology choices, deep dives, and trade-offs. Built for interviews at Amazon, Google, Meta, and top startups.</p>
     <div class="hero-stats">
-        <div class="hero-stat"><strong>20</strong><span>Designs</span></div>
+        <div class="hero-stat"><strong>27</strong><span>Designs</span></div>
         <div class="hero-stat"><strong>3</strong><span>Difficulty Levels</span></div>
         <div class="hero-stat"><strong>50+</strong><span>Deep Dives</span></div>
     </div>
@@ -74,7 +74,7 @@ permalink: /hld
 <!-- Progress bar -->
 <div class="progress-strip" id="progress-strip" style="opacity:0.5;">
     <div class="progress-inner">
-        <span class="progress-label" id="progress-label">0/20 completed</span>
+        <span class="progress-label" id="progress-label">0/27 completed</span>
         <div class="progress-bar-track">
             <div class="progress-bar-fill" id="progress-fill"></div>
         </div>
@@ -239,7 +239,7 @@ permalink: /hld
     <div class="difficulty-group" data-difficulty="intermediate">
         <div class="group-header">
             <h2><span class="diff-dot yellow"></span> Intermediate</h2>
-            <span class="group-count">6 problems</span>
+            <span class="group-count">8 problems</span>
         </div>
         <div class="problems-grid">
 
@@ -356,13 +356,49 @@ permalink: /hld
                     <span class="company">Microsoft</span>
                 </div>
             </a>
+
+            <a class="problem-card" href="/hld/SearchAutocomplete/" data-difficulty="intermediate">
+                <div class="card-top">
+                    <span class="diff-badge yellow">Intermediate</span>
+                </div>
+                <h3>Search Autocomplete / Typeahead</h3>
+                <p class="card-desc">Trie data structure, prefix matching, real-time trending detection, caching hot prefixes.</p>
+                <div class="card-tags">
+                    <span class="tag">Trie</span>
+                    <span class="tag">Prefix Matching</span>
+                    <span class="tag">Trending</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Google</span>
+                    <span class="company">LinkedIn</span>
+                    <span class="company">Amazon</span>
+                </div>
+            </a>
+
+            <a class="problem-card" href="/hld/NearbyService/" data-difficulty="intermediate">
+                <div class="card-top">
+                    <span class="diff-badge yellow">Intermediate</span>
+                </div>
+                <h3>Nearby Service (Yelp / Google Maps)</h3>
+                <p class="card-desc">Geohash, quadtree, spatial indexing, high-frequency location updates, radius queries.</p>
+                <div class="card-tags">
+                    <span class="tag">Geohash</span>
+                    <span class="tag">Redis Geo</span>
+                    <span class="tag">Spatial Index</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Google</span>
+                    <span class="company">Uber</span>
+                    <span class="company">Swiggy</span>
+                </div>
+            </a>
         </div>
     </div>
 
     <div class="difficulty-group" data-difficulty="advanced">
         <div class="group-header">
             <h2><span class="diff-dot red"></span> Advanced</h2>
-            <span class="group-count">8 problems</span>
+            <span class="group-count">13 problems</span>
         </div>
         <div class="problems-grid">
 
@@ -519,13 +555,103 @@ permalink: /hld
                     <span class="company">Figma</span>
                 </div>
             </a>
+
+            <a class="problem-card" href="/hld/Dropbox/" data-difficulty="advanced">
+                <div class="card-top">
+                    <span class="diff-badge red">Advanced</span>
+                </div>
+                <h3>Cloud File Storage (Dropbox / Google Drive)</h3>
+                <p class="card-desc">Chunking, content-addressed dedup, delta sync, conflict resolution, version history.</p>
+                <div class="card-tags">
+                    <span class="tag">Chunking</span>
+                    <span class="tag">Dedup</span>
+                    <span class="tag">Delta Sync</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Dropbox</span>
+                    <span class="company">Google</span>
+                    <span class="company">Microsoft</span>
+                </div>
+            </a>
+
+            <a class="problem-card" href="/hld/MetricsMonitoring/" data-difficulty="advanced">
+                <div class="card-top">
+                    <span class="diff-badge red">Advanced</span>
+                </div>
+                <h3>Metrics Monitoring (Datadog / Prometheus)</h3>
+                <p class="card-desc">Time-series ingestion, Gorilla encoding, rollup aggregation, real-time alerting pipeline.</p>
+                <div class="card-tags">
+                    <span class="tag">Time-Series DB</span>
+                    <span class="tag">Aggregation</span>
+                    <span class="tag">Alerting</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Amazon</span>
+                    <span class="company">Uber</span>
+                    <span class="company">Netflix</span>
+                </div>
+            </a>
+
+            <a class="problem-card" href="/hld/AdSystem/" data-difficulty="advanced">
+                <div class="card-top">
+                    <span class="diff-badge red">Advanced</span>
+                </div>
+                <h3>Ad Serving and Auction System</h3>
+                <p class="card-desc">Real-time bidding, ML ad ranking, budget pacing, click fraud detection, impression tracking.</p>
+                <div class="card-tags">
+                    <span class="tag">RTB Auction</span>
+                    <span class="tag">ML Ranking</span>
+                    <span class="tag">Budget Pacing</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Google</span>
+                    <span class="company">Meta</span>
+                    <span class="company">Amazon</span>
+                </div>
+            </a>
+
+            <a class="problem-card" href="/hld/PaymentSystem/" data-difficulty="advanced">
+                <div class="card-top">
+                    <span class="diff-badge red">Advanced</span>
+                </div>
+                <h3>Payment System (Stripe / Razorpay)</h3>
+                <p class="card-desc">Payment orchestration, idempotency, double-entry ledger, settlement, reconciliation, PCI compliance.</p>
+                <div class="card-tags">
+                    <span class="tag">Idempotency</span>
+                    <span class="tag">Ledger</span>
+                    <span class="tag">Reconciliation</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">Stripe</span>
+                    <span class="company">Razorpay</span>
+                    <span class="company">PhonePe</span>
+                </div>
+            </a>
+
+            <a class="problem-card" href="/hld/MessageQueue/" data-difficulty="advanced">
+                <div class="card-top">
+                    <span class="diff-badge red">Advanced</span>
+                </div>
+                <h3>Distributed Message Queue (Kafka)</h3>
+                <p class="card-desc">Partitioned commit log, consumer groups, exactly-once delivery, ISR replication, ordering guarantees.</p>
+                <div class="card-tags">
+                    <span class="tag">Partitioned Log</span>
+                    <span class="tag">Exactly-Once</span>
+                    <span class="tag">Replication</span>
+                </div>
+                <div class="card-companies">
+                    <span class="company">LinkedIn</span>
+                    <span class="company">Uber</span>
+                    <span class="company">Confluent</span>
+                </div>
+            </a>
         </div>
     </div>
 
     <!-- Coming Soon -->
     <div class="section" style="margin-top:2rem;">
         <p style="font-size:0.85rem;color:var(--text-dim);text-align:center;">
-            <strong>Coming soon:</strong> Search Autocomplete, Dropbox / Google Drive, Metrics Monitoring, Nearby Places, Web Crawler, E-Commerce, Spotify, Trending Topics, Distributed Queue, Ad Aggregator
+            <strong>Coming soon:</strong> Web Crawler, E-Commerce Platform, Spotify Music Streaming, Trending Topics, Distributed Cache
         </p>
     </div>
 </div>
