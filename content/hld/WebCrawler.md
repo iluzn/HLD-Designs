@@ -5,94 +5,189 @@ title: "Design a Web Crawler & Search Engine - System Design Interview"
 description: "System design for a Google-scale web crawler and search engine: distributed crawling, dedup, inverted index, and low-latency query serving. A frequent PhonePe SDE-2 HLD question."
 ---
 
-# Designing a Web Crawler & Search Engine (Google-scale)
+# Designing a Web Crawler and Search Engine
 
-**Difficulty:** Advanced **Topics:** Distributed Crawling, Inverted Index, Dedup, Ranking, Frontier Queue **Asked at:** PhonePe, Google, Amazon, Microsoft
+**Difficulty:** Advanced
 **Prerequisites:**[Message Queues](/concepts/message-queues/), [Consistent Hashing](/concepts/consistent-hashing/), and [Bloom Filters](/concepts/bloom-filters/)
 
 ---
 
-## 1. Understanding the Problem
+## Understanding the Problem
 
-Two coupled systems: a **crawler** that discovers and downloads web pages at massive scale and stores their content, and a **query service** that indexes that content and answers user searches in milliseconds. The hard parts: crawling billions of pages politely (without hammering any one site), avoiding re-crawling the same content, building and updating an inverted index, and serving ranked results fast.
-
-**Real examples:** Googlebot + Google Search, Bing, and internal enterprise search. This is a repeatedly reported **PhonePe SDE-2 HLD** question, usually split as "part 1: the crawler service, part 2: the serving service."
+Two coupled systems: a **crawler** that discovers and downloads billions of web pages, and a **search service** that indexes that content and answers user queries in milliseconds. The hard parts: crawling politely without hammering any single site, avoiding re-crawling unchanged content, building a massive inverted index, and serving ranked results at sub-200ms latency.
 
 ---
 
-## 1.5. Naive First Cut
+## Naive First Cut
 
 ```mermaid
 flowchart LR
     SEED["Seed URLs"]:::client
-    CR["Single crawler loop"]:::service
-    DB[("One DB: pages")]:::data
-    Q["User query"]:::client
+    CRAWLER["Single Crawler"]:::service
+    DB[("One DB<br/>pages + index")]:::data
+    USER["Search User"]:::client
 
-    SEED --> CR
-    CR --> DB
-    Q --> DB
+    SEED --> CRAWLER
+    CRAWLER --> DB
+    USER --> DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-One process pulls a URL, downloads it, saves HTML, extracts links, repeats. Queries scan the pages table.
-
-**Why this breaks:**
-
-- One machine can't crawl billions of pages - throughput is hopelessly low.
-- No dedup - the same page/content gets fetched and stored repeatedly.
-- No politeness - it would hammer a single domain and get blocked.
-- Scanning HTML for a search term is O(all pages) - no inverted index, no ranking.
-- No recrawl strategy - content goes stale; no way to prioritize important pages.
-
-The rest of the doc evolves this into a distributed, deduplicated crawler feeding an inverted index behind a fast query service.
+Why this breaks:
+- Single crawler — at 1 page/sec, crawling 10B pages takes 317 years
+- No URL deduplication — the same page is fetched thousands of times via different links
+- No politeness — hammering a single domain causes your IP to be blocked
+- One database can't hold billions of documents AND serve as a search index
+- No ranking — results are returned in insertion order, not by relevance
 
 ---
 
-## 1.7. Prior Art We're Drawing From
+## Functional Requirements
 
-- **Google's Mercator / Googlebot** - A URL "frontier" that balances politeness (per-host rate limits) with priority (important pages crawled more often), plus content fingerprinting to skip duplicates. ([The Anatomy of a Search Engine](http://infolab.stanford.edu/~backrub/google.html))
-- **Apache Nutch / Hadoop** - Open-source distributed crawler + indexer that partitions the frontier and index across many nodes. ([Apache Nutch](https://nutch.apache.org/))
-- **Elasticsearch / Lucene inverted index** - The core serving primitive: term → posting list of documents, with BM25 relevance scoring. ([Lucene](https://lucene.apache.org/))
-- **Bloom filters for "seen URL" checks** - A space-efficient membership test to avoid re-enqueuing already-crawled URLs across billions of them. ([Bloom filter deep dive](/concepts/bloom-filters/))
+### Core (top 3)
+1. **Crawl the web** — discover, download, and store web pages at scale (1B+ pages)
+2. **Build an inverted index** — map every word to the pages that contain it
+3. **Serve search queries** — return the top 10 most relevant results for a query in <200ms
 
----
-
-## 2. Technology Choices
-
-| Tier / Purpose | What it stores | Access pattern | Primary pick | Alternatives |
-|---|---|---|---|---|
-| URL frontier | pending URLs + priority | enqueue / dequeue | **Kafka** + Redis (per-host queues) | RabbitMQ, SQS |
-| Seen-URL / dedup | crawled URL + content hashes | membership test | **Redis + Bloom filter** | RocksDB |
-| Raw page store | fetched HTML | write-once, batch read | **S3 / object store** | HDFS, GCS |
-| Metadata store | url, status, lastCrawled, hash | point + range | **Cassandra** | Bigtable, DynamoDB |
-| Inverted index | term -> postings | full-text query | **Elasticsearch** | Lucene, Solr |
-| Query cache | hot query results | key lookup | **Redis** | Memcached |
-
-**Why Cassandra for page metadata, not a relational DB:** metadata is write-heavy (every fetch updates status/hash), keyed by URL, and needs to scale to tens of billions of rows across a cluster with no single primary. Wide-column stores are built for exactly this; we don't need joins here. Raw HTML goes to cheap object storage, not a DB.
-
-💡 *URL frontier = the prioritized set of URLs waiting to be crawled - the crawler's to-do list, sharded by host for politeness.*
+### Below the Line
+- Image/video indexing, real-time freshness (news), autocomplete, personalization, ads
 
 ---
 
-## 3. Functional Requirements
+## Non-Functional Requirements
 
-**Core (top 3):**
-1. Crawl: given seed URLs, discover and download reachable pages, extracting new links.
-2. Index: parse downloaded pages into an inverted index (term → documents).
-3. Query: return relevant pages ranked by relevance for a search string.
+- **Crawl throughput** — 10K pages/second sustained
+- **Index freshness** — popular pages re-crawled within hours; long-tail within weeks
+- **Query latency** — <200ms P99 for search results
+- **Politeness** — respect robots.txt; max 1 request/second per domain
 
-**Below the line:** rendering JS-heavy pages, image/video search, personalization, spam/SEO defense, freshness SLAs per site.
+---
 
-## 4. Non-Functional Requirements
+## Core Entities
 
-**Core:**
-1. **Scale:** billions of pages; crawl throughput of thousands of pages/sec.
-2. **Politeness:** respect `robots.txt` and per-host rate limits - never overload a domain.
-3. **Query latency:** < 200ms p99 for search.
-4. **Fault tolerance:** a crawler node dying must not lose URLs or re-crawl everything.
+- **URL** — address to crawl, domain, last crawled timestamp, crawl priority
+- **Page** — raw HTML content, extracted text, outgoing links, content hash
+- **Inverted Index Entry** — word → list of (page ID, position, frequency)
+- **Query** — user search terms, results with relevance scores
 
-**Below the line:** strict real-time freshness, exactly-once crawling (at-least-once + dedup is fine).
+---
+
+## API
+
+```text
+POST /v1/crawl/seed
+  Body: { urls: ["https://example.com", ...] }
+  Response: { queued: 150 }
+
+GET /v1/search?q=distributed+systems&page=1
+  Response: { results: [{ url, title, snippet, score }], total: 15000, took: "45ms" }
+
+GET /v1/crawl/status
+  Response: { pagesIndexed: 1200000000, crawlRate: "9800 pages/sec" }
+```
+
+---
+
+## High-Level Design
+
+### FR1: Crawl the Web
+
+A URL Frontier (priority queue) feeds URLs to a distributed fleet of Crawler workers. Each worker downloads the page, extracts links (new URLs fed back to the frontier), and stores content.
+
+```mermaid
+flowchart LR
+    FRONTIER["URL Frontier<br/>priority queue"]:::async
+    CRAWLER["Crawler Workers"]:::service
+    STORE[("Page Store<br/>object storage")]:::data
+    DEDUP["URL Dedup<br/>Bloom filter"]:::service
+
+    FRONTIER --> CRAWLER
+    CRAWLER --> STORE
+    CRAWLER --> DEDUP
+    DEDUP --> FRONTIER
+
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef async fill:#3a2a4c,stroke:#c084fc,color:#e2e8f0
+```
+
+### FR2: Build the Inverted Index
+
+An Indexer reads crawled pages, tokenizes content, and builds the inverted index. The index maps each word to a posting list (pages containing that word, with positions and frequency).
+
+```mermaid
+flowchart LR
+    STORE[("Page Store")]:::data
+    KAFKA["Kafka<br/>new pages"]:::async
+    INDEXER["Indexer"]:::service
+    INDEX[("Inverted Index<br/>sharded")]:::data
+
+    STORE --> KAFKA
+    KAFKA --> INDEXER
+    INDEXER --> INDEX
+
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef async fill:#3a2a4c,stroke:#c084fc,color:#e2e8f0
+```
+
+### FR3: Serve Search Queries
+
+The Query Service receives a user query, looks up each term in the inverted index, intersects posting lists, scores results by relevance (TF-IDF + PageRank), and returns top-K.
+
+```mermaid
+flowchart LR
+    USER["User"]:::client
+    QUERY["Query Service"]:::service
+    INDEX[("Inverted Index<br/>sharded")]:::data
+    CACHE[("Redis<br/>hot queries")]:::data
+
+    USER --> QUERY
+    QUERY --> CACHE
+    CACHE -.->|miss| INDEX
+
+    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
+    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
+    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+```
+
+---
+
+## Deep Dives
+
+### Deep Dive 1: URL deduplication — avoiding redundant crawls
+
+**Bad:** Maintain a hash set of all visited URLs in memory. At 10B URLs × 100 bytes each = 1TB of RAM. Doesn't fit on a single machine. Also, the same page can be reached via different URLs (trailing slashes, query params, anchors).
+
+**Good:** Use a Bloom filter for fast membership testing (probabilistic: may say "seen" for an unseen URL, but never misses a seen one). False positive rate of 1% at 10B URLs needs ~12GB — fits in memory. Normalize URLs (lowercase, remove fragments, sort params) before checking.
+
+**Great:** Combine the Bloom filter with content-based dedup. After downloading a page, compute a SimHash (locality-sensitive hash) of the content. Two pages with similar content (mirror sites, syndicated articles) get the same SimHash — dedup at the content level, not just URL level. This eliminates near-duplicate pages that have different URLs but identical content, reducing index bloat by 30-40%.
+
+### Deep Dive 2: Politeness and crawl rate management
+
+**Bad:** All crawler workers hit the same popular domain simultaneously. The site's servers overload, they block your IP, and you lose access to that domain's content entirely.
+
+**Good:** Enforce per-domain rate limiting: max 1 request/second per domain. The URL Frontier maintains a per-domain queue with a "not-before" timestamp. Workers pick the next URL whose domain is eligible to be crawled. Respect `robots.txt` (fetch and cache it per domain, honor `Crawl-delay` directives).
+
+**Great:** Use a two-level frontier. Back queue: per-domain queues with rate limiting (politeness). Front queue: priority queue that selects which domain to crawl next based on importance (PageRank of domain, freshness requirements). This ensures high-value domains (news sites, Wikipedia) are crawled frequently while staying polite. Assign each worker a set of domains via consistent hashing — this ensures DNS caching efficiency and persistent connections per worker-domain pair.
+
+### Deep Dive 3: Search ranking — beyond simple TF-IDF
+
+**Bad:** Rank by keyword frequency (TF-IDF only). SEO spammers stuff keywords into pages and dominate results. Irrelevant but keyword-rich pages rank above authoritative sources.
+
+**Good:** Combine TF-IDF with PageRank — a page's authority is proportional to the number and quality of pages linking to it. This boosts authoritative sources (Wikipedia, official docs) above spam. PageRank is computed offline as a batch job over the link graph.
+
+**Great:** Multi-signal ranking: TF-IDF (text relevance) + PageRank (authority) + freshness (prefer recent content for time-sensitive queries) + click-through rate (learn from user behavior over time). The scoring formula is a weighted combination, tuned via ML. For query latency, pre-compute static scores (PageRank) and combine with query-time scores (TF-IDF) during serving. Cache results for popular queries (top 1% of queries account for 30% of traffic) with a 1-minute TTL.
+
+---
+
+## What's Expected at Each Level
+
+| Level | Expectations |
+|---|---|
+| **Mid** | URL Frontier + crawler fleet. Bloom filter for dedup. Inverted index concept. Basic TF-IDF ranking. Robots.txt politeness. |
+| **Senior** | Per-domain rate limiting with two-level frontier. Content-based dedup (SimHash). PageRank for authority. Index sharding by term or document. |
+| **Staff+** | Consistent hashing for worker-domain affinity. Multi-signal ML ranking. Incremental index updates (not full rebuild). Freshness-based re-crawl prioritization. Cache strategy for query serving. |
