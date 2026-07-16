@@ -8,7 +8,7 @@ description: "System design for an end-to-end payment processing system like Str
 # Designing a Payment System (Stripe / Razorpay)
 
 **Difficulty:** Advanced **Topics:** Payment Orchestration, Idempotency, Double-Entry Ledger, Settlement, Reconciliation, PCI Compliance **Asked at:** Google, Amazon, PhonePe, Razorpay, Stripe, Flipkart, Goldman Sachs
-**Prerequisites:** [Fundamentals](/concepts) - especially [Message Queues](/concepts#message-queues), [Database Transactions](/concepts#transactions), and [Distributed Systems basics](/concepts#distributed-systems)
+**Prerequisites:**[Message Queues](/concepts/message-queues/), [Database Transactions](/concepts/write-ahead-log/), and [Scalability](/concepts/scalability/)
 
 ---
 

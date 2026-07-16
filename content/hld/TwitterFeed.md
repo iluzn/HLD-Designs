@@ -8,7 +8,7 @@ description: "System design for a social media news feed like Twitter (X) or Thr
 # Designing a Social Media Feed (Twitter / X / Threads)
 
 **Difficulty:** Intermediate
-**Prerequisites:** [Fundamentals](/concepts) - especially [Fan-Out Patterns](/concepts#fan-out-patterns), [Caching](/concepts#caching), and [Message Queues](/concepts#message-queues)
+**Prerequisites:**[Fan-Out](/concepts/fan-out/), [Caching](/concepts/caching/), and [Message Queues](/concepts/message-queues/)
 
 ---
 

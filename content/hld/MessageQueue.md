@@ -8,7 +8,7 @@ description: "System design for a distributed message queue like Apache Kafka or
 # Designing a Distributed Message Queue (Kafka)
 
 **Difficulty:** Advanced **Topics:** Partitioned Log, Consumer Groups, Exactly-Once Delivery, Replication, Ordering **Asked at:** Google, Amazon, Microsoft, LinkedIn, Uber, Confluent
-**Prerequisites:** [Fundamentals](/concepts) - especially [Distributed Systems basics](/concepts#distributed-systems), [Replication](/concepts#replication), and [Consensus](/concepts#consensus)
+**Prerequisites:**[Scalability](/concepts/scalability/), [Database Replication](/concepts/database-replication/), and [Leader Election](/concepts/leader-election/)
 
 ---
 

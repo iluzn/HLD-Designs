@@ -8,7 +8,7 @@ description: "System design for a distributed unique ID generator. Covers UUID, 
 # Designing a Distributed Unique ID Generator
 
 **Difficulty:** Beginner
-**Prerequisites:** [Fundamentals](/concepts) - especially [Back-of-Envelope Estimation](/concepts#back-of-envelope-estimation)
+**Prerequisites:**[Back-of-Envelope Estimation](/concepts/back-of-envelope/)
 **Asked at:** Twitter, Discord, Instagram, Amazon, Flipkart
 
 ---
