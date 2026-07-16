@@ -8,7 +8,7 @@ description: "System design for a distributed rate limiter - token bucket, slidi
 # Designing a Rate Limiter
 
 **Difficulty:** Beginner-Intermediate
-**Prerequisites:** [Fundamentals](/concepts) - especially [Caching](/concepts#caching) and [Message Queues](/concepts#message-queues)
+**Prerequisites:**[Caching](/concepts/caching/) and [Message Queues](/concepts/message-queues/)
 
 ---
 

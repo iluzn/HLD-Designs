@@ -8,7 +8,7 @@ description: "System design for a cloud file storage and sync service like Dropb
 # Designing Dropbox / Cloud File Storage and Sync
 
 **Difficulty:** Advanced **Topics:** Chunking, Deduplication, Delta Sync, Conflict Resolution, Object Storage, Metadata Service **Asked at:** Google, Amazon, Microsoft, Dropbox, PhonePe, Flipkart
-**Prerequisites:** [Fundamentals](/concepts) - especially [Object Storage](/concepts#object-storage), [Consistent Hashing](/concepts#consistent-hashing), and [Message Queues](/concepts#message-queues)
+**Prerequisites:**[Object Storage](/concepts/object-storage/), [Consistent Hashing](/concepts/consistent-hashing/), and [Message Queues](/concepts/message-queues/)
 
 ---
 

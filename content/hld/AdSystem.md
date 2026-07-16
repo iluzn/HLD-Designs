@@ -8,7 +8,7 @@ description: "System design for a real-time ad serving and auction platform like
 # Designing an Ad Serving and Auction System (Google Ads / Meta Ads)
 
 **Difficulty:** Advanced **Topics:** Real-Time Bidding, Ad Ranking, ML Prediction, Budget Pacing, Fraud Detection **Asked at:** Google, Meta, Amazon, Microsoft, LinkedIn, Flipkart Ads
-**Prerequisites:** [Fundamentals](/concepts) - especially [Caching](/concepts#caching), [Message Queues](/concepts#message-queues), and [Distributed Systems basics](/concepts#distributed-systems)
+**Prerequisites:**[Caching](/concepts/caching/), [Message Queues](/concepts/message-queues/), and [Scalability](/concepts/scalability/)
 
 ---
 

@@ -8,7 +8,7 @@ description: "System design for a search autocomplete and typeahead service like
 # Designing Search Autocomplete / Typeahead
 
 **Difficulty:** Intermediate **Topics:** Trie, Prefix Matching, Ranking, Caching, Real-time Trending **Asked at:** Google, Amazon, Microsoft, LinkedIn, Uber, Flipkart
-**Prerequisites:** [Fundamentals](/concepts) - especially [Caching](/concepts#caching), [Database Indexing](/concepts#database-indexing), and [Distributed Systems basics](/concepts#distributed-systems)
+**Prerequisites:**[Caching](/concepts/caching/), [Database Indexing](/concepts/database-indexing/), and [Scalability](/concepts/scalability/)
 
 ---
 

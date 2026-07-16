@@ -8,7 +8,7 @@ description: "System design for a proximity-based service like Yelp, Google Maps
 # Designing a Nearby Service (Yelp / Google Maps Places)
 
 **Difficulty:** Intermediate **Topics:** Geohash, Quadtree, Spatial Indexing, Location Updates, Radius Queries **Asked at:** Google, Uber, Amazon, Swiggy, Zomato, PhonePe, Grab
-**Prerequisites:** [Fundamentals](/concepts) - especially [Caching](/concepts#caching), [Database Indexing](/concepts#database-indexing), and [Distributed Systems basics](/concepts#distributed-systems)
+**Prerequisites:**[Caching](/concepts/caching/), [Database Indexing](/concepts/database-indexing/), and [Scalability](/concepts/scalability/)
 
 ---
 

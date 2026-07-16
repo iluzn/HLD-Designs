@@ -8,7 +8,7 @@ description: "System design for a distributed metrics monitoring and alerting sy
 # Designing a Metrics Monitoring System (Datadog / Prometheus)
 
 **Difficulty:** Advanced **Topics:** Time-Series DB, Aggregation Pipeline, Anomaly Detection, Alerting, Dashboard Queries **Asked at:** Google, Amazon, Microsoft, Uber, PhonePe, Flipkart, Netflix
-**Prerequisites:** [Fundamentals](/concepts) - especially [Message Queues](/concepts#message-queues), [Database Indexing](/concepts#database-indexing), and [Caching](/concepts#caching)
+**Prerequisites:**[Message Queues](/concepts/message-queues/), [Database Indexing](/concepts/database-indexing/), and [Caching](/concepts/caching/)
 
 ---
 

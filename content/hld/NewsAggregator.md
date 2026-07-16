@@ -8,7 +8,7 @@ description: "System design for a news aggregator like Google News or Apple News
 # Designing a News Aggregator (Google News / Apple News)
 
 **Difficulty:** Intermediate **Topics:** Crawling, NLP Deduplication, Feed Ranking, Trending Detection, Caching **Asked at:** Google, Amazon, Microsoft, Apple, Flipkart
-**Prerequisites:** [Fundamentals](/concepts) - especially [Caching](/concepts#caching), [Message Queues](/concepts#message-queues), and [Database Indexing](/concepts#database-indexing)
+**Prerequisites:**[Caching](/concepts/caching/), [Message Queues](/concepts/message-queues/), and [Database Indexing](/concepts/database-indexing/)
 
 ---
 
