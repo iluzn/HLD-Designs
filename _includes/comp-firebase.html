@@ -47,6 +47,9 @@ onAuthStateChanged(auth, async function (user) {
 //   signed out -> 'sc-comptrack-anon-<level>' only
 window.scCompSave = async function (level, data) {
   var uid = window._scCompUser;
+  // Cap free-text comments so the tracker can't balloon the shared user doc
+  // (it lives in the same 1 MiB document as judge progress).
+  try { Object.keys(data || {}).forEach(function (k) { if (data[k] && typeof data[k].comment === 'string' && data[k].comment.length > 280) data[k].comment = data[k].comment.slice(0, 280); }); } catch (e) {}
   try {
     if (uid) localStorage.setItem('sc-comptrack-' + uid + '-' + level, JSON.stringify(data));
     else localStorage.setItem('sc-comptrack-anon-' + level, JSON.stringify(data));
