@@ -723,22 +723,24 @@
         document.querySelectorAll('.content p').forEach(function(p) {
             var strong = p.querySelector(':scope > strong:first-child');
             if (!strong) return;
-            var m = /^(Bad|Good|Great)\s*[:—-]?\s*$/i.exec(strong.textContent.trim());
-            // Match "Bad:", "Bad —", "Bad" as the leading strong label
-            if (!m) { m = /^(Bad|Good|Great)\b[:—-]/i.exec(strong.textContent.trim()); }
+            // Handles all authored formats:
+            //   **Bad:** desc   |   **Bad** desc   |   **Bad - desc**   |   **Bad — desc**
+            // m[2] captures any description that was bolded together with the label.
+            var m = /^(Bad|Good|Great)\b[ \t]*[:：.\-–—]?[ \t]*([\s\S]*)$/i.exec(strong.textContent.trim());
             if (!m) return;
-            var key = m[1].toLowerCase();
-            var cfg = map[key];
+            var cfg = map[m[1].toLowerCase()];
             if (!cfg) return;
-            // Replace the leading strong with a styled label badge
+            var rest = (m[2] || '').trim();
             var badge = document.createElement('span');
             badge.className = 'bgg-label';
             badge.textContent = cfg.icon + ' ' + cfg.label;
-            // Strip the label text (and any leading colon/dash) from the strong node
             strong.remove();
-            // Clean a leading ":" or "—" left in the first text node
-            if (p.firstChild && p.firstChild.nodeType === 3) {
-                p.firstChild.textContent = p.firstChild.textContent.replace(/^\s*[:—-]\s*/, ' ');
+            if (rest) {
+                // Description was inside the bold — re-insert it as plain text.
+                p.insertBefore(document.createTextNode(' ' + rest), p.firstChild);
+            } else if (p.firstChild && p.firstChild.nodeType === 3) {
+                // Description follows the label — strip a leading separator (":", " - ", etc.)
+                p.firstChild.textContent = p.firstChild.textContent.replace(/^\s*[:：.\-–—]\s*/, ' ');
             }
             p.insertBefore(badge, p.firstChild);
             p.classList.add('bgg-card', cfg.cls);
