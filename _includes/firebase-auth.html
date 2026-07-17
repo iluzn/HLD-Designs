@@ -5,7 +5,7 @@
 <script type="module">
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getAuth, signInWithPopup, signInWithRedirect, signInWithCredential, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, deleteDoc, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, deleteDoc, query, where, getDocs, onSnapshot, limit } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBRZYsCxcjkug4EVGmMuhAgKM4moRH_ewA",
@@ -20,6 +20,13 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
+
+// Shared user-doc read: dedupe the load-time getDoc across the auth, judge and
+// comp modules so a signed-in page load costs one read of users/{uid}, not three.
+function readUserDoc(uid) {
+  if (window.__scUDocUid !== uid || !window.__scUDoc) { window.__scUDocUid = uid; window.__scUDoc = getDoc(doc(db, 'users', uid)); }
+  return window.__scUDoc;
+}
 
 const ADMIN_EMAIL = 'systemcraft.in@gmail.com';
 function isAdminUser() { return !!(window._firebaseUser && window._firebaseUser.email === ADMIN_EMAIL); }
@@ -101,7 +108,7 @@ onAuthStateChanged(auth, async function(user) {
 
         // Load progress from Firestore
         try {
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            const userDoc = await readUserDoc(user.uid);
             if (userDoc.exists()) {
                 window._userProgress = userDoc.data().progress || {};
             } else {
@@ -564,7 +571,7 @@ window.loadComments = async function() {
     var listEl = document.getElementById('comments-list');
     if (!listEl) return;
     try {
-        var q = query(collection(db, 'comments'), where('page', '==', window.location.pathname));
+        var q = query(collection(db, 'comments'), where('page', '==', window.location.pathname), limit(200));
         var snap = await getDocs(q);
         var items = [];
         snap.forEach(function(d) { var c = d.data(); c._id = d.id; items.push(c); });
@@ -688,7 +695,7 @@ function startNotifications(uid) {
     if (wrap) wrap.style.display = 'inline-flex';
     if (_notifUnsub) { _notifUnsub(); _notifUnsub = null; }
     try {
-        var q = query(collection(db, 'notifications'), where('recipientUid', '==', uid));
+        var q = query(collection(db, 'notifications'), where('recipientUid', '==', uid), limit(50));
         _notifUnsub = onSnapshot(q, function(snap) {
             var arr = [];
             snap.forEach(function(d) { var n = d.data(); n._id = d.id; arr.push(n); });

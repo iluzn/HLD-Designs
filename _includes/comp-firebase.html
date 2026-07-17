@@ -44,7 +44,7 @@ onAuthStateChanged(auth, async function (user) {
       // Fill any missing level from legacy inline data and migrate it.
       if (missing) {
         try {
-          const main = await getDoc(doc(db, 'users', user.uid));
+          const main = (window.__scUDocUid === user.uid && window.__scUDoc) ? await window.__scUDoc : await getDoc(doc(db, 'users', user.uid));
           const legacy = (main.exists() && main.data().compTrack) ? main.data().compTrack : null;
           if (legacy) {
             LEVELS.forEach(function (lv) {

@@ -22,6 +22,13 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 window._scFS.db = db;
 
+// Dedupe the user-doc read across the 3 Firebase modules (auth, judge, comp)
+// that each load on the same page — one network read instead of three.
+function readUserDoc(uid) {
+  if (window.__scUDocUid !== uid || !window.__scUDoc) { window.__scUDocUid = uid; window.__scUDoc = getDoc(doc(db, 'users', uid)); }
+  return window.__scUDoc;
+}
+
 const ANON_KEY = 'sc-lc-anon';
 function loadAnon() { try { return JSON.parse(localStorage.getItem(ANON_KEY) || '{"solved":[],"subs":{}}'); } catch (e) { return { solved: [], subs: {} }; } }
 
@@ -45,7 +52,7 @@ onAuthStateChanged(auth, async function (user) {
   if (user) {
     window._scUser = { uid: user.uid, email: user.email, name: user.displayName, photo: user.photoURL };
     try {
-      const snap = await getDoc(doc(db, 'users', user.uid));
+      const snap = await readUserDoc(user.uid);
       const j = (snap.exists() && snap.data().judge) ? snap.data().judge : { solved: [], subs: {} };
       window._scJudge = { solved: j.solved || [], subs: j.subs || {} };
     } catch (e) { /* keep whatever we have */ }
@@ -104,9 +111,26 @@ function buildDocSubs() {
   return out;
 }
 
+// Hard ceiling on submission metadata kept in the summary doc, so it can never
+// approach 1 MiB no matter how much a user grinds. The newest META_CAP entries
+// across all problems are kept; older ones live only as subcollection docs
+// (recoverable there). ~2000 entries x ~70 B = ~140 KB — tiny.
+var META_CAP = 2000;
+function capMeta() {
+  var subs = window._scJudge.subs || {}, all = [];
+  Object.keys(subs).forEach(function (sl) { (subs[sl] || []).forEach(function (x) { x.__sl = sl; all.push(x); }); });
+  if (all.length <= META_CAP) { all.forEach(function (x) { delete x.__sl; }); return; }
+  all.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+  var keep = {};
+  all.slice(0, META_CAP).forEach(function (x) { (keep[x.__sl] = keep[x.__sl] || []).push(x); });
+  all.forEach(function (x) { delete x.__sl; });
+  window._scJudge.subs = keep;
+}
+
 async function persist() {
   if (window._scUser) {
     pruneInlineCode();
+    capMeta();
     try { await setDoc(doc(db, 'users', window._scUser.uid), { judge: { solved: window._scJudge.solved || [], subs: buildDocSubs(), v: 2 } }, { merge: true }); }
     catch (e) { console.error('judge save failed', e); if (window.scReport) scReport('judge_save_error', e && e.message); }
   } else {
