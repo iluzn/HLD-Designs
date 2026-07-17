@@ -59,16 +59,31 @@ window.scJudgeMarkSolved = function (slug) {
   emitUpdated();
 };
 // Firestore caps a document at 1 MiB. The submission `code` blob is by far the
-// heaviest field, so we keep full code only for the most recent submissions
-// overall; older ones retain lightweight metadata (status/lang/ts/passed) which
-// is all the history list and heatmap need. This keeps the user doc well under
-// 1 MiB even for a power user grinding all 400 problems.
-var CODE_KEEP = 30;   // full code retained for the N newest submissions
+// heaviest field, so we bound how much code is retained. Priority order:
+//   1. The latest ACCEPTED submission's code for EACH problem (never dropped
+//      unless we blow the whole budget) — this is the artifact users revisit.
+//   2. Recent non-accepted attempts (the ones you're actively iterating on),
+//      newest first, until the code budget is exhausted.
+// Everything else keeps only metadata (status/lang/ts/passed), which is all the
+// history list and heatmap need. This keeps the doc under 1 MiB while preserving
+// every problem's accepted solution for any realistic amount of solving.
+var CODE_BUDGET = 600000;   // ~600 KB ceiling across all retained code
 function pruneSubCode() {
-  var subs = window._scJudge.subs || {}, all = [];
-  Object.keys(subs).forEach(function (sl) { (subs[sl] || []).forEach(function (x) { all.push(x); }); });
-  all.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
-  for (var i = CODE_KEEP; i < all.length; i++) { if (all[i] && all[i].code != null) delete all[i].code; }
+  var subs = window._scJudge.subs || {};
+  var accepted = [], others = [];
+  Object.keys(subs).forEach(function (sl) {
+    var arr = subs[sl] || [], foundAcc = false;
+    for (var i = 0; i < arr.length; i++) {          // arr is newest-first
+      if (!foundAcc && arr[i].status === 'Accepted') { accepted.push(arr[i]); foundAcc = true; }
+      else others.push(arr[i]);
+    }
+  });
+  function byTs(a, b) { return (b.ts || 0) - (a.ts || 0); }
+  accepted.sort(byTs); others.sort(byTs);            // newest first within each group
+  var used = 0;
+  function budget(x) { if (x.code == null) return; if (used + x.code.length <= CODE_BUDGET) used += x.code.length; else delete x.code; }
+  accepted.forEach(budget);   // keep each problem's latest accepted code first
+  others.forEach(budget);     // then fill remaining budget with recent attempts
 }
 window.scJudgeAddSub = function (slug, sub) {
   if (sub && sub.code && sub.code.length > 6000) sub.code = sub.code.slice(0, 6000);
