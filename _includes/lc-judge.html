@@ -404,12 +404,29 @@
       if (!a.length) { leftBody.innerHTML = '<div class="lc-empty">No submissions yet. Solve it and hit Submit.</div>'; return; }
       leftBody.innerHTML = a.map(function (s, i) {
         var cls = s.status === 'Accepted' ? 'ac' : 'wa';
-        return '<div class="lc-sub-row" data-i="' + i + '"><span class="lc-sub-status ' + cls + '">' + esc(s.status) + '</span>' +
+        var hasCode = (s.code != null);
+        return '<div class="lc-sub-row" data-i="' + i + '" data-ts="' + s.ts + '"><span class="lc-sub-status ' + cls + '">' + esc(s.status) + '</span>' +
           '<span class="lc-sub-meta">' + esc(s.langName || s.lang) + ' · ' + s.passed + '/' + s.total + ' · ' + timeAgo(s.ts) + '</span></div>' +
-          '<div class="lc-sub-code" id="lc-subcode-' + i + '" hidden>' + esc(s.code) + '</div>';
+          '<div class="lc-sub-code" id="lc-subcode-' + i + '" data-loaded="' + (hasCode ? '1' : '0') + '" hidden>' + (hasCode ? esc(s.code) : '') + '</div>';
       }).join('');
       leftBody.querySelectorAll('.lc-sub-row').forEach(function (row) {
-        row.addEventListener('click', function () { var c = document.getElementById('lc-subcode-' + row.getAttribute('data-i')); if (c) c.hidden = !c.hidden; });
+        row.addEventListener('click', function () {
+          var i = row.getAttribute('data-i');
+          var c = document.getElementById('lc-subcode-' + i);
+          if (!c) return;
+          c.hidden = !c.hidden;
+          // Lazily fetch code from the submissions subcollection on first expand.
+          if (!c.hidden && c.getAttribute('data-loaded') !== '1') {
+            c.textContent = 'Loading…';
+            var ts = parseInt(row.getAttribute('data-ts'), 10);
+            if (window.scJudgeGetCode) {
+              window.scJudgeGetCode(P.id, ts).then(function (code) {
+                c.textContent = (code != null && code !== '') ? code : '(code not stored for this submission)';
+                c.setAttribute('data-loaded', '1');
+              }).catch(function () { c.textContent = '(could not load code)'; });
+            } else { c.textContent = '(code unavailable)'; c.setAttribute('data-loaded', '1'); }
+          }
+        });
       });
       return;
     }

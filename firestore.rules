@@ -3,6 +3,13 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Per-user subcollections (submissions, compTrack, ...) — owner-only.
+      // Each doc gets its own 1 MiB budget, so submission code and tracker
+      // data scale independently of the summary doc.
+      match /{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
     }
 
     // Public comment threads, one flat list per page.

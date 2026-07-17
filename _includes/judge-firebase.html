@@ -7,6 +7,7 @@
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+window._scFS = { db: null, doc: doc, getDoc: getDoc, setDoc: setDoc };
 
 const firebaseConfig = {
   apiKey: "AIzaSyBRZYsCxcjkug4EVGmMuhAgKM4moRH_ewA",
@@ -19,6 +20,7 @@ const firebaseConfig = {
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+window._scFS.db = db;
 
 const ANON_KEY = 'sc-lc-anon';
 function loadAnon() { try { return JSON.parse(localStorage.getItem(ANON_KEY) || '{"solved":[],"subs":{}}'); } catch (e) { return { solved: [], subs: {} }; } }
@@ -29,6 +31,16 @@ window._scJudge = loadAnon();
 
 function emitReady() { window._scJudgeReady = true; document.dispatchEvent(new CustomEvent('sc-judge-ready')); }
 
+// --- Scalable model ---------------------------------------------------------
+// The summary doc (users/{uid}.judge) holds solved + submission METADATA only.
+// Each submission's heavy `code` blob lives in its own subcollection doc
+// (users/{uid}/submissions/{slug_ts}), fetched on demand. This decouples code
+// from the 1 MiB doc limit — code scales without bound, the summary stays tiny.
+// Safety: code is stripped from the summary doc only AFTER its subcollection
+// write succeeds, so if the security rules aren't deployed yet, we degrade
+// gracefully (code stays inline, pruned) instead of losing anything.
+var CODE_BUDGET = 600000;   // ~600 KB backstop for any code still held inline
+
 onAuthStateChanged(auth, async function (user) {
   if (user) {
     window._scUser = { uid: user.uid, email: user.email, name: user.displayName, photo: user.photoURL };
@@ -37,63 +49,115 @@ onAuthStateChanged(auth, async function (user) {
       const j = (snap.exists() && snap.data().judge) ? snap.data().judge : { solved: [], subs: {} };
       window._scJudge = { solved: j.solved || [], subs: j.subs || {} };
     } catch (e) { /* keep whatever we have */ }
-  } else {
-    window._scUser = null;
-    window._scJudge = loadAnon();
+    emitReady();
+    migrateInlineCode(user.uid).catch(function () {});   // background, non-blocking
+    return;
   }
+  window._scUser = null;
+  window._scJudge = loadAnon();
   emitReady();
 });
 
+function subId(slug, ts) { return slug + '_' + ts; }
+
+// Write one submission's full code to its own subcollection doc.
+async function offloadCode(uid, slug, sub) {
+  if (!sub || sub.code == null) return false;
+  try {
+    await setDoc(doc(db, 'users', uid, 'submissions', subId(slug, sub.ts)),
+      { slug: slug, ts: sub.ts, status: sub.status, lang: sub.lang, langName: sub.langName, passed: sub.passed, total: sub.total, code: sub.code },
+      { merge: true });
+    return true;
+  } catch (e) { if (window.scReport) scReport('sub_offload_error', e && e.message); return false; }
+}
+
+// Backstop: bound code that is still held INLINE (not yet offloaded). Keeps each
+// problem's latest accepted code first, then recent attempts, within the budget.
+function pruneInlineCode() {
+  var subs = window._scJudge.subs || {}, accepted = [], others = [];
+  Object.keys(subs).forEach(function (sl) {
+    var arr = subs[sl] || [], foundAcc = false;
+    for (var i = 0; i < arr.length; i++) {
+      var x = arr[i];
+      if (x._off) continue;                          // offloaded → not in summary doc
+      if (!foundAcc && x.status === 'Accepted') { accepted.push(x); foundAcc = true; }
+      else others.push(x);
+    }
+  });
+  var byTs = function (a, b) { return (b.ts || 0) - (a.ts || 0); };
+  accepted.sort(byTs); others.sort(byTs);
+  var used = 0, budget = function (x) { if (x.code == null) return; if (used + x.code.length <= CODE_BUDGET) used += x.code.length; else delete x.code; };
+  accepted.forEach(budget); others.forEach(budget);
+}
+
+// Build the metadata-only subs map for the summary doc. Code is included inline
+// ONLY for submissions not yet offloaded (the safe-fallback path).
+function buildDocSubs() {
+  var subs = window._scJudge.subs || {}, out = {};
+  Object.keys(subs).forEach(function (sl) {
+    out[sl] = (subs[sl] || []).map(function (x) {
+      var c = { ts: x.ts, status: x.status, lang: x.lang, langName: x.langName, passed: x.passed, total: x.total };
+      if (!x._off && x.code != null) c.code = x.code;
+      return c;
+    });
+  });
+  return out;
+}
+
 async function persist() {
   if (window._scUser) {
-    try { await setDoc(doc(db, 'users', window._scUser.uid), { judge: window._scJudge }, { merge: true }); } catch (e) { console.error('judge save failed', e); if (window.scReport) scReport('judge_save_error', e && e.message); }
+    pruneInlineCode();
+    try { await setDoc(doc(db, 'users', window._scUser.uid), { judge: { solved: window._scJudge.solved || [], subs: buildDocSubs(), v: 2 } }, { merge: true }); }
+    catch (e) { console.error('judge save failed', e); if (window.scReport) scReport('judge_save_error', e && e.message); }
   } else {
-    try { localStorage.setItem(ANON_KEY, JSON.stringify(window._scJudge)); } catch (e) {}
+    try { localStorage.setItem(ANON_KEY, JSON.stringify({ solved: window._scJudge.solved || [], subs: window._scJudge.subs || {} })); } catch (e) {}
   }
 }
 
+// One-time-per-load migration: push any inline code (legacy docs) into the
+// submissions subcollection, then rewrite the summary doc without it.
+async function migrateInlineCode(uid) {
+  var subs = window._scJudge.subs || {}, tasks = [], changed = false;
+  Object.keys(subs).forEach(function (sl) {
+    (subs[sl] || []).forEach(function (x) {
+      if (x.code != null && !x._off) {
+        tasks.push(offloadCode(uid, sl, x).then(function (ok) { if (ok) { x._off = true; changed = true; } }));
+      }
+    });
+  });
+  if (!tasks.length) return;
+  await Promise.all(tasks);
+  if (changed) await persist();
+}
+
 function emitUpdated() { try { document.dispatchEvent(new CustomEvent('sc-judge-ready')); } catch (e) {} }
+
 window.scJudgeMarkSolved = function (slug) {
   if (!window._scJudge.solved) window._scJudge.solved = [];
   if (window._scJudge.solved.indexOf(slug) === -1) { window._scJudge.solved.push(slug); persist(); }
   emitUpdated();
 };
-// Firestore caps a document at 1 MiB. The submission `code` blob is by far the
-// heaviest field, so we bound how much code is retained. Priority order:
-//   1. The latest ACCEPTED submission's code for EACH problem (never dropped
-//      unless we blow the whole budget) — this is the artifact users revisit.
-//   2. Recent non-accepted attempts (the ones you're actively iterating on),
-//      newest first, until the code budget is exhausted.
-// Everything else keeps only metadata (status/lang/ts/passed), which is all the
-// history list and heatmap need. This keeps the doc under 1 MiB while preserving
-// every problem's accepted solution for any realistic amount of solving.
-var CODE_BUDGET = 600000;   // ~600 KB ceiling across all retained code
-function pruneSubCode() {
-  var subs = window._scJudge.subs || {};
-  var accepted = [], others = [];
-  Object.keys(subs).forEach(function (sl) {
-    var arr = subs[sl] || [], foundAcc = false;
-    for (var i = 0; i < arr.length; i++) {          // arr is newest-first
-      if (!foundAcc && arr[i].status === 'Accepted') { accepted.push(arr[i]); foundAcc = true; }
-      else others.push(arr[i]);
-    }
-  });
-  function byTs(a, b) { return (b.ts || 0) - (a.ts || 0); }
-  accepted.sort(byTs); others.sort(byTs);            // newest first within each group
-  var used = 0;
-  function budget(x) { if (x.code == null) return; if (used + x.code.length <= CODE_BUDGET) used += x.code.length; else delete x.code; }
-  accepted.forEach(budget);   // keep each problem's latest accepted code first
-  others.forEach(budget);     // then fill remaining budget with recent attempts
-}
-window.scJudgeAddSub = function (slug, sub) {
+
+window.scJudgeAddSub = async function (slug, sub) {
   if (sub && sub.code && sub.code.length > 6000) sub.code = sub.code.slice(0, 6000);
   if (!window._scJudge.subs) window._scJudge.subs = {};
   var s = window._scJudge.subs[slug] || [];
   s.unshift(sub);
   if (s.length > 20) s = s.slice(0, 20);
   window._scJudge.subs[slug] = s;
-  pruneSubCode();
+  emitUpdated();                                   // instant UI (code still in memory)
+  var uid = window._scUser && window._scUser.uid;
+  if (uid) { var ok = await offloadCode(uid, slug, sub); if (ok) sub._off = true; }
   persist();
-  emitUpdated();
+};
+
+// Lazily fetch a submission's code: from memory if present, else its subcollection doc.
+window.scJudgeGetCode = async function (slug, ts) {
+  var arr = (window._scJudge.subs || {})[slug] || [];
+  for (var i = 0; i < arr.length; i++) { if (arr[i].ts === ts && arr[i].code != null) return arr[i].code; }
+  var uid = window._scUser && window._scUser.uid;
+  if (!uid) return null;
+  try { var snap = await getDoc(doc(db, 'users', uid, 'submissions', subId(slug, ts))); return snap.exists() ? (snap.data().code || '') : null; }
+  catch (e) { return null; }
 };
 </script>

@@ -27,12 +27,33 @@ window._scCompUser = null;
 // signed-out viewer on the same browser. Remove it.
 try { ['s1', 's2', 's3'].forEach(function (l) { localStorage.removeItem('sc-comptrack-' + l); }); } catch (e) {}
 
+const LEVELS = ['s1', 's2', 's3'];
+
+// Each level's tracker lives in its own subcollection doc
+// (users/{uid}/compTrack/{level}), so it scales independently of the judge
+// summary doc and never competes for the 1 MiB budget. Legacy data stored
+// inline at users/{uid}.compTrack is migrated to the subcollection on load.
 onAuthStateChanged(auth, async function (user) {
   if (user) {
     window._scCompUser = user.uid;
     try {
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      window._scCompTrack = (snap.exists() && snap.data().compTrack) ? snap.data().compTrack : {};
+      const snaps = await Promise.all(LEVELS.map(function (lv) { return getDoc(doc(db, 'users', user.uid, 'compTrack', lv)); }));
+      const track = {};
+      let missing = false;
+      LEVELS.forEach(function (lv, i) { if (snaps[i].exists()) track[lv] = snaps[i].data(); else missing = true; });
+      // Fill any missing level from legacy inline data and migrate it.
+      if (missing) {
+        try {
+          const main = await getDoc(doc(db, 'users', user.uid));
+          const legacy = (main.exists() && main.data().compTrack) ? main.data().compTrack : null;
+          if (legacy) {
+            LEVELS.forEach(function (lv) {
+              if (!track[lv] && legacy[lv]) { track[lv] = legacy[lv]; setDoc(doc(db, 'users', user.uid, 'compTrack', lv), legacy[lv]).catch(function () {}); }
+            });
+          }
+        } catch (e) { /* legacy read best-effort */ }
+      }
+      window._scCompTrack = track;
     } catch (e) { window._scCompTrack = window._scCompTrack || {}; }
   } else {
     window._scCompUser = null;
@@ -56,9 +77,7 @@ window.scCompSave = async function (level, data) {
   } catch (e) {}
   if (uid) {
     try {
-      const payload = { compTrack: {} };
-      payload.compTrack[level] = data;
-      await setDoc(doc(db, 'users', uid), payload, { merge: true });
+      await setDoc(doc(db, 'users', uid, 'compTrack', level), data);
     } catch (e) { console.error('comp track save failed', e); }
   }
 };
