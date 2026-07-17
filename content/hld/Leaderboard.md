@@ -400,24 +400,36 @@ This is atomic - zero gap. In a single operation: the current leaderboard become
 
 ## 8. Final Architecture
 
+This diagram brings together every "Great" choice from the deep dives: regional Redis for low-latency writes, a Kafka pipeline feeding a global aggregator (Deep Dive 1), a durable store for rebuilds, and a Top-K cache with WebSocket push for read amplification (Deep Dive 4).
+
 ```mermaid
 flowchart LR
-    GAME["Game Servers"]:::client
+    GAME["Game Servers<br/>per region"]:::client
     API["Leaderboard Service"]:::service
-    REDIS[("Redis Sorted Set<br/>live rankings")]:::data
+    R1[("Regional Redis<br/>live rankings")]:::data
     DB[("Durable Store<br/>Postgres or DynamoDB")]:::data
+    K["Kafka<br/>score events"]:::async
+    AGG["Global Aggregator"]:::service
+    RG[("Redis Global<br/>unified rankings")]:::data
     CACHE["Top-K Cache<br/>1s TTL"]:::service
+    WS["WebSocket Push"]:::service
     USER["Players"]:::client
 
     GAME --> API
-    API --> REDIS
+    API --> R1
     API --> DB
+    R1 --> K
+    K --> AGG
+    AGG --> RG
+    CACHE --> RG
+    CACHE --> WS
+    WS --> USER
     USER --> CACHE
-    CACHE --> REDIS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
+    classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
 ```
 
 ---
