@@ -374,35 +374,24 @@ For custom aliases (if we support them), we use a separate write path: first try
 **Bad - single origin DB, one region, hope for the best.**
 Falls over on raw QPS and gives lousy latency to anyone outside the origin region.
 
-**Good - Redis read-through cache, multi-replica DB.**
-In-memory cache holds the top N popular links; origin DB handles misses. Read replicas spread the load. Better, but still a round-trip to the origin region for cache misses, and Redis in one region doesn't help international users on cold links.
+**Good - Redis read-through cache in front of the DB.**
+Check Redis first on every redirect. Cache hit → return instantly (sub-ms). Cache miss → read from DB, backfill Redis, return. Since links are mostly immutable (write-once, read-forever), cache hit rate climbs to 95%+ quickly. Most traffic never touches the DB.
 
-**Great - tiered caching with CDN at the edge, Redis per region, and a globally replicated KV store as source of truth.**
-
-1. **CDN edge with edge compute.** Options: Cloudflare (Workers), CloudFront (Lambda@Edge or CloudFront Functions), Fastly (Compute@Edge), Akamai. For popular links, the edge serves the `302` directly without calling origin. Sub-10ms for cache hits worldwide. Short codes cached with a short TTL (5 min). A WAF (Cloudflare WAF / AWS WAF / Fastly Next-Gen) sits in front for bot filtering and rate limits.
-
-2. **Regional Redis cluster per region.** Options: ElastiCache Redis, self-hosted Redis on Kubernetes, Upstash, Valkey. On CDN miss, the Redirect Service in that region checks Redis. Hot dataset is the top few percent of active links - typically 20-50 GB per region, easily fits in memory. Cluster mode enabled for horizontal scale.
-
-3. **Globally replicated KV as source of truth.** Options: DynamoDB Global Tables, Cassandra multi-DC, ScyllaDB, Spanner, CockroachDB. Multi-region, active-active or single-writer-with-replicas, asynchronous replication. A new link takes ~1-2 seconds to become readable in every region - acceptable for this use case.
-
-4. **Bloom filter in each Redirect Service pod** to fast-reject obviously-invalid codes (404 without even hitting Redis or the KV).
+**Great - CDN layer in front of Redis + DB.**
+For truly hot links (viral tweets), the CDN edge (Cloudflare, CloudFront, Fastly) serves the `302` redirect directly from the user's nearest edge server — without ever reaching your origin. Sub-10ms worldwide.
 
 ```mermaid
 flowchart LR
     USER["Browser"]:::client
-    WAF["WAF<br/>Cloudflare AWS or Fastly"]:::edge
-    CDN["CDN edge<br/>5 min TTL"]:::edge
-    RS["Redirect Service<br/>regional"]:::service
-    BF["Bloom Filter<br/>in pod"]:::service
-    REDIS[("Redis<br/>ElastiCache or self hosted")]:::data
-    KV[("Global KV<br/>DynamoDB Cassandra or Spanner")]:::data
+    CDN["CDN Edge"]:::edge
+    RS["Redirect Service"]:::service
+    REDIS[("Redis Cache")]:::data
+    DB[("Database")]:::data
 
-    USER --> WAF
-    WAF --> CDN
-    CDN --> RS
-    RS --> BF
-    RS --> REDIS
-    RS --> KV
+    USER --> CDN
+    CDN -->|"miss"| RS
+    RS -->|"check cache"| REDIS
+    RS -->|"miss"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -410,43 +399,27 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-**Cache invalidation.** Two mechanisms:
-- TTL-based: CDN 5 min, Redis 24 h. Worst case a deleted link keeps redirecting for 5 min.
-- Active purge on delete: call the CDN's invalidation API (CloudFront `CreateInvalidation`, Cloudflare purge, Fastly purge) and publish a `link-deleted` event on the bus that regional consumers use to `DEL` from Redis. Best-effort - the TTL is the hard backstop.
+The lookup path: CDN (edge, ~5ms) → Redis (in-memory, ~1ms) → DB (disk, ~10ms). Each tier absorbs traffic so the next one sees less load. Cache invalidation is simple since links are immutable — set a TTL (e.g., CDN 5 min, Redis 24h) and on delete, purge both.
 
-### Deep Dive 3 - How do we handle a single link going viral without melting Redis?
+### Deep Dive 3 - How do we handle a single link going viral?
 
-**Problem.** "Celebrity problem." Elon tweets a short link. 100K people click it in the first second. Every redirect goes to the same Redis key on the same shard. A single Redis node tops out around 100-200K ops/sec; we've saturated one shard while the rest of the cluster sits idle.
+**Problem.** One link gets 100K clicks/sec. All requests land on the same Redis key on the same shard.
 
-**In simple terms:** Elon tweets a short link. 100K people click it in one second. All those requests hit the same Redis key on the same server. One key becomes a bottleneck.
+**Bad - add more Redis nodes.** Doesn't help — consistent hashing still routes this key to one node.
 
-**Bad - scale up by adding more Redis nodes.**
-Doesn't help. Consistent hashing still lands all requests on the same node for this key.
+**Good - local in-process cache in each pod.** Each pod caches the hottest codes in its own memory (simple LRU, 10K entries, 60s TTL). Most viral traffic is served from pod memory without hitting Redis at all.
 
-**Good - local in-process LRU cache in each redirect service pod.**
-Each pod caches the hottest codes in its own memory, absorbing most of the load before it ever hits Redis. Works well - RAM is cheap, a few hundred MB per pod holds the hot tail. Downside: stale invalidation is harder (have to push or poll invalidations).
+**Great - CDN absorbs viral traffic + local pod cache as backup.** For any truly viral link, the CDN edge handles 99%+ of requests before they reach origin. Set `Cache-Control: public, max-age=300`. Combined with the pod-level LRU, Redis only sees the initial miss and rare cache-fill requests. The "hot key" problem effectively disappears because it never reaches your infrastructure.
 
-**Great - CDN does most of the work + local pod cache for what gets through + request coalescing on genuine misses.**
+### Deep Dive 4 - How do we handle analytics without slowing redirects?
 
-For any truly viral link, the CDN edge should absorb 99%+ of traffic before it reaches origin. Tune the edge cache:
-- Set aggressive `Cache-Control: public, max-age=300` on hot redirects.
-- Use the CDN's **request collapsing** feature - N concurrent edge misses for the same key go as one upstream request.
+**Problem.** We want click counts per link without adding latency to the redirect path.
 
-At origin, add a per-pod LRU cache (10K entries) with 60s TTL. Anything that slips through goes to Redis.
+**Bad - synchronously write to a counter on each redirect.** Adds latency to the hot path and creates another hot-key problem.
 
-For the rare path of a brand-new viral link (cold across all tiers), use **request coalescing in-process**: the first miss acquires a local mutex keyed by `short_code`; subsequent misses for the same code wait up to 50ms instead of all racing to Redis simultaneously. Single-flight pattern. Prevents cache stampede.
+**Good - fire a click event to a message queue asynchronously.** The redirect returns immediately. A background consumer processes events and increments counters. Decoupled, durable, no impact on redirect latency.
 
-### Deep Dive 4 - How do we handle analytics without slowing down the redirect path?
-
-**Problem.** We want per-link click counts, country breakdowns, referrer stats, time-series graphs. If we synchronously write to an analytics DB on every redirect, we just added 20ms to the hot path and a second point of failure. Multiply by 120K/sec sustained.
-
-**In simple terms:** We need to count every click (country, device, time) without adding latency to the redirect. The redirect must stay fast; analytics can be slightly delayed.
-
-**Bad - synchronously increment a counter in Redis or Postgres on each redirect.**
-Adds latency. Redis `INCR` on one key creates the same hot-partition problem as redirect. A counter row in Postgres is even worse. Also loses events on Redis restart.
-
-**Good - fire-and-forget Kafka produce, aggregate in a stream processor.**
-Redirect Service produces to Kafka async (100µs latency), a Flink job windows events and writes aggregates to a columnar DB. Decoupled from the redirect path; durable.
+**Great - same as Good, but aggregate into time-bucketed counters.** Instead of storing every raw click event forever, a consumer rolls them up into per-hour/per-day counts per link. A stats API reads pre-aggregated data — fast queries, bounded storage.
 
 **Great - event bus + stream processor for rollups + object storage for raw events + columnar serving store.**
 
