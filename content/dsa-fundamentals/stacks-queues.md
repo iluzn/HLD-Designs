@@ -149,7 +149,7 @@ vector&lt;int&gt; nextGreater(vector&lt;int&gt;&amp; nums) {
 // Valid parentheses
 bool isValid(string s) {
     stack&lt;char&gt; stk;
-    unordered_map&lt;char, char&gt; pairs = {{')', '('}, {'}', '{'}, {']', '['}};
+    unordered_map&lt;char, char&gt; pairs = {% raw %}{{')', '('}, {'}', '{'}, {']', '['}}{% endraw %};
 
     for (char c : s) {
         if (pairs.count(c)) {
