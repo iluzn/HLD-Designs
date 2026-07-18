@@ -22,49 +22,101 @@ A Bloom filter is a space-efficient probabilistic data structure that answers th
 
 ## How It Works
 
-A Bloom filter uses:
-1. A **bit array** of `m` bits, all initialized to 0
-2. `k` independent **hash functions**, each mapping an element to a position in the bit array
+Think of it as a tiny array of light switches (bits). Initially all OFF (0).
 
-```mermaid
-flowchart TD
-    subgraph Insert["INSERT element X"]
-        A[Element X] --> B[Hash Function 1]
-        A --> C[Hash Function 2]
-        A --> D[Hash Function 3]
-        B --> E["Set bit at position 2"]
-        C --> F["Set bit at position 5"]
-        D --> G["Set bit at position 9"]
-    end
+**Setup:** You have a bit array of 10 slots and 3 hash functions.
 
-    subgraph Query["QUERY element Y"]
-        H[Element Y] --> I[Hash Function 1]
-        H --> J[Hash Function 2]
-        H --> K[Hash Function 3]
-        I --> L{"Bit at position 3?"}
-        J --> M{"Bit at position 5?"}
-        K --> N{"Bit at position 7?"}
-        L -->|"= 0"| O[DEFINITELY NOT in set]
-        M -->|"= 1"| P[Check next...]
-        N -->|"= 1"| P
-    end
-
-    classDef service fill:#6f6,stroke:#333,color:#000
-    classDef data fill:#ff6,stroke:#333,color:#000
-    classDef async fill:#b4f,stroke:#333,color:#000
-    classDef client fill:#f96,stroke:#333,color:#000
-
-    class A,H client
-    class B,C,D,I,J,K service
-    class E,F,G,L,M,N data
-    class O,P async
+```
+Bit array: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+             0  1  2  3  4  5  6  7  8  9
 ```
 
-**Insert:** Hash the element with all k functions, set those k bit positions to 1.
+---
 
-**Query:** Hash the element with all k functions, check those k bit positions.
-- If ANY bit is 0 → element is **definitely not** in the set
-- If ALL bits are 1 → element is **probably** in the set (could be a false positive)
+### Step 1: INSERT "cat"
+
+Run "cat" through 3 hash functions:
+- hash1("cat") = 1
+- hash2("cat") = 4  
+- hash3("cat") = 7
+
+Set those positions to 1:
+
+```
+Bit array: [0, 1, 0, 0, 1, 0, 0, 1, 0, 0]
+             0  1  2  3  4  5  6  7  8  9
+                ↑        ↑        ↑
+              cat      cat      cat
+```
+
+---
+
+### Step 2: INSERT "dog"
+
+Run "dog" through 3 hash functions:
+- hash1("dog") = 2
+- hash2("dog") = 4  ← same position as "cat"! That's fine, just stays 1
+- hash3("dog") = 9
+
+Set those positions to 1:
+
+```
+Bit array: [0, 1, 1, 0, 1, 0, 0, 1, 0, 1]
+             0  1  2  3  4  5  6  7  8  9
+                ↑  ↑     ↑        ↑     ↑
+              cat dog  cat+dog   cat   dog
+```
+
+---
+
+### Step 3: QUERY "cat" — is it in the set?
+
+Hash "cat" → positions 1, 4, 7. Check each:
+- Position 1 = 1 ✓
+- Position 4 = 1 ✓
+- Position 7 = 1 ✓
+
+All bits are 1 → **"probably yes"** (and in this case, correct — we did insert "cat")
+
+---
+
+### Step 4: QUERY "bird" — is it in the set?
+
+Hash "bird" → positions 1, 5, 9. Check each:
+- Position 1 = 1 ✓
+- Position 5 = 0 ✗ ← **STOP. Definitely NOT in the set.**
+
+If even ONE bit is 0, the element was never inserted. Guaranteed.
+
+---
+
+### Step 5: QUERY "fox" — the false positive
+
+Hash "fox" → positions 1, 2, 9. Check each:
+- Position 1 = 1 ✓ (set by "cat")
+- Position 2 = 1 ✓ (set by "dog")
+- Position 9 = 1 ✓ (set by "dog")
+
+All bits are 1 → **"probably yes"** — but we NEVER inserted "fox"! This is a **false positive.** The bits were coincidentally set by other elements.
+
+---
+
+### Why this happens
+
+The bit array is shared. Different elements can set the same bits. When all of an element's hash positions happen to be set by OTHER elements, the filter incorrectly says "probably yes." This is the unavoidable tradeoff for extreme space efficiency.
+
+**The fix:** make the bit array bigger (more bits = fewer collisions = fewer false positives). With the right sizing (~10 bits per element), false positive rate drops below 1%.
+
+---
+
+### The two guarantees
+
+| Filter says | Meaning | Can it be wrong? |
+|---|---|---|
+| "Definitely NOT in set" | At least one bit was 0 | **Never wrong** — if we'd inserted it, all bits would be 1 |
+| "Probably in set" | All bits are 1 | **Sometimes wrong** — other elements may have set those bits |
+
+This asymmetry is what makes it useful: you trust the "no" answer absolutely, and tolerate occasional false "yes" answers.
 
 ---
 
