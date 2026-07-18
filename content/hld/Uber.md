@@ -731,6 +731,22 @@ flowchart LR
     classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
+**How it works end-to-end (ride request path):**
+
+1. **Rider requests ride** — hits Load Balancer → API Gateway → Ride Service
+2. **Pricing Service calculates fare** — checks Redis Cache for surge multiplier (H3 zone-based supply/demand)
+3. **Matching Service finds driver** — queries Location Service which searches Redis Geo shards for nearest available drivers
+4. **Driver locked with fencing token** — Redis SET NX with TTL prevents double-assignment
+5. **Offer sent to driver** — Kafka event consumed by Notification Service, push via FCM/APNs and WebSocket
+6. **Driver accepts** — Ride Service persists to Postgres, ride state transitions to ACCEPTED
+
+**How it works end-to-end (live tracking path):**
+
+7. **Driver streams location** — GPS pings sent to Location Ingestion, written to Redis Geo, events emitted to Kafka
+8. **Kafka fans out to WebSocket Gateway** — via Redis Pub/Sub, rider sees real-time movement on map
+9. **ETA updated** — ETA Service calls Maps API periodically, pushes updated arrival time through WebSocket
+10. **Reconciler catches edge cases** — handles expired locks, stale driver entries, and zombie rides
+
 ---
 
 *Want a deep dive on carpooling matching (UberPool), payment splitting, or driver incentive algorithms? Drop a comment below 👇*

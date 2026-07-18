@@ -483,3 +483,18 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
     classDef async fill:#3a2a4c,stroke:#c084fc,color:#e2e8f0
 ```
+
+**How it works end-to-end (query path):**
+
+1. **User types a prefix** — keystroke sent to CDN (static prefix cache for top queries)
+2. **CDN cache miss** — request routed through Load Balancer to the Trie Service (sharded replicas)
+3. **Trie Service looks up suggestions** — checks Redis Cache for hot prefixes, falls back to in-memory trie traversal
+4. **Trending Cache checked** — Redis Sorted Set injects trending/breaking queries that haven't aged into the main trie yet
+5. **Top-K suggestions returned** — ranked by popularity score, served in <50ms
+
+**How it works end-to-end (update path):**
+
+6. **Query Logger captures searches** — every completed search published to Kafka
+7. **Stream Aggregator tallies counts** — rolling window aggregation updates Cassandra (Popularity Store)
+8. **Trending Detector identifies spikes** — velocity detection flags sudden surges, updates Trending Cache in real-time
+9. **Trie Builder rebuilds periodically** — batch job reads Popularity Store, constructs new trie version, swaps into Trie Service (blue-green)

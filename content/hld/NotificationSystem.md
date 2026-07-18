@@ -1160,6 +1160,17 @@ flowchart LR
     classDef external fill:#fbcfe8,stroke:#be185d,color:#500724
 ```
 
+**How it works end-to-end:**
+
+1. **Product Service sends notification** — calls the Notification API with event type, user IDs, and payload
+2. **Outbox pattern captures event** — written to Postgres; Debezium CDC streams the change to Kafka
+3. **Router consumes and evaluates** — checks user preferences (Redis pref cache), applies frequency caps (ATC/Policy)
+4. **Channel-specific topics populated** — Router publishes to per-channel Kafka topics (push, email, SMS, in-app)
+5. **Workers render and deliver** — Push/Email/SMS Workers call Template Service for localized content, then send via APNs/FCM, SES, or Twilio
+6. **In-App fan-out via WebSocket** — In-App worker pushes through the WebSocket Gateway to connected users
+7. **Failures retry with backoff** — exponential backoff on transient errors; permanent failures go to DLQ
+8. **Engagement tracked** — opens, clicks, and provider webhooks flow to the Engagement Collector, feeding the analytics store and ML feature store for send-time optimization
+
 
 ---
 

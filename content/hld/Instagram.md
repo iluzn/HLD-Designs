@@ -643,6 +643,21 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
+**How it works end-to-end (write path):**
+
+1. **User uploads photo** — Mobile/Web App sends image to Upload Service via API Gateway
+2. **Upload Service stores original** — writes raw image to S3, saves post metadata to Postgres
+3. **Processing queue picks up** — async event triggers Media Workers to generate thumbnails and multiple resolutions
+4. **Fan-out triggered** — Kafka event fires Fan-out Service to push postId into each follower's Cassandra feed partition
+5. **Celebrity exception** — users with >500K followers skip fan-out; their posts are merged at read time
+
+**How it works end-to-end (read path):**
+
+6. **User opens feed** — Feed Service checks Redis cache for pre-built timeline
+7. **Cache miss falls back to Cassandra** — reads the user's feed partition, hydrates post metadata
+8. **Feed Ranker scores posts** — ML model ranks by freshness, engagement, and social closeness
+9. **Media served from CDN** — images fetched from nearest CDN edge node (95%+ cache hit ratio)
+
 ---
 
 *Want a deep dive on Stories (ephemeral content with TTL), Explore page (recommendation engine), or Direct Messages? Drop a comment below 👇*

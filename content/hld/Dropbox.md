@@ -470,3 +470,13 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
     classDef async fill:#3a2a4c,stroke:#c084fc,color:#e2e8f0
 ```
+
+**How it works end-to-end:**
+
+1. **Client uploads file** — chunked upload sent directly to Object Store (S3); metadata request goes to API Gateway
+2. **Metadata Service processes** — checks Redis cache, queries Postgres for file tree, runs Bloom Filter dedup check
+3. **Dedup result** — if content hash already exists in S3, skip upload and just link metadata; otherwise persist new chunks
+4. **Sync event emitted** — Metadata Service publishes change event to Kafka
+5. **Sync Service notifies other devices** — consumes from Kafka, pushes update via long-poll or WebSocket to the client's other devices
+6. **Other devices download** — fetch changed chunks from CDN (cache hit) or S3 origin (cache miss)
+7. **Garbage Collector reclaims storage** — periodically scans for orphaned chunks (unreferenced after delete/overwrite) and removes from S3 and Metadata DB

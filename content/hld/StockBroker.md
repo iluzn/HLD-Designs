@@ -634,6 +634,18 @@ flowchart LR
 
 *Drop a comment below if you want a specific deep dive expanded (margin trading, options settlement, FIX protocol) 👇*
 
+**How it works end-to-end:**
+
+1. **User places order** — Mobile/Web hits Load Balancer → API Gateway → Order Management Service
+2. **OMS validates and persists** — checks idempotency, writes order to Postgres, emits event to Kafka
+3. **Matching Engine consumes** — picks up order from the per-symbol Kafka partition, matches against the in-memory order book (price-time priority)
+4. **Fill event emitted** — matched trade published back to Kafka
+5. **Event Projector updates read stores** — consumes fill events, updates Postgres Read Replica and Redis Cluster for portfolio/position queries
+6. **Notification Service alerts user** — push notification via FCM/APNs and real-time update via WebSocket Gateway
+7. **Exchange integration** — Matching Engine forwards orders to NSE/BSE for external execution
+8. **Reconciler ensures consistency** — compares internal state with exchange confirmations, fixes discrepancies
+9. **Cold storage archival** — Kafka sinks historical events to S3 for regulatory audit trail
+
 
 ---
 

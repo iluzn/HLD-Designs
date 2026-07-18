@@ -427,3 +427,14 @@ flowchart LR
     classDef async fill:#3a2a4c,stroke:#c084fc,color:#e2e8f0
     classDef external fill:#4c2a3a,stroke:#f472b6,color:#e2e8f0
 ```
+
+**How it works end-to-end:**
+
+1. **Merchant initiates payment** — API call hits the Payment API with amount, currency, and idempotency key
+2. **Idempotency check** — Idempotency Store rejects duplicate requests, returns cached result for retries
+3. **Orchestrator coordinates flow** — reads/writes Payment DB (Postgres), posts balanced entries to Double-Entry Ledger
+4. **Payment Router selects rail** — picks optimal Bank Gateway based on success rate, cost, and availability
+5. **PCI Vault decrypts card** — tokenized card data decrypted in the isolated vault, forwarded to the selected bank
+6. **Bank processes charge** — external gateway returns auth/decline; Orchestrator updates status
+7. **Settlement Engine batches** — end-of-day job nets transactions and posts final ledger entries
+8. **Reconciliation Job verifies** — compares internal ledger against bank statements, flags and fixes discrepancies

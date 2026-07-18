@@ -702,6 +702,21 @@ flowchart LR
     classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
+**How it works end-to-end (playback path):**
+
+1. **Client requests playback** — Smart TV/Mobile/Web resolves via DNS Steering to nearest API Gateway (Zuul)
+2. **Playback Service handles request** — fetches DRM license from Widevine/FairPlay, checks Redis for session state
+3. **Manifest returned** — client receives HLS/DASH manifest with segment URLs pointing to CDN
+4. **Video segments streamed from CDN** — Open Connect appliances serve 95%+ of traffic from inside ISPs
+5. **ABR adapts quality** — client-side algorithm switches bitrate per segment based on buffer level
+
+**How it works end-to-end (content ingestion path):**
+
+6. **New title ingested** — Ingest Service kicks off a Temporal workflow
+7. **Encoding Workers transcode** — GPU workers produce per-title optimized bitrate ladders, store segments in S3
+8. **Catalog updated** — Temporal marks the workflow complete, updates Catalog DB
+9. **Recommendation pipeline refreshes** — Kafka streams user activity to ML Pipeline (Spark), updated models cached in Redis
+
 ---
 
 *Want a deep dive on DRM (content protection), offline downloads, multi-language audio switching, or live streaming (sports events)? Drop a comment below 👇*

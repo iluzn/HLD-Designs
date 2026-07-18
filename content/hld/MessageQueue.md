@@ -405,3 +405,12 @@ flowchart LR
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
+
+**How it works end-to-end:**
+
+1. **Producers publish messages** — clients send records to the appropriate broker (partition leader) via round-robin or key-based routing
+2. **Broker appends to partition log** — leader writes to its local append-only log and replicates to follower brokers
+3. **Followers acknowledge** — in-sync replicas confirm write; producer gets ack once replication factor is satisfied
+4. **Controller manages metadata** — KRaft quorum tracks partition leadership, broker liveness, and topic configuration
+5. **Consumers pull messages** — consumer group members are assigned partitions and read sequentially by offset
+6. **Cold segments tiered to S3** — older log segments automatically moved to object storage to reduce broker disk costs while remaining queryable

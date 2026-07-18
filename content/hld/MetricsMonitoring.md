@@ -477,3 +477,17 @@ flowchart LR
     classDef async fill:#3a2a4c,stroke:#c084fc,color:#e2e8f0
     classDef external fill:#4c2a3a,stroke:#f472b6,color:#e2e8f0
 ```
+
+**How it works end-to-end (ingestion path):**
+
+1. **Services emit metrics** — application hosts push data points to the local Metrics Agent
+2. **Agent buffers and forwards** — batches metrics into Kafka (ingestion stream) for durability and backpressure absorption
+3. **TSDB Writer Fleet persists** — consumers write raw data points to VictoriaMetrics (15-day retention)
+4. **Rollup Job compresses** — periodically downsamples raw data into 1-min (6-month) and 1-hour (2-year) rollup stores
+
+**How it works end-to-end (query path):**
+
+5. **Dashboard UI queries** — user requests hit the Query Engine
+6. **Query Engine checks cache** — Redis query cache serves repeated dashboard panels; misses fan out to TSDB or Rollup Store
+7. **Alert Evaluator streams from Kafka** — evaluates threshold rules in near-real-time against incoming data
+8. **Notification dispatched** — triggered alerts routed through Notification Service to PagerDuty/Slack

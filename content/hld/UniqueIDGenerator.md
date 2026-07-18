@@ -422,6 +422,15 @@ flowchart LR
 
 Each generator produces IDs locally with zero runtime coordination (4M/sec/node); ZooKeeper is touched only once per node at startup for machine-ID assignment, and NTP prevents the clock skew that Deep Dive 2 addresses. Add nodes to scale past 4M/sec (Deep Dive 3).
 
+**How it works end-to-end:**
+
+1. **Application needs an ID** — calls the ID Generator service (or embedded library) via Load Balancer
+2. **Load Balancer routes** — distributes requests across the fleet of Snowflake generators
+3. **Generator produces ID locally** — combines current timestamp (41 bits) + machine ID (10 bits) + sequence counter (12 bits) into a 64-bit ID with zero coordination
+4. **Machine ID claimed at startup** — each generator registers once with ZooKeeper/etcd to get a unique 10-bit machine ID
+5. **NTP keeps clocks in sync** — prevents clock skew from causing duplicate or out-of-order IDs across generators
+6. **ID returned to caller** — unique, time-sorted, globally unique identifier delivered in <1ms
+
 ---
 
 ## What's Expected at Each Level

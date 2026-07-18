@@ -767,6 +767,18 @@ flowchart LR
     classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
+**How it works end-to-end:**
+
+1. **User sends request** — hits the Load Balancer, routed through API Gateway
+2. **Waiting Room queues during surge** — hot event on-sales throttle via the Booking Queue
+3. **Catalog Service serves seat map** — reads from Redis Cache (or Postgres on miss)
+4. **Seat Service checks availability** — queries Redis Lock Store for real-time seat state
+5. **Booking Service acquires lock** — Lock Manager does a Redis SET NX with TTL on selected seats
+6. **Payment is processed** — Payment Service calls the external Payment Gateway with idempotency key
+7. **Booking confirmed and persisted** — writes to Postgres, emits event to Kafka
+8. **Downstream consumers react** — Confirmation Service generates ticket, Notification Service sends email/push, SSE Gateway updates live seat maps
+9. **Reconciler handles orphans** — releases expired locks and syncs Redis with Postgres
+
 ---
 
 *Want a deep dive on multi-cinema franchise inventory aggregation, dynamic pricing (surge for hot shows), or fraud detection (bot-booking prevention)? Drop a comment below 👇*

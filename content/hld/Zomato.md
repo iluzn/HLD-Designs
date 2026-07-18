@@ -742,6 +742,21 @@ flowchart LR
 
 That's the design. Five deep dives in Bad / Good / Great progression, each picking the right primitive for the problem: Redis Geo for live rider locations, Redis locks with fencing tokens for consistent matching, WebSockets plus Pub/Sub for real-time tracking, Temporal for durable multi-step dispatch, and Elasticsearch fed by CDC for catalog search.
 
+**How it works end-to-end (order path):**
+
+1. **Customer places order** — request hits API Gateway, routed to Order Service
+2. **Order persisted and payment charged** — Order Service writes to Orders DB (Postgres), Payment Service charges via Razorpay/Stripe/UPI
+3. **Matching Workflow triggered** — Temporal orchestrates rider assignment: queries Redis Geo for nearby riders, scores candidates, acquires lock with fencing token
+4. **Rider notified** — Notification Service sends push via FCM/APNs; rider accepts or declines
+5. **Restaurant notified** — order details sent to Restaurant App for preparation
+
+**How it works end-to-end (live tracking path):**
+
+6. **Rider streams location** — GPS pings sent to Location Service, written to Redis Geo (per city shard), events emitted to Kafka
+7. **Kafka sinks to history** — Cassandra stores full location trail for ETA recalculation and analytics
+8. **Real-time push to customer** — Redis PubSub routes location updates to WebSocket Gateway, customer sees rider on map
+9. **Search stays fresh** — Debezium CDC streams restaurant DB changes to Kafka, Elasticsearch index updated in near-real-time
+
 ---
 
 ## Key Technologies Mentioned

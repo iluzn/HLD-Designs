@@ -785,6 +785,17 @@ flowchart LR
     classDef data fill:#fde68a,stroke:#b45309,color:#451a03
 ```
 
+**How it works end-to-end:**
+
+1. **Client submits job** — API call hits the Scheduler API, which persists the job and schedule to Postgres
+2. **Hydrator pre-loads hot window** — fetches upcoming jobs from Postgres and writes them into Redis ZSET scored by execution time
+3. **Dispatcher pops due jobs** — leader-elected shard reads from Redis ZSET, acquires shard lock via etcd, updates status in Postgres
+4. **Job dispatched to Kafka** — dispatcher publishes to the correct per-pool topic based on job type
+5. **Worker executes job** — pool-specific workers consume from Kafka, run the job logic, report heartbeats to Redis
+6. **Worker reports completion** — writes result back to Postgres and Redis; failures go back to Kafka for retry
+7. **Sweeper catches stuck executions** — detects missed heartbeats, marks jobs for re-dispatch via Kafka
+8. **Metrics and traces exported** — Prometheus and OpenTelemetry capture execution latency, success rates, and queue depths
+
 
 ---
 

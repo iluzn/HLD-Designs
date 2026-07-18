@@ -530,6 +530,16 @@ flowchart LR
 
 Each node internally uses an LSM tree with WAL for the storage engine. Data is replicated to N=3 nodes via consistent hashing with virtual nodes. Reads and writes use configurable quorum (W, R values).
 
+**How it works end-to-end:**
+
+1. **Client sends GET or PUT** — request hits the Load Balancer
+2. **Router determines target nodes** — consistent hash ring maps the key to N=3 replica nodes
+3. **Write path** — request forwarded to all 3 replicas; returns success once W nodes acknowledge (quorum write)
+4. **Read path** — request sent to R replicas; response returned once R nodes reply (quorum read, W+R>N ensures overlap)
+5. **Node stores data locally** — each node appends to WAL, writes to memtable, flushes to SSTables on disk (LSM tree)
+6. **ZooKeeper manages membership** — tracks which nodes are alive, assigns virtual node ranges, handles join/leave rebalancing
+7. **Anti-entropy repair** — Merkle trees detect divergent replicas; read-repair and background sync fix inconsistencies
+
 ---
 
 ## Key Technologies

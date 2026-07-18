@@ -432,6 +432,19 @@ flowchart LR
     classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
 ```
 
+**How it works end-to-end (write path):**
+
+1. **Game Server reports score** — calls the Leaderboard Service API with player ID and new score
+2. **Regional Redis updated** — ZADD writes the score to the local Redis sorted set (O(log N))
+3. **Score event published to Kafka** — regional change streamed for global aggregation
+4. **Global Aggregator merges** — consumes from all regions, updates Redis Global unified sorted set
+
+**How it works end-to-end (read path):**
+
+5. **Player requests leaderboard** — hits the Top-K Cache (1s TTL, absorbs millions of identical reads)
+6. **Cache miss reads from Redis Global** — ZREVRANGE fetches top-N from the unified sorted set
+7. **Live rank updates pushed** — WebSocket Push streams position changes to connected players viewing the board
+
 ---
 
 ## Key Technologies

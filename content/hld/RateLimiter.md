@@ -720,6 +720,16 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
+**How it works end-to-end:**
+
+1. **Client sends request** — hits the Edge WAF first for IP-level DDoS protection
+2. **Edge WAF passes clean traffic** — volumetric/IP-based attacks blocked; legitimate requests forwarded to API Gateway
+3. **API Gateway applies per-user limits** — invokes the Rate Limit Check (Redis Lua script) with the user's token bucket key
+4. **Redis Lua script executes atomically** — reads current token count, checks against Rules Config tier limits, decrements if allowed
+5. **Request allowed** — Gateway forwards to Backend Services; response includes X-RateLimit-Remaining headers
+6. **Request denied** — returns HTTP 429 with Retry-After header; event published to Analytics for monitoring
+7. **Analytics tracks limit events** — enables dashboards showing which users/endpoints hit limits and abuse patterns
+
 ---
 
 ## Interview Cheat Sheet

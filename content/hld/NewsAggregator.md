@@ -483,6 +483,22 @@ flowchart LR
     classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
+**How it works end-to-end (ingestion path):**
+
+1. **Crawl Scheduler triggers workers** — adaptive scheduling pings 50K publishers at their optimal frequency
+2. **Crawler Pool fetches articles** — downloads, parses, and deduplicates new content
+3. **Kafka receives raw articles** — events streamed to downstream consumers
+4. **Clustering Service groups stories** — computes sentence embeddings, finds nearest neighbors, assigns articles to story clusters
+5. **Article Store persists content** — Cassandra stores full article text and metadata
+
+**How it works end-to-end (read path):**
+
+6. **User requests feed** — hits API Gateway, routed to Feed Service
+7. **Feed Cache checked** — Redis returns cached personalized feed (5-min TTL absorbs 99% of reads)
+8. **Cache miss triggers ranking** — Feed Service calls Ranking Service which scores clusters by freshness, personalization, and diversity
+9. **Ranking Service reads context** — pulls story clusters from Postgres Cluster DB and user preferences from Redis Profiles
+10. **Ranked feed returned** — top stories served to the user with source diversity constraints applied
+
 ---
 
 ## Key Technologies

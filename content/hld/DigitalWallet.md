@@ -845,6 +845,17 @@ flowchart LR
     classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
+**How it works end-to-end:**
+
+1. **User initiates transaction** — Wallet App sends request through API Gateway to Wallet Service or Transfer Service
+2. **Idempotency validated** — Redis idem cache rejects duplicate requests before any state change
+3. **Ledger writes double-entry** — Ledger Service persists balanced debit + credit entries to Postgres primary with row-level locking
+4. **External rail called if needed** — Payment Gateway Adapters charge or credit the bank/UPI
+5. **CDC streams changes** — Debezium captures WAL changes and publishes to Kafka
+6. **Downstream consumers update** — Kafka feeds balance cache (Redis), hot balance reads (Aerospike), transaction history (Cassandra), and triggers notifications
+7. **Read path serves fast** — Read Service checks Redis balance cache first, falls back to Postgres read replica and Cassandra for history
+8. **Reconciler ensures integrity** — polls bank rails daily, compares with internal ledger, fixes discrepancies
+
 That's the design. Six deep dives each picking the right primitive: double-entry ledger with chart-of-accounts for correctness, row-locking with `FOR UPDATE` plus partitioned platform accounts for concurrency, tiered balance caches for read scale, continuous-plus-daily reconciliation for integrity with real banks, Orpheus-style three-phase idempotency to kill double-debits, and modeling holds as first-class accounts instead of flags. Correctness first, everything else second - a wallet that occasionally loses money is not a wallet.
 
 

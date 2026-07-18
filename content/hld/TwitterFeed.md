@@ -520,6 +520,21 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
+**How it works end-to-end (write path — posting a tweet):**
+
+1. **User posts tweet** — request hits API Gateway (auth + rate limit applied)
+2. **Tweet Service persists** — writes tweet to Cassandra (Tweet Store), uploads media to S3/CDN
+3. **Event emitted to Kafka** — tweet creation event published for async fan-out
+4. **Fan-out Workers distribute** — reads Social Graph for follower list, pushes tweetId into each follower's Redis sorted set (Timeline Cache)
+5. **Celebrity exception** — users with >500K followers skip fan-out; their tweets merged at read time
+
+**How it works end-to-end (read path — viewing feed):**
+
+6. **User opens feed** — Feed Service checks Timeline Cache (Redis sorted set) for pre-built timeline
+7. **Hydration** — tweet IDs fetched from cache, hydrated with full tweet content from Cassandra
+8. **Ranking Service scores** — ML model re-ranks by freshness, engagement, and social closeness
+9. **Response returned** — ranked feed served to the user in <200ms P99
+
 ---
 
 ## Interview Cheat Sheet

@@ -742,6 +742,17 @@ flowchart LR
     classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
+**How it works end-to-end:**
+
+1. **User opens document** — browser connects via Load Balancer to WebSocket Gateway for real-time sync
+2. **User types an edit** — operation sent over WebSocket to Collaboration Service (OT engine)
+3. **OT transforms and applies** — Collaboration Service checks Redis Doc State for current version, transforms against concurrent ops
+4. **Operation persisted** — written to Cassandra Op Log as an immutable event
+5. **Broadcast to collaborators** — transformed op published via Redis Pub/Sub to all WebSocket Gateway instances holding active editors
+6. **Periodic snapshot saved** — Snapshot Service compacts the op log into a full document snapshot stored in S3
+7. **Async indexing and summarization** — Kafka carries events to Change Summarizer (version history labels) and Elasticsearch (full-text search)
+8. **Presence tracked** — Presence Aggregator maintains cursor positions in Redis, broadcast via Pub/Sub for live cursor indicators
+
 ---
 
 *Want a deep dive on rich text OT (formatting operations), offline editing with CRDT fallback, or access control for shared documents? Drop a comment below 👇*

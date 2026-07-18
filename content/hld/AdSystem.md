@@ -389,3 +389,14 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
     classDef async fill:#3a2a4c,stroke:#c084fc,color:#e2e8f0
 ```
+
+**How it works end-to-end:**
+
+1. **User sends ad request** — browser hits the Load Balancer with page context
+2. **Ad Server queries the Ad Index** — retrieves candidate ads matching targeting criteria
+3. **ML Ranker scores candidates** — pulls user features from the Feature Store and predicts CTR
+4. **Budget check via Redis** — Ad Server confirms the winning ad's campaign still has budget (Budget Pacer keeps this fresh)
+5. **Ad is served to user** — winning creative returned in <100ms
+6. **User interacts (impression/click)** — Event Tracker fires the event to Kafka
+7. **Billing Processor consumes event** — deducts spend from the advertiser's account in the Billing DB
+8. **Fraud Detector consumes event** — flags suspicious click patterns for retroactive credit

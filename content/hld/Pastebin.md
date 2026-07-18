@@ -422,6 +422,19 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
+**How it works end-to-end (write path):**
+
+1. **User creates paste** — sends content to the Paste Service API
+2. **ID Generator produces short ID** — Base62-encoded random ID for a non-guessable URL
+3. **Content stored in Object Storage** — raw paste text written to S3 (cheap, durable blob store)
+4. **Metadata saved** — ID, expiry, language hint persisted to the Metadata DB
+
+**How it works end-to-end (read path):**
+
+5. **Reader requests paste** — hits CDN edge first (immutable content = high cache hit rate)
+6. **CDN cache miss** — request falls through to the Paste Service which fetches from S3 and Metadata DB
+7. **Cleanup Service handles expiry** — periodically scans Metadata DB for expired pastes and deletes their content from S3
+
 ---
 
 ## Key Technologies

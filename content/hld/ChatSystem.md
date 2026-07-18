@@ -531,6 +531,17 @@ flowchart LR
     classDef external fill:#4a1942,stroke:#f472b6,color:#e2e8f0
 ```
 
+**How it works end-to-end:**
+
+1. **Client opens WebSocket** — connects through Load Balancer (sticky by userId) to a WebSocket Server
+2. **Sender sends message** — WebSocket Server forwards to Chat Service
+3. **Chat Service persists message** — writes to Cassandra (Message Store) with a per-conversation sequence number
+4. **Connection Registry checked** — Redis lookup finds which WebSocket Server holds the recipient
+5. **Kafka fan-out for groups** — message event published to Kafka, Fan-out Workers push to each member's WebSocket Server
+6. **Recipient online** — message delivered in real-time through their WebSocket connection
+7. **Recipient offline** — message queued in Redis sorted set (Offline Queue) and push notification sent via FCM/APNs
+8. **Recipient reconnects** — drains Offline Queue in order, syncs from last seen sequence number
+
 ## Summary
 
 | Decision | Choice | Why |

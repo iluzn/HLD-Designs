@@ -371,3 +371,14 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
     classDef async fill:#3a2a4c,stroke:#c084fc,color:#e2e8f0
 ```
+
+**How it works end-to-end:**
+
+1. **User searches for nearby places** — request hits Load Balancer, routed to Nearby Service
+2. **Result Cache checked** — Redis returns cached results for repeated queries (same geohash cell)
+3. **Static index queried** — Elasticsearch geo_point index returns fixed locations (restaurants, gas stations) within radius
+4. **Dynamic index queried** — Redis Geo shards return live-moving entities (drivers, riders) near the user
+5. **Results merged and returned** — Nearby Service combines static + dynamic results, ranked by distance/relevance
+6. **Drivers update location** — Driver App sends GPS pings to Location Ingestion service
+7. **Kafka streams updates** — location events published for async processing
+8. **Index Updater refreshes Redis Geo** — consumes from Kafka and writes latest positions to the sharded dynamic spatial index

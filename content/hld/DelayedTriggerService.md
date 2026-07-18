@@ -517,6 +517,18 @@ flowchart LR
   class Idem,DB data
 ```
 
+**How it works end-to-end:**
+
+1. **Caller sends trigger request** — hits API Gateway, routed to the Trigger API
+2. **Idempotency check** — API checks Redis idem cache to reject duplicate requests
+3. **Trigger persisted** — written to Cassandra partitioned by time bucket and sub-shard
+4. **Short-delay triggers enqueued** — if fire time is <15 min away, pushed directly to SQS
+5. **Sweeper hydrates long-delay triggers** — leader per shard scans Cassandra buckets approaching due time
+6. **Timing wheel fires on schedule** — O(1) insert/expire ring buffer pushes messages to SQS when due
+7. **Dispatcher delivers callback** — consumes from SQS, checks trigger status in Cassandra, POSTs to caller's callback URL
+8. **Failures go to DLQ** — permanently-failed deliveries parked in Kafka DLQ for investigation
+9. **Reconciler catches leaks** — hourly job scans for stuck PENDING triggers and re-enqueues them
+
 ## Glossary (named components)
 
 - **Sweeper** - periodic process that scans Cassandra for triggers due in the next 15 min and pushes them into the in-memory timing wheel. Why it exists: Cassandra is the durable store, but range-scanning it at every tick would be slow; the sweeper hydrates a fast in-memory structure.
