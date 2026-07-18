@@ -263,8 +263,8 @@ flowchart LR
     DS -->|"3. Query DB"| DB
     DS -->|"4. Query DB"| OL
     SS -->|"5. Query DB"| OL
-    SS -->|"6. Query DB"| S3
-    DS -->|"7. Query DB"| S3
+    SS -->|"6. Store snapshot"| S3
+    DS -->|"7. Fetch snapshot"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

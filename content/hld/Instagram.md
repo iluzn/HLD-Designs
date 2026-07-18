@@ -197,11 +197,11 @@ flowchart LR
 
     App -->|"1. Send request"| GW
     GW -->|"2. Route request"| US
-    US -->|"3. Query DB"| S3
+    US -->|"3. Upload to storage"| S3
     US -->|"4. Query DB"| DB
     US -->|"5. Emit event"| Q
     Q -->|"6. Consume event"| MW
-    MW -->|"7. Query DB"| S3
+    MW -->|"7. Store processed image"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -622,11 +622,11 @@ flowchart LR
     GW -->|"7. Route request"| US
     GW -->|"8. Route request"| FS
     GW -->|"9. Route request"| SGS
-    US -->|"10. Query DB"| S3
+    US -->|"10. Upload media"| S3
     US -->|"11. Query DB"| PG
     US -->|"12. Emit event"| PQ
     PQ -->|"13. Consume event"| MW
-    MW -->|"14. Query DB"| S3
+    MW -->|"14. Store processed media"| S3
     MW -->|"15. Emit event"| KF
     KF -->|"16. Consume event"| FO
     FO -->|"17. Query DB"| CASS
