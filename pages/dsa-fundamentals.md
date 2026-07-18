@@ -1,38 +1,107 @@
 ---
 permalink: /dsa-fundamentals/
 layout: default
-title: "DSA Fundamentals - 12 Patterns for Coding Interviews"
-description: "The core DSA patterns, how to recognize them, complexity analysis, and a framework for solving any coding interview problem."
+title: "DSA Fundamentals - 16 Patterns for Coding Interviews"
+description: "Master the 16 core DSA patterns with step-by-step diagrams, template code in 4 languages, and linked practice problems. The fastest path to interview-ready."
+hide_toc: true
 ---
 
 # DSA Fundamentals
 
-The concepts and patterns you need before solving problems. This isn't a data-structures textbook - it's a practical guide to recognizing patterns, choosing the right approach, and communicating clearly during an interview.
+The patterns you need before grinding problems. Each deep dive has plain-English explanations, step-by-step diagrams, template code in 4 languages, and linked practice problems.
 
----
+<div class="dsaf-grid">
+<a class="dsaf-card" href="/dsa-fundamentals/sliding-window/">
+<span class="dsaf-icon">🪟</span>
+<strong>Sliding Window</strong>
+<span class="dsaf-desc">Fixed and variable window, shrink-expand template</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/two-pointers/">
+<span class="dsaf-icon">👆</span>
+<strong>Two Pointers</strong>
+<span class="dsaf-desc">Opposite-end, same-direction, partitioning</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/binary-search/">
+<span class="dsaf-icon">🔍</span>
+<strong>Binary Search</strong>
+<span class="dsaf-desc">Standard, search on answer, rotated arrays</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/stacks-queues/">
+<span class="dsaf-icon">📚</span>
+<strong>Stacks & Queues</strong>
+<span class="dsaf-desc">Monotonic stack, next greater, valid brackets</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/linked-lists/">
+<span class="dsaf-icon">🔗</span>
+<strong>Linked Lists</strong>
+<span class="dsaf-desc">Reversal, fast/slow pointers, merge, cycle</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/trees-traversal/">
+<span class="dsaf-icon">🌳</span>
+<strong>Trees & Traversal</strong>
+<span class="dsaf-desc">Inorder, preorder, postorder, BFS level-order</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/graphs-bfs-dfs/">
+<span class="dsaf-icon">🕸️</span>
+<strong>Graphs BFS/DFS</strong>
+<span class="dsaf-desc">Grid traversal, connected components, cycles</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/shortest-path/">
+<span class="dsaf-icon">🛤️</span>
+<strong>Shortest Path</strong>
+<span class="dsaf-desc">BFS, Dijkstra, Bellman-Ford, Floyd-Warshall</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/topological-sort/">
+<span class="dsaf-icon">📐</span>
+<strong>Topological Sort</strong>
+<span class="dsaf-desc">Kahn's BFS, DFS-based, DAG ordering</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/heaps/">
+<span class="dsaf-icon">⛰️</span>
+<strong>Heaps</strong>
+<span class="dsaf-desc">Min/max heap, top-K, merge-K sorted lists</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/dynamic-programming/">
+<span class="dsaf-icon">🧩</span>
+<strong>Dynamic Programming</strong>
+<span class="dsaf-desc">1D, 2D, knapsack, LCS, LIS</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/backtracking/">
+<span class="dsaf-icon">🔙</span>
+<strong>Backtracking</strong>
+<span class="dsaf-desc">Permutations, combinations, subsets, N-Queens</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/greedy/">
+<span class="dsaf-icon">💰</span>
+<strong>Greedy</strong>
+<span class="dsaf-desc">Interval scheduling, jump game, activity selection</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/tries/">
+<span class="dsaf-icon">🔤</span>
+<strong>Tries</strong>
+<span class="dsaf-desc">Prefix tree, insert/search/startsWith</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/union-find/">
+<span class="dsaf-icon">🤝</span>
+<strong>Union Find</strong>
+<span class="dsaf-desc">Disjoint set, path compression, union by rank</span>
+</a>
+<a class="dsaf-card" href="/dsa-fundamentals/bit-manipulation/">
+<span class="dsaf-icon">🔢</span>
+<strong>Bit Manipulation</strong>
+<span class="dsaf-desc">XOR tricks, set/clear/toggle, counting bits</span>
+</a>
+</div>
 
-## Deep Dives by Topic
-
-Each topic has plain-English explanations, step-by-step diagrams, template code in 4 languages, and linked practice problems.
-
-| Topic | What it covers |
-|---|---|
-| [Sliding Window](/dsa-fundamentals/sliding-window/) | Fixed and variable window, shrink-expand template |
-| [Two Pointers](/dsa-fundamentals/two-pointers/) | Opposite-end, same-direction, partitioning |
-| [Binary Search](/dsa-fundamentals/binary-search/) | Standard, search on answer, rotated arrays |
-| [Stacks & Queues](/dsa-fundamentals/stacks-queues/) | Monotonic stack, next greater element, valid brackets |
-| [Linked Lists](/dsa-fundamentals/linked-lists/) | Reversal, fast/slow pointers, merge, cycle detection |
-| [Trees & Traversal](/dsa-fundamentals/trees-traversal/) | Inorder/preorder/postorder, BFS level-order |
-| [Graphs BFS/DFS](/dsa-fundamentals/graphs-bfs-dfs/) | Grid traversal, connected components, cycle detection |
-| [Shortest Path](/dsa-fundamentals/shortest-path/) | BFS, Dijkstra, Bellman-Ford, 0-1 BFS, Floyd-Warshall |
-| [Topological Sort](/dsa-fundamentals/topological-sort/) | Kahn's BFS, DFS-based, DAG cycle detection |
-| [Heaps](/dsa-fundamentals/heaps/) | Min/max heap, top-K, merge-K sorted lists |
-| [Dynamic Programming](/dsa-fundamentals/dynamic-programming/) | 1D, 2D, knapsack, LCS, LIS |
-| [Backtracking](/dsa-fundamentals/backtracking/) | Permutations, combinations, subsets, N-Queens |
-| [Greedy](/dsa-fundamentals/greedy/) | Interval scheduling, jump game, activity selection |
-| [Tries](/dsa-fundamentals/tries/) | Prefix tree, insert/search/startsWith |
-| [Union Find](/dsa-fundamentals/union-find/) | Disjoint set, path compression, union by rank |
-| [Bit Manipulation](/dsa-fundamentals/bit-manipulation/) | XOR tricks, set/clear/toggle, counting bits |
+<style>
+.dsaf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.9rem; margin: 1.5rem 0 2.5rem; }
+.dsaf-card { display: flex; flex-direction: column; gap: 0.3rem; padding: 1rem 1.1rem; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-card, rgba(25,25,35,0.55)); text-decoration: none; color: var(--text); transition: border-color 0.2s, transform 0.2s; }
+.dsaf-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.dsaf-card .dsaf-icon { font-size: 1.4rem; margin-bottom: 0.1rem; }
+.dsaf-card strong { font-size: 0.9rem; }
+.dsaf-card .dsaf-desc { font-size: 0.76rem; color: var(--text-muted); line-height: 1.4; }
+@media (max-width: 600px) { .dsaf-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
 
 ---
 
