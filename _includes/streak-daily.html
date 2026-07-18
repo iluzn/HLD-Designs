@@ -5,10 +5,12 @@
     <span class="sc-daily-flame">🔥</span><span id="sc-daily-count" class="sc-daily-count"></span>
 </a>
 <style>
-/* Flame is dull until today's challenge is solved; lit (full colour) once done. */
-.sc-daily-btn .sc-daily-flame{transition:filter .2s,opacity .2s;}
-.sc-daily-btn.dull .sc-daily-flame{filter:grayscale(1);opacity:.5;}
-.sc-daily-btn.lit .sc-daily-flame{filter:none;opacity:1;}
+/* Flame is dull until today's challenge is solved; lit (full colour + fire animation) once done. */
+.sc-daily-btn .sc-daily-flame{transition:filter .2s,opacity .2s;display:inline-block;}
+.sc-daily-btn.dull .sc-daily-flame{filter:grayscale(1);opacity:.5;animation:none;}
+.sc-daily-btn.lit .sc-daily-flame{filter:none;opacity:1;animation:sc-fire 0.8s ease-in-out infinite alternate;}
+@keyframes sc-fire{0%{transform:scale(1) rotate(-2deg);text-shadow:0 0 4px rgba(255,140,0,0.5);}50%{transform:scale(1.15) rotate(1deg);text-shadow:0 0 8px rgba(255,80,0,0.7);}100%{transform:scale(1.05) rotate(-1deg);text-shadow:0 0 6px rgba(255,120,0,0.6);}}
+.sc-daily-btn.has-streak .sc-daily-count{font-weight:700;}
 </style>
 <script>
 (function () {
