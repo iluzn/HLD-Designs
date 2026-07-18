@@ -7,7 +7,7 @@ permalink: /approach
 
 # How to Approach System Design Interviews
 
-> 📖 **Part of the [System Design Interview Guide](/system-design-interview-guide).** Read the [Fundamentals](/concepts) first if CAP, caching, or sharding aren't second nature yet.
+> **Part of the [System Design Interview Guide](/system-design-interview-guide).** Read the [Fundamentals](/concepts) first if CAP, caching, or sharding aren't second nature yet.
 
 This is the framework. Memorize the structure, not the answers. Every system design interview follows the same arc - here's how to navigate it in 45 minutes.
 

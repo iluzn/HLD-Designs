@@ -7,7 +7,7 @@ description: "Core system design concepts: CAP theorem, load balancing, caching,
 
 # System Design Fundamentals
 
-> 📖 **Part of the [System Design Interview Guide](/system-design-interview-guide).** This page covers the building blocks. Once you're comfortable here, move to [The 45-Min Interview Framework →](/approach)
+> **Part of the [System Design Interview Guide](/system-design-interview-guide).** This page covers the building blocks. Once you're comfortable here, move to [The 45-Min Interview Framework →](/approach)
 
 Everything you need to know before tackling specific HLD problems. These are the building blocks every design uses.
 

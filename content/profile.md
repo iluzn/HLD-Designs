@@ -156,10 +156,10 @@ hide_toc: true
     html+='<div class="pf-top">'+
       '<div class="pf-panel pf-donut-wrap">'+donut(dc,td,solvedAll,totalAll)+'<div class="pf-dstats">'+dstats+'</div></div>'+
       '<div class="pf-tiles">'+
-        '<div class="pf-tile"><span class="em">🔥</span><b>'+sk.cur+'</b><span>Day streak</span></div>'+
-        '<div class="pf-tile"><span class="em">🏅</span><b>'+sk.max+'</b><span>Longest streak</span></div>'+
-        '<div class="pf-tile"><span class="em">📤</span><b>'+subs.length+'</b><span>Submissions</span></div>'+
-        '<div class="pf-tile"><span class="em">🎯</span><b>'+accRate+'%</b><span>Acceptance</span></div>'+
+        '<div class="pf-tile"><b>'+sk.cur+'</b><span>Day streak</span></div>'+
+        '<div class="pf-tile"><b>'+sk.max+'</b><span>Longest streak</span></div>'+
+        '<div class="pf-tile"><b>'+subs.length+'</b><span>Submissions</span></div>'+
+        '<div class="pf-tile"><b>'+accRate+'%</b><span>Acceptance</span></div>'+
       '</div>'+
     '</div>';
 
@@ -199,7 +199,7 @@ hide_toc: true
     var gridHtml=blocks.join('');
     var monthRow=monthLabels.join('');
 
-    html+='<div class="pf-sec">🔥 Submission Activity</div>';
+    html+='<div class="pf-sec">Submission Activity</div>';
     html+='<div class="pf-heat-card">';
     html+='<div class="pf-heat-head">'+
       '<span class="pf-heat-title"><b>'+yearSubs+'</b> submission'+(yearSubs===1?'':'s')+' in the past one year <i class="pf-info" title="Accepted and failed submissions across all problems in the last 12 months">i</i></span>'+
@@ -213,7 +213,7 @@ hide_toc: true
     var langs=Object.keys(langCount).sort(function(a,b){return langCount[b]-langCount[a];});
     if(langs.length){
       var maxL=langCount[langs[0]];
-      html+='<div class="pf-sec">💻 Languages Used</div><div class="pf-bars">';
+      html+='<div class="pf-sec">Languages Used</div><div class="pf-bars">';
       langs.forEach(function(l){ var v=langCount[l], pct=Math.round(v/maxL*100); html+='<div class="pf-bar-row"><span class="lbl">'+esc(l)+'</span><div class="pf-bar-track"><div class="pf-bar-fill" style="width:'+pct+'%"></div></div><span class="val">'+v+'</span></div>'; });
       html+='</div>';
     }
@@ -223,7 +223,7 @@ hide_toc: true
     var topics=Object.keys(topicCount).sort(function(a,b){return topicCount[b]-topicCount[a];});
     if(topics.length){
       var maxT=topicCount[topics[0]];
-      html+='<div class="pf-sec">🏷️ Topics Solved</div><div class="pf-bars">';
+      html+='<div class="pf-sec">Topics Solved</div><div class="pf-bars">';
       topics.slice(0,12).forEach(function(t){ var v=topicCount[t], pct=Math.round(v/maxT*100); html+='<div class="pf-bar-row"><span class="lbl" title="'+esc(t)+'">'+esc(t)+'</span><div class="pf-bar-track"><div class="pf-bar-fill" style="width:'+pct+'%"></div></div><span class="val">'+v+'</span></div>'; });
       html+='</div>';
     }
