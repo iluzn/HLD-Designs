@@ -589,8 +589,7 @@ stateDiagram-v2
 
 ```mermaid
 flowchart LR
-    CLIENT["Client"]:::client
-    BROWSER["Browser"]:::client
+    CLIENT["Client or Browser"]:::client
     CDN["CDN Edge"]:::edge
     GW["API Gateway"]:::edge
 
@@ -603,18 +602,17 @@ flowchart LR
     DB[("Database")]:::data
     Q["Message Queue"]:::async
 
-    CLIENT -->|"1. POST /links"| GW
-    GW -->|"2. Auth + forward"| WS
-    WS -->|"3. Get unique ID"| IDG
-    WS -->|"4. Store mapping"| DB
-
-    BROWSER -->|"1. GET /code"| CDN
-    CDN -->|"2. Cache miss"| RS
-    RS -->|"3. Check cache"| REDIS
-    RS -->|"4. DB fallback"| DB
-    RS -->|"5. Fire click event"| Q
-    Q -->|"6. Aggregate counts"| CONSUMER
-    CONSUMER -->|"7. Write rollups"| DB
+    CLIENT -->|"1. Request"| CDN
+    CDN -->|"2. Cache miss"| GW
+    GW -->|"3a. POST /links"| WS
+    GW -->|"3b. GET /code"| RS
+    WS -->|"4. Get unique ID"| IDG
+    WS -->|"5. Store mapping"| DB
+    RS -->|"4. Check cache"| REDIS
+    RS -->|"5. DB fallback"| DB
+    RS -->|"6. Fire click event"| Q
+    Q -->|"7. Aggregate counts"| CONSUMER
+    CONSUMER -->|"8. Write rollups"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -623,7 +621,7 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-The complete system: **Write path** (top) — creates short codes via Snowflake ID generation, stores in DB. **Read path** (bottom) — serves redirects through CDN → Redis → DB, firing analytics events async to a queue. **Analytics** — a consumer aggregates click counts in the background without touching the redirect hot path.
+All requests enter through **CDN → API Gateway**. The gateway routes writes (`POST /links`) to the Write Service and redirects (`GET /:code`) to the Redirect Service. The CDN caches popular redirects at the edge for sub-10ms responses.
 
 
 ---
