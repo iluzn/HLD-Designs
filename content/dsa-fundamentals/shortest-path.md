@@ -91,7 +91,6 @@ flowchart LR
 
 ### Code
 
-<div class="code-tabs" data-tabs="Python|Java|C++|JavaScript">
 
 ```python
 from collections import deque
@@ -172,7 +171,6 @@ function bfsShort(graph, src, dst) {
 }
 ```
 
-</div>
 
 **Common interview problems using BFS shortest path:**
 - [Word Ladder](/dsa/problem/word-ladder) — each word is a node, edges connect words differing by 1 letter
@@ -223,7 +221,6 @@ flowchart LR
 
 ### Code
 
-<div class="code-tabs" data-tabs="Python|Java|C++|JavaScript">
 
 ```python
 import heapq
@@ -320,7 +317,6 @@ function dijkstra(graph, src, dst) {
 }
 ```
 
-</div>
 
 **Common interview problems using Dijkstra:**
 - [Network Delay Time](/dsa/problem/network-delay-time) — classic single-source shortest path
@@ -373,7 +369,6 @@ Actually let me give a cleaner example:
 
 ### Code
 
-<div class="code-tabs" data-tabs="Python|Java|C++|JavaScript">
 
 ```python
 def bellman_ford(n, edges, src, dst):
@@ -439,7 +434,6 @@ function bellmanFord(n, edges, src, dst) {
 }
 ```
 
-</div>
 
 **Common interview problems using Bellman-Ford:**
 - [Cheapest Flights Within K Stops](/dsa/problem/cheapest-flights-within-k-stops) — run K rounds instead of V-1
@@ -478,7 +472,6 @@ flowchart LR
 
 ### Code
 
-<div class="code-tabs" data-tabs="Python|Java|C++|JavaScript">
 
 ```python
 from collections import deque
@@ -571,7 +564,6 @@ function bfs01(graph, src, dst) {
 }
 ```
 
-</div>
 
 **When to spot it:** grid problems where "some cells are free to cross, some cost 1." Classic: minimum obstacle removals to reach the corner.
 
@@ -594,7 +586,6 @@ dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
 
 ### Code
 
-<div class="code-tabs" data-tabs="Python|Java|C++|JavaScript">
 
 ```python
 def floyd_warshall(n, edges):
@@ -664,7 +655,6 @@ function floydWarshall(n, edges) {
 }
 ```
 
-</div>
 
 **Common interview problems:**
 - Find the city with the smallest number of neighbors at a threshold distance
