@@ -516,7 +516,7 @@
         // Theme toggle
         var btn = document.getElementById('theme-btn');
         function setTheme(t) { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t); btn.textContent = t === 'dark' ? '☀️' : '🌙'; }
-        btn.addEventListener('click', function() { setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); });
+        btn.addEventListener('click', function() { var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; setTheme(next); if (document.querySelector('.mermaid')) location.reload(); });
         setTheme(localStorage.getItem('theme') || 'dark');
 
         // Hamburger
