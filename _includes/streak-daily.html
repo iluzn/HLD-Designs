@@ -5,12 +5,26 @@
     <span class="sc-daily-flame">🔥</span><span id="sc-daily-count" class="sc-daily-count"></span>
 </a>
 <style>
-/* Flame is dull until today's challenge is solved; lit (full colour + fire animation) once done. */
-.sc-daily-btn .sc-daily-flame{transition:filter .2s,opacity .2s;display:inline-block;}
-.sc-daily-btn.dull .sc-daily-flame{filter:grayscale(1);opacity:.5;animation:none;}
-.sc-daily-btn.lit .sc-daily-flame{filter:none;opacity:1;animation:sc-fire 0.8s ease-in-out infinite alternate;}
-@keyframes sc-fire{0%{transform:scale(1) rotate(-2deg);text-shadow:0 0 4px rgba(255,140,0,0.5);}50%{transform:scale(1.15) rotate(1deg);text-shadow:0 0 8px rgba(255,80,0,0.7);}100%{transform:scale(1.05) rotate(-1deg);text-shadow:0 0 6px rgba(255,120,0,0.6);}}
-.sc-daily-btn.has-streak .sc-daily-count{font-weight:700;}
+.sc-daily-btn{position:relative;display:inline-flex;align-items:center;gap:0.2rem;padding:0.3rem 0.6rem;border-radius:8px;text-decoration:none;color:var(--text);font-size:0.85rem;overflow:visible;transition:all 0.3s;}
+.sc-daily-btn .sc-daily-flame{display:inline-block;transition:filter .2s,opacity .2s,transform .2s;}
+.sc-daily-btn .sc-daily-count{font-weight:700;font-size:0.8rem;}
+
+/* Dull state — grayscale, no effects */
+.sc-daily-btn.dull .sc-daily-flame{filter:grayscale(1);opacity:.45;}
+.sc-daily-btn.dull{background:transparent;}
+
+/* Lit state — the whole button is on fire */
+.sc-daily-btn.lit{background:rgba(255,100,0,0.1);box-shadow:0 0 12px rgba(255,80,0,0.3),0 0 24px rgba(255,140,0,0.15);border-radius:8px;}
+.sc-daily-btn.lit .sc-daily-flame{filter:none;opacity:1;animation:sc-flame-dance 0.6s ease-in-out infinite alternate;}
+.sc-daily-btn.lit .sc-daily-count{color:#ff8c00;}
+.sc-daily-btn.lit::before{content:'';position:absolute;inset:-2px;border-radius:10px;background:linear-gradient(45deg,rgba(255,80,0,0.4),rgba(255,200,0,0.2),rgba(255,80,0,0.4));background-size:200% 200%;animation:sc-fire-border 1.5s ease infinite;opacity:0.6;z-index:-1;}
+.sc-daily-btn.lit::after{content:'🔥';position:absolute;top:-6px;right:-4px;font-size:0.5rem;opacity:0.7;animation:sc-spark 1.2s ease-in-out infinite;}
+
+@keyframes sc-flame-dance{0%{transform:scale(1) translateY(0);}100%{transform:scale(1.1) translateY(-1px);}}
+@keyframes sc-fire-border{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+@keyframes sc-spark{0%,100%{transform:translateY(0) scale(0.8);opacity:0.5;}50%{transform:translateY(-4px) scale(1);opacity:0.9;}}
+
+[data-theme="light"] .sc-daily-btn.lit{background:rgba(255,100,0,0.08);box-shadow:0 0 10px rgba(255,80,0,0.2),0 0 20px rgba(255,140,0,0.1);}
 </style>
 <script>
 (function () {
