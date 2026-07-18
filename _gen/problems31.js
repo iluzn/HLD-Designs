@@ -57,4 +57,37 @@ MORE31.push({ slug: 'reverse-bits', title: 'Reverse Bits', difficulty: 'easy', t
     return result >>> 0;
   } });
 
+// ---- Longest Cycle in a Graph (DFS / functional graph) ----
+MORE31.push({ slug: 'longest-cycle-in-a-graph', title: 'Longest Cycle in a Graph', difficulty: 'hard', topics: ['Graph', 'DFS'], type: 'ARR_INT', langsrc: T.ARR_INT('longestCycle'),
+  desc: '<p>You are given a directed graph of <code>n</code> nodes numbered from <code>0</code> to <code>n - 1</code>, where each node has <strong>at most one</strong> outgoing edge.</p><p>The graph is represented by a 0-indexed array <code>nums</code> of size <code>n</code>, where <code>nums[i]</code> indicates that there is a directed edge from node <code>i</code> to node <code>nums[i]</code>. If there is no outgoing edge from node <code>i</code>, then <code>nums[i] == -1</code>.</p><p>Return the length of the <strong>longest</strong> cycle in the graph. If no cycle exists, return <code>-1</code>.</p>',
+  examples: [{ in: 'nums = [3,3,4,2,3]', out: '3', ex: 'Nodes 2 → 4 → 3 → 2 form a cycle of length 3.' }, { in: 'nums = [2,-1,3,1]', out: '-1', ex: 'No cycle exists.' }, { in: 'nums = [-1,4,-1,2,0,4]', out: '-1' }],
+  constraints: ['n == nums.length', '1 &lt;= n &lt;= 10^5', '-1 &lt;= nums[i] &lt; n', 'nums[i] != i (no self-loops)'],
+  editorial: '<h2>Approach: Walk each unvisited node forward</h2><p>Since each node has at most one outgoing edge (functional graph), following edges from any node either reaches -1 or enters a cycle. For each unvisited node, walk forward tracking the step count. If we revisit a node from the current walk, cycle length = current step - step when first seen.</p><pre><code>def longestCycle(nums):\n    n = len(nums)\n    visited = [False] * n\n    ans = -1\n    for i in range(n):\n        if visited[i]: continue\n        path = {}\n        node, step = i, 0\n        while node != -1 and not visited[node]:\n            if node in path:\n                ans = max(ans, step - path[node])\n                break\n            path[node] = step\n            step += 1\n            node = nums[node]\n        for key in path:\n            visited[key] = True\n    return ans</code></pre><p><b>Complexity:</b> O(n) time, O(n) space.</p>',
+  gen: function () {
+    var o = [[[3, 3, 4, 2, 3]], [[2, -1, 3, 1]], [[-1, 4, -1, 2, 0, 4]], [[-1]], [[1, 0]], [[-1, -1, -1]]];
+    for (var k = 0; k < 34; k++) {
+      var n = randInt(2, 12), arr = [];
+      for (var i = 0; i < n; i++) {
+        if (Math.random() < 0.2) arr.push(-1);
+        else { var t = randInt(0, n - 1); arr.push(t === i ? -1 : t); }
+      }
+      o.push([arr]);
+    }
+    return o;
+  },
+  ref: function (a) {
+    var edges = a[0], n = edges.length, visited = new Array(n).fill(false), ans = -1;
+    for (var i = 0; i < n; i++) {
+      if (visited[i]) continue;
+      var path = {}, node = i, step = 0, found = false;
+      while (node !== -1 && !visited[node]) {
+        if (path[node] !== undefined) { ans = Math.max(ans, step - path[node]); found = true; break; }
+        path[node] = step; step++; node = edges[node];
+      }
+      var keys = Object.keys(path);
+      for (var j = 0; j < keys.length; j++) visited[+keys[j]] = true;
+    }
+    return ans;
+  } });
+
 module.exports = { MORE31 };
