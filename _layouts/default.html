@@ -184,8 +184,9 @@
         .hint-block { display: block; margin-top: 0.5rem; padding: 0.6rem 0.9rem; background: rgba(129,140,248,0.06); border: 1px solid rgba(129,140,248,0.15); border-radius: 8px; font-size: 0.83rem; color: var(--text-muted); line-height: 1.6; }
         [data-theme="light"] .hint-block { background: rgba(79,70,229,0.04); border-color: rgba(79,70,229,0.12); }
 
-        .mermaid { background: var(--code-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; overflow-x: auto; max-width: 100%; backdrop-filter: blur(8px); }
+        .mermaid { background: var(--code-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; overflow-x: auto; max-width: 100%; backdrop-filter: blur(8px); overflow: hidden; }
         .mermaid .node rect, .mermaid .node polygon, .mermaid .node circle { opacity: 0.85; }
+        .mermaid > :not(svg) { display: none !important; }
         [data-theme="light"] .mermaid { background: #f8fafc; border-color: #e2e8f0; }
         .content hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), rgba(167,139,250,0.5), transparent); margin: 2.5rem 0; opacity: 0.4; }
 
