@@ -10,77 +10,31 @@ hide_toc: true
 
 The patterns you need before grinding problems. Each deep dive has plain-English explanations, step-by-step diagrams, template code in 4 languages, and linked practice problems.
 
+
 <div class="dsaf-grid">
-<a class="dsaf-card" href="/dsa-fundamentals/sliding-window/">
-<strong>Sliding Window</strong>
-<span class="dsaf-desc">Fixed and variable window, shrink-expand template</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/two-pointers/">
-<strong>Two Pointers</strong>
-<span class="dsaf-desc">Opposite-end, same-direction, partitioning</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/binary-search/">
-<strong>Binary Search</strong>
-<span class="dsaf-desc">Standard, search on answer, rotated arrays</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/stacks-queues/">
-<strong>Stacks & Queues</strong>
-<span class="dsaf-desc">Monotonic stack, next greater, valid brackets</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/linked-lists/">
-<strong>Linked Lists</strong>
-<span class="dsaf-desc">Reversal, fast/slow pointers, merge, cycle</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/trees-traversal/">
-<strong>Trees & Traversal</strong>
-<span class="dsaf-desc">Inorder, preorder, postorder, BFS level-order</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/graphs-bfs-dfs/">
-<strong>Graphs BFS/DFS</strong>
-<span class="dsaf-desc">Grid traversal, connected components, cycles</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/shortest-path/">
-<strong>Shortest Path</strong>
-<span class="dsaf-desc">BFS, Dijkstra, Bellman-Ford, Floyd-Warshall</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/topological-sort/">
-<strong>Topological Sort</strong>
-<span class="dsaf-desc">Kahn's BFS, DFS-based, DAG ordering</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/heaps/">
-<strong>Heaps</strong>
-<span class="dsaf-desc">Min/max heap, top-K, merge-K sorted lists</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/dynamic-programming/">
-<strong>Dynamic Programming</strong>
-<span class="dsaf-desc">1D, 2D, knapsack, LCS, LIS</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/backtracking/">
-<strong>Backtracking</strong>
-<span class="dsaf-desc">Permutations, combinations, subsets, N-Queens</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/greedy/">
-<strong>Greedy</strong>
-<span class="dsaf-desc">Interval scheduling, jump game, activity selection</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/tries/">
-<strong>Tries</strong>
-<span class="dsaf-desc">Prefix tree, insert/search/startsWith</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/union-find/">
-<strong>Union Find</strong>
-<span class="dsaf-desc">Disjoint set, path compression, union by rank</span>
-</a>
-<a class="dsaf-card" href="/dsa-fundamentals/bit-manipulation/">
-<strong>Bit Manipulation</strong>
-<span class="dsaf-desc">XOR tricks, set/clear/toggle, counting bits</span>
-</a>
+<a class="dsaf-card" href="/dsa-fundamentals/sliding-window/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="8" height="12" rx="1"/><path d="M14 6h6M14 12h6M14 18h6"/></svg><strong>Sliding Window</strong><span class="dsaf-desc">Fixed and variable window, shrink-expand template</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/two-pointers/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M5 12l3-3M5 12l3 3M19 12l-3-3M19 12l-3 3"/></svg><strong>Two Pointers</strong><span class="dsaf-desc">Opposite-end, same-direction, partitioning</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/binary-search/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><strong>Binary Search</strong><span class="dsaf-desc">Standard, search on answer, rotated arrays</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/stacks-queues/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="4" rx="1"/><rect x="4" y="10" width="16" height="4" rx="1"/><rect x="4" y="16" width="16" height="4" rx="1"/></svg><strong>Stacks & Queues</strong><span class="dsaf-desc">Monotonic stack, next greater, valid brackets</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/linked-lists/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="12" r="3"/><path d="M9 12h6"/></svg><strong>Linked Lists</strong><span class="dsaf-desc">Reversal, fast/slow pointers, merge, cycle</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/trees-traversal/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><circle cx="7" cy="13" r="2"/><circle cx="17" cy="13" r="2"/><path d="M12 7v4M10.5 11.5L7.5 13M13.5 11.5l2.5 1.5"/></svg><strong>Trees & Traversal</strong><span class="dsaf-desc">Inorder, preorder, postorder, BFS level-order</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/graphs-bfs-dfs/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M7 6h10M5 8l7 8M19 8l-7 8"/></svg><strong>Graphs BFS/DFS</strong><span class="dsaf-desc">Grid traversal, connected components, cycles</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/shortest-path/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg><strong>Shortest Path</strong><span class="dsaf-desc">BFS, Dijkstra, Bellman-Ford, Floyd-Warshall</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/topological-sort/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h12M3 18h6"/></svg><strong>Topological Sort</strong><span class="dsaf-desc">Kahn's BFS, DFS-based, DAG ordering</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/heaps/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 7-9 4-9-4 9-7z"/><path d="M3 10v4l9 4 9-4v-4"/></svg><strong>Heaps</strong><span class="dsaf-desc">Min/max heap, top-K, merge-K sorted lists</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/dynamic-programming/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><strong>Dynamic Programming</strong><span class="dsaf-desc">1D, 2D, knapsack, LCS, LIS</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/backtracking/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4 4m0 0l4 4m-4-4h11a4 4 0 000-8h-1"/></svg><strong>Backtracking</strong><span class="dsaf-desc">Permutations, combinations, subsets, N-Queens</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/greedy/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><strong>Greedy</strong><span class="dsaf-desc">Interval scheduling, jump game, activity selection</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/tries/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg><strong>Tries</strong><span class="dsaf-desc">Prefix tree, insert/search/startsWith</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/union-find/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="4"/><circle cx="16" cy="16" r="4"/><path d="M11.5 11.5l1 1"/></svg><strong>Union Find</strong><span class="dsaf-desc">Disjoint set, path compression, union by rank</span></a>
+<a class="dsaf-card" href="/dsa-fundamentals/bit-manipulation/"><svg class="dsaf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg><strong>Bit Manipulation</strong><span class="dsaf-desc">XOR tricks, set/clear/toggle, counting bits</span></a>
 </div>
 
 <style>
 .dsaf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.9rem; margin: 1.5rem 0 2.5rem; }
 .dsaf-card { display: flex; flex-direction: column; gap: 0.3rem; padding: 1rem 1.1rem; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-card, rgba(25,25,35,0.55)); text-decoration: none; color: var(--text); transition: border-color 0.2s, transform 0.2s; }
 .dsaf-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.dsaf-ic { width: 20px; height: 20px; color: var(--accent); margin-bottom: 0.2rem; flex-shrink: 0; }
 .dsaf-card strong { font-size: 0.9rem; }
 .dsaf-card .dsaf-desc { font-size: 0.76rem; color: var(--text-muted); line-height: 1.4; }
 @media (max-width: 600px) { .dsaf-grid { grid-template-columns: repeat(2, 1fr); } }
