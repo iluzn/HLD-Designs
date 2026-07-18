@@ -253,9 +253,9 @@ Both are equally efficient. Kahn's is often preferred in interviews because it n
 ## Practice Problems
 
 - [Course Schedule](/dsa/problem/course-schedule)
-- [Course Schedule II](/dsa/problem/course-schedule-ii)
-- [Alien Dictionary](/dsa/problem/alien-dictionary)
 - [Minimum Height Trees](/dsa/problem/minimum-height-trees)
+
+*Course Schedule II and Alien Dictionary require multi-value or string-based output with multiple valid answers — practice these directly on LeetCode.*
 
 ---
 

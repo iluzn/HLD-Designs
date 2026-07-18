@@ -274,7 +274,7 @@ Used for removing duplicates in-place, partitioning, or detecting cycles. The sl
 
 ## Practice Problems
 
-- [Two Sum II - Input Array Is Sorted](/dsa/problem/two-sum-ii-input-array-is-sorted)
+- Two Sum II - Input Array Is Sorted — the classic opposite-end two-pointer problem *(practice on LeetCode directly)*
 - [3Sum](/dsa/problem/3sum)
 - [Container With Most Water](/dsa/problem/container-with-most-water)
 - [Trapping Rain Water](/dsa/problem/trapping-rain-water)

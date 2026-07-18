@@ -272,9 +272,9 @@ Where L = length of the word. In practice, shared prefixes reduce space signific
 ## Practice Problems
 
 - [Implement Trie Prefix Tree](/dsa/problem/implement-trie-prefix-tree)
-- [Word Search II](/dsa/problem/word-search-ii)
 - [Design Add and Search Words Data Structure](/dsa/problem/design-add-and-search-words-data-structure)
-- [Replace Words](/dsa/problem/replace-words)
+
+*Word Search II and Replace Words require complex grid/string-list I/O — practice these directly on LeetCode.*
 
 ---
 

@@ -242,8 +242,9 @@ Store a weight on each edge (distance to parent). Used in problems like "is the 
 
 - [Number of Connected Components in an Undirected Graph](/dsa/problem/number-of-connected-components-in-an-undirected-graph)
 - [Redundant Connection](/dsa/problem/redundant-connection)
-- [Accounts Merge](/dsa/problem/accounts-merge)
 - [Longest Consecutive Sequence](/dsa/problem/longest-consecutive-sequence)
+
+*Accounts Merge requires complex string-list I/O with multiple valid orderings — practice on LeetCode directly.*
 
 ---
 

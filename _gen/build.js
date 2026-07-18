@@ -176,6 +176,7 @@ require('./problems27.js').MORE27.forEach(function (p) { P.push(p); });
 require('./problems28.js').MORE28.forEach(function (p) { P.push(p); });
 require('./problems29.js').MORE29.forEach(function (p) { P.push(p); });
 require('./problems30.js').MORE30.forEach(function (p) { P.push(p); });
+require('./problems31.js').MORE31.forEach(function (p) { P.push(p); });
 
 // Deduplicate by slug (keep first occurrence)
 var _seen = {}; var _deduped = [];

@@ -344,7 +344,7 @@ def dijkstra(graph, src, dst):
 
 **Common interview problems using Dijkstra:**
 - [Network Delay Time](/dsa/problem/network-delay-time) — classic single-source shortest path
-- [Path With Minimum Effort](/dsa/problem/path-with-minimum-effort) — Dijkstra on a grid with edge weights = height difference
+- Path With Minimum Effort — Dijkstra on a grid where edge weight = absolute height difference *(complex grid I/O — practice on LeetCode directly)*
 
 ---
 
@@ -472,7 +472,7 @@ Actually let me give a cleaner example:
 </div>
 
 **Common interview problems using Bellman-Ford:**
-- [Cheapest Flights Within K Stops](/dsa/problem/cheapest-flights-within-k-stops) — run K rounds instead of V-1
+- Cheapest Flights Within K Stops — run K+1 rounds instead of V-1 *(complex multi-param I/O — practice on LeetCode directly)*
 - Negative cycle detection — if V-th round still reduces distances
 
 ---

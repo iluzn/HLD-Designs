@@ -318,10 +318,10 @@ Start BFS from multiple sources simultaneously. Used in "rotting oranges" (all r
 ## Practice Problems
 
 - [Number of Islands](/dsa/problem/number-of-islands)
-- [Clone Graph](/dsa/problem/clone-graph)
 - [Course Schedule](/dsa/problem/course-schedule)
-- [Pacific Atlantic Water Flow](/dsa/problem/pacific-atlantic-water-flow)
 - [Rotting Oranges](/dsa/problem/rotting-oranges)
+
+*Clone Graph and Pacific Atlantic Water Flow require complex I/O (graph reconstruction, grid multi-source output) — practice these directly on LeetCode.*
 
 ---
 
