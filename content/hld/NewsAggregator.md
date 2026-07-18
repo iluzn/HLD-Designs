@@ -161,11 +161,11 @@ flowchart LR
     STORE[("Article Store<br/>Cassandra")]:::data
     SOURCES["50K Publishers"]:::external
 
-    SCHED --> WORKERS
-    WORKERS --> SOURCES
-    WORKERS --> EXTRACT
-    EXTRACT --> KF
-    KF --> STORE
+    SCHED -->|"1. Dispatch jobs"| WORKERS
+    WORKERS -->|"2. Fetch RSS and HTML"| SOURCES
+    WORKERS -->|"3. Parse content"| EXTRACT
+    EXTRACT -->|"4. Emit event"| KF
+    KF -->|"5. Sink data"| STORE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -206,10 +206,10 @@ flowchart LR
     CLUSTERDB[("Cluster DB<br/>Postgres")]:::data
     STORE[("Article Store")]:::data
 
-    KF --> CLUSTER
-    CLUSTER --> EMBED
-    CLUSTER --> CLUSTERDB
-    CLUSTER --> STORE
+    KF -->|"1. Consume event"| CLUSTER
+    CLUSTER -->|"2. Check cache"| EMBED
+    CLUSTER -->|"3. Query DB"| CLUSTERDB
+    CLUSTER -->|"4. Query DB"| STORE
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -251,12 +251,12 @@ flowchart LR
     PROFILE[("User Profile<br/>Redis")]:::data
     CLUSTERDB[("Cluster DB")]:::data
 
-    USER --> GW
-    GW --> FEED
-    FEED --> CACHE
-    FEED --> RANK
-    RANK --> PROFILE
-    RANK --> CLUSTERDB
+    USER -->|"1. Send request"| GW
+    GW -->|"2. Route request"| FEED
+    FEED -->|"3. Check cache"| CACHE
+    FEED -->|"4. Call service"| RANK
+    RANK -->|"5. Check cache"| PROFILE
+    RANK -->|"6. Query DB"| CLUSTERDB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -461,19 +461,19 @@ flowchart LR
     USER["Users"]:::client
     GW["API Gateway"]:::edge
 
-    SOURCES --> WORKERS
-    SCHED --> WORKERS
-    WORKERS --> KF
-    KF --> CLUSTER
-    KF --> ARTICLES
-    CLUSTER --> EMBED
-    CLUSTER --> CLUSTERDB
-    USER --> GW
-    GW --> FEED
-    FEED --> CACHE
-    FEED --> RANK
-    RANK --> CLUSTERDB
-    RANK --> PROFILE
+    SOURCES -->|"1. Provide articles"| WORKERS
+    SCHED -->|"2. Trigger crawl"| WORKERS
+    WORKERS -->|"3. Emit event"| KF
+    KF -->|"4. Consume event"| CLUSTER
+    KF -->|"5. Sink data"| ARTICLES
+    CLUSTER -->|"6. Check cache"| EMBED
+    CLUSTER -->|"7. Query DB"| CLUSTERDB
+    USER -->|"8. Send request"| GW
+    GW -->|"9. Route request"| FEED
+    FEED -->|"10. Check cache"| CACHE
+    FEED -->|"11. Call service"| RANK
+    RANK -->|"12. Query DB"| CLUSTERDB
+    RANK -->|"13. Check cache"| PROFILE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

@@ -202,12 +202,12 @@ flowchart LR
     RG["Redis Geo"]:::data
     DB["Ride DB Postgres"]:::data
 
-    Rider --> GW
-    GW --> RS
-    RS --> MS
-    MS --> LS
-    LS --> RG
-    RS --> DB
+    Rider -->|"1. Send request"| GW
+    GW -->|"2. Route request"| RS
+    RS -->|"3. Call service"| MS
+    MS -->|"4. Call service"| LS
+    LS -->|"5. Check cache"| RG
+    RS -->|"6. Query DB"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -251,11 +251,11 @@ flowchart LR
     WSG["WebSocket Gateway"]:::service
     Rider["Rider App"]:::client
 
-    Driver --> LI
-    LI --> RG
-    LI --> KF
-    KF --> WSG
-    WSG --> Rider
+    Driver -->|"1. Send request"| LI
+    LI -->|"2. Write cache"| RG
+    LI -->|"3. Emit event"| KF
+    KF -->|"4. Fan out"| WSG
+    WSG -->|"5. Push location"| Rider
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -299,13 +299,13 @@ flowchart LR
     Maps["Maps API"]:::external
     KF["Kafka"]:::async
 
-    MS --> NS
-    NS --> Driver
-    Driver --> RS
-    RS --> PS
-    RS --> ETA
-    ETA --> Maps
-    RS --> KF
+    MS -->|"1. Send notification"| NS
+    NS -->|"2. Push ride offer"| Driver
+    Driver -->|"3. API call"| RS
+    RS -->|"4. Call service"| PS
+    RS -->|"5. Call service"| ETA
+    ETA -->|"6. Call service"| Maps
+    RS -->|"7. Emit event"| KF
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -442,11 +442,11 @@ flowchart LR
     R3["Redis Shard: East"]:::data
     MS["Matching Service"]:::service
 
-    LI --> ROUTER
-    ROUTER --> R1
-    ROUTER --> R2
-    ROUTER --> R3
-    MS --> ROUTER
+    LI -->|"1. Query location"| ROUTER
+    ROUTER -->|"2. Check cache"| R1
+    ROUTER -->|"3. Check cache"| R2
+    ROUTER -->|"4. Check cache"| R3
+    MS -->|"5. Query location"| ROUTER
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -486,11 +486,11 @@ flowchart LR
     LOCK["Redis Lock driver:123"]:::data
     RS["Ride Service"]:::service
 
-    MS1 -->|"SET driver:123:lock NX EX 20"| LOCK
-    MS2 -->|"SET driver:123:lock NX EX 20"| LOCK
-    LOCK -->|"OK (acquired)"| MS1
-    LOCK -->|"nil (failed)"| MS2
-    MS1 --> RS
+    MS1 -->|"1. SET driver:123:lock NX EX 20"| LOCK
+    MS2 -->|"2. SET driver:123:lock NX EX 20"| LOCK
+    LOCK -->|"3. OK (acquired)"| MS1
+    LOCK -->|"4. Nil (failed)"| MS2
+    MS1 -->|"5. Call service"| RS
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -571,13 +571,13 @@ flowchart LR
     WSG2["WS Gateway 2"]:::service
     Rider["Rider App"]:::client
 
-    Driver --> LI
-    LI --> KF
-    KF --> ROUTER
-    ROUTER --> RPS
-    RPS --> WSG1
-    RPS --> WSG2
-    WSG1 --> Rider
+    Driver -->|"1. Send request"| LI
+    LI -->|"2. Emit event"| KF
+    KF -->|"3. Fan out"| ROUTER
+    ROUTER -->|"4. Check cache"| RPS
+    RPS -->|"5. Push to subscriber"| WSG1
+    RPS -->|"6. Push to subscriber"| WSG2
+    WSG1 -->|"7. Push location"| Rider
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -697,31 +697,31 @@ flowchart LR
         FCM["FCM and APNs"]:::external
     end
 
-    RA --> LB
-    DA --> LB
-    LB --> GW
-    LB --> WSG
-    GW --> RS
-    GW --> LI
-    RS --> MS
-    MS --> LS
-    LS --> RG
-    LI --> RG
-    LI --> KF
-    RS --> PG
-    RS --> KF
-    KF --> NS
-    KF --> WSG
-    NS --> FCM
-    NS --> WSG
-    MS --> RC
-    ETA --> MAPS
-    RS --> ETA
-    PS --> RC
-    REC --> PG
-    REC --> KF
-    KF --> RPS
-    RPS --> WSG
+    RA -->|"1. Send request"| LB
+    DA -->|"2. Send request"| LB
+    LB -->|"3. Route API"| GW
+    LB -->|"4. Route WebSocket"| WSG
+    GW -->|"5. Route request"| RS
+    GW -->|"6. Route location"| LI
+    RS -->|"7. Call service"| MS
+    MS -->|"8. Call service"| LS
+    LS -->|"9. Check cache"| RG
+    LI -->|"10. Write cache"| RG
+    LI -->|"11. Emit event"| KF
+    RS -->|"12. Query DB"| PG
+    RS -->|"13. Emit event"| KF
+    KF -->|"14. Consume event"| NS
+    KF -->|"15. Fan out"| WSG
+    NS -->|"16. Send notification"| FCM
+    NS -->|"17. Push update"| WSG
+    MS -->|"18. Check cache"| RC
+    ETA -->|"19. Call service"| MAPS
+    RS -->|"20. Call service"| ETA
+    PS -->|"21. Check cache"| RC
+    REC -->|"22. Persist data"| PG
+    REC -->|"23. Emit event"| KF
+    KF -->|"24. Consume event"| RPS
+    RPS -->|"25. Push to gateway"| WSG
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

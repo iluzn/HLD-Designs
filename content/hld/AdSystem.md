@@ -167,11 +167,11 @@ flowchart LR
     ML["ML Ranker<br/>(CTR prediction)"]:::service
     BUDGET["Budget Service<br/>(Redis)"]:::data
 
-    USER --> LB
-    LB --> ADSERV
-    ADSERV --> INDEX
-    ADSERV --> ML
-    ADSERV --> BUDGET
+    USER -->|"1. Send request"| LB
+    LB -->|"2. Route"| ADSERV
+    ADSERV -->|"3. Update index"| INDEX
+    ADSERV -->|"4. Get prediction"| ML
+    ADSERV -->|"5. Check cache"| BUDGET
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -204,12 +204,12 @@ flowchart LR
     BILLDB[("Billing DB<br/>Postgres")]:::data
     FRAUD["Fraud Detector"]:::service
 
-    USER -->|"impression pixel"| TRACKER
-    USER -->|"click redirect"| TRACKER
-    TRACKER --> KAFKA
-    KAFKA --> BILLING
-    KAFKA --> FRAUD
-    BILLING --> BILLDB
+    USER -->|"1. Impression pixel"| TRACKER
+    USER -->|"2. Click redirect"| TRACKER
+    TRACKER -->|"3. Consume event"| KAFKA
+    KAFKA -->|"4. Consume event"| BILLING
+    KAFKA -->|"5. Consume event"| FRAUD
+    BILLING -->|"6. Query DB"| BILLDB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -239,10 +239,10 @@ flowchart LR
     REDIS["Budget Redis<br/>(atomic DECRBY)"]:::data
     PACER["Budget Pacer<br/>(PID controller)"]:::service
 
-    ADSERV1 --> REDIS
-    ADSERV2 --> REDIS
-    ADSERV3 --> REDIS
-    PACER --> REDIS
+    ADSERV1 -->|"1. Check cache"| REDIS
+    ADSERV2 -->|"2. Check cache"| REDIS
+    ADSERV3 -->|"3. Check cache"| REDIS
+    PACER -->|"4. Check cache"| REDIS
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -370,18 +370,18 @@ flowchart LR
     FRAUD["Fraud Detector"]:::service
     BILLDB[("Billing DB")]:::data
 
-    USER --> LB
-    LB --> ADSERV
-    ADSERV --> INDEX
-    ADSERV --> ML
-    ML --> FEATURES
-    ADSERV --> BUDGET
-    PACER --> BUDGET
-    USER --> TRACKER
-    TRACKER --> KAFKA
-    KAFKA --> BILLING
-    KAFKA --> FRAUD
-    BILLING --> BILLDB
+    USER -->|"1. Send request"| LB
+    LB -->|"2. Route"| ADSERV
+    ADSERV -->|"3. Update index"| INDEX
+    ADSERV -->|"4. Get prediction"| ML
+    ML -->|"5. Return prediction"| FEATURES
+    ADSERV -->|"6. Check cache"| BUDGET
+    PACER -->|"7. Update cache"| BUDGET
+    USER -->|"8. Send request"| TRACKER
+    TRACKER -->|"9. Consume event"| KAFKA
+    KAFKA -->|"10. Consume event"| BILLING
+    KAFKA -->|"11. Consume event"| FRAUD
+    BILLING -->|"12. Query DB"| BILLDB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

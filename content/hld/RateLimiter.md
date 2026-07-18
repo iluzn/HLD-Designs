@@ -25,12 +25,12 @@ flowchart LR
     REDIS[("Redis<br/>counters")]:::data
     API["Your API"]:::service
 
-    CLIENT --> EDGE
-    EDGE --> GW
-    GW --> RL
-    RL --> REDIS
-    GW -->|"allowed"| API
-    GW -->|"rejected 429"| CLIENT
+    CLIENT -->|"1. Send request"| EDGE
+    EDGE -->|"2. IP check pass"| GW
+    GW -->|"3. Read cache"| RL
+    RL -->|"4. Return data"| REDIS
+    GW -->|"5. Allowed"| API
+    GW -->|"6. Rejected 429"| CLIENT
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -146,12 +146,12 @@ flowchart LR
     POD3["API Pod 3"]:::service
     REDIS[("Redis<br/>shared counters")]:::data
 
-    CLIENT --> POD1
-    CLIENT --> POD2
-    CLIENT --> POD3
-    POD1 --> REDIS
-    POD2 --> REDIS
-    POD3 --> REDIS
+    CLIENT -->|"1. API call"| POD1
+    CLIENT -->|"2. API call"| POD2
+    CLIENT -->|"3. API call"| POD3
+    POD1 -->|"4. Check cache"| REDIS
+    POD2 -->|"5. Check cache"| REDIS
+    POD3 -->|"6. Check cache"| REDIS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -206,8 +206,8 @@ flowchart LR
     end
     RESULT["200 requests in 3 seconds!"]:::client
 
-    A --> RESULT
-    B --> RESULT
+    A -->|"1. Window A: 100 reqs"| RESULT
+    B -->|"2. Window B: 100 reqs"| RESULT
 
     classDef default fill:#1e1e2e,stroke:#6366f1,color:#e2e8f0
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -296,8 +296,8 @@ flowchart LR
     end
     TOTAL["Estimated: 30 + 20 = 50"]:::service
 
-    OVERLAP --> TOTAL
-    CURR --> TOTAL
+    OVERLAP -->|"1. Weight previous"| TOTAL
+    CURR -->|"2. Add current"| TOTAL
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -362,11 +362,11 @@ flowchart TD
     ALLOW["✅ Allow<br/>tokens -= 1"]:::data
     REJECT["❌ 429 Reject"]:::client
 
-    REFILL -->|"adds tokens up to max"| BUCKET
-    REQ --> CHECK
-    CHECK -->|"yes"| ALLOW
-    CHECK -->|"no"| REJECT
-    BUCKET --> CHECK
+    REFILL -->|"1. Adds tokens up to max"| BUCKET
+    REQ -->|"2. Consume token"| CHECK
+    CHECK -->|"3. Yes"| ALLOW
+    CHECK -->|"4. No"| REJECT
+    BUCKET -->|"5. Serve content"| CHECK
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -430,9 +430,9 @@ flowchart LR
     OUT["Steady output<br/>1 req every 200ms"]:::service
     DROP["❌ Dropped<br/>5 requests overflow"]:::client
 
-    IN -->|"5 fit"| BUCKET
-    IN -->|"5 overflow"| DROP
-    BUCKET -->|"constant drip"| OUT
+    IN -->|"1. 5 fit"| BUCKET
+    IN -->|"2. 5 overflow"| DROP
+    BUCKET -->|"3. Constant drip"| OUT
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -479,14 +479,14 @@ flowchart TD
     LB["Leaky Bucket<br/>Shopify, Netflix"]:::data
     FW["Fixed Window<br/>Simple internal use"]:::data
 
-    START --> Q1
-    Q1 -->|"Yes"| TB
-    Q1 -->|"No"| Q2
-    Q2 -->|"Yes exact"| SWL
-    Q2 -->|"No approx OK"| Q3
-    Q3 -->|"Yes smooth output"| LB
-    Q3 -->|"No just cap input"| SWC
-    START -->|"Simplest possible"| FW
+    START -->|"1. Which algorithm?"| Q1
+    Q1 -->|"2. Yes"| TB
+    Q1 -->|"3. No"| Q2
+    Q2 -->|"4. Yes exact"| SWL
+    Q2 -->|"5. No approx OK"| Q3
+    Q3 -->|"6. Yes smooth output"| LB
+    Q3 -->|"7. No just cap input"| SWC
+    START -->|"8. Simplest possible"| FW
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -502,15 +502,15 @@ flowchart TD
 ```mermaid
 flowchart LR
     CLIENT["Client"]:::client
-    L1["Layer 1: Edge<br/>Cloudflare WAF<br/>IP-level DDoS"]:::edge
-    L2["Layer 2: Gateway<br/>Kong or Envoy<br/>per-API-key limits"]:::edge
+    L1["Layer 1: Edge"]:::edge
+    L2["Layer 2: Gateway"]:::edge
     L3["Layer 3: Service<br/>your code<br/>domain-specific"]:::service
     API["Backend"]:::service
 
-    CLIENT --> L1
-    L1 --> L2
-    L2 --> L3
-    L3 --> API
+    CLIENT -->|"1. Send request"| L1
+    L1 -->|"2. Pass to user limit"| L2
+    L2 -->|"3. Route request"| L3
+    L3 -->|"4. Allow"| API
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -540,13 +540,13 @@ flowchart TD
     FO["Fail-Open<br/>allow all requests"]:::service
     FB["Fallback<br/>local in-memory bucket"]:::service
 
-    DOWN --> FC
-    DOWN --> FO
-    DOWN --> FB
+    DOWN -->|"1. Return data"| FC
+    DOWN -->|"2. Return data"| FO
+    DOWN -->|"3. Return data"| FB
 
-    FC -->|"❌ Global outage"| BAD["Users locked out"]:::client
-    FO -->|"⚠️ No protection"| OK["Backend might overload"]:::client
-    FB -->|"✅ Graceful"| GOOD["Slightly inaccurate but safe"]:::client
+    FC -->|"4. ❌ Global outage"| BAD["Users locked out"]:::client
+    FO -->|"5. ⚠️ No protection"| OK["Backend might overload"]:::client
+    FB -->|"6. ✅ Graceful"| GOOD["Slightly inaccurate but safe"]:::client
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -637,9 +637,9 @@ flowchart LR
         R2["Pod 2"]:::service
         R3["Pod 3"]:::service
         REDIS["Redis: count=100"]:::data
-        R1 --> REDIS
-        R2 --> REDIS
-        R3 --> REDIS
+        R1 -->|"1. Update cache"| REDIS
+        R2 -->|"2. Update cache"| REDIS
+        R3 -->|"3. Update cache"| REDIS
     end
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -673,11 +673,11 @@ flowchart TD
     ALLOW["✅ Allow"]:::data
     REJECT["❌ 429 Reject"]:::client
 
-    REQ --> BURST
-    BURST -->|"pass"| SUSTAIN
-    BURST -->|"fail"| REJECT
-    SUSTAIN -->|"pass"| ALLOW
-    SUSTAIN -->|"fail"| REJECT
+    REQ -->|"1. Check burst"| BURST
+    BURST -->|"2. Pass"| SUSTAIN
+    BURST -->|"3. Fail"| REJECT
+    SUSTAIN -->|"4. Pass"| ALLOW
+    SUSTAIN -->|"5. Fail"| REJECT
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -705,13 +705,13 @@ flowchart LR
     API["Backend Services"]:::service
     K["Analytics<br/>limit events"]:::async
 
-    CLIENTS --> EDGE
-    EDGE --> GW
-    GW --> RL
-    RL --> REDIS
-    RL --> RULES
-    GW -->|"allowed"| API
-    RL --> K
+    CLIENTS -->|"1. Send request"| EDGE
+    EDGE -->|"2. IP check pass"| GW
+    GW -->|"3. Read cache"| RL
+    RL -->|"4. Return data"| REDIS
+    RL -->|"5. Return data"| RULES
+    GW -->|"6. Allowed"| API
+    RL -->|"7. Publish change"| K
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

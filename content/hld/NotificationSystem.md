@@ -19,21 +19,21 @@ A multi-channel notification platform that delivers push, SMS, email, and in-app
 ```mermaid
 flowchart LR
     SERVICES["Internal Services<br/>order placed and payment etc"]:::client
-    BUS["Event Bus<br/>Kafka"]:::async
+    BUS["Kafka"]:::async
     NS["Notification Service<br/>template and routing"]:::service
     PUSH["Push<br/>FCM APNs"]:::external
     SMS["SMS<br/>Twilio"]:::external
     EMAIL["Email<br/>SES"]:::external
     USER["User"]:::client
 
-    SERVICES --> BUS
-    BUS --> NS
-    NS --> PUSH
-    NS --> SMS
-    NS --> EMAIL
-    PUSH --> USER
-    SMS --> USER
-    EMAIL --> USER
+    SERVICES -->|"1. Emit event"| BUS
+    BUS -->|"2. Consume event"| NS
+    NS -->|"3. Send notification"| PUSH
+    NS -->|"4. Send notification"| SMS
+    NS -->|"5. Send notification"| EMAIL
+    PUSH -->|"6. Push update"| USER
+    SMS -->|"7. Deliver"| USER
+    EMAIL -->|"8. Deliver"| USER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -324,7 +324,7 @@ Start with the minimum viable pipeline: accept, enqueue, fan out per channel, di
 flowchart LR
     APP["Product Service"]:::service
     API["Notification API"]:::edge
-    Q["Message broker<br/>Kafka or Kinesis"]:::async
+    Q["Message broker<br/>Kafka"]:::async
     ROUTE["Router"]:::service
     PUSH["Push Worker"]:::service
     EMAIL["Email Worker"]:::service
@@ -333,15 +333,15 @@ flowchart LR
     SES["SES / Mailgun"]:::external
     TWIL["Twilio"]:::external
 
-    APP --> API
-    API --> Q
-    Q --> ROUTE
-    ROUTE --> PUSH
-    ROUTE --> EMAIL
-    ROUTE --> SMS
-    PUSH --> APNS
-    EMAIL --> SES
-    SMS --> TWIL
+    APP -->|"1. Send notification"| API
+    API -->|"2. Emit event"| Q
+    Q -->|"3. Consume event"| ROUTE
+    ROUTE -->|"4. Send notification"| PUSH
+    ROUTE -->|"5. Send notification"| EMAIL
+    ROUTE -->|"6. Send notification"| SMS
+    PUSH -->|"7. Send notification"| APNS
+    EMAIL -->|"8. Render template"| SES
+    SMS -->|"9. Render template"| TWIL
 
     classDef edge fill:#bfdbfe,stroke:#1d4ed8,color:#0c1f4a
     classDef service fill:#bbf7d0,stroke:#16a34a,color:#052e16
@@ -383,9 +383,9 @@ flowchart LR
     PREFDB[("Postgres<br/>user_preferences")]:::data
     PREFCACHE[("Redis<br/>pref cache")]:::data
 
-    API --> PREFS
-    ROUTE --> PREFS
-    PREFS --> PREFCACHE
+    API -->|"1. Call service"| PREFS
+    ROUTE -->|"2. Call service"| PREFS
+    PREFS -->|"3. Check cache"| PREFCACHE
     PREFCACHE -. miss .-> PREFDB
 
     classDef edge fill:#bfdbfe,stroke:#1d4ed8,color:#0c1f4a
@@ -432,10 +432,10 @@ flowchart LR
     RETRY["Retry Queue<br/>delayed topic"]:::async
     DLQ["Dead Letter Queue"]:::async
 
-    PUSH --> APNS
-    PUSH --> ATTEMPT
+    PUSH -->|"1. Send notification"| APNS
+    PUSH -->|"2. Query DB"| ATTEMPT
     PUSH -.timeout or 5xx.-> RETRY
-    RETRY --> PUSH
+    RETRY -->|"3. Consume event"| PUSH
     PUSH -.permanent failure.-> DLQ
 
     classDef service fill:#bbf7d0,stroke:#16a34a,color:#052e16
@@ -529,10 +529,10 @@ flowchart LR
     KAFKA["Kafka"]:::async
     ROUTE["Router"]:::service
 
-    API --> DB
-    DB --> CDC
-    CDC --> KAFKA
-    KAFKA --> ROUTE
+    API -->|"1. Query DB"| DB
+    DB -->|"2. CDC stream"| CDC
+    CDC -->|"3. Stream changes"| KAFKA
+    KAFKA -->|"4. Consume event"| ROUTE
 
     classDef edge fill:#bfdbfe,stroke:#1d4ed8,color:#0c1f4a
     classDef service fill:#bbf7d0,stroke:#16a34a,color:#052e16
@@ -575,12 +575,12 @@ flowchart LR
     WORKERS2["Mkt Workers"]:::service
     APNS["APNs"]:::external
 
-    KAFKA1 --> BUCKET1
-    BUCKET1 --> WORKERS1
-    KAFKA2 --> BUCKET2
-    BUCKET2 --> WORKERS2
-    WORKERS1 --> APNS
-    WORKERS2 --> APNS
+    KAFKA1 -->|"1. Deliver"| BUCKET1
+    BUCKET1 -->|"2. Read file"| WORKERS1
+    KAFKA2 -->|"3. Deliver"| BUCKET2
+    BUCKET2 -->|"4. Read file"| WORKERS2
+    WORKERS1 -->|"5. Send notification"| APNS
+    WORKERS2 -->|"6. Send notification"| APNS
 
     classDef service fill:#bbf7d0,stroke:#16a34a,color:#052e16
     classDef async fill:#e9d5ff,stroke:#7c3aed,color:#3b0764
@@ -662,12 +662,12 @@ flowchart LR
     KAFKA["Kafka<br/>in-app topic"]:::async
     FANOUT["In-App Fan-out"]:::service
 
-    APP --> LB
-    LB --> WS
-    WS --> PRESENCE
-    FANOUT --> KAFKA
-    KAFKA --> WS
-    WS --> APP
+    APP -->|"1. Send request"| LB
+    LB -->|"2. Route"| WS
+    WS -->|"3. Return response"| PRESENCE
+    FANOUT -->|"4. Send request"| KAFKA
+    KAFKA -->|"5. Send request"| WS
+    WS -->|"6. Push to client"| APP
 
     classDef client fill:#fed7aa,stroke:#c2410c,color:#431407
     classDef edge fill:#bfdbfe,stroke:#1d4ed8,color:#0c1f4a
@@ -708,11 +708,11 @@ flowchart LR
     CACHE[("Redis<br/>compiled templates")]:::data
     WORKER["Channel Worker"]:::service
 
-    CONSOLE --> TMPL
-    TMPL --> DB
-    TMPL --> S3
-    WORKER --> TMPL
-    TMPL --> CACHE
+    CONSOLE -->|"1. Call service"| TMPL
+    TMPL -->|"2. Query DB"| DB
+    TMPL -->|"3. Store file"| S3
+    WORKER -->|"4. Call service"| TMPL
+    TMPL -->|"5. Check cache"| CACHE
     CACHE -. miss .-> S3
 
     classDef client fill:#fed7aa,stroke:#c2410c,color:#431407
@@ -771,12 +771,12 @@ flowchart LR
     RANKER["Ranker"]:::service
     DELAYQ[("Redis ZSET<br/>per-user delayed queue")]:::data
 
-    EVENTS --> FEATURE
-    FEATURE --> MODEL
-    MODEL --> SERVING
-    ATC --> SERVING
-    SERVING --> RANKER
-    RANKER --> DELAYQ
+    EVENTS -->|"1. Send request"| FEATURE
+    FEATURE -->|"2. Return data"| MODEL
+    MODEL -->|"3. Return prediction"| SERVING
+    ATC -->|"4. Score urgency"| SERVING
+    SERVING -->|"5. Return prediction"| RANKER
+    RANKER -->|"6. Return prediction"| DELAYQ
 
     classDef service fill:#bbf7d0,stroke:#16a34a,color:#052e16
     classDef async fill:#e9d5ff,stroke:#7c3aed,color:#3b0764
@@ -823,16 +823,16 @@ flowchart LR
     COLLECT["Engagement Collector"]:::service
     KAFKA["Kafka<br/>engagement topic"]:::async
     DEDUP["Deduper"]:::service
-    DWH[("ClickHouse<br/>events - 90d hot")]:::data
+    DWH[("Analytics Store<br/>events - 90d hot")]:::data
     COLD[("Parquet on S3<br/>cold - 2y")]:::data
 
-    APP --> COLLECT
-    EMAIL --> COLLECT
-    PROVIDER --> COLLECT
-    COLLECT --> KAFKA
-    KAFKA --> DEDUP
-    DEDUP --> DWH
-    DWH --> COLD
+    APP -->|"1. Send request"| COLLECT
+    EMAIL -->|"2. Notify"| COLLECT
+    PROVIDER -->|"3. Return data"| COLLECT
+    COLLECT -->|"4. Emit event"| KAFKA
+    KAFKA -->|"5. Consume event"| DEDUP
+    DEDUP -->|"6. Emit event"| DWH
+    DWH -->|"7. Sink data"| COLD
 
     classDef client fill:#fed7aa,stroke:#c2410c,color:#431407
     classDef service fill:#bbf7d0,stroke:#16a34a,color:#052e16
@@ -1099,7 +1099,7 @@ flowchart LR
     subgraph "Engagement"
         COLLECT["Engagement Collector"]:::service
         EVENTS["Kafka<br/>engagement"]:::async
-        CH[("ClickHouse<br/>90d hot")]:::data
+        CH[("Analytics Store<br/>90d hot")]:::data
         FS["Feature Store"]:::data
     end
 
@@ -1109,48 +1109,48 @@ flowchart LR
         TWIL["Twilio"]:::external
     end
 
-    CLIENT --> API
-    CLIENT --> CAMPAIGN
-    USER --> WSGW
-    WSGW --> PRESENCE
-    API --> DB
-    CAMPAIGN --> DB
-    DB --> CDC
-    CDC --> KAFKA
-    KAFKA --> ROUTE
-    ROUTE --> PREFS
-    PREFS --> PREFCACHE
+    CLIENT -->|"1. Send notification"| API
+    CLIENT -->|"2. Call service"| CAMPAIGN
+    USER -->|"3. Send request"| WSGW
+    WSGW -->|"4. Read cache"| PRESENCE
+    API -->|"5. Query DB"| DB
+    CAMPAIGN -->|"6. Query DB"| DB
+    DB -->|"7. CDC stream"| CDC
+    CDC -->|"8. Stream changes"| KAFKA
+    KAFKA -->|"9. Consume event"| ROUTE
+    ROUTE -->|"10. Check prefs"| PREFS
+    PREFS -->|"11. Update cache"| PREFCACHE
     PREFCACHE -. miss .-> PREFDB
-    ROUTE --> ATC
-    ROUTE --> RANKER
-    RANKER --> DELAYQ
-    DELAYQ --> KAFKA
-    KAFKA --> PUSH
-    KAFKA --> EMAIL
-    KAFKA --> SMS
-    KAFKA --> INAPP
-    PUSH --> TMPL
-    EMAIL --> TMPL
-    SMS --> TMPL
-    INAPP --> TMPL
-    TMPL --> TMPLDB
-    INAPP --> WSGW
-    PUSH --> APNS
-    EMAIL --> SES
-    SMS --> TWIL
-    PUSH --> ATTEMPTS
-    EMAIL --> ATTEMPTS
-    SMS --> ATTEMPTS
+    ROUTE -->|"12. Score send time"| ATC
+    ROUTE -->|"13. Get prediction"| RANKER
+    RANKER -->|"14. Return prediction"| DELAYQ
+    DELAYQ -->|"15. Publish change"| KAFKA
+    KAFKA -->|"16. Consume event"| PUSH
+    KAFKA -->|"17. Consume event"| EMAIL
+    KAFKA -->|"18. Consume event"| SMS
+    KAFKA -->|"19. Consume event"| INAPP
+    PUSH -->|"20. Render template"| TMPL
+    EMAIL -->|"21. Render template"| TMPL
+    SMS -->|"22. Render template"| TMPL
+    INAPP -->|"23. Send request"| TMPL
+    TMPL -->|"24. Persist data"| TMPLDB
+    INAPP -->|"25. Send request"| WSGW
+    PUSH -->|"26. Send notification"| APNS
+    EMAIL -->|"27. Send via SES"| SES
+    SMS -->|"28. Send via Twilio"| TWIL
+    PUSH -->|"29. Query DB"| ATTEMPTS
+    EMAIL -->|"30. Query DB"| ATTEMPTS
+    SMS -->|"31. Query DB"| ATTEMPTS
     PUSH -.permanent fail.-> DLQ
     EMAIL -.permanent fail.-> DLQ
     SMS -.permanent fail.-> DLQ
     USER -.opens / clicks.-> COLLECT
     APNS -.webhooks.-> COLLECT
     SES -.webhooks.-> COLLECT
-    COLLECT --> EVENTS
-    EVENTS --> CH
-    EVENTS --> FS
-    FS --> RANKER
+    COLLECT -->|"32. Emit event"| EVENTS
+    EVENTS -->|"33. Sink data"| CH
+    EVENTS -->|"34. Sink data"| FS
+    FS -->|"35. Return data"| RANKER
 
     classDef client fill:#fed7aa,stroke:#c2410c,color:#431407
     classDef edge fill:#bfdbfe,stroke:#1d4ed8,color:#0c1f4a

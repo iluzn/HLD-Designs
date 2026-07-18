@@ -202,13 +202,13 @@ flowchart LR
     DB["Postgres Catalog DB"]:::data
     RL["Redis Lock Store"]:::data
 
-    User --> GW
-    GW --> CAT
-    GW --> SS
-    CAT --> RC
-    CAT --> DB
-    SS --> RL
-    SS --> DB
+    User -->|"1. Send request"| GW
+    GW -->|"2. Route request"| CAT
+    GW -->|"3. Route request"| SS
+    CAT -->|"4. Check cache"| RC
+    CAT -->|"5. Query DB"| DB
+    SS -->|"6. Check cache"| RL
+    SS -->|"7. Query DB"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -252,13 +252,13 @@ flowchart LR
     DB["Booking DB Postgres"]:::data
     REC["Hold Expiry Reconciler"]:::service
 
-    User --> GW
-    GW --> BS
-    BS --> LM
-    LM --> RL
-    BS --> DB
-    REC --> RL
-    REC --> DB
+    User -->|"1. Send request"| GW
+    GW -->|"2. Route request"| BS
+    BS -->|"3. Acquire lock"| LM
+    LM -->|"4. Check cache"| RL
+    BS -->|"5. Query DB"| DB
+    REC -->|"6. Update cache"| RL
+    REC -->|"7. Persist data"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -316,15 +316,15 @@ flowchart LR
     DB["Booking DB"]:::data
     NS["Notification Service"]:::service
 
-    User --> BS
-    BS --> PS
-    PS --> PGW
-    PGW --> PS
-    PS --> BS
-    BS --> CONF
-    CONF --> DB
-    CONF --> KF
-    KF --> NS
+    User -->|"1. API call"| BS
+    BS -->|"2. Call service"| PS
+    PS -->|"3. Call external"| PGW
+    PGW -->|"4. Route request"| PS
+    PS -->|"5. Call service"| BS
+    BS -->|"6. Call service"| CONF
+    CONF -->|"7. Query DB"| DB
+    CONF -->|"8. Emit event"| KF
+    KF -->|"9. Consume event"| NS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -473,10 +473,10 @@ flowchart LR
     R3["Redis Shard 3"]:::data
     BS["Booking Service"]:::service
 
-    BS --> LM
-    LM -->|"show:1:seat:A*"| R1
-    LM -->|"show:1:seat:B*"| R2
-    LM -->|"show:2:seat:*"| R3
+    BS -->|"1. Acquire seats"| LM
+    LM -->|"2. Show:1:seat:A*"| R1
+    LM -->|"3. Show:1:seat:B*"| R2
+    LM -->|"4. Show:2:seat:*"| R3
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -620,10 +620,10 @@ flowchart LR
     BS["Booking Service"]:::service
     RL["Redis Locks"]:::data
 
-    Users --> WR
-    WR -->|"Assign position"| Q
-    Q -->|"Dequeue 100/sec"| BS
-    BS --> RL
+    Users -->|"1. API call"| WR
+    WR -->|"2. Assign position"| Q
+    Q -->|"3. Dequeue 100/sec"| BS
+    BS -->|"4. Check cache"| RL
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -731,33 +731,33 @@ flowchart LR
         FCM["FCM and Email"]:::external
     end
 
-    UA --> LB
-    LB --> GW
-    LB --> SSE
-    GW --> WR
-    WR --> Q
-    Q --> BS
-    GW --> CAT
-    GW --> SS
-    GW --> BS
-    CAT --> RC
-    CAT --> PG
-    SS --> RL
-    BS --> LM
-    LM --> RL
-    BS --> PG
-    BS --> PS
-    PS --> PGW
-    BS --> KF
-    KF --> CONF
-    KF --> NS
-    KF --> SSE
-    CONF --> PG
-    NS --> FCM
-    REC --> RL
-    REC --> PG
-    SSE --> RPS
-    RPS --> SSE
+    UA -->|"1. Send request"| LB
+    LB -->|"2. Route API"| GW
+    LB -->|"3. Route SSE"| SSE
+    GW -->|"4. Route to waiting room"| WR
+    WR -->|"5. Emit event"| Q
+    Q -->|"6. Consume event"| BS
+    GW -->|"7. Route request"| CAT
+    GW -->|"8. Route request"| SS
+    GW -->|"9. Route request"| BS
+    CAT -->|"10. Check cache"| RC
+    CAT -->|"11. Query DB"| PG
+    SS -->|"12. Check cache"| RL
+    BS -->|"13. Acquire lock"| LM
+    LM -->|"14. Check cache"| RL
+    BS -->|"15. Query DB"| PG
+    BS -->|"16. Call service"| PS
+    PS -->|"17. Call external"| PGW
+    BS -->|"18. Emit event"| KF
+    KF -->|"19. Consume event"| CONF
+    KF -->|"20. Consume event"| NS
+    KF -->|"21. Consume event"| SSE
+    CONF -->|"22. Query DB"| PG
+    NS -->|"23. Send notification"| FCM
+    REC -->|"24. Update cache"| RL
+    REC -->|"25. Persist data"| PG
+    SSE -->|"26. Check limit"| RPS
+    RPS -->|"27. Return data"| SSE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

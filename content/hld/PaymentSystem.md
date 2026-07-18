@@ -175,13 +175,13 @@ flowchart LR
     BANK["Bank or Card Network"]:::external
     LEDGER[("Ledger<br/>Double-Entry")]:::data
 
-    MERCHANT --> API
-    API --> IDEMP
-    API --> ORCH
-    ORCH --> DB
-    ORCH --> ROUTER
-    ROUTER --> BANK
-    ORCH --> LEDGER
+    MERCHANT -->|"1. API call"| API
+    API -->|"2. Check cache"| IDEMP
+    API -->|"3. Call external"| ORCH
+    ORCH -->|"4. Query DB"| DB
+    ORCH -->|"5. Call external"| ROUTER
+    ROUTER -->|"6. Call external"| BANK
+    ORCH -->|"7. Query DB"| LEDGER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -216,12 +216,12 @@ flowchart LR
     BANK["Bank"]:::external
     LEDGER[("Ledger")]:::data
 
-    MERCHANT -->|"POST /refund"| API
-    API --> ORCH
-    ORCH --> DB
-    ORCH --> ROUTER
-    ROUTER --> BANK
-    ORCH --> LEDGER
+    MERCHANT -->|"1. POST /refund"| API
+    API -->|"2. Call external"| ORCH
+    ORCH -->|"3. Query DB"| DB
+    ORCH -->|"4. Call external"| ROUTER
+    ROUTER -->|"5. Call external"| BANK
+    ORCH -->|"6. Query DB"| LEDGER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -253,11 +253,11 @@ flowchart LR
     PAYOUT["Payout Service"]:::service
     BANK["Bank Transfer"]:::external
 
-    SCHEDULER --> SETTLE
-    SETTLE --> DB
-    SETTLE --> LEDGER
-    SETTLE --> PAYOUT
-    PAYOUT --> BANK
+    SCHEDULER -->|"1. Trigger batch"| SETTLE
+    SETTLE -->|"2. Query payments"| DB
+    SETTLE -->|"3. Post entries"| LEDGER
+    SETTLE -->|"4. Call service"| PAYOUT
+    PAYOUT -->|"5. Call external"| BANK
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -405,20 +405,20 @@ flowchart LR
     SETTLE["Settlement Engine"]:::async
     RECON["Reconciliation Job"]:::async
 
-    MERCHANT --> API
-    SDK --> VAULT
-    API --> IDEMP
-    API --> ORCH
-    ORCH --> DB
-    ORCH --> LEDGER
-    ORCH --> ROUTER
-    ROUTER --> BANK1
-    ROUTER --> BANK2
-    VAULT --> ROUTER
-    SETTLE --> DB
-    SETTLE --> LEDGER
-    RECON --> DB
-    RECON --> LEDGER
+    MERCHANT -->|"1. API call"| API
+    SDK -->|"2. Send request"| VAULT
+    API -->|"3. Query DB"| IDEMP
+    API -->|"4. Orchestrate"| ORCH
+    ORCH -->|"5. Query DB"| DB
+    ORCH -->|"6. Post entry"| LEDGER
+    ORCH -->|"7. Route payment"| ROUTER
+    ROUTER -->|"8. Call external"| BANK1
+    ROUTER -->|"9. Call external"| BANK2
+    VAULT -->|"10. Decrypt and route"| ROUTER
+    SETTLE -->|"11. Query DB"| DB
+    SETTLE -->|"12. Post entries"| LEDGER
+    RECON -->|"13. Fix breaks"| DB
+    RECON -->|"14. Fix breaks"| LEDGER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

@@ -154,8 +154,8 @@ flowchart LR
     API["Leaderboard Service"]:::service
     REDIS[("Redis Sorted Set<br/>ZADD")]:::data
 
-    GAME --> API
-    API --> REDIS
+    GAME -->|"1. Call service"| API
+    API -->|"2. Check cache"| REDIS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -213,10 +213,10 @@ flowchart LR
     DB[("Durable Store<br/>Postgres or DynamoDB")]:::data
     USER["Player"]:::client
 
-    GAME --> API
-    API -->|"ZADD score"| REDIS
-    API -->|"INSERT for durability"| DB
-    USER -->|"GET rank or top-N"| API
+    GAME -->|"1. Call service"| API
+    API -->|"2. ZADD score"| REDIS
+    API -->|"3. INSERT for durability"| DB
+    USER -->|"4. GET rank or top-N"| API
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -304,12 +304,12 @@ flowchart LR
     AGG["Global Aggregator"]:::service
     RG[("Redis Global")]:::data
 
-    G1 --> R1
-    G2 --> R2
-    R1 --> K
-    R2 --> K
-    K --> AGG
-    AGG --> RG
+    G1 -->|"1. Check cache"| R1
+    G2 -->|"2. Check cache"| R2
+    R1 -->|"3. Publish change"| K
+    R2 -->|"4. Publish change"| K
+    K -->|"5. Consume event"| AGG
+    AGG -->|"6. Check cache"| RG
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -415,16 +415,16 @@ flowchart LR
     WS["WebSocket Push"]:::service
     USER["Players"]:::client
 
-    GAME --> API
-    API --> R1
-    API --> DB
-    R1 --> K
-    K --> AGG
-    AGG --> RG
-    CACHE --> RG
-    CACHE --> WS
-    WS --> USER
-    USER --> CACHE
+    GAME -->|"1. Call service"| API
+    API -->|"2. Check cache"| R1
+    API -->|"3. Query DB"| DB
+    R1 -->|"4. Publish change"| K
+    K -->|"5. Consume event"| AGG
+    AGG -->|"6. Check cache"| RG
+    CACHE -->|"7. Return data"| RG
+    CACHE -->|"8. Return data"| WS
+    WS -->|"9. Push update"| USER
+    USER -->|"10. Read cache"| CACHE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0

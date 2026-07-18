@@ -160,15 +160,15 @@ flowchart LR
     USER["User Mobile App"]:::client
     LB["Load Balancer"]:::edge
     NEARBY["Nearby Service"]:::service
-    GEODEX["Spatial Index<br/>(Redis Geo or ES)"]:::data
+    GEODEX["Spatial Index<br/>(Redis Geo)"]:::data
     PLACEDB[("Place Metadata<br/>Postgres")]:::data
     CACHE["Result Cache"]:::data
 
-    USER --> LB
-    LB --> NEARBY
-    NEARBY --> CACHE
-    NEARBY --> GEODEX
-    NEARBY --> PLACEDB
+    USER -->|"1. Send request"| LB
+    LB -->|"2. Route request"| NEARBY
+    NEARBY -->|"3. Check cache"| CACHE
+    NEARBY -->|"4. Check cache"| GEODEX
+    NEARBY -->|"5. Query DB"| PLACEDB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -200,11 +200,11 @@ flowchart LR
     UPDATER["Index Updater"]:::service
     GEODYN["Dynamic Spatial Index<br/>(Redis Geo)"]:::data
 
-    DRIVER --> LB
-    LB --> LOCAPI
-    LOCAPI --> KAFKA
-    KAFKA --> UPDATER
-    UPDATER --> GEODYN
+    DRIVER -->|"1. Send request"| LB
+    LB -->|"2. Route request"| LOCAPI
+    LOCAPI -->|"3. Emit event"| KAFKA
+    KAFKA -->|"4. Consume event"| UPDATER
+    UPDATER -->|"5. Return results"| GEODYN
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -235,10 +235,10 @@ flowchart LR
     SEARCH["Elasticsearch<br/>(geo + attributes)"]:::data
     CACHE["Cache"]:::data
 
-    USER --> NEARBY
-    NEARBY --> CACHE
-    NEARBY --> GEODEX
-    NEARBY --> SEARCH
+    USER -->|"1. API call"| NEARBY
+    NEARBY -->|"2. Check cache"| CACHE
+    NEARBY -->|"3. Update index"| GEODEX
+    NEARBY -->|"4. Update index"| SEARCH
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -354,16 +354,16 @@ flowchart LR
     PLACEDB[("Place DB<br/>Postgres")]:::data
     CACHE["Result Cache<br/>Redis"]:::data
 
-    USER --> LB
-    LB --> NEARBY
-    NEARBY --> CACHE
-    NEARBY --> STATIC
-    NEARBY --> DYNAMIC
-    NEARBY --> PLACEDB
-    DRIVER --> LOCAPI
-    LOCAPI --> KAFKA
-    KAFKA --> UPDATER
-    UPDATER --> DYNAMIC
+    USER -->|"1. Send request"| LB
+    LB -->|"2. Route request"| NEARBY
+    NEARBY -->|"3. Check cache"| CACHE
+    NEARBY -->|"4. Update index"| STATIC
+    NEARBY -->|"5. Check cache"| DYNAMIC
+    NEARBY -->|"6. Query DB"| PLACEDB
+    DRIVER -->|"7. Send request"| LOCAPI
+    LOCAPI -->|"8. Emit event"| KAFKA
+    KAFKA -->|"9. Consume event"| UPDATER
+    UPDATER -->|"10. Return results"| DYNAMIC
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

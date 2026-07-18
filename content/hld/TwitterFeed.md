@@ -25,11 +25,11 @@ flowchart LR
     READER["User opens feed"]:::client
     FEED["Feed Service"]:::service
 
-    POSTER --> API
-    API --> K
-    K --> CACHE
-    READER --> FEED
-    FEED --> CACHE
+    POSTER -->|"1. API call"| API
+    API -->|"2. Emit event"| K
+    K -->|"3. Check cache"| CACHE
+    READER -->|"4. API call"| FEED
+    FEED -->|"5. Check cache"| CACHE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -128,11 +128,11 @@ flowchart LR
     R2[("Redis timeline<br/>follower 2")]:::data
     R3[("Redis timeline<br/>follower N")]:::data
 
-    TWEET --> API
-    API --> FAN
-    FAN --> R1
-    FAN --> R2
-    FAN --> R3
+    TWEET -->|"1. API call"| API
+    API -->|"2. Call service"| FAN
+    FAN -->|"3. Check cache"| R1
+    FAN -->|"4. Check cache"| R2
+    FAN -->|"5. Check cache"| R3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -157,10 +157,10 @@ flowchart LR
     TWEETS[("Tweets<br/>get recent from each")]:::data
     MERGE["Merge and rank"]:::service
 
-    USER --> FEED
-    FEED --> FOLLOW
-    FEED --> TWEETS
-    FEED --> MERGE
+    USER -->|"1. API call"| FEED
+    FEED -->|"2. Push update"| FOLLOW
+    FEED -->|"3. Fetch recent"| TWEETS
+    FEED -->|"4. Get prediction"| MERGE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -184,9 +184,9 @@ flowchart TD
     PUSH["Fan-out on WRITE<br/>push to follower timelines"]:::service
     PULL["Fan-out on READ<br/>fetch at read time"]:::service
 
-    TWEET --> CHECK
-    CHECK -->|"No: regular user"| PUSH
-    CHECK -->|"Yes: celebrity"| PULL
+    TWEET -->|"1. Check followers"| CHECK
+    CHECK -->|"2. No: regular user"| PUSH
+    CHECK -->|"3. Yes: celebrity"| PULL
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -221,10 +221,10 @@ flowchart LR
     TDB[("Tweet Store<br/>Cassandra")]:::data
     K["Kafka"]:::async
 
-    POSTER --> GW
-    GW --> TS
-    TS --> TDB
-    TS --> K
+    POSTER -->|"1. Send request"| GW
+    GW -->|"2. Route request"| TS
+    TS -->|"3. Query DB"| TDB
+    TS -->|"4. Emit event"| K
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -267,13 +267,13 @@ flowchart LR
     FEED["Feed Service"]:::service
     TDB[("Tweet Store")]:::data
 
-    K --> FANOUT
-    FANOUT --> GRAPH
-    FANOUT --> CACHE
-    READER --> GW
-    GW --> FEED
-    FEED --> CACHE
-    FEED --> TDB
+    K -->|"1. Consume event"| FANOUT
+    FANOUT -->|"2. Lookup followers"| GRAPH
+    FANOUT -->|"3. Check cache"| CACHE
+    READER -->|"4. Send request"| GW
+    GW -->|"5. Route request"| FEED
+    FEED -->|"6. Check cache"| CACHE
+    FEED -->|"7. Query DB"| TDB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -318,9 +318,9 @@ flowchart TD
     PUSH["Fan-out on WRITE<br/>push to Redis timelines"]:::service
     PULL["Skip push<br/>fetched at read time"]:::service
 
-    TWEET --> CHECK
-    CHECK -->|"< 10K followers"| PUSH
-    CHECK -->|"> 10K followers"| PULL
+    TWEET -->|"1. Check followers"| CHECK
+    CHECK -->|"2. < 10K followers"| PUSH
+    CHECK -->|"3. > 10K followers"| PULL
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -434,14 +434,14 @@ flowchart LR
     CONTENT["Content type<br/>media > text only"]:::service
     SCORE["Final score = weighted sum"]:::data
 
-    TWEET --> FRESH
-    TWEET --> ENGAGE
-    TWEET --> SOCIAL
-    TWEET --> CONTENT
-    FRESH --> SCORE
-    ENGAGE --> SCORE
-    SOCIAL --> SCORE
-    CONTENT --> SCORE
+    TWEET -->|"1. Compute freshness"| FRESH
+    TWEET -->|"2. Compute engagement"| ENGAGE
+    TWEET -->|"3. Compute social"| SOCIAL
+    TWEET -->|"4. Compute content"| CONTENT
+    FRESH -->|"5. Weight"| SCORE
+    ENGAGE -->|"6. Weight"| SCORE
+    SOCIAL -->|"7. Weight"| SCORE
+    CONTENT -->|"8. Serve content"| SCORE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -500,18 +500,18 @@ flowchart LR
     K["Kafka<br/>tweet events"]:::async
     MEDIA[("Media<br/>S3 plus CDN")]:::data
 
-    USERS --> GW
-    GW --> TS
-    GW --> FEED
-    TS --> TDB
-    TS --> MEDIA
-    TS --> K
-    K --> FANOUT
-    FANOUT --> GRAPH
-    FANOUT --> CACHE
-    FEED --> CACHE
-    FEED --> TDB
-    FEED --> RANK
+    USERS -->|"1. Send request"| GW
+    GW -->|"2. Route request"| TS
+    GW -->|"3. Route request"| FEED
+    TS -->|"4. Query DB"| TDB
+    TS -->|"5. Store file"| MEDIA
+    TS -->|"6. Emit event"| K
+    K -->|"7. Consume event"| FANOUT
+    FANOUT -->|"8. Push update"| GRAPH
+    FANOUT -->|"9. Check cache"| CACHE
+    FEED -->|"10. Check cache"| CACHE
+    FEED -->|"11. Query DB"| TDB
+    FEED -->|"12. Call service"| RANK
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

@@ -202,13 +202,13 @@ flowchart LR
     S3E["S3 Encoded Segments"]:::data
     CAT["Catalog DB"]:::data
 
-    Studio --> IS
-    IS --> S3M
-    IS --> ORCH
-    ORCH --> EW
-    EW --> S3E
-    EW --> ORCH
-    ORCH --> CAT
+    Studio -->|"1. Call service"| IS
+    IS -->|"2. Store file"| S3M
+    IS -->|"3. Start workflow"| ORCH
+    ORCH -->|"4. Dispatch task"| EW
+    EW -->|"5. Store file"| S3E
+    EW -->|"6. Report complete"| ORCH
+    ORCH -->|"7. Query DB"| CAT
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -257,12 +257,12 @@ flowchart LR
     S3["S3 Segments"]:::data
     SS["Session Store Redis"]:::data
 
-    TV --> GW
-    GW --> PS
-    PS --> DRM
-    PS --> SS
-    TV --> CDN
-    CDN --> S3
+    TV -->|"1. Call service"| GW
+    GW -->|"2. Route request"| PS
+    PS -->|"3. Get DRM license"| DRM
+    PS -->|"4. Check cache"| SS
+    TV -->|"5. Fetch segments"| CDN
+    CDN -->|"6. Fetch origin"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -311,14 +311,14 @@ flowchart LR
     ES["Elasticsearch"]:::data
     CAT["Catalog DB"]:::data
 
-    TV --> GW
-    GW --> RS
-    RS --> RC
-    RS --> CAT
-    TV --> GW
-    GW --> ES
-    KF --> ML
-    ML --> RC
+    TV -->|"1. Send request"| GW
+    GW -->|"2. Route request"| RS
+    RS -->|"3. Check cache"| RC
+    RS -->|"4. Query DB"| CAT
+    TV -->|"5. Send request"| GW
+    GW -->|"6. Search query"| ES
+    KF -->|"7. Stream events"| ML
+    ML -->|"8. Return prediction"| RC
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -459,11 +459,11 @@ flowchart LR
     PKG["Packager HLS and DASH"]:::service
     S3["S3 Segments"]:::data
 
-    Master --> SD
-    SD --> CH
-    CH --> ENC
-    ENC --> PKG
-    PKG --> S3
+    Master -->|"1. Detect scenes"| SD
+    SD -->|"2. Analyze complexity"| CH
+    CH -->|"3. Encode parallel"| ENC
+    ENC -->|"4. Package manifests"| PKG
+    PKG -->|"5. Store segments"| S3
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -554,13 +554,13 @@ flowchart LR
     Ranker["Neural Ranker"]:::service
     Cache["Redis Rec Cache"]:::data
 
-    Events --> Spark
-    Spark --> CF
-    Spark --> CB
-    CF --> CAND
-    CB --> CAND
-    CAND --> Ranker
-    Ranker --> Cache
+    Events -->|"1. Stream events"| Spark
+    Spark -->|"2. Collaborative filter"| CF
+    Spark -->|"3. Content-based filter"| CB
+    CF -->|"4. Generate candidates"| CAND
+    CB -->|"5. Generate candidates"| CAND
+    CAND -->|"6. Rank"| Ranker
+    Ranker -->|"7. Store results"| Cache
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
@@ -658,7 +658,7 @@ flowchart LR
 
     subgraph Data
         S3["S3 Video Segments"]:::data
-        CAT["Catalog DB Vitess"]:::data
+        CAT["Catalog DB"]:::data
         CASS["Cassandra User Activity"]:::data
         RD["Redis Cluster"]:::data
         ES["Elasticsearch"]:::data
@@ -668,31 +668,31 @@ flowchart LR
         DRM["DRM Widevine FairPlay"]:::external
     end
 
-    TV --> DNS
-    MOB --> DNS
-    WEB --> DNS
-    DNS --> GW
-    DNS --> CDN
-    GW --> PS
-    GW --> RS
-    GW --> SS
-    PS --> DRM
-    PS --> RD
-    RS --> RD
-    RS --> CAT
-    SS --> ES
-    CDN --> S3
-    IS --> TMP
-    TMP --> EW
-    EW --> S3
-    EW --> TMP
-    TMP --> CAT
-    KF --> ML
-    ML --> RD
-    TV --> CDN
-    MOB --> CDN
-    WEB --> CDN
-    CASS --> KF
+    TV -->|"1. Resolve CDN"| DNS
+    MOB -->|"2. Resolve CDN"| DNS
+    WEB -->|"3. Resolve CDN"| DNS
+    DNS -->|"4. Route to API"| GW
+    DNS -->|"5. Route to edge"| CDN
+    GW -->|"6. Route request"| PS
+    GW -->|"7. Route request"| RS
+    GW -->|"8. Route request"| SS
+    PS -->|"9. Get DRM license"| DRM
+    PS -->|"10. Check cache"| RD
+    RS -->|"11. Check cache"| RD
+    RS -->|"12. Query DB"| CAT
+    SS -->|"13. Update index"| ES
+    CDN -->|"14. Fetch origin"| S3
+    IS -->|"15. Start workflow"| TMP
+    TMP -->|"16. Dispatch encode"| EW
+    EW -->|"17. Store file"| S3
+    EW -->|"18. Report complete"| TMP
+    TMP -->|"19. Update catalog"| CAT
+    KF -->|"20. Stream events"| ML
+    ML -->|"21. Update cache"| RD
+    TV -->|"22. Fetch segments"| CDN
+    MOB -->|"23. Fetch segments"| CDN
+    WEB -->|"24. Fetch segments"| CDN
+    CASS -->|"25. Publish events"| KF
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

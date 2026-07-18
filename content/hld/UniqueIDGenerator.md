@@ -23,8 +23,8 @@ flowchart LR
     IDG["ID Generator"]:::service
     DB[("Optional DB<br/>for coordination")]:::data
 
-    SVC --> IDG
-    IDG --> DB
+    SVC -->|"1. Request ID"| IDG
+    IDG -->|"2. Persist data"| DB
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -146,8 +146,8 @@ flowchart LR
     DB1["Ticket Server 1<br/>IDs: 1 3 5 7 ..."]:::data
     DB2["Ticket Server 2<br/>IDs: 2 4 6 8 ..."]:::data
 
-    SVC --> DB1
-    SVC --> DB2
+    SVC -->|"1. Get odd ID"| DB1
+    SVC -->|"2. Get even ID"| DB2
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -226,9 +226,9 @@ flowchart LR
     S2["Server 2<br/>range: 1001-2000"]:::service
     S3["Server 3<br/>range: 2001-3000"]:::service
 
-    ALLOC --> S1
-    ALLOC --> S2
-    ALLOC --> S3
+    ALLOC -->|"1. Assign range 1-1000"| S1
+    ALLOC -->|"2. Assign range 1001-2000"| S2
+    ALLOC -->|"3. Assign range 2001-3000"| S3
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
@@ -399,19 +399,19 @@ flowchart LR
     G1["ID Generator 1<br/>Snowflake"]:::service
     G2["ID Generator 2<br/>Snowflake"]:::service
     GN["ID Generator N<br/>Snowflake"]:::service
-    ZK[("ZooKeeper or etcd<br/>machine-ID registry")]:::data
+    ZK[("ZooKeeper<br/>machine-ID registry")]:::data
     NTP["NTP time sync"]:::external
 
-    APP --> LB
-    LB --> G1
-    LB --> G2
-    LB --> GN
-    G1 -->|"claim machine ID on startup"| ZK
-    G2 --> ZK
-    GN --> ZK
-    NTP -->|"clock sync"| G1
-    NTP --> G2
-    NTP --> GN
+    APP -->|"1. Send request"| LB
+    LB -->|"2. Route"| G1
+    LB -->|"3. Route"| G2
+    LB -->|"4. Route"| GN
+    G1 -->|"5. Claim machine ID"| ZK
+    G2 -->|"6. Claim machine ID"| ZK
+    GN -->|"7. Claim machine ID"| ZK
+    NTP -->|"8. Clock sync"| G1
+    NTP -->|"9. Clock sync"| G2
+    NTP -->|"10. Clock sync"| GN
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

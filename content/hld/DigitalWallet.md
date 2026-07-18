@@ -26,12 +26,12 @@ flowchart LR
     BANK["External Bank<br/>UPI Cards"]:::external
     K["Kafka<br/>events"]:::async
 
-    APP --> API
-    API --> LEDGER
-    LEDGER --> DB
-    LEDGER --> CACHE
-    API --> BANK
-    LEDGER --> K
+    APP -->|"1. API call"| API
+    API -->|"2. Query DB"| LEDGER
+    LEDGER -->|"3. Persist entry"| DB
+    LEDGER -->|"4. Update cache"| CACHE
+    API -->|"5. Call external"| BANK
+    LEDGER -->|"6. Emit event"| K
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -270,17 +270,17 @@ flowchart LR
     K["Event Bus"]:::async
     BANK["External Rail<br/>UPI Cards Bank"]:::external
 
-    APP --> GW
-    GW --> WS
-    WS --> PS
-    PS --> BANK
-    BANK --> WH
-    REC --> BANK
-    WH --> K
-    REC --> K
-    K --> L
-    L --> DB
-    WS --> DB
+    APP -->|"1. Send request"| GW
+    GW -->|"2. Route request"| WS
+    WS -->|"3. Call external"| PS
+    PS -->|"4. Initiate charge"| BANK
+    BANK -->|"5. Webhook callback"| WH
+    REC -->|"6. Poll rail status"| BANK
+    WH -->|"7. Emit event"| K
+    REC -->|"8. Emit event"| K
+    K -->|"9. Consume event"| L
+    L -->|"10. Persist entry"| DB
+    WS -->|"11. Query DB"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -331,17 +331,17 @@ flowchart LR
     TS["Transfer Service"]:::service
     L["Ledger Service"]:::service
     DB[("Postgres<br/>ledger primary")]:::data
-    K["Event bus<br/>Kafka or Kinesis"]:::async
+    K["Kafka"]:::async
     NOTIF["Notification Service"]:::service
     RCV["Recipient App"]:::client
 
-    APP --> GW
-    GW --> TS
-    TS --> L
-    L --> DB
-    L --> K
-    K --> NOTIF
-    NOTIF --> RCV
+    APP -->|"1. Send request"| GW
+    GW -->|"2. Route request"| TS
+    TS -->|"3. Query DB"| L
+    L -->|"4. Persist entry"| DB
+    L -->|"5. Emit event"| K
+    K -->|"6. Consume event"| NOTIF
+    NOTIF -->|"7. Push notification"| RCV
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -382,11 +382,11 @@ flowchart LR
     LEDGER[("Postgres<br/>ledger plus replicas")]:::data
     HIST[("Cassandra<br/>tx history feed")]:::data
 
-    APP --> GW
-    GW --> READ
-    READ --> CACHE
-    READ --> LEDGER
-    READ --> HIST
+    APP -->|"1. Send request"| GW
+    GW -->|"2. Route request"| READ
+    READ -->|"3. Check cache"| CACHE
+    READ -->|"4. Read DB"| LEDGER
+    READ -->|"5. Read DB"| HIST
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -543,12 +543,12 @@ flowchart LR
     CDC["Debezium CDC"]:::async
     K["Kafka"]:::async
 
-    APP --> READ
-    READ --> REDIS
-    READ --> REPL
-    PRIM --> CDC
-    CDC --> K
-    K --> REDIS
+    APP -->|"1. API call"| READ
+    READ -->|"2. Check cache"| REDIS
+    READ -->|"3. Read DB"| REPL
+    PRIM -->|"4. Stream WAL"| CDC
+    CDC -->|"5. Stream changes"| K
+    K -->|"6. Consume event"| REDIS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -799,43 +799,43 @@ flowchart LR
     HIST[("Cassandra<br/>tx history feed")]:::data
 
     CDC["Debezium CDC"]:::async
-    K["Event Bus<br/>Kafka or Kinesis"]:::async
+    K["Kafka"]:::async
 
     BANK["Rails<br/>UPI Bank Cards"]:::external
     PUSH["FCM APNs SMS"]:::external
 
-    APP --> GW
-    GW --> WS
-    GW --> TS
-    GW --> READ
+    APP -->|"1. Send request"| GW
+    GW -->|"2. Route request"| WS
+    GW -->|"3. Route request"| TS
+    GW -->|"4. Route request"| READ
 
-    WS --> IDE
-    TS --> IDE
-    WS --> PG
-    PG --> BANK
-    TS --> LS
-    WS --> LS
-    LS --> PRIM
-    LS --> BAL
+    WS -->|"5. Check cache"| IDE
+    TS -->|"6. Check cache"| IDE
+    WS -->|"7. Call external"| PG
+    PG -->|"8. Initiate charge"| BANK
+    TS -->|"9. Query DB"| LS
+    WS -->|"10. Query DB"| LS
+    LS -->|"11. Write ledger"| PRIM
+    LS -->|"12. Update cache"| BAL
 
-    PRIM --> REPL
-    PRIM --> CDC
-    CDC --> K
-    K --> KV
-    K --> BAL
-    K --> HIST
-    K --> NOTIF
-    K --> FRAUD
+    PRIM -->|"13. Replicate"| REPL
+    PRIM -->|"14. Stream WAL"| CDC
+    CDC -->|"15. Stream changes"| K
+    K -->|"16. Consume event"| KV
+    K -->|"17. Consume event"| BAL
+    K -->|"18. Consume event"| HIST
+    K -->|"19. Consume event"| NOTIF
+    K -->|"20. Consume event"| FRAUD
 
-    READ --> BAL
-    READ --> REPL
-    READ --> KV
-    READ --> HIST
+    READ -->|"21. Check cache"| BAL
+    READ -->|"22. Read DB"| REPL
+    READ -->|"23. Query history"| KV
+    READ -->|"24. Read DB"| HIST
 
-    REC --> BANK
-    REC --> PRIM
+    REC -->|"25. Poll rail status"| BANK
+    REC -->|"26. Persist data"| PRIM
 
-    NOTIF --> PUSH
+    NOTIF -->|"27. Send notification"| PUSH
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

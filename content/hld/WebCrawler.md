@@ -104,10 +104,10 @@ flowchart LR
     STORE[("Page Store<br/>object storage")]:::data
     DEDUP["URL Dedup<br/>Bloom filter"]:::service
 
-    FRONTIER --> CRAWLER
-    CRAWLER --> STORE
-    CRAWLER --> DEDUP
-    DEDUP --> FRONTIER
+    FRONTIER -->|"1. Dequeue URL"| CRAWLER
+    CRAWLER -->|"2. Store page"| STORE
+    CRAWLER -->|"3. Extract links"| DEDUP
+    DEDUP -->|"4. Enqueue new URLs"| FRONTIER
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -125,9 +125,9 @@ flowchart LR
     INDEXER["Indexer"]:::service
     INDEX[("Inverted Index<br/>sharded")]:::data
 
-    STORE --> KAFKA
-    KAFKA --> INDEXER
-    INDEXER --> INDEX
+    STORE -->|"1. Change events"| KAFKA
+    KAFKA -->|"2. Consume event"| INDEXER
+    INDEXER -->|"3. Return results"| INDEX
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -145,8 +145,8 @@ flowchart LR
     INDEX[("Inverted Index<br/>sharded")]:::data
     CACHE[("Redis<br/>hot queries")]:::data
 
-    USER --> QUERY
-    QUERY --> CACHE
+    USER -->|"1. API call"| QUERY
+    QUERY -->|"2. Check cache"| CACHE
     CACHE -.->|miss| INDEX
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0

@@ -205,12 +205,12 @@ flowchart LR
     OL["Operation Log Cassandra"]:::data
     RPS["Redis Pub/Sub"]:::async
 
-    U1 --> WSG
-    U2 --> WSG
-    WSG --> CS
-    CS --> OL
-    CS --> RPS
-    RPS --> WSG
+    U1 -->|"1. Send request"| WSG
+    U2 -->|"2. Send request"| WSG
+    WSG -->|"3. Route request"| CS
+    CS -->|"4. Query DB"| OL
+    CS -->|"5. Check cache"| RPS
+    RPS -->|"6. Return data"| WSG
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -258,13 +258,13 @@ flowchart LR
     SS["Snapshot Service"]:::service
     S3["Object Store S3"]:::data
 
-    User --> GW
-    GW --> DS
-    DS --> DB
-    DS --> OL
-    SS --> OL
-    SS --> S3
-    DS --> S3
+    User -->|"1. Send request"| GW
+    GW -->|"2. Route request"| DS
+    DS -->|"3. Query DB"| DB
+    DS -->|"4. Query DB"| OL
+    SS -->|"5. Query DB"| OL
+    SS -->|"6. Query DB"| S3
+    DS -->|"7. Query DB"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -309,12 +309,12 @@ flowchart LR
     CS["Change Summarizer"]:::service
     KF["Kafka"]:::async
 
-    User --> GW
-    GW --> HS
-    HS --> OL
-    HS --> S3
-    KF --> CS
-    CS --> DB["History DB Postgres"]:::data
+    User -->|"1. Send request"| GW
+    GW -->|"2. Route request"| HS
+    HS -->|"3. Query DB"| OL
+    HS -->|"4. Store file"| S3
+    KF -->|"5. Consume event"| CS
+    CS -->|"6. Propagate change"| DB["History DB Postgres"]:::data
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -476,12 +476,12 @@ flowchart LR
     VER["Version Manager"]:::service
     OL["Op Log"]:::data
 
-    C1 -->|"op + baseVersion"| OT
-    C2 -->|"op + baseVersion"| OT
-    OT --> VER
-    VER --> OL
-    OT -->|"transformed op"| C1
-    OT -->|"transformed op"| C2
+    C1 -->|"1. Op + baseVersion"| OT
+    C2 -->|"2. Op + baseVersion"| OT
+    OT -->|"3. Assign version"| VER
+    VER -->|"4. Append to log"| OL
+    OT -->|"5. Transformed op"| C1
+    OT -->|"6. Transformed op"| C2
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -524,13 +524,13 @@ flowchart LR
     U2["User 2"]:::client
     U3["User 3"]:::client
 
-    CS --> RPS
-    RPS --> WSG1
-    RPS --> WSG2
-    RPS --> WSG3
-    WSG1 --> U1
-    WSG2 --> U2
-    WSG3 --> U3
+    CS -->|"1. Check cache"| RPS
+    RPS -->|"2. Return data"| WSG1
+    RPS -->|"3. Return data"| WSG2
+    RPS -->|"4. Return data"| WSG3
+    WSG1 -->|"5. Return response"| U1
+    WSG2 -->|"6. Return response"| U2
+    WSG3 -->|"7. Return response"| U3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -608,14 +608,14 @@ flowchart LR
     RED["Redis Doc State"]:::data
     OL["Operation Log"]:::data
 
-    WSG --> LB
-    LB -->|"docId hash"| CS1
-    LB -->|"docId hash"| CS2
-    LB -->|"docId hash"| CS3
-    CS1 --> RED
-    CS2 --> RED
-    CS3 --> RED
-    CS1 --> OL
+    WSG -->|"1. Receive ops"| LB
+    LB -->|"2. DocId hash"| CS1
+    LB -->|"3. DocId hash"| CS2
+    LB -->|"4. DocId hash"| CS3
+    CS1 -->|"5. Check cache"| RED
+    CS2 -->|"6. Check cache"| RED
+    CS3 -->|"7. Check cache"| RED
+    CS1 -->|"8. Persist op"| OL
 
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -712,27 +712,27 @@ flowchart LR
         ES["Elasticsearch"]:::data
     end
 
-    U1 --> LB
-    LB --> GW
-    LB --> WSG
-    GW --> DS
-    WSG --> CS
-    CS --> RED
-    CS --> CAS
-    CS --> RPS
-    RPS --> WSG
-    DS --> PG
-    DS --> S3
-    DS --> CAS
-    SS --> CAS
-    SS --> S3
-    KF --> SUMM
-    KF --> ES
-    CS --> KF
-    HS --> CAS
-    HS --> S3
-    PRES --> RED
-    PRES --> RPS
+    U1 -->|"1. Send request"| LB
+    LB -->|"2. Route HTTP"| GW
+    LB -->|"3. Route WebSocket"| WSG
+    GW -->|"4. Route request"| DS
+    WSG -->|"5. Route request"| CS
+    CS -->|"6. Check cache"| RED
+    CS -->|"7. Query DB"| CAS
+    CS -->|"8. Check cache"| RPS
+    RPS -->|"9. Return data"| WSG
+    DS -->|"10. Query DB"| PG
+    DS -->|"11. Store file"| S3
+    DS -->|"12. Query DB"| CAS
+    SS -->|"13. Query DB"| CAS
+    SS -->|"14. Store file"| S3
+    KF -->|"15. Consume event"| SUMM
+    KF -->|"16. Consume event"| ES
+    CS -->|"17. Emit event"| KF
+    HS -->|"18. Query DB"| CAS
+    HS -->|"19. Store file"| S3
+    PRES -->|"20. Check cache"| RED
+    PRES -->|"21. Check cache"| RPS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

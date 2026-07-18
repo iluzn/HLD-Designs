@@ -167,16 +167,16 @@ flowchart LR
     CLIENT["Desktop Client"]:::client
     API["API Gateway"]:::edge
     META["Metadata Service"]:::service
-    OBJSTORE[("Object Store<br/>S3 or GCS")]:::data
+    OBJSTORE[("Object Storage")]:::data
     METADB[("Metadata DB<br/>Postgres")]:::data
 
     CLIENT -->|"1. init upload with chunk list"| API
-    API --> META
-    META --> METADB
+    API -->|"2. Route request"| META
+    META -->|"3. Query DB"| METADB
     META -->|"2. returns: which chunks needed"| API
     CLIENT -->|"3. upload only new chunks"| OBJSTORE
     CLIENT -->|"4. complete upload"| API
-    API --> META
+    API -->|"5. Route request"| META
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -222,13 +222,13 @@ flowchart LR
     QUEUE["Notification Queue<br/>Kafka"]:::async
     CLIENT2["Other Devices"]:::client
 
-    CLIENT -->|"upload"| API
-    API --> META
-    META --> METADB
-    META -->|"emit SyncEvent"| QUEUE
-    QUEUE --> SYNC
-    SYNC -->|"long-poll response"| CLIENT2
-    CLIENT2 -->|"download changed chunks"| OBJSTORE
+    CLIENT -->|"1. Upload"| API
+    API -->|"2. Route request"| META
+    META -->|"3. Query DB"| METADB
+    META -->|"4. Emit SyncEvent"| QUEUE
+    QUEUE -->|"5. Consume event"| SYNC
+    SYNC -->|"6. Long-poll response"| CLIENT2
+    CLIENT2 -->|"7. Download changed chunks"| OBJSTORE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -265,13 +265,13 @@ flowchart LR
     OBJSTORE[("Object Store<br/>all chunk versions retained")]:::data
     GC["Garbage Collector<br/>(periodic)"]:::async
 
-    CLIENT -->|"list versions"| API
-    API --> META
-    META --> METADB
-    CLIENT -->|"restore version 3"| API
-    API --> META
-    META -->|"create new version pointing to v3 chunks"| METADB
-    GC -->|"delete unreferenced chunks older than 30d"| OBJSTORE
+    CLIENT -->|"1. List versions"| API
+    API -->|"2. Route request"| META
+    META -->|"3. Query DB"| METADB
+    CLIENT -->|"4. Restore version 3"| API
+    API -->|"5. Route request"| META
+    META -->|"6. Create new version pointing to v3 chunks"| METADB
+    GC -->|"7. Delete unreferenced chunks older than 30d"| OBJSTORE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -449,20 +449,20 @@ flowchart LR
     GC["Garbage Collector"]:::async
     BLOOM["Bloom Filter<br/>(dedup check)"]:::service
 
-    CLIENT --> API
-    CLIENT --> CDN
-    CDN --> OBJSTORE
-    API --> META
-    META --> METADB
-    META --> CACHE
-    META --> BLOOM
-    BLOOM --> OBJSTORE
-    CLIENT --> OBJSTORE
-    META --> QUEUE
-    QUEUE --> SYNC
-    SYNC --> CLIENT
-    GC --> OBJSTORE
-    GC --> METADB
+    CLIENT -->|"1. Send request"| API
+    CLIENT -->|"2. Send request"| CDN
+    CDN -->|"3. Fetch origin"| OBJSTORE
+    API -->|"4. Route request"| META
+    META -->|"5. Query DB"| METADB
+    META -->|"6. Check cache"| CACHE
+    META -->|"7. Dedup check"| BLOOM
+    BLOOM -->|"8. Persist data"| OBJSTORE
+    CLIENT -->|"9. Send request"| OBJSTORE
+    META -->|"10. Emit event"| QUEUE
+    QUEUE -->|"11. Consume event"| SYNC
+    SYNC -->|"12. Return response"| CLIENT
+    GC -->|"13. Persist data"| OBJSTORE
+    GC -->|"14. Persist data"| METADB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

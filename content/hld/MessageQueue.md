@@ -172,12 +172,12 @@ flowchart LR
     DISK2[("Disk Log<br/>Follower 1")]:::data
     DISK3[("Disk Log<br/>Follower 2")]:::data
 
-    PROD --> LEADER
-    LEADER --> DISK1
-    LEADER --> FOLL1
-    LEADER --> FOLL2
-    FOLL1 --> DISK2
-    FOLL2 --> DISK3
+    PROD -->|"1. Publish message"| LEADER
+    LEADER -->|"2. Append to log"| DISK1
+    LEADER -->|"3. Replicate"| FOLL1
+    LEADER -->|"4. Replicate"| FOLL2
+    FOLL1 -->|"5. Append to log"| DISK2
+    FOLL2 -->|"6. Append to log"| DISK3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -208,12 +208,12 @@ flowchart LR
     C3["Consumer 3"]:::client
     COORD["Group Coordinator"]:::service
 
-    COORD -->|"assign P0"| C1
-    COORD -->|"assign P1"| C2
-    COORD -->|"assign P2"| C3
-    LEADER --> C1
-    LEADER2 --> C2
-    LEADER3 --> C3
+    COORD -->|"1. Assign P0"| C1
+    COORD -->|"2. Assign P1"| C2
+    COORD -->|"3. Assign P2"| C3
+    LEADER -->|"4. Pull messages"| C1
+    LEADER2 -->|"5. Pull messages"| C2
+    LEADER3 -->|"6. Pull messages"| C3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -242,14 +242,14 @@ flowchart LR
     P3["Partition 3<br/>Broker A"]:::service
     CG["Consumer Group<br/>(4 consumers)"]:::client
 
-    PROD --> P0
-    PROD --> P1
-    PROD --> P2
-    PROD --> P3
-    P0 --> CG
-    P1 --> CG
-    P2 --> CG
-    P3 --> CG
+    PROD -->|"1. Hash and route"| P0
+    PROD -->|"2. Hash and route"| P1
+    PROD -->|"3. Hash and route"| P2
+    PROD -->|"4. Hash and route"| P3
+    P0 -->|"5. Pull messages"| CG
+    P1 -->|"6. Pull messages"| CG
+    P2 -->|"7. Pull messages"| CG
+    P3 -->|"8. Pull messages"| CG
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -388,18 +388,18 @@ flowchart LR
     CONS["Consumer Group"]:::client
     S3["Tiered Storage<br/>(S3 cold segments)"]:::data
 
-    PRODS --> BROKER1
-    PRODS --> BROKER2
-    PRODS --> BROKER3
-    BROKER1 --> CONS
-    BROKER2 --> CONS
-    BROKER3 --> CONS
-    CTRL --> BROKER1
-    CTRL --> BROKER2
-    CTRL --> BROKER3
-    BROKER1 --> S3
-    BROKER2 --> S3
-    BROKER3 --> S3
+    PRODS -->|"1. Publish"| BROKER1
+    PRODS -->|"2. Publish"| BROKER2
+    PRODS -->|"3. Publish"| BROKER3
+    BROKER1 -->|"4. Deliver"| CONS
+    BROKER2 -->|"5. Deliver"| CONS
+    BROKER3 -->|"6. Deliver"| CONS
+    CTRL -->|"7. Manage metadata"| BROKER1
+    CTRL -->|"8. Manage metadata"| BROKER2
+    CTRL -->|"9. Manage metadata"| BROKER3
+    BROKER1 -->|"10. Tier cold data"| S3
+    BROKER2 -->|"11. Tier cold data"| S3
+    BROKER3 -->|"12. Tier cold data"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0

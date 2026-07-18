@@ -195,13 +195,13 @@ flowchart LR
     MW["Media Workers"]:::service
     DB["Post Metadata DB"]:::data
 
-    App --> GW
-    GW --> US
-    US --> S3
-    US --> DB
-    US --> Q
-    Q --> MW
-    MW --> S3
+    App -->|"1. Send request"| GW
+    GW -->|"2. Route request"| US
+    US -->|"3. Query DB"| S3
+    US -->|"4. Query DB"| DB
+    US -->|"5. Emit event"| Q
+    Q -->|"6. Consume event"| MW
+    MW -->|"7. Query DB"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -250,14 +250,14 @@ flowchart LR
     FO["Fan-out Service"]:::service
     KF["Kafka"]:::async
 
-    App --> GW
-    GW --> FS
-    FS --> FC
-    FS --> CASS
-    App --> CDN
-    CDN --> S3
-    KF --> FO
-    FO --> CASS
+    App -->|"1. Send request"| GW
+    GW -->|"2. Route request"| FS
+    FS -->|"3. Check cache"| FC
+    FS -->|"4. Query DB"| CASS
+    App -->|"5. Send request"| CDN
+    CDN -->|"6. Fetch origin"| S3
+    KF -->|"7. Consume event"| FO
+    FO -->|"8. Query DB"| CASS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -303,13 +303,13 @@ flowchart LR
     BF["Backfill Worker"]:::service
     CASS["Feed Store"]:::data
 
-    App --> GW
-    GW --> SGS
-    SGS --> RG
-    SGS --> DB
-    SGS --> KF
-    KF --> BF
-    BF --> CASS
+    App -->|"1. Send request"| GW
+    GW -->|"2. Route request"| SGS
+    SGS -->|"3. Check cache"| RG
+    SGS -->|"4. Query DB"| DB
+    SGS -->|"5. Emit event"| KF
+    KF -->|"6. Consume event"| BF
+    BF -->|"7. Query DB"| CASS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -438,12 +438,12 @@ flowchart LR
     S3P["S3 Processed"]:::data
     CDN["CDN"]:::edge
 
-    Client --> PS
-    PS --> S3O
-    S3O --> Q
-    Q --> W1
-    W1 --> S3P
-    S3P --> CDN
+    Client -->|"1. Send request"| PS
+    PS -->|"2. Check limit"| S3O
+    S3O -->|"3. Serve content"| Q
+    Q -->|"4. Consume event"| W1
+    W1 -->|"5. Store file"| S3P
+    S3P -->|"6. Deliver"| CDN
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -613,28 +613,28 @@ flowchart LR
         RD["Redis Cluster"]:::data
     end
 
-    MOB --> LB
-    WEB --> LB
-    LB --> GW
-    MOB --> CDN
-    WEB --> CDN
-    CDN --> S3
-    GW --> US
-    GW --> FS
-    GW --> SGS
-    US --> S3
-    US --> PG
-    US --> PQ
-    PQ --> MW
-    MW --> S3
-    MW --> KF
-    KF --> FO
-    FO --> CASS
-    FS --> RD
-    FS --> CASS
-    FS --> RANK
-    SGS --> RD
-    SGS --> PG
+    MOB -->|"1. Send request"| LB
+    WEB -->|"2. Send request"| LB
+    LB -->|"3. Route API"| GW
+    MOB -->|"4. Send request"| CDN
+    WEB -->|"5. Send request"| CDN
+    CDN -->|"6. Fetch origin"| S3
+    GW -->|"7. Route request"| US
+    GW -->|"8. Route request"| FS
+    GW -->|"9. Route request"| SGS
+    US -->|"10. Query DB"| S3
+    US -->|"11. Query DB"| PG
+    US -->|"12. Emit event"| PQ
+    PQ -->|"13. Consume event"| MW
+    MW -->|"14. Query DB"| S3
+    MW -->|"15. Emit event"| KF
+    KF -->|"16. Consume event"| FO
+    FO -->|"17. Query DB"| CASS
+    FS -->|"18. Check cache"| RD
+    FS -->|"19. Query DB"| CASS
+    FS -->|"20. Get prediction"| RANK
+    SGS -->|"21. Check cache"| RD
+    SGS -->|"22. Query DB"| PG
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

@@ -169,15 +169,15 @@ flowchart LR
     N4["Node 4<br/>keys U-Z"]:::data
     COORD["Coordinator<br/>membership"]:::async
 
-    C --> R
-    R --> N1
-    R --> N2
-    R --> N3
-    R --> N4
-    COORD --> N1
-    COORD --> N2
-    COORD --> N3
-    COORD --> N4
+    C -->|"1. Send request"| R
+    R -->|"2. Route to node"| N1
+    R -->|"3. Route to node"| N2
+    R -->|"4. Route to node"| N3
+    R -->|"5. Route to node"| N4
+    COORD -->|"6. Health check"| N1
+    COORD -->|"7. Health check"| N2
+    COORD -->|"8. Health check"| N3
+    COORD -->|"9. Health check"| N4
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -217,10 +217,10 @@ flowchart LR
     R1["Replica 1<br/>Node 3"]:::data
     R2["Replica 2<br/>Node 4"]:::data
 
-    C --> R
-    R --> P
-    P -->|"replicate"| R1
-    P -->|"replicate"| R2
+    C -->|"1. Send request"| R
+    R -->|"2. Write to primary"| P
+    P -->|"3. Replicate"| R1
+    P -->|"4. Replicate"| R2
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -363,7 +363,7 @@ flowchart LR
     end
 
     KEY["key: user:42<br/>hash position"]:::client
-    KEY --> VN2
+    KEY -->|"1. Send request"| VN2
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -395,13 +395,13 @@ flowchart LR
     READ["Read"]:::client
     BLOOM["Bloom Filter"]:::service
 
-    WRITE --> WAL
-    WRITE --> MEM
-    MEM -->|"flush when full"| SS1
-    SS1 -->|"compaction"| SS2
-    READ --> MEM
-    READ --> BLOOM
-    BLOOM --> SS1
+    WRITE -->|"1. Append to log"| WAL
+    WRITE -->|"2. Insert sorted"| MEM
+    MEM -->|"3. Flush when full"| SS1
+    SS1 -->|"4. Compaction"| SS2
+    READ -->|"5. Check memory"| MEM
+    READ -->|"6. Check filter"| BLOOM
+    BLOOM -->|"7. Scan disk"| SS1
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -504,22 +504,22 @@ flowchart LR
     N4["Node 4"]:::data
     N5["Node 5"]:::data
     N6["Node 6"]:::data
-    COORD["Coordinator<br/>ZooKeeper or Gossip"]:::async
+    COORD["Coordinator<br/>ZooKeeper"]:::async
 
-    C --> LB
-    LB --> R
-    R --> N1
-    R --> N2
-    R --> N3
-    R --> N4
-    R --> N5
-    R --> N6
-    COORD --> N1
-    COORD --> N2
-    COORD --> N3
-    COORD --> N4
-    COORD --> N5
-    COORD --> N6
+    C -->|"1. Send request"| LB
+    LB -->|"2. Route"| R
+    R -->|"3. Route to replica"| N1
+    R -->|"4. Route to replica"| N2
+    R -->|"5. Route to replica"| N3
+    R -->|"6. Route to replica"| N4
+    R -->|"7. Route to replica"| N5
+    R -->|"8. Route to replica"| N6
+    COORD -->|"9. Manage membership"| N1
+    COORD -->|"10. Manage membership"| N2
+    COORD -->|"11. Manage membership"| N3
+    COORD -->|"12. Manage membership"| N4
+    COORD -->|"13. Manage membership"| N5
+    COORD -->|"14. Manage membership"| N6
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

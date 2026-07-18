@@ -26,13 +26,13 @@ flowchart LR
     PUSH["Push Notifications<br/>FCM APNs"]:::external
     RECEIVER["Receiver"]:::client
 
-    SENDER --> WS
-    WS --> CHAT
-    CHAT --> STORE
-    CHAT --> K
-    K --> WS
-    CHAT --> PUSH
-    WS --> RECEIVER
+    SENDER -->|"1. Connect"| WS
+    WS -->|"2. Call service"| CHAT
+    CHAT -->|"3. Query DB"| STORE
+    CHAT -->|"4. Emit event"| K
+    K -->|"5. Fan out"| WS
+    CHAT -->|"6. Send notification"| PUSH
+    WS -->|"7. Return response"| RECEIVER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -185,12 +185,12 @@ flowchart LR
     WS2["WebSocket Server B"]:::service
     RECEIVER["Receiver"]:::client
 
-    SENDER --> WS1
-    WS1 --> CHAT
-    CHAT --> STORE
-    CHAT --> ROUTE
-    ROUTE --> WS2
-    WS2 --> RECEIVER
+    SENDER -->|"1. Connect"| WS1
+    WS1 -->|"2. Call service"| CHAT
+    CHAT -->|"3. Query DB"| STORE
+    CHAT -->|"4. Check cache"| ROUTE
+    ROUTE -->|"5. Return data"| WS2
+    WS2 -->|"6. Return response"| RECEIVER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -237,11 +237,11 @@ flowchart LR
     PUSH["Push Service"]:::service
     FCM["FCM and APNs"]:::external
 
-    SENDER --> CHAT
-    CHAT --> STORE
-    CHAT --> OFFLINE
-    CHAT --> PUSH
-    PUSH --> FCM
+    SENDER -->|"1. API call"| CHAT
+    CHAT -->|"2. Query DB"| STORE
+    CHAT -->|"3. Check cache"| OFFLINE
+    CHAT -->|"4. Send notification"| PUSH
+    PUSH -->|"5. Send notification"| FCM
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -277,12 +277,12 @@ flowchart LR
     WS["WebSocket Servers"]:::service
     MEMBERS["Group Members"]:::client
 
-    SENDER --> CHAT
-    CHAT --> STORE
-    CHAT --> K
-    K --> FAN
-    FAN --> WS
-    WS --> MEMBERS
+    SENDER -->|"1. API call"| CHAT
+    CHAT -->|"2. Query DB"| STORE
+    CHAT -->|"3. Emit event"| K
+    K -->|"4. Consume event"| FAN
+    FAN -->|"5. Push update"| WS
+    WS -->|"6. Return response"| MEMBERS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -510,18 +510,18 @@ flowchart LR
     MEDIA[("S3 and CDN<br/>media")]:::data
     FCM["FCM and APNs"]:::external
 
-    CLIENTS --> LB
-    CLIENTS -->|"presigned upload"| MEDIA
-    LB --> WS
-    WS --> CHAT
-    CHAT --> REG
-    CHAT --> STORE
-    CHAT --> OFFLINE
-    CHAT --> K
-    K --> FAN
-    FAN --> WS
-    CHAT --> PUSH
-    PUSH --> FCM
+    CLIENTS -->|"1. Send request"| LB
+    CLIENTS -->|"2. Presigned upload"| MEDIA
+    LB -->|"3. Send request"| WS
+    WS -->|"4. Route request"| CHAT
+    CHAT -->|"5. Check cache"| REG
+    CHAT -->|"6. Query DB"| STORE
+    CHAT -->|"7. Check cache"| OFFLINE
+    CHAT -->|"8. Emit event"| K
+    K -->|"9. Consume event"| FAN
+    FAN -->|"10. Push update"| WS
+    CHAT -->|"11. Send notification"| PUSH
+    PUSH -->|"12. Send notification"| FCM
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

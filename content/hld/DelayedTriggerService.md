@@ -26,13 +26,13 @@ flowchart LR
     DISP["Dispatcher<br/>fires HTTP callback"]:::service
     TARGET["Caller callback URL"]:::external
 
-    CALLER --> API
-    API --> DB
-    API --> SQS
-    SWEEPER --> DB
-    SWEEPER --> SQS
-    SQS --> DISP
-    DISP --> TARGET
+    CALLER -->|"1. Call service"| API
+    API -->|"2. Query DB"| DB
+    API -->|"3. Emit event"| SQS
+    SWEEPER -->|"4. Schedule"| DB
+    SWEEPER -->|"5. Trigger job"| SQS
+    SQS -->|"6. Consume event"| DISP
+    DISP -->|"7. POST callback"| TARGET
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -206,9 +206,9 @@ We'll layer in components as the three FRs demand them.
 
 ```mermaid
 flowchart LR
-  Caller["Caller"] --> API["Trigger API"]
-  API --> Idem["Redis<br/>idempotency cache"]
-  API --> DB["Cassandra<br/>partition by fireAt-minute"]
+  Caller["Caller"] -->|"1. Register trigger"| API["Trigger API"]
+  API -->|"2. Check cache"| Idem["Redis<br/>idempotency cache"]
+  API -->|"3. Persist trigger"| DB["Cassandra<br/>partition by fireAt-minute"]
 
   classDef client fill:#FFD8A8,stroke:#E8590C,color:#000
   classDef service fill:#B2F2BB,stroke:#2F9E44,color:#000
@@ -244,12 +244,12 @@ We split by delay length, borrowing from Dynein:
 
 ```mermaid
 flowchart LR
-  DB["Cassandra"] --> Sweeper["Sweeper<br/>scans next bucket"]
-  Sweeper --> Wheel["Timing wheel<br/>per shard"]
-  Wheel --> SQS["SQS delay queue"]
-  API2["Trigger API"] --> SQS
-  SQS --> Disp["Dispatcher pool"]
-  Disp --> CallerCB["Caller callback URL"]
+  DB["Cassandra"] -->|"1. Scan bucket"| Sweeper["Sweeper<br/>scans next bucket"]
+  Sweeper -->|"2. Load into wheel"| Wheel["Timing wheel<br/>per shard"]
+  Wheel -->|"3. Push when due"| SQS["SQS delay queue"]
+  API2["Trigger API"] -->|"4. Short delay enqueue"| SQS
+  SQS -->|"5. Consume message"| Disp["Dispatcher pool"]
+  Disp -->|"6. POST callback"| CallerCB["Caller callback URL"]
 
   classDef client fill:#FFD8A8,stroke:#E8590C,color:#000
   classDef edge fill:#A5D8FF,stroke:#1971C2,color:#000
@@ -282,9 +282,9 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  Caller2["Caller"] --> API3["Trigger API"]
-  API3 --> DB2["Cassandra<br/>set status=CANCELLED"]
-  Disp2["Dispatcher"] --> DB2
+  Caller2["Caller"] -->|"1. Cancel request"| API3["Trigger API"]
+  API3 -->|"2. Set CANCELLED"| DB2["Cassandra<br/>set status=CANCELLED"]
+  Disp2["Dispatcher"] -->|"3. Check status"| DB2
   Disp2 -.skips if cancelled.-> Drop["Discard"]
 
   classDef client fill:#FFD8A8,stroke:#E8590C,color:#000
@@ -404,10 +404,10 @@ Self-audit found these as the real risk areas: (1) hot bucket at top-of-the-hour
 
 ```mermaid
 flowchart LR
-  Hot["fireAt=14:00:00<br/>1M triggers"] --> SubShard["Sub-shard by hash(triggerId) % 64"]
-  SubShard --> P0["partition 14:00 #0"]
-  SubShard --> P1["partition 14:00 #1"]
-  SubShard --> Pn["partition 14:00 #63"]
+  Hot["fireAt=14:00:00<br/>1M triggers"] -->|"1. Distribute"| SubShard["Sub-shard by hash(triggerId) % 64"]
+  SubShard -->|"2. Route to shard"| P0["partition 14:00 #0"]
+  SubShard -->|"3. Route to shard"| P1["partition 14:00 #1"]
+  SubShard -->|"4. Route to shard"| Pn["partition 14:00 #63"]
 
   classDef data fill:#FFE066,stroke:#F08C00,color:#000
   classDef service fill:#B2F2BB,stroke:#2F9E44,color:#000
@@ -444,10 +444,10 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  SQS["main SQS"] --> Disp["Dispatcher"]
-  Disp --> CB["per-caller<br/>circuit breaker"]
-  CB --> Healthy["healthy callers<br/>POST"]
-  CB --> Open["open circuit<br/>retry SQS"]
+  SQS["main SQS"] -->|"1. Deliver message"| Disp["Dispatcher"]
+  Disp -->|"2. Check breaker"| CB["per-caller<br/>circuit breaker"]
+  CB -->|"3. POST to healthy"| Healthy["healthy callers<br/>POST"]
+  CB -->|"4. Fast-fail to retry"| Open["open circuit<br/>retry SQS"]
   Open -.30s later.-> Disp
 
   classDef async fill:#D0BFFF,stroke:#6741D5,color:#000
@@ -484,23 +484,23 @@ If a callback fails N times, the trigger lands in a DLQ topic (Kafka). A small o
 
 ```mermaid
 flowchart LR
-  Caller["Caller services"] --> ALB["API gateway"]
-  ALB --> API["Trigger API"]
-  API --> Idem["Redis idem cache"]
-  API --> DB["Cassandra<br/>partition by bucket sub-shard"]
-  API --> SQSshort["SQS short-delay queue"]
+  Caller["Caller services"] -->|"1. Send request"| ALB["API gateway"]
+  ALB -->|"2. Route request"| API["Trigger API"]
+  API -->|"3. Check idempotency"| Idem["Redis idem cache"]
+  API -->|"4. Persist trigger"| DB["Cassandra<br/>partition by bucket sub-shard"]
+  API -->|"5. Enqueue short delay"| SQSshort["SQS short-delay queue"]
 
-  Sweeper["Sweeper<br/>leader per shard"] --> DB
-  Sweeper --> Wheel["Timing wheel<br/>per shard"]
-  Wheel --> SQSshort
+  Sweeper["Sweeper<br/>leader per shard"] -->|"6. Scan buckets"| DB
+  Sweeper -->|"7. Load into wheel"| Wheel["Timing wheel<br/>per shard"]
+  Wheel -->|"8. Push when due"| SQSshort
 
-  SQSshort --> Disp["Dispatcher pool<br/>per-caller bulkheads + breaker"]
-  Disp --> DB
-  Disp --> CB["Caller callback URL"]
+  SQSshort -->|"9. Consume message"| Disp["Dispatcher pool<br/>per-caller bulkheads + breaker"]
+  Disp -->|"10. Check status"| DB
+  Disp -->|"11. POST callback"| CB["Caller callback URL"]
 
   Disp -.failures.-> DLQ["DLQ Kafka topic"]
-  Recon["Reconciler<br/>hourly"] --> DB
-  Recon --> SQSshort
+  Recon["Reconciler<br/>hourly"] -->|"12. Scan leaks"| DB
+  Recon -->|"13. Re-enqueue"| SQSshort
 
   classDef client fill:#FFD8A8,stroke:#E8590C,color:#000
   classDef edge fill:#A5D8FF,stroke:#1971C2,color:#000

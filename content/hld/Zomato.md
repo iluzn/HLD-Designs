@@ -28,13 +28,13 @@ flowchart LR
     MATCH["Dispatch<br/>Temporal"]:::service
     WS["WebSocket<br/>live tracking"]:::service
 
-    CUST --> SEARCH
-    CUST --> ORDER
-    RIDER --> LOC
-    ORDER --> MATCH
-    MATCH --> LOC
-    LOC --> WS
-    WS --> CUST
+    CUST -->|"1. Send request"| SEARCH
+    CUST -->|"2. API call"| ORDER
+    RIDER -->|"3. Read cache"| LOC
+    ORDER -->|"4. Assign rider"| MATCH
+    MATCH -->|"5. Update cache"| LOC
+    LOC -->|"6. Return data"| WS
+    WS -->|"7. Deliver"| CUST
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -162,9 +162,9 @@ flowchart LR
     RESTSVC["Restaurant Service"]:::service
     DB[("Restaurants and Menus DB")]:::data
 
-    CUST --> GW
-    GW --> RESTSVC
-    RESTSVC --> DB
+    CUST -->|"1. Send request"| GW
+    GW -->|"2. Route request"| RESTSVC
+    RESTSVC -->|"3. Query DB"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -204,11 +204,11 @@ flowchart LR
     DB[("Orders DB")]:::data
     PG["Payment Gateway<br/>Razorpay Stripe UPI"]:::external
 
-    CUST --> GW
-    GW --> ORDER
-    ORDER --> DB
-    ORDER --> PAY
-    PAY --> PG
+    CUST -->|"1. Send request"| GW
+    GW -->|"2. Route request"| ORDER
+    ORDER -->|"3. Query DB"| DB
+    ORDER -->|"4. Call service"| PAY
+    PAY -->|"5. Call external"| PG
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -252,17 +252,17 @@ flowchart LR
     ORDERDB[("Orders DB")]:::data
     PUSH["FCM and APNs"]:::external
 
-    RIDER -->|"location pings"| LOC
-    LOC --> LOCDB
-    CUST --> GW
-    GW --> ORDER
-    ORDER --> ORDERDB
-    ORDER -->|"match request"| MATCH
-    MATCH --> LOCDB
-    MATCH --> NOTIF
-    NOTIF --> PUSH
-    PUSH --> RIDER
-    RIDER -->|"accept"| GW
+    RIDER -->|"1. Location pings"| LOC
+    LOC -->|"2. Query DB"| LOCDB
+    CUST -->|"3. Send request"| GW
+    GW -->|"4. Route request"| ORDER
+    ORDER -->|"5. Query DB"| ORDERDB
+    ORDER -->|"6. Match request"| MATCH
+    MATCH -->|"7. Query DB"| LOCDB
+    MATCH -->|"8. Send notification"| NOTIF
+    NOTIF -->|"9. Send notification"| PUSH
+    PUSH -->|"10. Notify rider"| RIDER
+    RIDER -->|"11. Accept"| GW
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -324,10 +324,10 @@ flowchart LR
     K["Kafka<br/>rider location stream"]:::async
     DW[("Cassandra<br/>history")]:::data
 
-    RIDER --> LOC
-    LOC --> GEO
-    LOC --> K
-    K --> DW
+    RIDER -->|"1. API call"| LOC
+    LOC -->|"2. Check cache"| GEO
+    LOC -->|"3. Emit event"| K
+    K -->|"4. Send request"| DW
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -473,14 +473,14 @@ flowchart LR
     K["Kafka"]:::async
     IDX["Indexer"]:::service
 
-    CUST --> GW
-    GW --> SEARCH
-    SEARCH --> REDIS
-    SEARCH --> ES
-    RDB --> CDC
-    CDC --> K
-    K --> IDX
-    IDX --> ES
+    CUST -->|"1. Send request"| GW
+    GW -->|"2. Route request"| SEARCH
+    SEARCH -->|"3. Check cache"| REDIS
+    SEARCH -->|"4. Update index"| ES
+    RDB -->|"5. CDC stream"| CDC
+    CDC -->|"6. Stream changes"| K
+    K -->|"7. Consume event"| IDX
+    IDX -->|"8. Return results"| ES
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -703,34 +703,34 @@ flowchart LR
     PG["Razorpay Stripe UPI"]:::external
     PUSH["FCM APNs"]:::external
 
-    CUST --> GW
-    RIDER --> GW
-    REST --> GW
-    CUST --> WS
-    RIDER --> LOC
+    CUST -->|"1. Send request"| GW
+    RIDER -->|"2. Send request"| GW
+    REST -->|"3. Send request"| GW
+    CUST -->|"4. Send request"| WS
+    RIDER -->|"5. API call"| LOC
 
-    GW --> RSVC
-    RSVC --> RDB
-    GW --> SEARCH
-    SEARCH --> SCACHE
-    SEARCH --> ES
-    RDB --> CDC
-    CDC --> K
-    K --> ES
-    GW --> ORDER
-    ORDER --> ORDERDB
-    ORDER --> PAY
-    PAY --> PG
-    ORDER -->|"confirmed"| MATCH
-    LOC --> GEO
-    LOC --> K
-    K --> HIST
-    LOC --> PUBSUB
-    PUBSUB --> WS
-    MATCH --> GEO
-    MATCH --> NOTIF
-    NOTIF --> PUSH
-    MATCH --> ORDER
+    GW -->|"6. Route request"| RSVC
+    RSVC -->|"7. Query DB"| RDB
+    GW -->|"8. Route request"| SEARCH
+    SEARCH -->|"9. Check cache"| SCACHE
+    SEARCH -->|"10. Update index"| ES
+    RDB -->|"11. CDC stream"| CDC
+    CDC -->|"12. Stream changes"| K
+    K -->|"13. Consume event"| ES
+    GW -->|"14. Route request"| ORDER
+    ORDER -->|"15. Query DB"| ORDERDB
+    ORDER -->|"16. Call service"| PAY
+    PAY -->|"17. Charge"| PG
+    ORDER -->|"18. Confirmed"| MATCH
+    LOC -->|"19. Check cache"| GEO
+    LOC -->|"20. Emit event"| K
+    K -->|"21. Consume event"| HIST
+    LOC -->|"22. Check cache"| PUBSUB
+    PUBSUB -->|"23. Return data"| WS
+    MATCH -->|"24. Update cache"| GEO
+    MATCH -->|"25. Call service"| NOTIF
+    NOTIF -->|"26. Send notification"| PUSH
+    MATCH -->|"27. Call service"| ORDER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

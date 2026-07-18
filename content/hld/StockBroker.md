@@ -201,11 +201,11 @@ flowchart LR
     ME["Matching Engine"]:::service
     DB["Order DB"]:::data
 
-    App --> GW
-    GW --> OMS
-    OMS --> DB
-    OMS --> KF
-    KF --> ME
+    App -->|"1. Send request"| GW
+    GW -->|"2. Route request"| OMS
+    OMS -->|"3. Query DB"| DB
+    OMS -->|"4. Emit event"| KF
+    KF -->|"5. Consume event"| ME
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -259,13 +259,13 @@ flowchart LR
     KF["Kafka events"]:::async
     Proj["Projector"]:::service
 
-    App --> GW
-    GW --> QS
-    QS --> RC
-    QS --> RDB
-    KF --> Proj
-    Proj --> RDB
-    Proj --> RC
+    App -->|"1. Send request"| GW
+    GW -->|"2. Route request"| QS
+    QS -->|"3. Check cache"| RC
+    QS -->|"4. Fallback query"| RDB
+    KF -->|"5. Consume event"| Proj
+    Proj -->|"6. Update view"| RDB
+    Proj -->|"7. Update cache"| RC
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -309,10 +309,10 @@ flowchart LR
     FCM["FCM and APNs"]:::external
     DLQ["Dead Letter Queue"]:::async
 
-    KF --> NS
-    NS --> WS
-    NS --> FCM
-    NS --> DLQ
+    KF -->|"1. Consume event"| NS
+    NS -->|"2. Push update"| WS
+    NS -->|"3. Send notification"| FCM
+    NS -->|"4. Emit event"| DLQ
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
@@ -430,9 +430,9 @@ flowchart LR
         BID["Bids TreeMap DESC"]:::data
         ASK["Asks TreeMap ASC"]:::data
     end
-    NEW["New Order"]:::client --> MATCH{"Prices Cross?"}:::service
-    MATCH -->|Yes| FILL["Execute Trade"]:::service
-    MATCH -->|No| REST["Add to Book"]:::data
+    NEW["New Order"]:::client -->|"1. Check match"| MATCH{"Prices Cross?"}:::service
+    MATCH -->|"2. Yes"| FILL["Execute Trade"]:::service
+    MATCH -->|"3. No"| REST["Add to Book"]:::data
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -599,28 +599,28 @@ flowchart LR
         FCM["FCM and APNs"]:::external
     end
 
-    MOB --> LB
-    WEB --> LB
-    LB --> GW
-    LB --> WSG
-    GW --> OMS
-    GW --> QS
-    OMS --> PG
-    OMS --> KF
-    KF --> ME
-    ME --> KF
-    ME --> EX
-    KF --> NS
-    KF --> PROJ
-    PROJ --> PGR
-    PROJ --> RD
-    QS --> RD
-    QS --> PGR
-    NS --> FCM
-    NS --> WSG
-    REC --> PG
-    REC --> KF
-    KF --> S3
+    MOB -->|"1. Send request"| LB
+    WEB -->|"2. Send request"| LB
+    LB -->|"3. Route API"| GW
+    LB -->|"4. Route WebSocket"| WSG
+    GW -->|"5. Route to OMS"| OMS
+    GW -->|"6. Route request"| QS
+    OMS -->|"7. Persist data"| PG
+    OMS -->|"8. Emit event"| KF
+    KF -->|"9. Consume event"| ME
+    ME -->|"10. Emit event"| KF
+    ME -->|"11. Send to exchange"| EX
+    KF -->|"12. Consume event"| NS
+    KF -->|"13. Consume event"| PROJ
+    PROJ -->|"14. Consume event"| PGR
+    PROJ -->|"15. Consume event"| RD
+    QS -->|"16. Check cache"| RD
+    QS -->|"17. Read DB"| PGR
+    NS -->|"18. Send notification"| FCM
+    NS -->|"19. Push update"| WSG
+    REC -->|"20. Persist data"| PG
+    REC -->|"21. Emit event"| KF
+    KF -->|"22. Sink data"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

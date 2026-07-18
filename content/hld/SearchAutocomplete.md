@@ -162,9 +162,9 @@ flowchart LR
     TRIE["Trie Service<br/>(in-memory)"]:::service
     CACHE["Redis Cache"]:::data
 
-    USER -->|"GET /suggestions?prefix=how"| LB
-    LB --> TRIE
-    TRIE --> CACHE
+    USER -->|"1. GET /suggestions?prefix=how"| LB
+    LB -->|"2. Route request"| TRIE
+    TRIE -->|"3. Check cache"| CACHE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -206,16 +206,16 @@ flowchart LR
     CACHE["Redis Cache"]:::data
     QLOG["Query Logger"]:::service
     STREAM["Kafka"]:::async
-    AGG["Flink Aggregator"]:::async
+    AGG["Stream Aggregator"]:::async
     POPDB[("Popularity Store<br/>Cassandra")]:::data
 
-    USER --> LB
-    LB --> TRIE
-    TRIE --> CACHE
-    USER -->|"search submitted"| QLOG
-    QLOG --> STREAM
-    STREAM --> AGG
-    AGG --> POPDB
+    USER -->|"1. Send request"| LB
+    LB -->|"2. Route request"| TRIE
+    TRIE -->|"3. Check cache"| CACHE
+    USER -->|"4. Search submitted"| QLOG
+    QLOG -->|"5. Emit event"| STREAM
+    STREAM -->|"6. Consume event"| AGG
+    AGG -->|"7. Query DB"| POPDB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -257,21 +257,21 @@ flowchart LR
     CACHE["Redis Cache"]:::data
     QLOG["Query Logger"]:::service
     STREAM["Kafka"]:::async
-    AGG["Flink Aggregator"]:::async
+    AGG["Stream Aggregator"]:::async
     POPDB[("Popularity Store")]:::data
     TREND["Trending Detector"]:::async
     HOTCACHE["Trending Cache<br/>(Redis Sorted Set)"]:::data
 
-    USER --> LB
-    LB --> TRIE
-    TRIE --> CACHE
-    TRIE --> HOTCACHE
-    USER --> QLOG
-    QLOG --> STREAM
-    STREAM --> AGG
-    AGG --> POPDB
-    STREAM --> TREND
-    TREND --> HOTCACHE
+    USER -->|"1. Send request"| LB
+    LB -->|"2. Route request"| TRIE
+    TRIE -->|"3. Check cache"| CACHE
+    TRIE -->|"4. Check cache"| HOTCACHE
+    USER -->|"5. Send request"| QLOG
+    QLOG -->|"6. Emit event"| STREAM
+    STREAM -->|"7. Consume event"| AGG
+    AGG -->|"8. Query DB"| POPDB
+    STREAM -->|"9. Consume event"| TREND
+    TREND -->|"10. Update cache"| HOTCACHE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -384,9 +384,9 @@ flowchart LR
     S1["Shard 's'<br/>Trie in memory"]:::service
     NODE["Node s-y-s<br/>top-10 pre-computed"]:::data
 
-    REQ --> ROUTER
-    ROUTER --> S1
-    S1 --> NODE
+    REQ -->|"1. Send prefix"| ROUTER
+    ROUTER -->|"2. Route to shard"| S1
+    S1 -->|"3. Walk trie"| NODE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -458,24 +458,24 @@ flowchart LR
     HOTCACHE["Trending Cache<br/>(Redis Sorted Set)"]:::data
     QLOG["Query Logger"]:::service
     STREAM["Kafka"]:::async
-    AGG["Flink Aggregator"]:::async
+    AGG["Stream Aggregator"]:::async
     TREND["Trending Detector"]:::async
     POPDB[("Popularity Store<br/>Cassandra")]:::data
     BUILDER["Trie Builder<br/>(periodic)"]:::async
 
-    USER --> CDN
-    CDN --> LB
-    LB --> TRIE
-    TRIE --> CACHE
-    TRIE --> HOTCACHE
-    USER --> QLOG
-    QLOG --> STREAM
-    STREAM --> AGG
-    STREAM --> TREND
-    AGG --> POPDB
-    TREND --> HOTCACHE
-    BUILDER --> POPDB
-    BUILDER --> TRIE
+    USER -->|"1. Send request"| CDN
+    CDN -->|"2. Cache miss"| LB
+    LB -->|"3. Route request"| TRIE
+    TRIE -->|"4. Check cache"| CACHE
+    TRIE -->|"5. Check cache"| HOTCACHE
+    USER -->|"6. Send request"| QLOG
+    QLOG -->|"7. Emit event"| STREAM
+    STREAM -->|"8. Consume event"| AGG
+    STREAM -->|"9. Consume event"| TREND
+    AGG -->|"10. Query DB"| POPDB
+    TREND -->|"11. Update cache"| HOTCACHE
+    BUILDER -->|"12. Persist data"| POPDB
+    BUILDER -->|"13. Call service"| TRIE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

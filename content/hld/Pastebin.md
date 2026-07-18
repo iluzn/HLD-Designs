@@ -162,10 +162,10 @@ flowchart LR
     S3[("Object Storage<br/>paste content")]:::data
     META[("Metadata DB<br/>id expiry lang")]:::data
 
-    USER --> API
-    API --> ID
-    API --> S3
-    API --> META
+    USER -->|"1. API call"| API
+    API -->|"2. Generate short ID"| ID
+    API -->|"3. Store content"| S3
+    API -->|"4. Save metadata"| META
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -204,10 +204,10 @@ flowchart LR
     META[("Metadata DB")]:::data
     S3[("Object Storage")]:::data
 
-    READER --> CDN
-    CDN -->|"cache miss"| API
-    API --> META
-    API --> S3
+    READER -->|"1. Update cache"| CDN
+    CDN -->|"2. Cache miss"| API
+    API -->|"3. Query DB"| META
+    API -->|"4. Store file"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -245,9 +245,9 @@ flowchart LR
     S3[("Object Storage")]:::data
     CRON["Cleanup Service<br/>runs every 5 min"]:::async
 
-    API -->|"check expiry"| META
-    CRON --> META
-    CRON --> S3
+    API -->|"1. Check expiry"| META
+    CRON -->|"2. Query DB"| META
+    CRON -->|"3. Store file"| S3
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -406,14 +406,14 @@ flowchart LR
     CLEANUP["Cleanup Service"]:::async
     READER["Reader"]:::client
 
-    USER --> API
-    API --> ID
-    API --> S3
-    API --> META
-    READER --> CDN
-    CDN --> API
-    CLEANUP --> META
-    CLEANUP --> S3
+    USER -->|"1. Create paste"| API
+    API -->|"2. Generate short ID"| ID
+    API -->|"3. Store content"| S3
+    API -->|"4. Save metadata"| META
+    READER -->|"5. Read paste"| CDN
+    CDN -->|"6. Cache miss"| API
+    CLEANUP -->|"7. Scan expired"| META
+    CLEANUP -->|"8. Delete content"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
