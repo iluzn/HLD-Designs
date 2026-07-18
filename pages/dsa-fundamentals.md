@@ -11,6 +11,31 @@ The concepts and patterns you need before solving problems. This isn't a data-st
 
 ---
 
+## Deep Dives by Topic
+
+Each topic has plain-English explanations, step-by-step diagrams, template code in 4 languages, and linked practice problems.
+
+| Topic | What it covers |
+|---|---|
+| [Sliding Window](/dsa-fundamentals/sliding-window/) | Fixed and variable window, shrink-expand template |
+| [Two Pointers](/dsa-fundamentals/two-pointers/) | Opposite-end, same-direction, partitioning |
+| [Binary Search](/dsa-fundamentals/binary-search/) | Standard, search on answer, rotated arrays |
+| [Stacks & Queues](/dsa-fundamentals/stacks-queues/) | Monotonic stack, next greater element, valid brackets |
+| [Linked Lists](/dsa-fundamentals/linked-lists/) | Reversal, fast/slow pointers, merge, cycle detection |
+| [Trees & Traversal](/dsa-fundamentals/trees-traversal/) | Inorder/preorder/postorder, BFS level-order |
+| [Graphs BFS/DFS](/dsa-fundamentals/graphs-bfs-dfs/) | Grid traversal, connected components, cycle detection |
+| [Shortest Path](/dsa-fundamentals/shortest-path/) | BFS, Dijkstra, Bellman-Ford, 0-1 BFS, Floyd-Warshall |
+| [Topological Sort](/dsa-fundamentals/topological-sort/) | Kahn's BFS, DFS-based, DAG cycle detection |
+| [Heaps](/dsa-fundamentals/heaps/) | Min/max heap, top-K, merge-K sorted lists |
+| [Dynamic Programming](/dsa-fundamentals/dynamic-programming/) | 1D, 2D, knapsack, LCS, LIS |
+| [Backtracking](/dsa-fundamentals/backtracking/) | Permutations, combinations, subsets, N-Queens |
+| [Greedy](/dsa-fundamentals/greedy/) | Interval scheduling, jump game, activity selection |
+| [Tries](/dsa-fundamentals/tries/) | Prefix tree, insert/search/startsWith |
+| [Union Find](/dsa-fundamentals/union-find/) | Disjoint set, path compression, union by rank |
+| [Bit Manipulation](/dsa-fundamentals/bit-manipulation/) | XOR tricks, set/clear/toggle, counting bits |
+
+---
+
 ## The Problem-Solving Framework
 
 Every coding interview answer follows this structure. Practice it until it's muscle memory.
