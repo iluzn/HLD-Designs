@@ -213,15 +213,15 @@ The create path is low-QPS (~1K/sec peak) but needs a unique, collision-free sho
 ```mermaid
 flowchart LR
     CLIENT["Client"]:::client
-    GW["API Gateway<br/>Kong Apigee or AWS"]:::edge
-    WS["Write Service<br/>Kubernetes or Fargate"]:::service
+    GW["API Gateway"]:::edge
+    WS["Write Service"]:::service
     IDG["Snowflake ID Gen"]:::service
-    DB[("Global KV<br/>DynamoDB or Cassandra")]:::data
+    DB[("Database")]:::data
 
-    CLIENT --> GW
-    GW --> WS
-    WS --> IDG
-    WS --> DB
+    CLIENT -->|"1. POST /links with long URL"| GW
+    GW -->|"2. Auth + rate limit"| WS
+    WS -->|"3. Get unique ID"| IDG
+    WS -->|"4. Store short_code to long_url"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -256,17 +256,17 @@ This is the hot path - billions of reads per day. Latency and cost both matter.
 ```mermaid
 flowchart LR
     USER["Browser"]:::client
-    CDN["CDN edge<br/>Cloudflare CloudFront Fastly"]:::edge
+    CDN["CDN Edge"]:::edge
     RS["Redirect Service"]:::service
-    CACHE[("Redis cache<br/>ElastiCache or self hosted")]:::data
-    DB[("Global KV<br/>DynamoDB or Cassandra")]:::data
-    K["Event bus<br/>Kafka or Kinesis"]:::async
+    CACHE[("Redis Cache")]:::data
+    DB[("Database")]:::data
+    K["Event Bus"]:::async
 
-    USER --> CDN
-    CDN --> RS
-    RS --> CACHE
-    RS --> DB
-    RS --> K
+    USER -->|"1. GET /aB3xY9"| CDN
+    CDN -->|"2. Cache miss"| RS
+    RS -->|"3. Check cache"| CACHE
+    RS -->|"4. Cache miss - read DB"| DB
+    RS -->|"5. Fire click event async"| K
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
