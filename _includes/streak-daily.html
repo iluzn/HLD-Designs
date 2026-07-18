@@ -5,11 +5,22 @@
     <span class="sc-daily-flame">🔥</span><span id="sc-daily-count" class="sc-daily-count"></span>
 </a>
 <style>
+.sc-daily-btn{position:relative;display:inline-flex;align-items:center;gap:0.15rem;padding:0.25rem 0.5rem;border-radius:8px;text-decoration:none;color:var(--text);font-size:0.85rem;transition:all 0.3s;}
 .sc-daily-btn .sc-daily-flame{display:inline-block;transition:filter .2s,opacity .2s;}
-.sc-daily-btn .sc-daily-count{font-weight:700;}
-.sc-daily-btn.dull .sc-daily-flame{filter:grayscale(1);opacity:.45;}
-.sc-daily-btn.lit .sc-daily-flame{filter:none;opacity:1;animation:sc-pulse 2s ease-in-out infinite;}
-@keyframes sc-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
+.sc-daily-btn .sc-daily-count{font-weight:700;font-size:0.82rem;}
+
+/* Dull — grayscale, no glow */
+.sc-daily-btn.dull .sc-daily-flame{filter:grayscale(1);opacity:.4;}
+
+/* Lit — glowing ember effect */
+.sc-daily-btn.lit .sc-daily-flame{filter:none;opacity:1;animation:sc-ember-bounce 2s ease-in-out infinite;}
+.sc-daily-btn.lit .sc-daily-count{color:#f59e0b;}
+.sc-daily-btn.lit{background:rgba(245,158,11,0.08);box-shadow:0 0 8px rgba(245,158,11,0.35),0 0 20px rgba(245,120,0,0.15);animation:sc-ember-glow 2s ease-in-out infinite alternate;}
+
+@keyframes sc-ember-glow{0%{box-shadow:0 0 6px rgba(245,158,11,0.3),0 0 16px rgba(245,120,0,0.1);}100%{box-shadow:0 0 12px rgba(245,158,11,0.5),0 0 28px rgba(255,100,0,0.2);}}
+@keyframes sc-ember-bounce{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+
+[data-theme="light"] .sc-daily-btn.lit{background:rgba(245,158,11,0.06);box-shadow:0 0 6px rgba(245,120,0,0.2),0 0 14px rgba(245,158,11,0.1);}
 </style>
 <script>
 (function () {
