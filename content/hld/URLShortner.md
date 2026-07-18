@@ -19,15 +19,15 @@ A URL shortener maps short codes to long URLs and redirects billions of clicks p
 ```mermaid
 flowchart LR
     USER["Browser"]:::client
-    CDN["CDN Edge<br/>cache hot links"]:::edge
+    CDN["CDN Edge"]:::edge
     RS["Redirect Service"]:::service
-    REDIS[("Redis cache")]:::data
-    DB[("Global KV Store<br/>all links")]:::data
+    REDIS[("Redis Cache")]:::data
+    DB[("Database")]:::data
 
-    USER --> CDN
-    CDN --> RS
-    RS --> REDIS
-    RS --> DB
+    USER -->|"1. Click short URL"| CDN
+    CDN -->|"2. Cache miss"| RS
+    RS -->|"3. Check cache"| REDIS
+    RS -->|"4. Fallback read"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -589,43 +589,29 @@ stateDiagram-v2
 
 ```mermaid
 flowchart LR
-    CLIENT["User or API Client"]:::client
-    BROWSER["Browser<br/>redirect"]:::client
-    CDN["CDN edge<br/>Cloudflare CloudFront Fastly"]:::edge
+    CLIENT["Client"]:::client
+    BROWSER["Browser"]:::client
+    CDN["CDN Edge"]:::edge
     GW["API Gateway"]:::edge
 
     WS["Write Service"]:::service
     RS["Redirect Service"]:::service
     IDG["Snowflake ID Gen"]:::service
-    SP["Stream Processor<br/>Flink"]:::service
-    STATS["Stats API"]:::service
 
-    BF[("Bloom Filter")]:::data
-    REDIS[("Regional Redis")]:::data
-    KV[("Global KV<br/>DynamoDB Cassandra or Spanner")]:::data
-    CH[("Serving store<br/>ClickHouse or Pinot")]:::data
-    S3[("Object storage<br/>S3 or GCS")]:::data
+    REDIS[("Redis Cache")]:::data
+    DB[("Database")]:::data
+    Q["Message Queue"]:::async
 
-    K["Event bus<br/>Kafka or Kinesis"]:::async
+    CLIENT -->|"1. POST /links"| GW
+    GW -->|"2. Auth + forward"| WS
+    WS -->|"3. Get ID"| IDG
+    WS -->|"4. Store mapping"| DB
 
-    CLIENT --> GW
-    GW --> WS
-    WS --> IDG
-    WS --> KV
-
-    BROWSER --> CDN
-    CDN --> RS
-    RS --> BF
-    RS --> REDIS
-    RS --> KV
-    RS --> K
-
-    K --> SP
-    K --> S3
-    SP --> CH
-
-    CLIENT --> STATS
-    STATS --> CH
+    BROWSER -->|"1. GET /code"| CDN
+    CDN -->|"2. Miss"| RS
+    RS -->|"3. Cache lookup"| REDIS
+    RS -->|"4. Miss - read DB"| DB
+    RS -->|"5. Fire click event"| Q
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -634,7 +620,7 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-That's the design. Five deep dives each picking the right primitive: Snowflake for collision-free distributed ID generation, a CDN-Redis-KV tiered cache for global low-latency reads, local caches with request coalescing to absorb viral spikes, Kafka-to-Flink-to-ClickHouse for analytics that never touches the hot path, and a globally-replicated KV store to eliminate regional bottlenecks. Read-heavy, latency-sensitive, and deceptively simple - the fun is in making it feel trivial at any scale.
+The complete system: write path (left) creates short codes via Snowflake + stores in DB. Read path (right) serves redirects through CDN → Redis → DB tiers, firing analytics events async to a queue. Simple, fast, and scalable.
 
 
 ---
