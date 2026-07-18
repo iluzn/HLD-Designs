@@ -691,7 +691,7 @@ Seat map updates are server→client only (users don't send data back over this 
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Clients
         UA["User Browser and App"]:::client
     end

@@ -403,7 +403,7 @@ This is atomic - zero gap. In a single operation: the current leaderboard become
 This diagram brings together every "Great" choice from the deep dives: regional Redis for low-latency writes, a Kafka pipeline feeding a global aggregator (Deep Dive 1), a durable store for rebuilds, and a Top-K cache with WebSocket push for read amplification (Deep Dive 4).
 
 ```mermaid
-flowchart LR
+flowchart TD
     GAME["Game Servers<br/>per region"]:::client
     API["Leaderboard Service"]:::service
     R1[("Regional Redis<br/>live rankings")]:::data

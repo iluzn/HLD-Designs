@@ -445,7 +445,7 @@ score = 0.3 * topic_relevance
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     SOURCES["50K Publishers"]:::external
     SCHED["Crawl Scheduler"]:::service
     WORKERS["Crawler Pool"]:::service

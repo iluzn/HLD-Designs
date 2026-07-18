@@ -258,7 +258,7 @@ Each layer backs up the one above it. Industry principle: **rail truth always wi
 8. **Postgres (ledger primary)** - the sacred source of truth. Stores journal entries and ledger lines. ACID transactions ensure money is never created or destroyed.
 
 ```mermaid
-flowchart LR
+flowchart TD
     APP["Wallet App"]:::client
     GW["API Gateway"]:::edge
     WS["Wallet Service"]:::service
@@ -778,7 +778,7 @@ Every transition is a compare-and-set in the DB and emits an event. Illegal tran
 ## Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     APP["Wallet App"]:::client
     GW["API Gateway"]:::edge
 

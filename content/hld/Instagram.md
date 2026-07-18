@@ -429,21 +429,22 @@ stateDiagram-v2
 3. **Optimization:** Generate progressive JPEGs so images render top-to-bottom even on slow connections. Store a tiny 20px blurred placeholder (BlurHash) in the post metadata for instant feed skeleton rendering.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Client["Client"]:::client
-    PS["Pre-signed URL"]:::edge
-    S3O["S3 Originals"]:::data
+    US["Upload Service"]:::service
+    S3O[("S3 Originals")]:::data
     Q["SQS Queue"]:::async
-    W1["Worker Pool"]:::service
-    S3P["S3 Processed"]:::data
+    W["Worker Pool"]:::service
+    S3P[("S3 Processed")]:::data
     CDN["CDN"]:::edge
 
-    Client -->|"1. Upload photo"| PS
-    PS -->|"2. Check limit"| S3O
-    S3O -->|"3. Serve content"| Q
-    Q -->|"4. Generate image variants"| W1
-    W1 -->|"5. Store processed media"| S3P
-    S3P -->|"6. Deliver"| CDN
+    Client -->|"1. Get pre-signed URL"| US
+    Client -->|"2. Upload directly to S3"| S3O
+    US -->|"3. Enqueue processing job"| Q
+    Q -->|"4. Pick job"| W
+    W -->|"5. Download original"| S3O
+    W -->|"6. Resize + compress + store"| S3P
+    S3P -->|"7. Serve via CDN"| CDN
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -580,7 +581,7 @@ Feed ranking runs on every feed load for 500M daily users. At 200M feed loads/da
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Clients
         MOB["Mobile App"]:::client
         WEB["Web App"]:::client

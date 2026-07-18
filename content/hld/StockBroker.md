@@ -562,7 +562,7 @@ Regulators (SEBI, SEC) require a full audit trail of every order state change. "
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Clients
         MOB["Mobile App"]:::client
         WEB["Web App"]:::client

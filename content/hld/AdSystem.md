@@ -355,7 +355,7 @@ Invalid clicks are excluded from billing retroactively. Advertisers see "invalid
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     USER["User Browser"]:::client
     LB["Load Balancer"]:::edge
     ADSERV["Ad Server"]:::service

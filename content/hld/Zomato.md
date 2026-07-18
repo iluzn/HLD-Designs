@@ -240,7 +240,7 @@ Now we introduce a Rider Client, a Location Service that receives live GPS pings
 5. **FCM / APNs** - Firebase Cloud Messaging and Apple Push Notification service. External services that deliver push notifications to rider phones, even when the app is backgrounded.
 
 ```mermaid
-flowchart LR
+flowchart TD
     CUST["Customer App"]:::client
     RIDER["Rider App"]:::client
     GW["API Gateway"]:::edge
@@ -675,7 +675,7 @@ Every transition is a compare-and-set in Postgres (`UPDATE ... WHERE status = ex
 Putting it all together:
 
 ```mermaid
-flowchart LR
+flowchart TD
     CUST["Customer App"]:::client
     RIDER["Rider App"]:::client
     REST["Restaurant App"]:::client

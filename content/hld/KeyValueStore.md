@@ -494,7 +494,7 @@ sequenceDiagram
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     C["Client"]:::client
     LB["Load Balancer"]:::edge
     R["Router Layer<br/>consistent hash ring"]:::service

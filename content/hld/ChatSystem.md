@@ -496,7 +496,7 @@ This is the "ordered log" model (Facebook Iris). The server is the source of tru
 ## Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     CLIENTS["Mobile and Web Clients"]:::client
     LB["Load Balancer<br/>sticky by userId"]:::edge
     WS["WebSocket Servers<br/>Netty edge tier"]:::service

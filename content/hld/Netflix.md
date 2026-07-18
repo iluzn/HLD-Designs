@@ -629,7 +629,7 @@ flowchart LR
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Clients
         TV["Smart TV"]:::client
         MOB["Mobile App"]:::client

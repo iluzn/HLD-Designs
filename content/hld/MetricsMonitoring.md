@@ -441,7 +441,7 @@ This separation means simple alerts never wait for complex anomaly detection, an
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     APPS["Services and Infrastructure"]:::client
     AGENT["Metrics Agent<br/>(per-host)"]:::service
     KAFKA["Kafka<br/>(ingestion stream)"]:::async

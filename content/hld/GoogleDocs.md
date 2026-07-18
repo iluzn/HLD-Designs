@@ -679,7 +679,7 @@ The OT transform operation needs atomic read-modify-write: "read current version
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Clients
         U1["User Browsers"]:::client
     end

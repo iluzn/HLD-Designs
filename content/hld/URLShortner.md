@@ -588,7 +588,7 @@ stateDiagram-v2
 ## Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     CLIENT["Client or Browser"]:::client
     CDN["CDN Edge"]:::edge
     GW["API Gateway"]:::edge

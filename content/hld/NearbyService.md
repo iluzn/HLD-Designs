@@ -341,7 +341,7 @@ sequenceDiagram
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     USER["User App"]:::client
     DRIVER["Driver App"]:::client
     LB["Load Balancer"]:::edge

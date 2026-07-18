@@ -719,7 +719,7 @@ stateDiagram-v2
 ## 8. Final Architecture Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
     CLIENT["Clients and CI systems"]:::client
 
     subgraph "Control Plane"

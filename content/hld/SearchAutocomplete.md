@@ -250,7 +250,7 @@ flowchart LR
 When something goes viral (a breaking news event, a product launch), we can't wait 15 minutes for the next Trie rebuild. We need a fast path that injects trending queries into suggestions within minutes.
 
 ```mermaid
-flowchart LR
+flowchart TD
     USER["User Browser"]:::client
     LB["Load Balancer"]:::edge
     TRIE["Trie Service"]:::service
@@ -449,7 +449,7 @@ flowchart LR
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     USER["User Browser"]:::client
     CDN["CDN<br/>(static prefix cache)"]:::edge
     LB["Load Balancer"]:::edge

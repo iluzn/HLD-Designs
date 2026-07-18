@@ -390,7 +390,7 @@ sequenceDiagram
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     MERCHANT["Merchant"]:::client
     SDK["Client SDK<br/>(tokenization)"]:::client
     API["Payment API"]:::edge

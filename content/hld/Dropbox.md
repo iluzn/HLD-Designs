@@ -436,7 +436,7 @@ sequenceDiagram
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     CLIENT["Desktop and Mobile Clients"]:::client
     CDN["CDN<br/>(download acceleration)"]:::edge
     API["API Gateway"]:::edge

@@ -658,7 +658,7 @@ flowchart LR
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Clients
         RA["Rider App"]:::client
         DA["Driver App"]:::client

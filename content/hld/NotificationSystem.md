@@ -321,7 +321,7 @@ Start with the minimum viable pipeline: accept, enqueue, fan out per channel, di
 5. **External Providers (APNs, SES, Twilio)** - the actual delivery services. We don't send emails ourselves - we hand them to SES/Mailgun, which handles the SMTP complexity.<br>💡 *FCM (Firebase Cloud Messaging) and APNs (Apple Push Notification Service) are the only way to send push notifications to Android and iOS devices respectively. Your server can't push directly to phones - it must go through these gateways.*
 
 ```mermaid
-flowchart LR
+flowchart TD
     APP["Product Service"]:::service
     API["Notification API"]:::edge
     Q["Message broker<br/>Kafka"]:::async
@@ -1061,7 +1061,7 @@ stateDiagram-v2
 ## 8. Final Architecture Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
     CLIENT["Product Services"]:::client
     USER["End Users<br/>mobile and web"]:::client
 

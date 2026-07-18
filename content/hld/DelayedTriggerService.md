@@ -483,7 +483,7 @@ If a callback fails N times, the trigger lands in a DLQ topic (Kafka). A small o
 ## 8. Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
   Caller["Caller services"] -->|"1. Register delayed trigger"| ALB["API gateway"]
   ALB -->|"2. Forward to trigger API"| API["Trigger API"]
   API -->|"3. Check idempotency"| Idem["Redis idem cache"]

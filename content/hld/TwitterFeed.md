@@ -487,7 +487,7 @@ Implementation: WebSocket connection subscribes to a channel. Fan-out also publi
 ## Final Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     USERS["Users"]:::client
     GW["API Gateway<br/>auth rate-limit"]:::edge
     TS["Tweet Service"]:::service

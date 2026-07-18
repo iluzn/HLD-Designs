@@ -624,7 +624,7 @@ X-RateLimit-Remaining: 0
 **Problem:** You have 10 API servers. If each uses its own counter, the total allowed = 10× the limit.
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Problem["Without shared state"]
         P1["Pod 1: count=50"]:::service
         P2["Pod 2: count=50"]:::service
