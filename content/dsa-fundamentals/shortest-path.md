@@ -92,8 +92,16 @@ flowchart LR
 ### Code
 
 
-```python
-from collections import deque
+<div class="code-tabs">
+<div class="tab-buttons">
+<button class="tab-btn active">Python</button>
+<button class="tab-btn">Java</button>
+<button class="tab-btn">C++</button>
+<button class="tab-btn">JavaScript</button>
+</div>
+<div class="tab-content active">
+
+<pre><code class="language-python">from collections import deque
 
 def bfs_shortest(graph, src, dst):
     # graph = adjacency list: {node: [neighbors]}
@@ -109,12 +117,13 @@ def bfs_shortest(graph, src, dst):
                 visited.add(neighbor)
                 queue.append((neighbor, dist + 1))
     
-    return -1  # unreachable
-```
+    return -1  # unreachable</code></pre>
 
-```java
-int bfsShort(List<List<Integer>> graph, int src, int dst) {
-    Queue<int[]> q = new LinkedList<>();
+</div>
+<div class="tab-content">
+
+<pre><code class="language-java">int bfsShort(List&lt;List&lt;Integer&gt;&gt; graph, int src, int dst) {
+    Queue&lt;int[]&gt; q = new LinkedList&lt;&gt;();
     boolean[] vis = new boolean[graph.size()];
     q.offer(new int[]{src, 0});
     vis[src] = true;
@@ -129,13 +138,14 @@ int bfsShort(List<List<Integer>> graph, int src, int dst) {
         }
     }
     return -1;
-}
-```
+}</code></pre>
 
-```cpp
-int bfsShort(vector<vector<int>>& graph, int src, int dst) {
-    queue<pair<int,int>> q;
-    vector<bool> vis(graph.size(), false);
+</div>
+<div class="tab-content">
+
+<pre><code class="language-cpp">int bfsShort(vector&lt;vector&lt;int&gt;&gt;&amp; graph, int src, int dst) {
+    queue&lt;pair&lt;int,int&gt;&gt; q;
+    vector&lt;bool&gt; vis(graph.size(), false);
     q.push({src, 0});
     vis[src] = true;
     while (!q.empty()) {
@@ -149,15 +159,16 @@ int bfsShort(vector<vector<int>>& graph, int src, int dst) {
         }
     }
     return -1;
-}
-```
+}</code></pre>
 
-```javascript
-function bfsShort(graph, src, dst) {
+</div>
+<div class="tab-content">
+
+<pre><code class="language-javascript">function bfsShort(graph, src, dst) {
     const queue = [[src, 0]];
     const visited = new Set([src]);
     let i = 0;
-    while (i < queue.length) {
+    while (i &lt; queue.length) {
         const [node, dist] = queue[i++];
         if (node === dst) return dist;
         for (const nb of graph[node]) {
@@ -168,9 +179,10 @@ function bfsShort(graph, src, dst) {
         }
     }
     return -1;
-}
-```
+}</code></pre>
 
+</div>
+</div>
 
 **Common interview problems using BFS shortest path:**
 - [Word Ladder](/dsa/problem/word-ladder) — each word is a node, edges connect words differing by 1 letter
@@ -222,8 +234,16 @@ flowchart LR
 ### Code
 
 
-```python
-import heapq
+<div class="code-tabs">
+<div class="tab-buttons">
+<button class="tab-btn active">Python</button>
+<button class="tab-btn">Java</button>
+<button class="tab-btn">C++</button>
+<button class="tab-btn">JavaScript</button>
+</div>
+<div class="tab-content active">
+
+<pre><code class="language-python">import heapq
 
 def dijkstra(graph, src, dst):
     # graph = {node: [(neighbor, weight), ...]}
@@ -234,67 +254,70 @@ def dijkstra(graph, src, dst):
         d, node = heapq.heappop(heap)
         if node == dst:
             return d
-        if d > dist.get(node, float('inf')):
+        if d &gt; dist.get(node, float('inf')):
             continue  # stale entry, skip
         for neighbor, weight in graph[node]:
             new_dist = d + weight
-            if new_dist < dist.get(neighbor, float('inf')):
+            if new_dist &lt; dist.get(neighbor, float('inf')):
                 dist[neighbor] = new_dist
                 heapq.heappush(heap, (new_dist, neighbor))
     
-    return -1  # unreachable
-```
+    return -1  # unreachable</code></pre>
 
-```java
-int dijkstra(List<List<int[]>> graph, int src, int dst) {
+</div>
+<div class="tab-content">
+
+<pre><code class="language-java">int dijkstra(List&lt;List&lt;int[]&gt;&gt; graph, int src, int dst) {
     int n = graph.size();
     int[] dist = new int[n];
     Arrays.fill(dist, Integer.MAX_VALUE);
     dist[src] = 0;
     // min-heap: [distance, node]
-    PriorityQueue<int[]> pq = new PriorityQueue<>((a,b) -> a[0] - b[0]);
+    PriorityQueue&lt;int[]&gt; pq = new PriorityQueue&lt;&gt;((a,b) -&gt; a[0] - b[0]);
     pq.offer(new int[]{0, src});
     while (!pq.isEmpty()) {
         int[] cur = pq.poll();
         int d = cur[0], node = cur[1];
         if (node == dst) return d;
-        if (d > dist[node]) continue;
+        if (d &gt; dist[node]) continue;
         for (int[] edge : graph.get(node)) {
             int nb = edge[0], w = edge[1];
-            if (d + w < dist[nb]) {
+            if (d + w &lt; dist[nb]) {
                 dist[nb] = d + w;
                 pq.offer(new int[]{dist[nb], nb});
             }
         }
     }
     return -1;
-}
-```
+}</code></pre>
 
-```cpp
-int dijkstra(vector<vector<pair<int,int>>>& graph, int src, int dst) {
+</div>
+<div class="tab-content">
+
+<pre><code class="language-cpp">int dijkstra(vector&lt;vector&lt;pair&lt;int,int&gt;&gt;&gt;&amp; graph, int src, int dst) {
     int n = graph.size();
-    vector<int> dist(n, INT_MAX);
+    vector&lt;int&gt; dist(n, INT_MAX);
     dist[src] = 0;
-    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> pq;
+    priority_queue&lt;pair&lt;int,int&gt;, vector&lt;pair&lt;int,int&gt;&gt;, greater&lt;&gt;&gt; pq;
     pq.push({0, src});
     while (!pq.empty()) {
         auto [d, node] = pq.top(); pq.pop();
         if (node == dst) return d;
-        if (d > dist[node]) continue;
+        if (d &gt; dist[node]) continue;
         for (auto [nb, w] : graph[node]) {
-            if (d + w < dist[nb]) {
+            if (d + w &lt; dist[nb]) {
                 dist[nb] = d + w;
                 pq.push({dist[nb], nb});
             }
         }
     }
     return -1;
-}
-```
+}</code></pre>
 
-```javascript
-function dijkstra(graph, src, dst) {
+</div>
+<div class="tab-content">
+
+<pre><code class="language-javascript">function dijkstra(graph, src, dst) {
     // graph = [[{to, w}, ...], ...]  (adjacency list)
     const n = graph.length;
     const dist = Array(n).fill(Infinity);
@@ -302,21 +325,22 @@ function dijkstra(graph, src, dst) {
     // Simple heap using sorted insertion (for interview; use a real heap lib in prod)
     const heap = [[0, src]]; // [dist, node]
     while (heap.length) {
-        heap.sort((a, b) => a[0] - b[0]);
+        heap.sort((a, b) =&gt; a[0] - b[0]);
         const [d, node] = heap.shift();
         if (node === dst) return d;
-        if (d > dist[node]) continue;
+        if (d &gt; dist[node]) continue;
         for (const {to, w} of graph[node]) {
-            if (d + w < dist[to]) {
+            if (d + w &lt; dist[to]) {
                 dist[to] = d + w;
                 heap.push([dist[to], to]);
             }
         }
     }
     return -1;
-}
-```
+}</code></pre>
 
+</div>
+</div>
 
 **Common interview problems using Dijkstra:**
 - [Network Delay Time](/dsa/problem/network-delay-time) — classic single-source shortest path
@@ -370,70 +394,82 @@ Actually let me give a cleaner example:
 ### Code
 
 
-```python
-def bellman_ford(n, edges, src, dst):
+<div class="code-tabs">
+<div class="tab-buttons">
+<button class="tab-btn active">Python</button>
+<button class="tab-btn">Java</button>
+<button class="tab-btn">C++</button>
+<button class="tab-btn">JavaScript</button>
+</div>
+<div class="tab-content active">
+
+<pre><code class="language-python">def bellman_ford(n, edges, src, dst):
     # edges = [(u, v, weight), ...]
     dist = [float('inf')] * n
     dist[src] = 0
     
     for _ in range(n - 1):  # V-1 rounds
         for u, v, w in edges:
-            if dist[u] != float('inf') and dist[u] + w < dist[v]:
+            if dist[u] != float('inf') and dist[u] + w &lt; dist[v]:
                 dist[v] = dist[u] + w
     
     # Check for negative cycle (optional)
     for u, v, w in edges:
-        if dist[u] != float('inf') and dist[u] + w < dist[v]:
+        if dist[u] != float('inf') and dist[u] + w &lt; dist[v]:
             return -1  # negative cycle exists
     
-    return dist[dst] if dist[dst] != float('inf') else -1
-```
+    return dist[dst] if dist[dst] != float('inf') else -1</code></pre>
 
-```java
-int bellmanFord(int n, int[][] edges, int src, int dst) {
+</div>
+<div class="tab-content">
+
+<pre><code class="language-java">int bellmanFord(int n, int[][] edges, int src, int dst) {
     int[] dist = new int[n];
     Arrays.fill(dist, Integer.MAX_VALUE);
     dist[src] = 0;
-    for (int i = 0; i < n - 1; i++) {
+    for (int i = 0; i &lt; n - 1; i++) {
         for (int[] e : edges) {
-            if (dist[e[0]] != Integer.MAX_VALUE && dist[e[0]] + e[2] < dist[e[1]]) {
+            if (dist[e[0]] != Integer.MAX_VALUE &amp;&amp; dist[e[0]] + e[2] &lt; dist[e[1]]) {
                 dist[e[1]] = dist[e[0]] + e[2];
             }
         }
     }
     return dist[dst] == Integer.MAX_VALUE ? -1 : dist[dst];
-}
-```
+}</code></pre>
 
-```cpp
-int bellmanFord(int n, vector<array<int,3>>& edges, int src, int dst) {
-    vector<int> dist(n, INT_MAX);
+</div>
+<div class="tab-content">
+
+<pre><code class="language-cpp">int bellmanFord(int n, vector&lt;array&lt;int,3&gt;&gt;&amp; edges, int src, int dst) {
+    vector&lt;int&gt; dist(n, INT_MAX);
     dist[src] = 0;
-    for (int i = 0; i < n - 1; i++) {
-        for (auto& [u, v, w] : edges) {
-            if (dist[u] != INT_MAX && dist[u] + w < dist[v])
+    for (int i = 0; i &lt; n - 1; i++) {
+        for (auto&amp; [u, v, w] : edges) {
+            if (dist[u] != INT_MAX &amp;&amp; dist[u] + w &lt; dist[v])
                 dist[v] = dist[u] + w;
         }
     }
     return dist[dst] == INT_MAX ? -1 : dist[dst];
-}
-```
+}</code></pre>
 
-```javascript
-function bellmanFord(n, edges, src, dst) {
+</div>
+<div class="tab-content">
+
+<pre><code class="language-javascript">function bellmanFord(n, edges, src, dst) {
     const dist = Array(n).fill(Infinity);
     dist[src] = 0;
-    for (let i = 0; i < n - 1; i++) {
+    for (let i = 0; i &lt; n - 1; i++) {
         for (const [u, v, w] of edges) {
-            if (dist[u] !== Infinity && dist[u] + w < dist[v]) {
+            if (dist[u] !== Infinity &amp;&amp; dist[u] + w &lt; dist[v]) {
                 dist[v] = dist[u] + w;
             }
         }
     }
     return dist[dst] === Infinity ? -1 : dist[dst];
-}
-```
+}</code></pre>
 
+</div>
+</div>
 
 **Common interview problems using Bellman-Ford:**
 - [Cheapest Flights Within K Stops](/dsa/problem/cheapest-flights-within-k-stops) — run K rounds instead of V-1
@@ -473,8 +509,16 @@ flowchart LR
 ### Code
 
 
-```python
-from collections import deque
+<div class="code-tabs">
+<div class="tab-buttons">
+<button class="tab-btn active">Python</button>
+<button class="tab-btn">Java</button>
+<button class="tab-btn">C++</button>
+<button class="tab-btn">JavaScript</button>
+</div>
+<div class="tab-content active">
+
+<pre><code class="language-python">from collections import deque
 
 def bfs01(graph, src, dst):
     # graph = {node: [(neighbor, weight)]} where weight is 0 or 1
@@ -487,30 +531,31 @@ def bfs01(graph, src, dst):
             return dist[node]
         for neighbor, w in graph[node]:
             new_dist = dist[node] + w
-            if new_dist < dist.get(neighbor, float('inf')):
+            if new_dist &lt; dist.get(neighbor, float('inf')):
                 dist[neighbor] = new_dist
                 if w == 0:
                     dq.appendleft(neighbor)  # front — same layer
                 else:
                     dq.append(neighbor)      # back — next layer
     
-    return -1
-```
+    return -1</code></pre>
 
-```java
-int bfs01(List<List<int[]>> graph, int src, int dst) {
+</div>
+<div class="tab-content">
+
+<pre><code class="language-java">int bfs01(List&lt;List&lt;int[]&gt;&gt; graph, int src, int dst) {
     int n = graph.size();
     int[] dist = new int[n];
     Arrays.fill(dist, Integer.MAX_VALUE);
     dist[src] = 0;
-    Deque<Integer> dq = new ArrayDeque<>();
+    Deque&lt;Integer&gt; dq = new ArrayDeque&lt;&gt;();
     dq.offerFirst(src);
     while (!dq.isEmpty()) {
         int node = dq.pollFirst();
         if (node == dst) return dist[node];
         for (int[] edge : graph.get(node)) {
             int nb = edge[0], w = edge[1];
-            if (dist[node] + w < dist[nb]) {
+            if (dist[node] + w &lt; dist[nb]) {
                 dist[nb] = dist[node] + w;
                 if (w == 0) dq.offerFirst(nb);
                 else dq.offerLast(nb);
@@ -518,21 +563,22 @@ int bfs01(List<List<int[]>> graph, int src, int dst) {
         }
     }
     return -1;
-}
-```
+}</code></pre>
 
-```cpp
-int bfs01(vector<vector<pair<int,int>>>& graph, int src, int dst) {
+</div>
+<div class="tab-content">
+
+<pre><code class="language-cpp">int bfs01(vector&lt;vector&lt;pair&lt;int,int&gt;&gt;&gt;&amp; graph, int src, int dst) {
     int n = graph.size();
-    vector<int> dist(n, INT_MAX);
+    vector&lt;int&gt; dist(n, INT_MAX);
     dist[src] = 0;
-    deque<int> dq;
+    deque&lt;int&gt; dq;
     dq.push_front(src);
     while (!dq.empty()) {
         int node = dq.front(); dq.pop_front();
         if (node == dst) return dist[node];
         for (auto [nb, w] : graph[node]) {
-            if (dist[node] + w < dist[nb]) {
+            if (dist[node] + w &lt; dist[nb]) {
                 dist[nb] = dist[node] + w;
                 if (w == 0) dq.push_front(nb);
                 else dq.push_back(nb);
@@ -540,11 +586,12 @@ int bfs01(vector<vector<pair<int,int>>>& graph, int src, int dst) {
         }
     }
     return -1;
-}
-```
+}</code></pre>
 
-```javascript
-function bfs01(graph, src, dst) {
+</div>
+<div class="tab-content">
+
+<pre><code class="language-javascript">function bfs01(graph, src, dst) {
     const n = graph.length;
     const dist = Array(n).fill(Infinity);
     dist[src] = 0;
@@ -553,7 +600,7 @@ function bfs01(graph, src, dst) {
         const node = dq.shift();
         if (node === dst) return dist[node];
         for (const [nb, w] of graph[node]) {
-            if (dist[node] + w < dist[nb]) {
+            if (dist[node] + w &lt; dist[nb]) {
                 dist[nb] = dist[node] + w;
                 if (w === 0) dq.unshift(nb);
                 else dq.push(nb);
@@ -561,9 +608,10 @@ function bfs01(graph, src, dst) {
         }
     }
     return -1;
-}
-```
+}</code></pre>
 
+</div>
+</div>
 
 **When to spot it:** grid problems where "some cells are free to cross, some cost 1." Classic: minimum obstacle removals to reach the corner.
 
@@ -587,8 +635,16 @@ dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
 ### Code
 
 
-```python
-def floyd_warshall(n, edges):
+<div class="code-tabs">
+<div class="tab-buttons">
+<button class="tab-btn active">Python</button>
+<button class="tab-btn">Java</button>
+<button class="tab-btn">C++</button>
+<button class="tab-btn">JavaScript</button>
+</div>
+<div class="tab-content active">
+
+<pre><code class="language-python">def floyd_warshall(n, edges):
     # Returns dist[i][j] = shortest path from i to j
     INF = float('inf')
     dist = [[INF] * n for _ in range(n)]
@@ -600,61 +656,65 @@ def floyd_warshall(n, edges):
     for k in range(n):          # intermediate node
         for i in range(n):      # source
             for j in range(n):  # destination
-                if dist[i][k] + dist[k][j] < dist[i][j]:
+                if dist[i][k] + dist[k][j] &lt; dist[i][j]:
                     dist[i][j] = dist[i][k] + dist[k][j]
     
-    return dist
-```
+    return dist</code></pre>
 
-```java
-int[][] floydWarshall(int n, int[][] edges) {
+</div>
+<div class="tab-content">
+
+<pre><code class="language-java">int[][] floydWarshall(int n, int[][] edges) {
     int INF = (int) 1e9;
     int[][] dist = new int[n][n];
     for (int[] row : dist) Arrays.fill(row, INF);
-    for (int i = 0; i < n; i++) dist[i][i] = 0;
+    for (int i = 0; i &lt; n; i++) dist[i][i] = 0;
     for (int[] e : edges) dist[e[0]][e[1]] = Math.min(dist[e[0]][e[1]], e[2]);
     
-    for (int k = 0; k < n; k++)
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-                if (dist[i][k] + dist[k][j] < dist[i][j])
+    for (int k = 0; k &lt; n; k++)
+        for (int i = 0; i &lt; n; i++)
+            for (int j = 0; j &lt; n; j++)
+                if (dist[i][k] + dist[k][j] &lt; dist[i][j])
                     dist[i][j] = dist[i][k] + dist[k][j];
     return dist;
-}
-```
+}</code></pre>
 
-```cpp
-vector<vector<int>> floydWarshall(int n, vector<array<int,3>>& edges) {
+</div>
+<div class="tab-content">
+
+<pre><code class="language-cpp">vector&lt;vector&lt;int&gt;&gt; floydWarshall(int n, vector&lt;array&lt;int,3&gt;&gt;&amp; edges) {
     const int INF = 1e9;
-    vector<vector<int>> dist(n, vector<int>(n, INF));
-    for (int i = 0; i < n; i++) dist[i][i] = 0;
-    for (auto& [u, v, w] : edges) dist[u][v] = min(dist[u][v], w);
+    vector&lt;vector&lt;int&gt;&gt; dist(n, vector&lt;int&gt;(n, INF));
+    for (int i = 0; i &lt; n; i++) dist[i][i] = 0;
+    for (auto&amp; [u, v, w] : edges) dist[u][v] = min(dist[u][v], w);
     
-    for (int k = 0; k < n; k++)
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-                if (dist[i][k] + dist[k][j] < dist[i][j])
+    for (int k = 0; k &lt; n; k++)
+        for (int i = 0; i &lt; n; i++)
+            for (int j = 0; j &lt; n; j++)
+                if (dist[i][k] + dist[k][j] &lt; dist[i][j])
                     dist[i][j] = dist[i][k] + dist[k][j];
     return dist;
-}
-```
+}</code></pre>
 
-```javascript
-function floydWarshall(n, edges) {
+</div>
+<div class="tab-content">
+
+<pre><code class="language-javascript">function floydWarshall(n, edges) {
     const INF = Infinity;
-    const dist = Array.from({length: n}, () => Array(n).fill(INF));
-    for (let i = 0; i < n; i++) dist[i][i] = 0;
+    const dist = Array.from({length: n}, () =&gt; Array(n).fill(INF));
+    for (let i = 0; i &lt; n; i++) dist[i][i] = 0;
     for (const [u, v, w] of edges) dist[u][v] = Math.min(dist[u][v], w);
     
-    for (let k = 0; k < n; k++)
-        for (let i = 0; i < n; i++)
-            for (let j = 0; j < n; j++)
-                if (dist[i][k] + dist[k][j] < dist[i][j])
+    for (let k = 0; k &lt; n; k++)
+        for (let i = 0; i &lt; n; i++)
+            for (let j = 0; j &lt; n; j++)
+                if (dist[i][k] + dist[k][j] &lt; dist[i][j])
                     dist[i][j] = dist[i][k] + dist[k][j];
     return dist;
-}
-```
+}</code></pre>
 
+</div>
+</div>
 
 **Common interview problems:**
 - Find the city with the smallest number of neighbors at a threshold distance
