@@ -214,9 +214,9 @@ flowchart LR
     USER["Player"]:::client
 
     GAME --> API
-    API --> REDIS
-    API --> DB
-    USER --> API
+    API -->|"ZADD score"| REDIS
+    API -->|"INSERT for durability"| DB
+    USER -->|"GET rank or top-N"| API
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0

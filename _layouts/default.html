@@ -496,7 +496,7 @@
     <script>
         var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         mermaid.initialize({ startOnLoad: true, look: 'handDrawn', theme: isDark ? 'dark' : 'default',
-            themeVariables: isDark ? { primaryColor:'#2d2b55', primaryTextColor:'#e2e8f0', primaryBorderColor:'#818cf8', lineColor:'#6b7280', secondaryColor:'#1e1b4b', tertiaryColor:'#1e1b4b', background:'#111118', mainBkg:'#2d2b55', nodeBorder:'#818cf8', clusterBkg:'#1e1b4b', titleColor:'#e2e8f0', edgeLabelBackground:'#1e1b4b' } : { primaryColor:'#ede9fe', primaryTextColor:'#1e293b', primaryBorderColor:'#6366f1', lineColor:'#6b7280', secondaryColor:'#f5f3ff', tertiaryColor:'#f5f3ff', background:'#ffffff', mainBkg:'#ede9fe', nodeBorder:'#6366f1', clusterBkg:'#f5f3ff', titleColor:'#1e293b', edgeLabelBackground:'#ffffff' }
+            themeVariables: isDark ? { primaryColor:'#2d2b55', primaryTextColor:'#e2e8f0', primaryBorderColor:'#818cf8', lineColor:'#94a3b8', secondaryColor:'#1e1b4b', tertiaryColor:'#1e1b4b', background:'#111118', mainBkg:'#2d2b55', nodeBorder:'#818cf8', clusterBkg:'#1e1b4b', titleColor:'#e2e8f0', edgeLabelBackground:'#1e1b4b' } : { primaryColor:'#e0e7ff', primaryTextColor:'#1e293b', primaryBorderColor:'#4f46e5', lineColor:'#475569', secondaryColor:'#eef2ff', tertiaryColor:'#eef2ff', background:'#ffffff', mainBkg:'#e0e7ff', nodeBorder:'#4f46e5', clusterBkg:'#f8fafc', titleColor:'#1e293b', edgeLabelBackground:'#f8fafc' }
         });
         document.querySelectorAll('pre code.language-mermaid').forEach(function(el) {
             var div = document.createElement('div'); div.className = 'mermaid'; div.textContent = el.textContent; el.parentElement.replaceWith(div);
