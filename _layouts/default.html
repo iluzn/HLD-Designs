@@ -186,6 +186,11 @@
 
         .mermaid { background: var(--code-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; overflow-x: auto; max-width: 100%; backdrop-filter: blur(8px); }
         .mermaid .node rect, .mermaid .node polygon, .mermaid .node circle { opacity: 0.85; }
+        /* Light theme: override the dark classDef fills so nodes are legible on white */
+        [data-theme="light"] .mermaid .node rect, [data-theme="light"] .mermaid .node polygon, [data-theme="light"] .mermaid .node circle { opacity: 0.9; }
+        [data-theme="light"] .mermaid .node .label { color: #1e293b !important; fill: #1e293b !important; }
+        [data-theme="light"] .mermaid .edgeLabel { background: #f8fafc !important; color: #334155 !important; }
+        [data-theme="light"] .mermaid .label { color: #1e293b !important; }
         .content hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), rgba(167,139,250,0.5), transparent); margin: 2.5rem 0; opacity: 0.4; }
 
         /* Deep Dive styling */
@@ -495,7 +500,7 @@
     <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
     <script>
         var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        mermaid.initialize({ startOnLoad: true, look: 'handDrawn', theme: isDark ? 'dark' : 'default',
+        mermaid.initialize({ startOnLoad: true, look: isDark ? 'handDrawn' : 'classic', theme: isDark ? 'dark' : 'default',
             themeVariables: isDark ? { primaryColor:'#2d2b55', primaryTextColor:'#e2e8f0', primaryBorderColor:'#818cf8', lineColor:'#94a3b8', secondaryColor:'#1e1b4b', tertiaryColor:'#1e1b4b', background:'#111118', mainBkg:'#2d2b55', nodeBorder:'#818cf8', clusterBkg:'#1e1b4b', titleColor:'#e2e8f0', edgeLabelBackground:'#1e1b4b' } : { primaryColor:'#e0e7ff', primaryTextColor:'#1e293b', primaryBorderColor:'#4f46e5', lineColor:'#475569', secondaryColor:'#eef2ff', tertiaryColor:'#eef2ff', background:'#ffffff', mainBkg:'#e0e7ff', nodeBorder:'#4f46e5', clusterBkg:'#f8fafc', titleColor:'#1e293b', edgeLabelBackground:'#f8fafc' }
         });
         document.querySelectorAll('pre code.language-mermaid').forEach(function(el) {
