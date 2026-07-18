@@ -13,9 +13,9 @@ baseurl: ""
 # verifiable this is, the more authorship trust it earns.
 # ---------------------------------------------------------------------------
 author:
-  name: "Shaswat Kumar"
-  job_title: "Software Engineer at Amazon"
-  bio: "Software engineer at Amazon who went through the interview grind at Indian and international tech companies and built SystemCraft as the free system design resource that should have existed."
+  name: "SystemCraft"
+  job_title: "Interview Prep Platform"
+  bio: "Free system design, LLD, and DSA resources built by engineers who went through the interview grind at Indian and international tech companies."
   url: "https://systemcraft.in/about/"
   email: "systemcraft.in@gmail.com"
   image: "https://systemcraft.in/favicon-192x192.png"  # <-- replace with a real headshot for best E-E-A-T
