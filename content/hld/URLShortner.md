@@ -61,19 +61,9 @@ Think Bitly, TinyURL, t.co (Twitter), or Google's short-lived goo.gl.
 
 A 30-second whiteboard sketch:
 
-```mermaid
-flowchart LR
-    USER["User Browser"]:::client
-    API["Shortener API"]:::service
-    DB[("One DB<br/>short to long")]:::data
-
-    USER --> API
-    API --> DB
-
-    classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
-    classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
-    classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
-```
+<div class="excalidraw-diagram">
+  <img src="/assets/diagrams/hld/url-shortener-naive.svg" alt="Naive URL Shortener: User Browser → Shortener API → Database" loading="lazy" />
+</div>
 
 Receive a URL, generate a random code, store `{short, long}` in a DB, look it up on redirect. Works for 100 users. Breaks at scale:
 - Random code generation collides more often than you'd think at 100M+ links.

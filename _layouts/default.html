@@ -187,6 +187,13 @@
         .mermaid { background: var(--code-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; overflow-x: auto; max-width: 100%; backdrop-filter: blur(8px); }
         .mermaid .node rect, .mermaid .node polygon, .mermaid .node circle { opacity: 0.85; }
         [data-theme="light"] .mermaid { background: #f8fafc; border-color: #e2e8f0; }
+
+        /* Excalidraw diagram styling */
+        .excalidraw-diagram { text-align: center; margin: 1.5rem 0; padding: 1.5rem; background: var(--code-bg); border: 1px solid var(--glass-border); border-radius: 12px; overflow-x: auto; backdrop-filter: blur(8px); }
+        .excalidraw-diagram img { max-width: 100%; height: auto; }
+        [data-theme="dark"] .excalidraw-diagram { background: rgba(20,20,30,0.8); }
+        [data-theme="dark"] .excalidraw-diagram img { filter: invert(1) hue-rotate(180deg); }
+        [data-theme="light"] .excalidraw-diagram { background: #f8fafc; border-color: #e2e8f0; }
         .content hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), rgba(167,139,250,0.5), transparent); margin: 2.5rem 0; opacity: 0.4; }
 
         /* Deep Dive styling */
