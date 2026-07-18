@@ -415,16 +415,16 @@ flowchart TD
     WS["WebSocket Push"]:::service
     USER["Players"]:::client
 
-    GAME -->|"1. Submit score update"| API
-    API -->|"2. ZADD to regional Redis"| R1
-    API -->|"3. Persist for durability"| DB
-    R1 -->|"4. Publish score change"| K
-    K -->|"5. Merge regional scores"| AGG
-    AGG -->|"6. ZADD to global Redis"| RG
-    CACHE -->|"7. Serve top-K from global"| RG
-    CACHE -->|"8. Feed live leaderboard"| WS
-    WS -->|"9. Push rank updates"| USER
-    USER -->|"10. Fetch cached rankings"| CACHE
+    GAME -->|"Submit score update"| API
+    API -->|"ZADD to regional Redis"| R1
+    API -->|"Persist for durability"| DB
+    R1 -->|"Publish score change"| K
+    K -->|"Merge regional scores"| AGG
+    AGG -->|"ZADD to global Redis"| RG
+    CACHE -->|"Serve top-K from global"| RG
+    CACHE -->|"Feed live leaderboard"| WS
+    WS -->|"Push rank updates"| USER
+    USER -->|"Fetch cached rankings"| CACHE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0

@@ -500,18 +500,18 @@ flowchart TD
     K["Kafka<br/>tweet events"]:::async
     MEDIA[("Media<br/>S3 plus CDN")]:::data
 
-    USERS -->|"1. POST or GET"| GW
-    GW -->|"2. Forward to tweet svc"| TS
-    GW -->|"3. Forward to feed svc"| FEED
-    TS -->|"4. Persist tweet"| TDB
-    TS -->|"5. Store media file"| MEDIA
-    TS -->|"6. Publish tweet event"| K
-    K -->|"7. Process tweet event"| FANOUT
-    FANOUT -->|"8. Lookup followers"| GRAPH
-    FANOUT -->|"9. Prepend to follower feeds"| CACHE
-    FEED -->|"10. Read pre-built feed"| CACHE
-    FEED -->|"11. Hydrate tweet details"| TDB
-    FEED -->|"12. Rank by relevance"| RANK
+    USERS -->|"POST or GET"| GW
+    GW -->|"Forward to tweet svc"| TS
+    GW -->|"Forward to feed svc"| FEED
+    TS -->|"Persist tweet"| TDB
+    TS -->|"Store media file"| MEDIA
+    TS -->|"Publish tweet event"| K
+    K -->|"Process tweet event"| FANOUT
+    FANOUT -->|"Lookup followers"| GRAPH
+    FANOUT -->|"Prepend to follower feeds"| CACHE
+    FEED -->|"Read pre-built feed"| CACHE
+    FEED -->|"Hydrate tweet details"| TDB
+    FEED -->|"Rank by relevance"| RANK
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

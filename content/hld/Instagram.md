@@ -614,28 +614,28 @@ flowchart TD
         RD["Redis Cluster"]:::data
     end
 
-    MOB -->|"1. Open app"| LB
-    WEB -->|"2. Open app"| LB
-    LB -->|"3. Route API"| GW
-    MOB -->|"4. Load images"| CDN
-    WEB -->|"5. Load images"| CDN
-    CDN -->|"6. Fetch origin"| S3
-    GW -->|"7. Forward to upload svc"| US
-    GW -->|"8. Forward to feed svc"| FS
-    GW -->|"9. Forward to stories svc"| SGS
-    US -->|"10. Upload media"| S3
-    US -->|"11. Save post metadata"| PG
-    US -->|"12. Publish new post event"| PQ
-    PQ -->|"13. Process media variants"| MW
-    MW -->|"14. Store processed media"| S3
-    MW -->|"15. Publish post ready event"| KF
-    KF -->|"16. Fan out to followers"| FO
-    FO -->|"17. Write to follower feeds"| CASS
-    FS -->|"18. Lookup cached feed"| RD
-    FS -->|"19. Fetch feed from store"| CASS
-    FS -->|"20. Get prediction"| RANK
-    SGS -->|"21. Lookup viewer set"| RD
-    SGS -->|"22. Save story metadata"| PG
+    MOB -->|"Open app"| LB
+    WEB -->|"Open app"| LB
+    LB -->|"Route API"| GW
+    MOB -->|"Load images"| CDN
+    WEB -->|"Load images"| CDN
+    CDN -->|"Fetch origin"| S3
+    GW -->|"Forward to upload svc"| US
+    GW -->|"Forward to feed svc"| FS
+    GW -->|"Forward to stories svc"| SGS
+    US -->|"Upload media"| S3
+    US -->|"Save post metadata"| PG
+    US -->|"Publish new post event"| PQ
+    PQ -->|"Process media variants"| MW
+    MW -->|"Store processed media"| S3
+    MW -->|"Publish post ready event"| KF
+    KF -->|"Fan out to followers"| FO
+    FO -->|"Write to follower feeds"| CASS
+    FS -->|"Lookup cached feed"| RD
+    FS -->|"Fetch feed from store"| CASS
+    FS -->|"Get prediction"| RANK
+    SGS -->|"Lookup viewer set"| RD
+    SGS -->|"Save story metadata"| PG
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

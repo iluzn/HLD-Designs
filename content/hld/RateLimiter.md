@@ -705,13 +705,13 @@ flowchart LR
     API["Backend Services"]:::service
     K["Analytics<br/>limit events"]:::async
 
-    CLIENTS -->|"1. Incoming request"| EDGE
-    EDGE -->|"2. IP check pass"| GW
-    GW -->|"3. Read cache"| RL
-    RL -->|"4. INCR rate counter"| REDIS
-    RL -->|"5. Load limit rules"| RULES
-    GW -->|"6. Allowed"| API
-    RL -->|"7. Publish change"| K
+    CLIENTS -->|"Incoming request"| EDGE
+    EDGE -->|"IP check pass"| GW
+    GW -->|"Read cache"| RL
+    RL -->|"INCR rate counter"| REDIS
+    RL -->|"Load limit rules"| RULES
+    GW -->|"Allowed"| API
+    RL -->|"Publish change"| K
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

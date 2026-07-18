@@ -456,19 +456,19 @@ flowchart TD
     NOTIFY["Notification Service"]:::service
     PD["PagerDuty and Slack"]:::external
 
-    APPS -->|"1. Write metrics"| AGENT
-    AGENT -->|"2. Ship to Kafka"| KAFKA
-    KAFKA -->|"3. Write DB"| WRITER
-    KAFKA -->|"4. Evaluate alert rules"| ALERT
-    WRITER -->|"5. Persist to TSDB"| TSDB
-    TSDB -->|"6. Compute rollups"| ROLLUPJOB
-    ROLLUPJOB -->|"7. Store rollup data"| ROLLUP
-    DASH -->|"8. Query"| QENG
-    QENG -->|"9. Lookup cached result"| QCACHE
-    QENG -->|"10. Scan raw data"| TSDB
-    QENG -->|"11. Read rollup data"| ROLLUP
-    ALERT -->|"12. Fire alert"| NOTIFY
-    NOTIFY -->|"13. Dispatch alert"| PD
+    APPS -->|"Write metrics"| AGENT
+    AGENT -->|"Ship to Kafka"| KAFKA
+    KAFKA -->|"Write DB"| WRITER
+    KAFKA -->|"Evaluate alert rules"| ALERT
+    WRITER -->|"Persist to TSDB"| TSDB
+    TSDB -->|"Compute rollups"| ROLLUPJOB
+    ROLLUPJOB -->|"Store rollup data"| ROLLUP
+    DASH -->|"Query"| QENG
+    QENG -->|"Lookup cached result"| QCACHE
+    QENG -->|"Scan raw data"| TSDB
+    QENG -->|"Read rollup data"| ROLLUP
+    ALERT -->|"Fire alert"| NOTIFY
+    NOTIFY -->|"Dispatch alert"| PD
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

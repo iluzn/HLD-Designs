@@ -402,16 +402,16 @@ flowchart LR
     ZK[("ZooKeeper<br/>machine-ID registry")]:::data
     NTP["NTP time sync"]:::external
 
-    APP -->|"1. Request unique ID"| LB
-    LB -->|"2. Route"| G1
-    LB -->|"3. Route"| G2
-    LB -->|"4. Route"| GN
-    G1 -->|"5. Claim machine ID"| ZK
-    G2 -->|"6. Claim machine ID"| ZK
-    GN -->|"7. Claim machine ID"| ZK
-    NTP -->|"8. Clock sync"| G1
-    NTP -->|"9. Clock sync"| G2
-    NTP -->|"10. Clock sync"| GN
+    APP -->|"Request unique ID"| LB
+    LB -->|"Route"| G1
+    LB -->|"Route"| G2
+    LB -->|"Route"| GN
+    G1 -->|"Claim machine ID"| ZK
+    G2 -->|"Claim machine ID"| ZK
+    GN -->|"Claim machine ID"| ZK
+    NTP -->|"Clock sync"| G1
+    NTP -->|"Clock sync"| G2
+    NTP -->|"Clock sync"| GN
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

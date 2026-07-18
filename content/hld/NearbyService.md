@@ -354,16 +354,16 @@ flowchart TD
     PLACEDB[("Place DB<br/>Postgres")]:::data
     CACHE["Result Cache<br/>Redis"]:::data
 
-    USER -->|"1. GET /nearby"| LB
-    LB -->|"2. Forward to nearby svc"| NEARBY
-    NEARBY -->|"3. Lookup cached results"| CACHE
-    NEARBY -->|"4. Query static index"| STATIC
-    NEARBY -->|"5. Query live drivers"| DYNAMIC
-    NEARBY -->|"6. Enrich place details"| PLACEDB
-    DRIVER -->|"7. PUT GPS coordinates"| LOCAPI
-    LOCAPI -->|"8. Publish location event"| KAFKA
-    KAFKA -->|"9. Update spatial index"| UPDATER
-    UPDATER -->|"10. GEOADD to Redis Geo"| DYNAMIC
+    USER -->|"GET /nearby"| LB
+    LB -->|"Forward to nearby svc"| NEARBY
+    NEARBY -->|"Lookup cached results"| CACHE
+    NEARBY -->|"Query static index"| STATIC
+    NEARBY -->|"Query live drivers"| DYNAMIC
+    NEARBY -->|"Enrich place details"| PLACEDB
+    DRIVER -->|"PUT GPS coordinates"| LOCAPI
+    LOCAPI -->|"Publish location event"| KAFKA
+    KAFKA -->|"Update spatial index"| UPDATER
+    UPDATER -->|"GEOADD to Redis Geo"| DYNAMIC
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

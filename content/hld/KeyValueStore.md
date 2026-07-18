@@ -506,20 +506,20 @@ flowchart TD
     N6["Node 6"]:::data
     COORD["Coordinator<br/>ZooKeeper"]:::async
 
-    C -->|"1. GET or PUT request"| LB
-    LB -->|"2. Route"| R
-    R -->|"3. Route to replica"| N1
-    R -->|"4. Route to replica"| N2
-    R -->|"5. Route to replica"| N3
-    R -->|"6. Route to replica"| N4
-    R -->|"7. Route to replica"| N5
-    R -->|"8. Route to replica"| N6
-    COORD -->|"9. Manage membership"| N1
-    COORD -->|"10. Manage membership"| N2
-    COORD -->|"11. Manage membership"| N3
-    COORD -->|"12. Manage membership"| N4
-    COORD -->|"13. Manage membership"| N5
-    COORD -->|"14. Manage membership"| N6
+    C -->|"GET or PUT request"| LB
+    LB -->|"Route"| R
+    R -->|"Route to replica"| N1
+    R -->|"Route to replica"| N2
+    R -->|"Route to replica"| N3
+    R -->|"Route to replica"| N4
+    R -->|"Route to replica"| N5
+    R -->|"Route to replica"| N6
+    COORD -->|"Manage membership"| N1
+    COORD -->|"Manage membership"| N2
+    COORD -->|"Manage membership"| N3
+    COORD -->|"Manage membership"| N4
+    COORD -->|"Manage membership"| N5
+    COORD -->|"Manage membership"| N6
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

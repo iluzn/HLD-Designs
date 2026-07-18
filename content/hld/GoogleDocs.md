@@ -712,27 +712,27 @@ flowchart TD
         ES["Elasticsearch"]:::data
     end
 
-    U1 -->|"1. Open document"| LB
-    LB -->|"2. Route HTTP"| GW
-    LB -->|"3. Route WebSocket"| WSG
-    GW -->|"4. Forward to doc svc"| DS
-    WSG -->|"5. Forward to collab svc"| CS
-    CS -->|"6. Load doc state"| RED
-    CS -->|"7. Append to op log"| CAS
-    CS -->|"8. Broadcast via Pub/Sub"| RPS
-    RPS -->|"9. Push to WS gateways"| WSG
-    DS -->|"10. Fetch doc metadata"| PG
-    DS -->|"11. Store doc snapshot"| S3
-    DS -->|"12. Read op log"| CAS
-    SS -->|"13. Compact op log"| CAS
-    SS -->|"14. Save compacted snapshot"| S3
-    KF -->|"15. Feed doc summarizer"| SUMM
-    KF -->|"16. Update search index"| ES
-    CS -->|"17. Publish doc change"| KF
-    HS -->|"18. Read version history"| CAS
-    HS -->|"19. Fetch old snapshots"| S3
-    PRES -->|"20. Track active cursors"| RED
-    PRES -->|"21. Broadcast presence"| RPS
+    U1 -->|"Open document"| LB
+    LB -->|"Route HTTP"| GW
+    LB -->|"Route WebSocket"| WSG
+    GW -->|"Forward to doc svc"| DS
+    WSG -->|"Forward to collab svc"| CS
+    CS -->|"Load doc state"| RED
+    CS -->|"Append to op log"| CAS
+    CS -->|"Broadcast via Pub/Sub"| RPS
+    RPS -->|"Push to WS gateways"| WSG
+    DS -->|"Fetch doc metadata"| PG
+    DS -->|"Store doc snapshot"| S3
+    DS -->|"Read op log"| CAS
+    SS -->|"Compact op log"| CAS
+    SS -->|"Save compacted snapshot"| S3
+    KF -->|"Feed doc summarizer"| SUMM
+    KF -->|"Update search index"| ES
+    CS -->|"Publish doc change"| KF
+    HS -->|"Read version history"| CAS
+    HS -->|"Fetch old snapshots"| S3
+    PRES -->|"Track active cursors"| RED
+    PRES -->|"Broadcast presence"| RPS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

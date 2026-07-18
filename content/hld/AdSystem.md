@@ -370,18 +370,18 @@ flowchart TD
     FRAUD["Fraud Detector"]:::service
     BILLDB[("Billing DB")]:::data
 
-    USER -->|"1. Page load with ad slot"| LB
-    LB -->|"2. Route"| ADSERV
-    ADSERV -->|"3. Update index"| INDEX
-    ADSERV -->|"4. Get prediction"| ML
-    ML -->|"5. Return prediction"| FEATURES
-    ADSERV -->|"6. Check remaining budget"| BUDGET
-    PACER -->|"7. Adjust pacing rate"| BUDGET
-    USER -->|"8. Click or impression"| TRACKER
-    TRACKER -->|"9. Publish click event"| KAFKA
-    KAFKA -->|"10. Process billing"| BILLING
-    KAFKA -->|"11. Evaluate fraud rules"| FRAUD
-    BILLING -->|"12. Decrement ad budget"| BILLDB
+    USER -->|"Page load with ad slot"| LB
+    LB -->|"Route"| ADSERV
+    ADSERV -->|"Update index"| INDEX
+    ADSERV -->|"Get prediction"| ML
+    ML -->|"Return prediction"| FEATURES
+    ADSERV -->|"Check remaining budget"| BUDGET
+    PACER -->|"Adjust pacing rate"| BUDGET
+    USER -->|"Click or impression"| TRACKER
+    TRACKER -->|"Publish click event"| KAFKA
+    KAFKA -->|"Process billing"| BILLING
+    KAFKA -->|"Evaluate fraud rules"| FRAUD
+    BILLING -->|"Decrement ad budget"| BILLDB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

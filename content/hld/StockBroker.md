@@ -599,28 +599,28 @@ flowchart TD
         FCM["FCM and APNs"]:::external
     end
 
-    MOB -->|"1. Submit order"| LB
-    WEB -->|"2. Submit order"| LB
-    LB -->|"3. Route API"| GW
-    LB -->|"4. Route WebSocket"| WSG
-    GW -->|"5. Route to OMS"| OMS
-    GW -->|"6. Forward to query svc"| QS
-    OMS -->|"7. Persist order record"| PG
-    OMS -->|"8. Publish order event"| KF
-    KF -->|"9. Match buy-sell orders"| ME
-    ME -->|"10. Publish fill event"| KF
-    ME -->|"11. Send to exchange"| EX
-    KF -->|"12. Trigger notifications"| NS
-    KF -->|"13. Project to read model"| PROJ
-    PROJ -->|"14. Update read replica"| PGR
-    PROJ -->|"15. Refresh portfolio cache"| RD
-    QS -->|"16. Lookup cached portfolio"| RD
-    QS -->|"17. Fallback to read DB"| PGR
-    NS -->|"18. Push via FCM APNs"| FCM
-    NS -->|"19. Push via WebSocket"| WSG
-    REC -->|"20. Write reconciled trades"| PG
-    REC -->|"21. Publish reconciled event"| KF
-    KF -->|"22. Sink data"| S3
+    MOB -->|"Submit order"| LB
+    WEB -->|"Submit order"| LB
+    LB -->|"Route API"| GW
+    LB -->|"Route WebSocket"| WSG
+    GW -->|"Route to OMS"| OMS
+    GW -->|"Forward to query svc"| QS
+    OMS -->|"Persist order record"| PG
+    OMS -->|"Publish order event"| KF
+    KF -->|"Match buy-sell orders"| ME
+    ME -->|"Publish fill event"| KF
+    ME -->|"Send to exchange"| EX
+    KF -->|"Trigger notifications"| NS
+    KF -->|"Project to read model"| PROJ
+    PROJ -->|"Update read replica"| PGR
+    PROJ -->|"Refresh portfolio cache"| RD
+    QS -->|"Lookup cached portfolio"| RD
+    QS -->|"Fallback to read DB"| PGR
+    NS -->|"Push via FCM APNs"| FCM
+    NS -->|"Push via WebSocket"| WSG
+    REC -->|"Write reconciled trades"| PG
+    REC -->|"Publish reconciled event"| KF
+    KF -->|"Sink data"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

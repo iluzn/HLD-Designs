@@ -731,33 +731,33 @@ flowchart TD
         FCM["FCM and Email"]:::external
     end
 
-    UA -->|"1. Open ticket page"| LB
-    LB -->|"2. Route API"| GW
-    LB -->|"3. Route SSE"| SSE
-    GW -->|"4. Route to waiting room"| WR
-    WR -->|"5. Enqueue user position"| Q
-    Q -->|"6. Dequeue for booking"| BS
-    GW -->|"7. Forward to catalog svc"| CAT
-    GW -->|"8. Forward to seat svc"| SS
-    GW -->|"9. Forward to booking svc"| BS
-    CAT -->|"10. Lookup cached shows"| RC
-    CAT -->|"11. Fetch show from DB"| PG
-    SS -->|"12. Read seat availability"| RL
-    BS -->|"13. Acquire lock"| LM
-    LM -->|"14. SET NX seat lock"| RL
-    BS -->|"15. Write booking record"| PG
-    BS -->|"16. Initiate payment"| PS
-    PS -->|"17. Charge via gateway"| PGW
-    BS -->|"18. Publish booking event"| KF
-    KF -->|"19. Generate e-ticket"| CONF
-    KF -->|"20. Send confirmation"| NS
-    KF -->|"21. Push seat status update"| SSE
-    CONF -->|"22. Read booking details"| PG
-    NS -->|"23. Push via FCM and email"| FCM
-    REC -->|"24. Release expired locks"| RL
-    REC -->|"25. Cancel expired holds"| PG
-    SSE -->|"26. Check limit"| RPS
-    RPS -->|"27. Broadcast to clients"| SSE
+    UA -->|"Open ticket page"| LB
+    LB -->|"Route API"| GW
+    LB -->|"Route SSE"| SSE
+    GW -->|"Route to waiting room"| WR
+    WR -->|"Enqueue user position"| Q
+    Q -->|"Dequeue for booking"| BS
+    GW -->|"Forward to catalog svc"| CAT
+    GW -->|"Forward to seat svc"| SS
+    GW -->|"Forward to booking svc"| BS
+    CAT -->|"Lookup cached shows"| RC
+    CAT -->|"Fetch show from DB"| PG
+    SS -->|"Read seat availability"| RL
+    BS -->|"Acquire lock"| LM
+    LM -->|"SET NX seat lock"| RL
+    BS -->|"Write booking record"| PG
+    BS -->|"Initiate payment"| PS
+    PS -->|"Charge via gateway"| PGW
+    BS -->|"Publish booking event"| KF
+    KF -->|"Generate e-ticket"| CONF
+    KF -->|"Send confirmation"| NS
+    KF -->|"Push seat status update"| SSE
+    CONF -->|"Read booking details"| PG
+    NS -->|"Push via FCM and email"| FCM
+    REC -->|"Release expired locks"| RL
+    REC -->|"Cancel expired holds"| PG
+    SSE -->|"Check limit"| RPS
+    RPS -->|"Broadcast to clients"| SSE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

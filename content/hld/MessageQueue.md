@@ -388,18 +388,18 @@ flowchart LR
     CONS["Consumer Group"]:::client
     S3["Tiered Storage<br/>(S3 cold segments)"]:::data
 
-    PRODS -->|"1. Publish"| BROKER1
-    PRODS -->|"2. Publish"| BROKER2
-    PRODS -->|"3. Publish"| BROKER3
-    BROKER1 -->|"4. Deliver"| CONS
-    BROKER2 -->|"5. Deliver"| CONS
-    BROKER3 -->|"6. Deliver"| CONS
-    CTRL -->|"7. Manage metadata"| BROKER1
-    CTRL -->|"8. Manage metadata"| BROKER2
-    CTRL -->|"9. Manage metadata"| BROKER3
-    BROKER1 -->|"10. Tier cold data"| S3
-    BROKER2 -->|"11. Tier cold data"| S3
-    BROKER3 -->|"12. Tier cold data"| S3
+    PRODS -->|"Publish"| BROKER1
+    PRODS -->|"Publish"| BROKER2
+    PRODS -->|"Publish"| BROKER3
+    BROKER1 -->|"Deliver"| CONS
+    BROKER2 -->|"Deliver"| CONS
+    BROKER3 -->|"Deliver"| CONS
+    CTRL -->|"Manage metadata"| BROKER1
+    CTRL -->|"Manage metadata"| BROKER2
+    CTRL -->|"Manage metadata"| BROKER3
+    BROKER1 -->|"Tier cold data"| S3
+    BROKER2 -->|"Tier cold data"| S3
+    BROKER3 -->|"Tier cold data"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0

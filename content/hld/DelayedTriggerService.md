@@ -484,23 +484,23 @@ If a callback fails N times, the trigger lands in a DLQ topic (Kafka). A small o
 
 ```mermaid
 flowchart TD
-  Caller["Caller services"] -->|"1. Register delayed trigger"| ALB["API gateway"]
-  ALB -->|"2. Forward to trigger API"| API["Trigger API"]
-  API -->|"3. Check idempotency"| Idem["Redis idem cache"]
-  API -->|"4. Persist trigger"| DB["Cassandra<br/>partition by bucket sub-shard"]
-  API -->|"5. Enqueue short delay"| SQSshort["SQS short-delay queue"]
+  Caller["Caller services"] -->|"Register delayed trigger"| ALB["API gateway"]
+  ALB -->|"Forward to trigger API"| API["Trigger API"]
+  API -->|"Check idempotency"| Idem["Redis idem cache"]
+  API -->|"Persist trigger"| DB["Cassandra<br/>partition by bucket sub-shard"]
+  API -->|"Enqueue short delay"| SQSshort["SQS short-delay queue"]
 
-  Sweeper["Sweeper<br/>leader per shard"] -->|"6. Scan buckets"| DB
-  Sweeper -->|"7. Load into wheel"| Wheel["Timing wheel<br/>per shard"]
-  Wheel -->|"8. Push when due"| SQSshort
+  Sweeper["Sweeper<br/>leader per shard"] -->|"Scan buckets"| DB
+  Sweeper -->|"Load into wheel"| Wheel["Timing wheel<br/>per shard"]
+  Wheel -->|"Push when due"| SQSshort
 
-  SQSshort -->|"9. Consume message"| Disp["Dispatcher pool<br/>per-caller bulkheads + breaker"]
-  Disp -->|"10. Check status"| DB
-  Disp -->|"11. POST callback"| CB["Caller callback URL"]
+  SQSshort -->|"Consume message"| Disp["Dispatcher pool<br/>per-caller bulkheads + breaker"]
+  Disp -->|"Check status"| DB
+  Disp -->|"POST callback"| CB["Caller callback URL"]
 
   Disp -.failures.-> DLQ["DLQ Kafka topic"]
-  Recon["Reconciler<br/>hourly"] -->|"12. Scan leaks"| DB
-  Recon -->|"13. Re-enqueue"| SQSshort
+  Recon["Reconciler<br/>hourly"] -->|"Scan leaks"| DB
+  Recon -->|"Re-enqueue"| SQSshort
 
   classDef client fill:#FFD8A8,stroke:#E8590C,color:#000
   classDef edge fill:#A5D8FF,stroke:#1971C2,color:#000

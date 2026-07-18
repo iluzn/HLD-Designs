@@ -1109,48 +1109,48 @@ flowchart TD
         TWIL["Twilio"]:::external
     end
 
-    CLIENT -->|"1. POST notification"| API
-    CLIENT -->|"2. Create campaign"| CAMPAIGN
-    USER -->|"3. Connect WebSocket"| WSGW
-    WSGW -->|"4. Read cache"| PRESENCE
-    API -->|"5. Persist notification"| DB
-    CAMPAIGN -->|"6. Persist campaign"| DB
-    DB -->|"7. CDC stream"| CDC
-    CDC -->|"8. Stream changes"| KAFKA
-    KAFKA -->|"9. Route by channel"| ROUTE
-    ROUTE -->|"10. Check prefs"| PREFS
-    PREFS -->|"11. Cache user prefs"| PREFCACHE
+    CLIENT -->|"POST notification"| API
+    CLIENT -->|"Create campaign"| CAMPAIGN
+    USER -->|"Connect WebSocket"| WSGW
+    WSGW -->|"Read cache"| PRESENCE
+    API -->|"Persist notification"| DB
+    CAMPAIGN -->|"Persist campaign"| DB
+    DB -->|"CDC stream"| CDC
+    CDC -->|"Stream changes"| KAFKA
+    KAFKA -->|"Route by channel"| ROUTE
+    ROUTE -->|"Check prefs"| PREFS
+    PREFS -->|"Cache user prefs"| PREFCACHE
     PREFCACHE -. miss .-> PREFDB
-    ROUTE -->|"12. Score send time"| ATC
-    ROUTE -->|"13. Get prediction"| RANKER
-    RANKER -->|"14. Return prediction"| DELAYQ
-    DELAYQ -->|"15. Publish change"| KAFKA
-    KAFKA -->|"16. Deliver via push"| PUSH
-    KAFKA -->|"17. Deliver via email"| EMAIL
-    KAFKA -->|"18. Deliver via SMS"| SMS
-    KAFKA -->|"19. Deliver in-app"| INAPP
-    PUSH -->|"20. Render template"| TMPL
-    EMAIL -->|"21. Render template"| TMPL
-    SMS -->|"22. Render template"| TMPL
-    INAPP -->|"23. Render template"| TMPL
-    TMPL -->|"24. Load from template DB"| TMPLDB
-    INAPP -->|"25. Push via WebSocket"| WSGW
-    PUSH -->|"26. Send via APNs FCM"| APNS
-    EMAIL -->|"27. Send via SES"| SES
-    SMS -->|"28. Send via Twilio"| TWIL
-    PUSH -->|"29. Record delivery attempt"| ATTEMPTS
-    EMAIL -->|"30. Record delivery attempt"| ATTEMPTS
-    SMS -->|"31. Record delivery attempt"| ATTEMPTS
+    ROUTE -->|"Score send time"| ATC
+    ROUTE -->|"Get prediction"| RANKER
+    RANKER -->|"Return prediction"| DELAYQ
+    DELAYQ -->|"Publish change"| KAFKA
+    KAFKA -->|"Deliver via push"| PUSH
+    KAFKA -->|"Deliver via email"| EMAIL
+    KAFKA -->|"Deliver via SMS"| SMS
+    KAFKA -->|"Deliver in-app"| INAPP
+    PUSH -->|"Render template"| TMPL
+    EMAIL -->|"Render template"| TMPL
+    SMS -->|"Render template"| TMPL
+    INAPP -->|"Render template"| TMPL
+    TMPL -->|"Load from template DB"| TMPLDB
+    INAPP -->|"Push via WebSocket"| WSGW
+    PUSH -->|"Send via APNs FCM"| APNS
+    EMAIL -->|"Send via SES"| SES
+    SMS -->|"Send via Twilio"| TWIL
+    PUSH -->|"Record delivery attempt"| ATTEMPTS
+    EMAIL -->|"Record delivery attempt"| ATTEMPTS
+    SMS -->|"Record delivery attempt"| ATTEMPTS
     PUSH -.permanent fail.-> DLQ
     EMAIL -.permanent fail.-> DLQ
     SMS -.permanent fail.-> DLQ
     USER -.opens / clicks.-> COLLECT
     APNS -.webhooks.-> COLLECT
     SES -.webhooks.-> COLLECT
-    COLLECT -->|"32. Publish engagement event"| EVENTS
-    EVENTS -->|"33. Sink data"| CH
-    EVENTS -->|"34. Sink data"| FS
-    FS -->|"35. Feed model training"| RANKER
+    COLLECT -->|"Publish engagement event"| EVENTS
+    EVENTS -->|"Sink data"| CH
+    EVENTS -->|"Sink data"| FS
+    FS -->|"Feed model training"| RANKER
 
     classDef client fill:#fed7aa,stroke:#c2410c,color:#431407
     classDef edge fill:#bfdbfe,stroke:#1d4ed8,color:#0c1f4a

@@ -406,14 +406,14 @@ flowchart LR
     CLEANUP["Cleanup Service"]:::async
     READER["Reader"]:::client
 
-    USER -->|"1. POST paste content"| API
-    API -->|"2. Generate short ID"| ID
-    API -->|"3. Store paste text"| S3
-    API -->|"4. Save paste metadata"| META
-    READER -->|"5. GET paste by ID"| CDN
-    CDN -->|"6. Forward on miss"| API
-    CLEANUP -->|"7. Scan expired pastes"| META
-    CLEANUP -->|"8. Delete expired content"| S3
+    USER -->|"POST paste content"| API
+    API -->|"Generate short ID"| ID
+    API -->|"Store paste text"| S3
+    API -->|"Save paste metadata"| META
+    READER -->|"GET paste by ID"| CDN
+    CDN -->|"Forward on miss"| API
+    CLEANUP -->|"Scan expired pastes"| META
+    CLEANUP -->|"Delete expired content"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

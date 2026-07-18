@@ -697,31 +697,31 @@ flowchart TD
         FCM["FCM and APNs"]:::external
     end
 
-    RA -->|"1. Request ride"| LB
-    DA -->|"2. Send GPS pings"| LB
-    LB -->|"3. Route API"| GW
-    LB -->|"4. Route WebSocket"| WSG
-    GW -->|"5. Forward to ride svc"| RS
-    GW -->|"6. Route location"| LI
-    RS -->|"7. Find nearest driver"| MS
-    MS -->|"8. Query available drivers"| LS
-    LS -->|"9. GEORADIUS lookup"| RG
-    LI -->|"10. GEOADD position"| RG
-    LI -->|"11. Publish location event"| KF
-    RS -->|"12. Persist ride record"| PG
-    RS -->|"13. Publish ride state event"| KF
-    KF -->|"14. Trigger notifications"| NS
-    KF -->|"15. Stream to rider socket"| WSG
-    NS -->|"16. Push via FCM APNs"| FCM
-    NS -->|"17. Push ride update"| WSG
-    MS -->|"18. Read driver status"| RC
-    ETA -->|"19. Query route distance"| MAPS
-    RS -->|"20. Compute arrival ETA"| ETA
-    PS -->|"21. Read surge multiplier"| RC
-    REC -->|"22. Write reconciled ride"| PG
-    REC -->|"23. Publish ride event"| KF
-    KF -->|"24. Stream to tracking"| RPS
-    RPS -->|"25. Push to gateway"| WSG
+    RA -->|"Request ride"| LB
+    DA -->|"Send GPS pings"| LB
+    LB -->|"Route API"| GW
+    LB -->|"Route WebSocket"| WSG
+    GW -->|"Forward to ride svc"| RS
+    GW -->|"Route location"| LI
+    RS -->|"Find nearest driver"| MS
+    MS -->|"Query available drivers"| LS
+    LS -->|"GEORADIUS lookup"| RG
+    LI -->|"GEOADD position"| RG
+    LI -->|"Publish location event"| KF
+    RS -->|"Persist ride record"| PG
+    RS -->|"Publish ride state event"| KF
+    KF -->|"Trigger notifications"| NS
+    KF -->|"Stream to rider socket"| WSG
+    NS -->|"Push via FCM APNs"| FCM
+    NS -->|"Push ride update"| WSG
+    MS -->|"Read driver status"| RC
+    ETA -->|"Query route distance"| MAPS
+    RS -->|"Compute arrival ETA"| ETA
+    PS -->|"Read surge multiplier"| RC
+    REC -->|"Write reconciled ride"| PG
+    REC -->|"Publish ride event"| KF
+    KF -->|"Stream to tracking"| RPS
+    RPS -->|"Push to gateway"| WSG
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

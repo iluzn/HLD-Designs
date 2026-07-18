@@ -668,31 +668,31 @@ flowchart TD
         DRM["DRM Widevine FairPlay"]:::external
     end
 
-    TV -->|"1. Resolve CDN"| DNS
-    MOB -->|"2. Resolve CDN"| DNS
-    WEB -->|"3. Resolve CDN"| DNS
-    DNS -->|"4. Route to API"| GW
-    DNS -->|"5. Route to edge"| CDN
-    GW -->|"6. Route to playback svc"| PS
-    GW -->|"7. Route to reco svc"| RS
-    GW -->|"8. Route to search svc"| SS
-    PS -->|"9. Get DRM license"| DRM
-    PS -->|"10. Lookup active session"| RD
-    RS -->|"11. Lookup cached recs"| RD
-    RS -->|"12. Fetch from catalog"| CAT
-    SS -->|"13. Update index"| ES
-    CDN -->|"14. Fetch origin"| S3
-    IS -->|"15. Start workflow"| TMP
-    TMP -->|"16. Dispatch encode"| EW
-    EW -->|"17. Store encoded segments"| S3
-    EW -->|"18. Report complete"| TMP
-    TMP -->|"19. Update catalog"| CAT
-    KF -->|"20. Stream events"| ML
-    ML -->|"21. Refresh reco cache"| RD
-    TV -->|"22. Fetch segments"| CDN
-    MOB -->|"23. Fetch segments"| CDN
-    WEB -->|"24. Fetch segments"| CDN
-    CASS -->|"25. Publish events"| KF
+    TV -->|"Resolve CDN"| DNS
+    MOB -->|"Resolve CDN"| DNS
+    WEB -->|"Resolve CDN"| DNS
+    DNS -->|"Route to API"| GW
+    DNS -->|"Route to edge"| CDN
+    GW -->|"Route to playback svc"| PS
+    GW -->|"Route to reco svc"| RS
+    GW -->|"Route to search svc"| SS
+    PS -->|"Get DRM license"| DRM
+    PS -->|"Lookup active session"| RD
+    RS -->|"Lookup cached recs"| RD
+    RS -->|"Fetch from catalog"| CAT
+    SS -->|"Update index"| ES
+    CDN -->|"Fetch origin"| S3
+    IS -->|"Start workflow"| TMP
+    TMP -->|"Dispatch encode"| EW
+    EW -->|"Store encoded segments"| S3
+    EW -->|"Report complete"| TMP
+    TMP -->|"Update catalog"| CAT
+    KF -->|"Stream events"| ML
+    ML -->|"Refresh reco cache"| RD
+    TV -->|"Fetch segments"| CDN
+    MOB -->|"Fetch segments"| CDN
+    WEB -->|"Fetch segments"| CDN
+    CASS -->|"Publish events"| KF
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

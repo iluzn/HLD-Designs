@@ -463,19 +463,19 @@ flowchart TD
     POPDB[("Popularity Store<br/>Cassandra")]:::data
     BUILDER["Trie Builder<br/>(periodic)"]:::async
 
-    USER -->|"1. Type prefix query"| CDN
-    CDN -->|"2. Cache miss"| LB
-    LB -->|"3. Forward to trie svc"| TRIE
-    TRIE -->|"4. Lookup prefix in cache"| CACHE
-    TRIE -->|"5. Check trending cache"| HOTCACHE
-    USER -->|"6. Submit full search"| QLOG
-    QLOG -->|"7. Publish query event"| STREAM
-    STREAM -->|"8. Aggregate popularity"| AGG
-    STREAM -->|"9. Detect trending spikes"| TREND
-    AGG -->|"10. Update popularity store"| POPDB
-    TREND -->|"11. Refresh trending cache"| HOTCACHE
-    BUILDER -->|"12. Rebuild trie from data"| POPDB
-    BUILDER -->|"13. Push new trie version"| TRIE
+    USER -->|"Type prefix query"| CDN
+    CDN -->|"Cache miss"| LB
+    LB -->|"Forward to trie svc"| TRIE
+    TRIE -->|"Lookup prefix in cache"| CACHE
+    TRIE -->|"Check trending cache"| HOTCACHE
+    USER -->|"Submit full search"| QLOG
+    QLOG -->|"Publish query event"| STREAM
+    STREAM -->|"Aggregate popularity"| AGG
+    STREAM -->|"Detect trending spikes"| TREND
+    AGG -->|"Update popularity store"| POPDB
+    TREND -->|"Refresh trending cache"| HOTCACHE
+    BUILDER -->|"Rebuild trie from data"| POPDB
+    BUILDER -->|"Push new trie version"| TRIE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

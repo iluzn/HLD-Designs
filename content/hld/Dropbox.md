@@ -449,20 +449,20 @@ flowchart TD
     GC["Garbage Collector"]:::async
     BLOOM["Bloom Filter<br/>(dedup check)"]:::service
 
-    CLIENT -->|"1. Upload or sync file"| API
-    CLIENT -->|"2. Download via CDN"| CDN
-    CDN -->|"3. Fetch origin"| OBJSTORE
-    API -->|"4. Write file metadata"| META
-    META -->|"5. Read chunk tree"| METADB
-    META -->|"6. Lookup cached metadata"| CACHE
-    META -->|"7. Dedup check"| BLOOM
-    BLOOM -->|"8. Store new chunks"| OBJSTORE
-    CLIENT -->|"9. Upload chunk data"| OBJSTORE
-    META -->|"10. Publish sync event"| QUEUE
-    QUEUE -->|"11. Notify synced devices"| SYNC
-    SYNC -->|"12. Push to other devices"| CLIENT
-    GC -->|"13. Delete orphan chunks"| OBJSTORE
-    GC -->|"14. Remove stale metadata"| METADB
+    CLIENT -->|"Upload or sync file"| API
+    CLIENT -->|"Download via CDN"| CDN
+    CDN -->|"Fetch origin"| OBJSTORE
+    API -->|"Write file metadata"| META
+    META -->|"Read chunk tree"| METADB
+    META -->|"Lookup cached metadata"| CACHE
+    META -->|"Dedup check"| BLOOM
+    BLOOM -->|"Store new chunks"| OBJSTORE
+    CLIENT -->|"Upload chunk data"| OBJSTORE
+    META -->|"Publish sync event"| QUEUE
+    QUEUE -->|"Notify synced devices"| SYNC
+    SYNC -->|"Push to other devices"| CLIENT
+    GC -->|"Delete orphan chunks"| OBJSTORE
+    GC -->|"Remove stale metadata"| METADB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

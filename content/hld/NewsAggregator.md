@@ -461,19 +461,19 @@ flowchart TD
     USER["Users"]:::client
     GW["API Gateway"]:::edge
 
-    SOURCES -->|"1. Provide articles"| WORKERS
-    SCHED -->|"2. Trigger crawl"| WORKERS
-    WORKERS -->|"3. Publish parsed article"| KF
-    KF -->|"4. Process new article"| CLUSTER
-    KF -->|"5. Sink data"| ARTICLES
-    CLUSTER -->|"6. Compute embeddings"| EMBED
-    CLUSTER -->|"7. Read cluster centroids"| CLUSTERDB
-    USER -->|"8. GET personalized feed"| GW
-    GW -->|"9. Forward to feed svc"| FEED
-    FEED -->|"10. Lookup cached feed"| CACHE
-    FEED -->|"11. Score and rank articles"| RANK
-    RANK -->|"12. Read top clusters"| CLUSTERDB
-    RANK -->|"13. Load user preferences"| PROFILE
+    SOURCES -->|"Provide articles"| WORKERS
+    SCHED -->|"Trigger crawl"| WORKERS
+    WORKERS -->|"Publish parsed article"| KF
+    KF -->|"Process new article"| CLUSTER
+    KF -->|"Sink data"| ARTICLES
+    CLUSTER -->|"Compute embeddings"| EMBED
+    CLUSTER -->|"Read cluster centroids"| CLUSTERDB
+    USER -->|"GET personalized feed"| GW
+    GW -->|"Forward to feed svc"| FEED
+    FEED -->|"Lookup cached feed"| CACHE
+    FEED -->|"Score and rank articles"| RANK
+    RANK -->|"Read top clusters"| CLUSTERDB
+    RANK -->|"Load user preferences"| PROFILE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

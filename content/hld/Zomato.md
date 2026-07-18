@@ -703,34 +703,34 @@ flowchart TD
     PG["Razorpay Stripe UPI"]:::external
     PUSH["FCM APNs"]:::external
 
-    CUST -->|"1. Browse or order"| GW
-    RIDER -->|"2. Send GPS pings"| GW
-    REST -->|"3. Manage menu"| GW
-    CUST -->|"4. Track delivery"| WS
-    RIDER -->|"5. PUT GPS location"| LOC
+    CUST -->|"Browse or order"| GW
+    RIDER -->|"Send GPS pings"| GW
+    REST -->|"Manage menu"| GW
+    CUST -->|"Track delivery"| WS
+    RIDER -->|"PUT GPS location"| LOC
 
-    GW -->|"6. Forward to restaurant svc"| RSVC
-    RSVC -->|"7. Fetch restaurant data"| RDB
-    GW -->|"8. Forward to search svc"| SEARCH
-    SEARCH -->|"9. Lookup cached results"| SCACHE
-    SEARCH -->|"10. Full-text query"| ES
-    RDB -->|"11. CDC stream"| CDC
-    CDC -->|"12. Stream changes"| K
-    K -->|"13. Index new menu items"| ES
-    GW -->|"14. Forward to order svc"| ORDER
-    ORDER -->|"15. Persist order record"| ORDERDB
-    ORDER -->|"16. Initiate payment"| PAY
-    PAY -->|"17. Charge"| PG
-    ORDER -->|"18. Confirmed"| MATCH
-    LOC -->|"19. GEOADD to Redis Geo"| GEO
-    LOC -->|"20. Publish location event"| K
-    K -->|"21. Archive to history"| HIST
-    LOC -->|"22. Stream via Pub/Sub"| PUBSUB
-    PUBSUB -->|"23. Push rider position"| WS
-    MATCH -->|"24. Find nearest rider"| GEO
-    MATCH -->|"25. Notify selected rider"| NOTIF
-    NOTIF -->|"26. Push via FCM"| PUSH
-    MATCH -->|"27. Update order status"| ORDER
+    GW -->|"Forward to restaurant svc"| RSVC
+    RSVC -->|"Fetch restaurant data"| RDB
+    GW -->|"Forward to search svc"| SEARCH
+    SEARCH -->|"Lookup cached results"| SCACHE
+    SEARCH -->|"Full-text query"| ES
+    RDB -->|"CDC stream"| CDC
+    CDC -->|"Stream changes"| K
+    K -->|"Index new menu items"| ES
+    GW -->|"Forward to order svc"| ORDER
+    ORDER -->|"Persist order record"| ORDERDB
+    ORDER -->|"Initiate payment"| PAY
+    PAY -->|"Charge"| PG
+    ORDER -->|"Confirmed"| MATCH
+    LOC -->|"GEOADD to Redis Geo"| GEO
+    LOC -->|"Publish location event"| K
+    K -->|"Archive to history"| HIST
+    LOC -->|"Stream via Pub/Sub"| PUBSUB
+    PUBSUB -->|"Push rider position"| WS
+    MATCH -->|"Find nearest rider"| GEO
+    MATCH -->|"Notify selected rider"| NOTIF
+    NOTIF -->|"Push via FCM"| PUSH
+    MATCH -->|"Update order status"| ORDER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

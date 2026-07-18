@@ -510,18 +510,18 @@ flowchart TD
     MEDIA[("S3 and CDN<br/>media")]:::data
     FCM["FCM and APNs"]:::external
 
-    CLIENTS -->|"1. Open WebSocket"| LB
-    CLIENTS -->|"2. Presigned upload"| MEDIA
-    LB -->|"3. Sticky route by user"| WS
-    WS -->|"4. Forward to chat logic"| CHAT
-    CHAT -->|"5. Lookup receiver server"| REG
-    CHAT -->|"6. Persist message"| STORE
-    CHAT -->|"7. Queue for offline user"| OFFLINE
-    CHAT -->|"8. Publish group fan-out"| K
-    K -->|"9. Process group delivery"| FAN
-    FAN -->|"10. Push to online members"| WS
-    CHAT -->|"11. Trigger push alert"| PUSH
-    PUSH -->|"12. Deliver via FCM APNs"| FCM
+    CLIENTS -->|"Open WebSocket"| LB
+    CLIENTS -->|"Presigned upload"| MEDIA
+    LB -->|"Sticky route by user"| WS
+    WS -->|"Forward to chat logic"| CHAT
+    CHAT -->|"Lookup receiver server"| REG
+    CHAT -->|"Persist message"| STORE
+    CHAT -->|"Queue for offline user"| OFFLINE
+    CHAT -->|"Publish group fan-out"| K
+    K -->|"Process group delivery"| FAN
+    FAN -->|"Push to online members"| WS
+    CHAT -->|"Trigger push alert"| PUSH
+    PUSH -->|"Deliver via FCM APNs"| FCM
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

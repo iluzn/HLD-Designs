@@ -602,17 +602,17 @@ flowchart TD
     DB[("Database")]:::data
     Q["Message Queue"]:::async
 
-    CLIENT -->|"1. Request"| CDN
-    CDN -->|"2. Cache miss"| GW
+    CLIENT -->|"Request"| CDN
+    CDN -->|"Cache miss"| GW
     GW -->|"3a. POST /links"| WS
     GW -->|"3b. GET /code"| RS
-    WS -->|"4. Get unique ID"| IDG
-    WS -->|"5. Store mapping"| DB
-    RS -->|"4. Lookup short code"| REDIS
-    RS -->|"5. DB fallback"| DB
-    RS -->|"6. Fire click event"| Q
-    Q -->|"7. Aggregate counts"| CONSUMER
-    CONSUMER -->|"8. Write rollups"| DB
+    WS -->|"Get unique ID"| IDG
+    WS -->|"Store mapping"| DB
+    RS -->|"Lookup short code"| REDIS
+    RS -->|"DB fallback"| DB
+    RS -->|"Fire click event"| Q
+    Q -->|"Aggregate counts"| CONSUMER
+    CONSUMER -->|"Write rollups"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

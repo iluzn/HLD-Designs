@@ -405,20 +405,20 @@ flowchart TD
     SETTLE["Settlement Engine"]:::async
     RECON["Reconciliation Job"]:::async
 
-    MERCHANT -->|"1. POST /payments"| API
-    SDK -->|"2. Tokenize card data"| VAULT
-    API -->|"3. Check idempotency key"| IDEMP
-    API -->|"4. Orchestrate"| ORCH
-    ORCH -->|"5. Persist payment record"| DB
-    ORCH -->|"6. Post ledger entry"| LEDGER
-    ORCH -->|"7. Route payment"| ROUTER
-    ROUTER -->|"8. Charge via Visa"| BANK1
-    ROUTER -->|"9. Charge via UPI"| BANK2
-    VAULT -->|"10. Decrypt and route"| ROUTER
-    SETTLE -->|"11. Batch settled payments"| DB
-    SETTLE -->|"12. Post entries"| LEDGER
-    RECON -->|"13. Fix breaks"| DB
-    RECON -->|"14. Fix breaks"| LEDGER
+    MERCHANT -->|"POST /payments"| API
+    SDK -->|"Tokenize card data"| VAULT
+    API -->|"Check idempotency key"| IDEMP
+    API -->|"Orchestrate"| ORCH
+    ORCH -->|"Persist payment record"| DB
+    ORCH -->|"Post ledger entry"| LEDGER
+    ORCH -->|"Route payment"| ROUTER
+    ROUTER -->|"Charge via Visa"| BANK1
+    ROUTER -->|"Charge via UPI"| BANK2
+    VAULT -->|"Decrypt and route"| ROUTER
+    SETTLE -->|"Batch settled payments"| DB
+    SETTLE -->|"Post entries"| LEDGER
+    RECON -->|"Fix breaks"| DB
+    RECON -->|"Fix breaks"| LEDGER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

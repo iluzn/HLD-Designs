@@ -749,34 +749,34 @@ flowchart TD
         CH[("Analytics Store<br/>executions OLAP replica")]:::data
     end
 
-    CLIENT -->|"1. POST create or cancel job"| API
-    API -->|"2. Persist job definition"| PG
-    API -->|"3. Write to hot ZSET"| REDIS
-    API -->|"4. Write schedule"| CRON
-    HYDRATOR -->|"5. Fetch job details"| PG
-    HYDRATOR -->|"6. Read metadata"| REDIS
-    REDIS -->|"7. Pop due jobs"| DISP
-    DISP -->|"8. Acquire shard lock"| ETCD
-    DISP -->|"9. Update status"| PG
-    DISP -->|"10. Dispatch job"| KAFKA
-    SWEEPER -->|"11. Re-schedule stuck jobs"| PG
-    SWEEPER -->|"12. Re-enqueue for retry"| KAFKA
-    KAFKA -->|"13. Execute email jobs"| WORKER_A
-    KAFKA -->|"14. Execute ETL jobs"| WORKER_B
-    KAFKA -->|"15. Execute general jobs"| WORKER_C
-    WORKER_A -->|"16. Write execution result"| PG
-    WORKER_B -->|"17. Write execution result"| PG
-    WORKER_C -->|"18. Write execution result"| PG
-    WORKER_A -->|"19. Read cache"| REDIS
-    WORKER_B -->|"20. Renew heartbeat TTL"| REDIS
-    WORKER_C -->|"21. Poll cancel set"| REDIS
+    CLIENT -->|"POST create or cancel job"| API
+    API -->|"Persist job definition"| PG
+    API -->|"Write to hot ZSET"| REDIS
+    API -->|"Write schedule"| CRON
+    HYDRATOR -->|"Fetch job details"| PG
+    HYDRATOR -->|"Read metadata"| REDIS
+    REDIS -->|"Pop due jobs"| DISP
+    DISP -->|"Acquire shard lock"| ETCD
+    DISP -->|"Update status"| PG
+    DISP -->|"Dispatch job"| KAFKA
+    SWEEPER -->|"Re-schedule stuck jobs"| PG
+    SWEEPER -->|"Re-enqueue for retry"| KAFKA
+    KAFKA -->|"Execute email jobs"| WORKER_A
+    KAFKA -->|"Execute ETL jobs"| WORKER_B
+    KAFKA -->|"Execute general jobs"| WORKER_C
+    WORKER_A -->|"Write execution result"| PG
+    WORKER_B -->|"Write execution result"| PG
+    WORKER_C -->|"Write execution result"| PG
+    WORKER_A -->|"Read cache"| REDIS
+    WORKER_B -->|"Renew heartbeat TTL"| REDIS
+    WORKER_C -->|"Poll cancel set"| REDIS
     WORKER_A -.failure.-> KAFKA
     WORKER_B -.failure.-> KAFKA
     WORKER_C -.failure.-> KAFKA
-    DISP -->|"22. Report metrics"| METRICS
-    WORKER_A -->|"23. Report metrics"| METRICS
-    WORKER_A -->|"24. Report traces"| TRACES
-    PG -->|"25. Replicate to OLAP"| CH
+    DISP -->|"Report metrics"| METRICS
+    WORKER_A -->|"Report metrics"| METRICS
+    WORKER_A -->|"Report traces"| TRACES
+    PG -->|"Replicate to OLAP"| CH
 
     classDef client fill:#fed7aa,stroke:#c2410c,color:#431407
     classDef edge fill:#bfdbfe,stroke:#1d4ed8,color:#0c1f4a

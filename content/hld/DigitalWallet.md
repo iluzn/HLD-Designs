@@ -804,38 +804,38 @@ flowchart TD
     BANK["Rails<br/>UPI Bank Cards"]:::external
     PUSH["FCM APNs SMS"]:::external
 
-    APP -->|"1. Initiate transaction"| GW
-    GW -->|"2. Forward to wallet svc"| WS
-    GW -->|"3. Forward to transfer svc"| TS
-    GW -->|"4. Forward to read svc"| READ
+    APP -->|"Initiate transaction"| GW
+    GW -->|"Forward to wallet svc"| WS
+    GW -->|"Forward to transfer svc"| TS
+    GW -->|"Forward to read svc"| READ
 
-    WS -->|"5. Check idempotency key"| IDE
-    TS -->|"6. Check idempotency key"| IDE
-    WS -->|"7. Initiate bank charge"| PG
-    PG -->|"8. Initiate charge"| BANK
-    TS -->|"9. Validate sender balance"| LS
-    WS -->|"10. Post journal entry"| LS
-    LS -->|"11. Write ledger entry"| PRIM
-    LS -->|"12. Refresh balance cache"| BAL
+    WS -->|"Check idempotency key"| IDE
+    TS -->|"Check idempotency key"| IDE
+    WS -->|"Initiate bank charge"| PG
+    PG -->|"Initiate charge"| BANK
+    TS -->|"Validate sender balance"| LS
+    WS -->|"Post journal entry"| LS
+    LS -->|"Write ledger entry"| PRIM
+    LS -->|"Refresh balance cache"| BAL
 
-    PRIM -->|"13. Replicate"| REPL
-    PRIM -->|"14. Stream WAL"| CDC
-    CDC -->|"15. Stream changes"| K
-    K -->|"16. Update hot balance"| KV
-    K -->|"17. Invalidate balance cache"| BAL
-    K -->|"18. Append tx history"| HIST
-    K -->|"19. Trigger notifications"| NOTIF
-    K -->|"20. Evaluate fraud rules"| FRAUD
+    PRIM -->|"Replicate"| REPL
+    PRIM -->|"Stream WAL"| CDC
+    CDC -->|"Stream changes"| K
+    K -->|"Update hot balance"| KV
+    K -->|"Invalidate balance cache"| BAL
+    K -->|"Append tx history"| HIST
+    K -->|"Trigger notifications"| NOTIF
+    K -->|"Evaluate fraud rules"| FRAUD
 
-    READ -->|"21. Lookup cached balance"| BAL
-    READ -->|"22. Fallback to replica"| REPL
-    READ -->|"23. Fetch hot balance"| KV
-    READ -->|"24. Fetch tx history"| HIST
+    READ -->|"Lookup cached balance"| BAL
+    READ -->|"Fallback to replica"| REPL
+    READ -->|"Fetch hot balance"| KV
+    READ -->|"Fetch tx history"| HIST
 
-    REC -->|"25. Poll rail status"| BANK
-    REC -->|"26. Write reconciled entry"| PRIM
+    REC -->|"Poll rail status"| BANK
+    REC -->|"Write reconciled entry"| PRIM
 
-    NOTIF -->|"27. Push via FCM APNs"| PUSH
+    NOTIF -->|"Push via FCM APNs"| PUSH
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
