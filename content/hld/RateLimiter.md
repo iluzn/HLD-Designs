@@ -25,10 +25,10 @@ flowchart LR
     REDIS[("Redis<br/>counters")]:::data
     API["Your API"]:::service
 
-    CLIENT -->|"1. Send request"| EDGE
+    CLIENT -->|"1. Incoming request"| EDGE
     EDGE -->|"2. IP check pass"| GW
     GW -->|"3. Read cache"| RL
-    RL -->|"4. Return data"| REDIS
+    RL -->|"4. INCR rate counter"| REDIS
     GW -->|"5. Allowed"| API
     GW -->|"6. Rejected 429"| CLIENT
 
@@ -146,12 +146,12 @@ flowchart LR
     POD3["API Pod 3"]:::service
     REDIS[("Redis<br/>shared counters")]:::data
 
-    CLIENT -->|"1. API call"| POD1
-    CLIENT -->|"2. API call"| POD2
-    CLIENT -->|"3. API call"| POD3
-    POD1 -->|"4. Check cache"| REDIS
-    POD2 -->|"5. Check cache"| REDIS
-    POD3 -->|"6. Check cache"| REDIS
+    CLIENT -->|"1. Request to pod 1"| POD1
+    CLIENT -->|"2. Request to pod 2"| POD2
+    CLIENT -->|"3. Request to pod 3"| POD3
+    POD1 -->|"4. INCR rate counter"| REDIS
+    POD2 -->|"5. INCR rate counter"| REDIS
+    POD3 -->|"6. INCR rate counter"| REDIS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -507,9 +507,9 @@ flowchart LR
     L3["Layer 3: Service<br/>your code<br/>domain-specific"]:::service
     API["Backend"]:::service
 
-    CLIENT -->|"1. Send request"| L1
+    CLIENT -->|"1. Incoming request"| L1
     L1 -->|"2. Pass to user limit"| L2
-    L2 -->|"3. Route request"| L3
+    L2 -->|"3. Evaluate rate limit"| L3
     L3 -->|"4. Allow"| API
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -540,9 +540,9 @@ flowchart TD
     FO["Fail-Open<br/>allow all requests"]:::service
     FB["Fallback<br/>local in-memory bucket"]:::service
 
-    DOWN -->|"1. Return data"| FC
-    DOWN -->|"2. Return data"| FO
-    DOWN -->|"3. Return data"| FB
+    DOWN -->|"1. Redis unavailable"| FC
+    DOWN -->|"2. Redis unavailable"| FO
+    DOWN -->|"3. Redis unavailable"| FB
 
     FC -->|"4. ❌ Global outage"| BAD["Users locked out"]:::client
     FO -->|"5. ⚠️ No protection"| OK["Backend might overload"]:::client
@@ -637,9 +637,9 @@ flowchart LR
         R2["Pod 2"]:::service
         R3["Pod 3"]:::service
         REDIS["Redis: count=100"]:::data
-        R1 -->|"1. Update cache"| REDIS
-        R2 -->|"2. Update cache"| REDIS
-        R3 -->|"3. Update cache"| REDIS
+        R1 -->|"1. INCR rate counter"| REDIS
+        R2 -->|"2. INCR rate counter"| REDIS
+        R3 -->|"3. INCR rate counter"| REDIS
     end
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -705,11 +705,11 @@ flowchart LR
     API["Backend Services"]:::service
     K["Analytics<br/>limit events"]:::async
 
-    CLIENTS -->|"1. Send request"| EDGE
+    CLIENTS -->|"1. Incoming request"| EDGE
     EDGE -->|"2. IP check pass"| GW
     GW -->|"3. Read cache"| RL
-    RL -->|"4. Return data"| REDIS
-    RL -->|"5. Return data"| RULES
+    RL -->|"4. INCR rate counter"| REDIS
+    RL -->|"5. Load limit rules"| RULES
     GW -->|"6. Allowed"| API
     RL -->|"7. Publish change"| K
 

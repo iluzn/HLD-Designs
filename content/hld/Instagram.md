@@ -195,12 +195,12 @@ flowchart LR
     MW["Media Workers"]:::service
     DB["Post Metadata DB"]:::data
 
-    App -->|"1. Send request"| GW
-    GW -->|"2. Route request"| US
+    App -->|"1. Upload photo"| GW
+    GW -->|"2. Forward to upload svc"| US
     US -->|"3. Upload to storage"| S3
-    US -->|"4. Query DB"| DB
-    US -->|"5. Emit event"| Q
-    Q -->|"6. Consume event"| MW
+    US -->|"4. Save post metadata"| DB
+    US -->|"5. Publish new post event"| Q
+    Q -->|"6. Process media variants"| MW
     MW -->|"7. Store processed image"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -250,14 +250,14 @@ flowchart LR
     FO["Fan-out Service"]:::service
     KF["Kafka"]:::async
 
-    App -->|"1. Send request"| GW
-    GW -->|"2. Route request"| FS
-    FS -->|"3. Check cache"| FC
-    FS -->|"4. Query DB"| CASS
-    App -->|"5. Send request"| CDN
+    App -->|"1. GET user feed"| GW
+    GW -->|"2. Forward to feed svc"| FS
+    FS -->|"3. Lookup cached feed"| FC
+    FS -->|"4. Fetch feed from store"| CASS
+    App -->|"5. Load images"| CDN
     CDN -->|"6. Fetch origin"| S3
-    KF -->|"7. Consume event"| FO
-    FO -->|"8. Query DB"| CASS
+    KF -->|"7. Fan out new posts"| FO
+    FO -->|"8. Write to follower feeds"| CASS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -303,13 +303,13 @@ flowchart LR
     BF["Backfill Worker"]:::service
     CASS["Feed Store"]:::data
 
-    App -->|"1. Send request"| GW
-    GW -->|"2. Route request"| SGS
-    SGS -->|"3. Check cache"| RG
-    SGS -->|"4. Query DB"| DB
-    SGS -->|"5. Emit event"| KF
-    KF -->|"6. Consume event"| BF
-    BF -->|"7. Query DB"| CASS
+    App -->|"1. POST generate story"| GW
+    GW -->|"2. Forward to stories svc"| SGS
+    SGS -->|"3. Lookup viewer set"| RG
+    SGS -->|"4. Save story metadata"| DB
+    SGS -->|"5. Publish story event"| KF
+    KF -->|"6. Backfill follower feeds"| BF
+    BF -->|"7. Write to feed store"| CASS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -438,11 +438,11 @@ flowchart LR
     S3P["S3 Processed"]:::data
     CDN["CDN"]:::edge
 
-    Client -->|"1. Send request"| PS
+    Client -->|"1. Upload photo"| PS
     PS -->|"2. Check limit"| S3O
     S3O -->|"3. Serve content"| Q
-    Q -->|"4. Consume event"| W1
-    W1 -->|"5. Store file"| S3P
+    Q -->|"4. Generate image variants"| W1
+    W1 -->|"5. Store processed media"| S3P
     S3P -->|"6. Deliver"| CDN
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -613,28 +613,28 @@ flowchart LR
         RD["Redis Cluster"]:::data
     end
 
-    MOB -->|"1. Send request"| LB
-    WEB -->|"2. Send request"| LB
+    MOB -->|"1. Open app"| LB
+    WEB -->|"2. Open app"| LB
     LB -->|"3. Route API"| GW
-    MOB -->|"4. Send request"| CDN
-    WEB -->|"5. Send request"| CDN
+    MOB -->|"4. Load images"| CDN
+    WEB -->|"5. Load images"| CDN
     CDN -->|"6. Fetch origin"| S3
-    GW -->|"7. Route request"| US
-    GW -->|"8. Route request"| FS
-    GW -->|"9. Route request"| SGS
+    GW -->|"7. Forward to upload svc"| US
+    GW -->|"8. Forward to feed svc"| FS
+    GW -->|"9. Forward to stories svc"| SGS
     US -->|"10. Upload media"| S3
-    US -->|"11. Query DB"| PG
-    US -->|"12. Emit event"| PQ
-    PQ -->|"13. Consume event"| MW
+    US -->|"11. Save post metadata"| PG
+    US -->|"12. Publish new post event"| PQ
+    PQ -->|"13. Process media variants"| MW
     MW -->|"14. Store processed media"| S3
-    MW -->|"15. Emit event"| KF
-    KF -->|"16. Consume event"| FO
-    FO -->|"17. Query DB"| CASS
-    FS -->|"18. Check cache"| RD
-    FS -->|"19. Query DB"| CASS
+    MW -->|"15. Publish post ready event"| KF
+    KF -->|"16. Fan out to followers"| FO
+    FO -->|"17. Write to follower feeds"| CASS
+    FS -->|"18. Lookup cached feed"| RD
+    FS -->|"19. Fetch feed from store"| CASS
     FS -->|"20. Get prediction"| RANK
-    SGS -->|"21. Check cache"| RD
-    SGS -->|"22. Query DB"| PG
+    SGS -->|"21. Lookup viewer set"| RD
+    SGS -->|"22. Save story metadata"| PG
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

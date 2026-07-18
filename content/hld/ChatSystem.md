@@ -26,13 +26,13 @@ flowchart LR
     PUSH["Push Notifications<br/>FCM APNs"]:::external
     RECEIVER["Receiver"]:::client
 
-    SENDER -->|"1. Connect"| WS
-    WS -->|"2. Call service"| CHAT
-    CHAT -->|"3. Query DB"| STORE
-    CHAT -->|"4. Emit event"| K
+    SENDER -->|"1. Open WebSocket"| WS
+    WS -->|"2. Forward message"| CHAT
+    CHAT -->|"3. Persist message"| STORE
+    CHAT -->|"4. Publish to fan-out"| K
     K -->|"5. Fan out"| WS
-    CHAT -->|"6. Send notification"| PUSH
-    WS -->|"7. Return response"| RECEIVER
+    CHAT -->|"6. Push offline alert"| PUSH
+    WS -->|"7. Deliver to recipient"| RECEIVER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -185,12 +185,12 @@ flowchart LR
     WS2["WebSocket Server B"]:::service
     RECEIVER["Receiver"]:::client
 
-    SENDER -->|"1. Connect"| WS1
-    WS1 -->|"2. Call service"| CHAT
-    CHAT -->|"3. Query DB"| STORE
-    CHAT -->|"4. Check cache"| ROUTE
-    ROUTE -->|"5. Return data"| WS2
-    WS2 -->|"6. Return response"| RECEIVER
+    SENDER -->|"1. Open WebSocket"| WS1
+    WS1 -->|"2. Forward message"| CHAT
+    CHAT -->|"3. Persist message"| STORE
+    CHAT -->|"4. Lookup receiver server"| ROUTE
+    ROUTE -->|"5. Route to Server B"| WS2
+    WS2 -->|"6. Deliver to recipient"| RECEIVER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -237,11 +237,11 @@ flowchart LR
     PUSH["Push Service"]:::service
     FCM["FCM and APNs"]:::external
 
-    SENDER -->|"1. API call"| CHAT
-    CHAT -->|"2. Query DB"| STORE
-    CHAT -->|"3. Check cache"| OFFLINE
-    CHAT -->|"4. Send notification"| PUSH
-    PUSH -->|"5. Send notification"| FCM
+    SENDER -->|"1. Send message"| CHAT
+    CHAT -->|"2. Persist message"| STORE
+    CHAT -->|"3. Queue for offline user"| OFFLINE
+    CHAT -->|"4. Trigger push alert"| PUSH
+    PUSH -->|"5. Deliver via FCM APNs"| FCM
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -277,12 +277,12 @@ flowchart LR
     WS["WebSocket Servers"]:::service
     MEMBERS["Group Members"]:::client
 
-    SENDER -->|"1. API call"| CHAT
-    CHAT -->|"2. Query DB"| STORE
-    CHAT -->|"3. Emit event"| K
-    K -->|"4. Consume event"| FAN
-    FAN -->|"5. Push update"| WS
-    WS -->|"6. Return response"| MEMBERS
+    SENDER -->|"1. Send group message"| CHAT
+    CHAT -->|"2. Store single copy"| STORE
+    CHAT -->|"3. Publish fan-out event"| K
+    K -->|"4. Process group delivery"| FAN
+    FAN -->|"5. Push to online members"| WS
+    WS -->|"6. Deliver to each member"| MEMBERS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -510,18 +510,18 @@ flowchart LR
     MEDIA[("S3 and CDN<br/>media")]:::data
     FCM["FCM and APNs"]:::external
 
-    CLIENTS -->|"1. Send request"| LB
+    CLIENTS -->|"1. Open WebSocket"| LB
     CLIENTS -->|"2. Presigned upload"| MEDIA
-    LB -->|"3. Send request"| WS
-    WS -->|"4. Route request"| CHAT
-    CHAT -->|"5. Check cache"| REG
-    CHAT -->|"6. Query DB"| STORE
-    CHAT -->|"7. Check cache"| OFFLINE
-    CHAT -->|"8. Emit event"| K
-    K -->|"9. Consume event"| FAN
-    FAN -->|"10. Push update"| WS
-    CHAT -->|"11. Send notification"| PUSH
-    PUSH -->|"12. Send notification"| FCM
+    LB -->|"3. Sticky route by user"| WS
+    WS -->|"4. Forward to chat logic"| CHAT
+    CHAT -->|"5. Lookup receiver server"| REG
+    CHAT -->|"6. Persist message"| STORE
+    CHAT -->|"7. Queue for offline user"| OFFLINE
+    CHAT -->|"8. Publish group fan-out"| K
+    K -->|"9. Process group delivery"| FAN
+    FAN -->|"10. Push to online members"| WS
+    CHAT -->|"11. Trigger push alert"| PUSH
+    PUSH -->|"12. Deliver via FCM APNs"| FCM
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

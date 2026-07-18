@@ -201,11 +201,11 @@ flowchart LR
     ME["Matching Engine"]:::service
     DB["Order DB"]:::data
 
-    App -->|"1. Send request"| GW
-    GW -->|"2. Route request"| OMS
-    OMS -->|"3. Query DB"| DB
-    OMS -->|"4. Emit event"| KF
-    KF -->|"5. Consume event"| ME
+    App -->|"1. Submit order"| GW
+    GW -->|"2. Forward to OMS"| OMS
+    OMS -->|"3. Persist order record"| DB
+    OMS -->|"4. Publish order event"| KF
+    KF -->|"5. Match buy-sell orders"| ME
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -259,13 +259,13 @@ flowchart LR
     KF["Kafka events"]:::async
     Proj["Projector"]:::service
 
-    App -->|"1. Send request"| GW
-    GW -->|"2. Route request"| QS
-    QS -->|"3. Check cache"| RC
+    App -->|"1. GET portfolio"| GW
+    GW -->|"2. Forward to query svc"| QS
+    QS -->|"3. Lookup cached portfolio"| RC
     QS -->|"4. Fallback query"| RDB
-    KF -->|"5. Consume event"| Proj
+    KF -->|"5. Project trade events"| Proj
     Proj -->|"6. Update view"| RDB
-    Proj -->|"7. Update cache"| RC
+    Proj -->|"7. Refresh portfolio cache"| RC
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -309,10 +309,10 @@ flowchart LR
     FCM["FCM and APNs"]:::external
     DLQ["Dead Letter Queue"]:::async
 
-    KF -->|"1. Consume event"| NS
-    NS -->|"2. Push update"| WS
-    NS -->|"3. Send notification"| FCM
-    NS -->|"4. Emit event"| DLQ
+    KF -->|"1. Process trade fill"| NS
+    NS -->|"2. Push via WebSocket"| WS
+    NS -->|"3. Push via FCM APNs"| FCM
+    NS -->|"4. Route to dead letter"| DLQ
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef async fill:#3b1f5e,stroke:#c084fc,color:#e2e8f0
@@ -599,27 +599,27 @@ flowchart LR
         FCM["FCM and APNs"]:::external
     end
 
-    MOB -->|"1. Send request"| LB
-    WEB -->|"2. Send request"| LB
+    MOB -->|"1. Submit order"| LB
+    WEB -->|"2. Submit order"| LB
     LB -->|"3. Route API"| GW
     LB -->|"4. Route WebSocket"| WSG
     GW -->|"5. Route to OMS"| OMS
-    GW -->|"6. Route request"| QS
-    OMS -->|"7. Persist data"| PG
-    OMS -->|"8. Emit event"| KF
-    KF -->|"9. Consume event"| ME
-    ME -->|"10. Emit event"| KF
+    GW -->|"6. Forward to query svc"| QS
+    OMS -->|"7. Persist order record"| PG
+    OMS -->|"8. Publish order event"| KF
+    KF -->|"9. Match buy-sell orders"| ME
+    ME -->|"10. Publish fill event"| KF
     ME -->|"11. Send to exchange"| EX
-    KF -->|"12. Consume event"| NS
-    KF -->|"13. Consume event"| PROJ
-    PROJ -->|"14. Consume event"| PGR
-    PROJ -->|"15. Consume event"| RD
-    QS -->|"16. Check cache"| RD
-    QS -->|"17. Read DB"| PGR
-    NS -->|"18. Send notification"| FCM
-    NS -->|"19. Push update"| WSG
-    REC -->|"20. Persist data"| PG
-    REC -->|"21. Emit event"| KF
+    KF -->|"12. Trigger notifications"| NS
+    KF -->|"13. Project to read model"| PROJ
+    PROJ -->|"14. Update read replica"| PGR
+    PROJ -->|"15. Refresh portfolio cache"| RD
+    QS -->|"16. Lookup cached portfolio"| RD
+    QS -->|"17. Fallback to read DB"| PGR
+    NS -->|"18. Push via FCM APNs"| FCM
+    NS -->|"19. Push via WebSocket"| WSG
+    REC -->|"20. Write reconciled trades"| PG
+    REC -->|"21. Publish reconciled event"| KF
     KF -->|"22. Sink data"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0

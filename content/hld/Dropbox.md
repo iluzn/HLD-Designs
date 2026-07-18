@@ -171,12 +171,12 @@ flowchart LR
     METADB[("Metadata DB<br/>Postgres")]:::data
 
     CLIENT -->|"1. init upload with chunk list"| API
-    API -->|"2. Route request"| META
-    META -->|"3. Query DB"| METADB
+    API -->|"2. Forward to metadata svc"| META
+    META -->|"3. Check existing chunks"| METADB
     META -->|"2. returns: which chunks needed"| API
     CLIENT -->|"3. upload only new chunks"| OBJSTORE
     CLIENT -->|"4. complete upload"| API
-    API -->|"5. Route request"| META
+    API -->|"5. Commit file version"| META
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -223,10 +223,10 @@ flowchart LR
     CLIENT2["Other Devices"]:::client
 
     CLIENT -->|"1. Upload"| API
-    API -->|"2. Route request"| META
-    META -->|"3. Query DB"| METADB
+    API -->|"2. Write file metadata"| META
+    META -->|"3. Lookup chunk refs"| METADB
     META -->|"4. Emit SyncEvent"| QUEUE
-    QUEUE -->|"5. Consume event"| SYNC
+    QUEUE -->|"5. Notify synced devices"| SYNC
     SYNC -->|"6. Long-poll response"| CLIENT2
     CLIENT2 -->|"7. Download changed chunks"| OBJSTORE
 
@@ -266,10 +266,10 @@ flowchart LR
     GC["Garbage Collector<br/>(periodic)"]:::async
 
     CLIENT -->|"1. List versions"| API
-    API -->|"2. Route request"| META
-    META -->|"3. Query DB"| METADB
+    API -->|"2. Fetch version history"| META
+    META -->|"3. Read version log"| METADB
     CLIENT -->|"4. Restore version 3"| API
-    API -->|"5. Route request"| META
+    API -->|"5. Create restore version"| META
     META -->|"6. Create new version pointing to v3 chunks"| METADB
     GC -->|"7. Delete unreferenced chunks older than 30d"| OBJSTORE
 
@@ -449,20 +449,20 @@ flowchart LR
     GC["Garbage Collector"]:::async
     BLOOM["Bloom Filter<br/>(dedup check)"]:::service
 
-    CLIENT -->|"1. Send request"| API
-    CLIENT -->|"2. Send request"| CDN
+    CLIENT -->|"1. Upload or sync file"| API
+    CLIENT -->|"2. Download via CDN"| CDN
     CDN -->|"3. Fetch origin"| OBJSTORE
-    API -->|"4. Route request"| META
-    META -->|"5. Query DB"| METADB
-    META -->|"6. Check cache"| CACHE
+    API -->|"4. Write file metadata"| META
+    META -->|"5. Read chunk tree"| METADB
+    META -->|"6. Lookup cached metadata"| CACHE
     META -->|"7. Dedup check"| BLOOM
-    BLOOM -->|"8. Persist data"| OBJSTORE
-    CLIENT -->|"9. Send request"| OBJSTORE
-    META -->|"10. Emit event"| QUEUE
-    QUEUE -->|"11. Consume event"| SYNC
-    SYNC -->|"12. Return response"| CLIENT
-    GC -->|"13. Persist data"| OBJSTORE
-    GC -->|"14. Persist data"| METADB
+    BLOOM -->|"8. Store new chunks"| OBJSTORE
+    CLIENT -->|"9. Upload chunk data"| OBJSTORE
+    META -->|"10. Publish sync event"| QUEUE
+    QUEUE -->|"11. Notify synced devices"| SYNC
+    SYNC -->|"12. Push to other devices"| CLIENT
+    GC -->|"13. Delete orphan chunks"| OBJSTORE
+    GC -->|"14. Remove stale metadata"| METADB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

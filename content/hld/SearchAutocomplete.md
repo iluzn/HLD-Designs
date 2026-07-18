@@ -163,8 +163,8 @@ flowchart LR
     CACHE["Redis Cache"]:::data
 
     USER -->|"1. GET /suggestions?prefix=how"| LB
-    LB -->|"2. Route request"| TRIE
-    TRIE -->|"3. Check cache"| CACHE
+    LB -->|"2. Forward to trie svc"| TRIE
+    TRIE -->|"3. Lookup prefix in cache"| CACHE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -209,13 +209,13 @@ flowchart LR
     AGG["Stream Aggregator"]:::async
     POPDB[("Popularity Store<br/>Cassandra")]:::data
 
-    USER -->|"1. Send request"| LB
-    LB -->|"2. Route request"| TRIE
-    TRIE -->|"3. Check cache"| CACHE
+    USER -->|"1. Type prefix query"| LB
+    LB -->|"2. Forward to trie svc"| TRIE
+    TRIE -->|"3. Lookup prefix in cache"| CACHE
     USER -->|"4. Search submitted"| QLOG
-    QLOG -->|"5. Emit event"| STREAM
-    STREAM -->|"6. Consume event"| AGG
-    AGG -->|"7. Query DB"| POPDB
+    QLOG -->|"5. Publish query event"| STREAM
+    STREAM -->|"6. Aggregate popularity"| AGG
+    AGG -->|"7. Update popularity store"| POPDB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -262,16 +262,16 @@ flowchart LR
     TREND["Trending Detector"]:::async
     HOTCACHE["Trending Cache<br/>(Redis Sorted Set)"]:::data
 
-    USER -->|"1. Send request"| LB
-    LB -->|"2. Route request"| TRIE
-    TRIE -->|"3. Check cache"| CACHE
-    TRIE -->|"4. Check cache"| HOTCACHE
-    USER -->|"5. Send request"| QLOG
-    QLOG -->|"6. Emit event"| STREAM
-    STREAM -->|"7. Consume event"| AGG
-    AGG -->|"8. Query DB"| POPDB
-    STREAM -->|"9. Consume event"| TREND
-    TREND -->|"10. Update cache"| HOTCACHE
+    USER -->|"1. Type prefix query"| LB
+    LB -->|"2. Forward to trie svc"| TRIE
+    TRIE -->|"3. Lookup prefix in cache"| CACHE
+    TRIE -->|"4. Check trending cache"| HOTCACHE
+    USER -->|"5. Submit full search"| QLOG
+    QLOG -->|"6. Publish query event"| STREAM
+    STREAM -->|"7. Aggregate popularity"| AGG
+    AGG -->|"8. Update popularity store"| POPDB
+    STREAM -->|"9. Detect trending spikes"| TREND
+    TREND -->|"10. Refresh trending cache"| HOTCACHE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -463,19 +463,19 @@ flowchart LR
     POPDB[("Popularity Store<br/>Cassandra")]:::data
     BUILDER["Trie Builder<br/>(periodic)"]:::async
 
-    USER -->|"1. Send request"| CDN
+    USER -->|"1. Type prefix query"| CDN
     CDN -->|"2. Cache miss"| LB
-    LB -->|"3. Route request"| TRIE
-    TRIE -->|"4. Check cache"| CACHE
-    TRIE -->|"5. Check cache"| HOTCACHE
-    USER -->|"6. Send request"| QLOG
-    QLOG -->|"7. Emit event"| STREAM
-    STREAM -->|"8. Consume event"| AGG
-    STREAM -->|"9. Consume event"| TREND
-    AGG -->|"10. Query DB"| POPDB
-    TREND -->|"11. Update cache"| HOTCACHE
-    BUILDER -->|"12. Persist data"| POPDB
-    BUILDER -->|"13. Call service"| TRIE
+    LB -->|"3. Forward to trie svc"| TRIE
+    TRIE -->|"4. Lookup prefix in cache"| CACHE
+    TRIE -->|"5. Check trending cache"| HOTCACHE
+    USER -->|"6. Submit full search"| QLOG
+    QLOG -->|"7. Publish query event"| STREAM
+    STREAM -->|"8. Aggregate popularity"| AGG
+    STREAM -->|"9. Detect trending spikes"| TREND
+    AGG -->|"10. Update popularity store"| POPDB
+    TREND -->|"11. Refresh trending cache"| HOTCACHE
+    BUILDER -->|"12. Rebuild trie from data"| POPDB
+    BUILDER -->|"13. Push new trie version"| TRIE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

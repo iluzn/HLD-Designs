@@ -26,12 +26,12 @@ flowchart LR
     BANK["External Bank<br/>UPI Cards"]:::external
     K["Kafka<br/>events"]:::async
 
-    APP -->|"1. API call"| API
-    API -->|"2. Query DB"| LEDGER
-    LEDGER -->|"3. Persist entry"| DB
-    LEDGER -->|"4. Update cache"| CACHE
-    API -->|"5. Call external"| BANK
-    LEDGER -->|"6. Emit event"| K
+    APP -->|"1. Initiate transaction"| API
+    API -->|"2. Post journal entry"| LEDGER
+    LEDGER -->|"3. Write ledger entry"| DB
+    LEDGER -->|"4. Refresh balance cache"| CACHE
+    API -->|"5. Charge via bank rail"| BANK
+    LEDGER -->|"6. Publish tx event"| K
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -270,17 +270,17 @@ flowchart LR
     K["Event Bus"]:::async
     BANK["External Rail<br/>UPI Cards Bank"]:::external
 
-    APP -->|"1. Send request"| GW
-    GW -->|"2. Route request"| WS
-    WS -->|"3. Call external"| PS
+    APP -->|"1. POST load funds"| GW
+    GW -->|"2. Forward to wallet svc"| WS
+    WS -->|"3. Initiate bank charge"| PS
     PS -->|"4. Initiate charge"| BANK
     BANK -->|"5. Webhook callback"| WH
     REC -->|"6. Poll rail status"| BANK
-    WH -->|"7. Emit event"| K
-    REC -->|"8. Emit event"| K
-    K -->|"9. Consume event"| L
+    WH -->|"7. Publish rail confirmed"| K
+    REC -->|"8. Publish reconciled result"| K
+    K -->|"9. Post journal entry"| L
     L -->|"10. Persist entry"| DB
-    WS -->|"11. Query DB"| DB
+    WS -->|"11. Read transaction state"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -335,12 +335,12 @@ flowchart LR
     NOTIF["Notification Service"]:::service
     RCV["Recipient App"]:::client
 
-    APP -->|"1. Send request"| GW
-    GW -->|"2. Route request"| TS
-    TS -->|"3. Query DB"| L
-    L -->|"4. Persist entry"| DB
-    L -->|"5. Emit event"| K
-    K -->|"6. Consume event"| NOTIF
+    APP -->|"1. POST transfer funds"| GW
+    GW -->|"2. Forward to transfer svc"| TS
+    TS -->|"3. Validate sender balance"| L
+    L -->|"4. Write debit and credit"| DB
+    L -->|"5. Publish transfer event"| K
+    K -->|"6. Trigger notification"| NOTIF
     NOTIF -->|"7. Push notification"| RCV
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -382,11 +382,11 @@ flowchart LR
     LEDGER[("Postgres<br/>ledger plus replicas")]:::data
     HIST[("Cassandra<br/>tx history feed")]:::data
 
-    APP -->|"1. Send request"| GW
-    GW -->|"2. Route request"| READ
-    READ -->|"3. Check cache"| CACHE
-    READ -->|"4. Read DB"| LEDGER
-    READ -->|"5. Read DB"| HIST
+    APP -->|"1. GET balance and history"| GW
+    GW -->|"2. Forward to read svc"| READ
+    READ -->|"3. Lookup cached balance"| CACHE
+    READ -->|"4. Fetch from ledger replica"| LEDGER
+    READ -->|"5. Fetch tx history"| HIST
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -543,12 +543,12 @@ flowchart LR
     CDC["Debezium CDC"]:::async
     K["Kafka"]:::async
 
-    APP -->|"1. API call"| READ
-    READ -->|"2. Check cache"| REDIS
-    READ -->|"3. Read DB"| REPL
+    APP -->|"1. GET balance"| READ
+    READ -->|"2. Lookup cached balance"| REDIS
+    READ -->|"3. Fallback to replica"| REPL
     PRIM -->|"4. Stream WAL"| CDC
     CDC -->|"5. Stream changes"| K
-    K -->|"6. Consume event"| REDIS
+    K -->|"6. Invalidate balance cache"| REDIS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -804,38 +804,38 @@ flowchart LR
     BANK["Rails<br/>UPI Bank Cards"]:::external
     PUSH["FCM APNs SMS"]:::external
 
-    APP -->|"1. Send request"| GW
-    GW -->|"2. Route request"| WS
-    GW -->|"3. Route request"| TS
-    GW -->|"4. Route request"| READ
+    APP -->|"1. Initiate transaction"| GW
+    GW -->|"2. Forward to wallet svc"| WS
+    GW -->|"3. Forward to transfer svc"| TS
+    GW -->|"4. Forward to read svc"| READ
 
-    WS -->|"5. Check cache"| IDE
-    TS -->|"6. Check cache"| IDE
-    WS -->|"7. Call external"| PG
+    WS -->|"5. Check idempotency key"| IDE
+    TS -->|"6. Check idempotency key"| IDE
+    WS -->|"7. Initiate bank charge"| PG
     PG -->|"8. Initiate charge"| BANK
-    TS -->|"9. Query DB"| LS
-    WS -->|"10. Query DB"| LS
-    LS -->|"11. Write ledger"| PRIM
-    LS -->|"12. Update cache"| BAL
+    TS -->|"9. Validate sender balance"| LS
+    WS -->|"10. Post journal entry"| LS
+    LS -->|"11. Write ledger entry"| PRIM
+    LS -->|"12. Refresh balance cache"| BAL
 
     PRIM -->|"13. Replicate"| REPL
     PRIM -->|"14. Stream WAL"| CDC
     CDC -->|"15. Stream changes"| K
-    K -->|"16. Consume event"| KV
-    K -->|"17. Consume event"| BAL
-    K -->|"18. Consume event"| HIST
-    K -->|"19. Consume event"| NOTIF
-    K -->|"20. Consume event"| FRAUD
+    K -->|"16. Update hot balance"| KV
+    K -->|"17. Invalidate balance cache"| BAL
+    K -->|"18. Append tx history"| HIST
+    K -->|"19. Trigger notifications"| NOTIF
+    K -->|"20. Evaluate fraud rules"| FRAUD
 
-    READ -->|"21. Check cache"| BAL
-    READ -->|"22. Read DB"| REPL
-    READ -->|"23. Query history"| KV
-    READ -->|"24. Read DB"| HIST
+    READ -->|"21. Lookup cached balance"| BAL
+    READ -->|"22. Fallback to replica"| REPL
+    READ -->|"23. Fetch hot balance"| KV
+    READ -->|"24. Fetch tx history"| HIST
 
     REC -->|"25. Poll rail status"| BANK
-    REC -->|"26. Persist data"| PRIM
+    REC -->|"26. Write reconciled entry"| PRIM
 
-    NOTIF -->|"27. Send notification"| PUSH
+    NOTIF -->|"27. Push via FCM APNs"| PUSH
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

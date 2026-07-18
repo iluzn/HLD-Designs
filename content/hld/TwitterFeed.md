@@ -25,11 +25,11 @@ flowchart LR
     READER["User opens feed"]:::client
     FEED["Feed Service"]:::service
 
-    POSTER -->|"1. API call"| API
-    API -->|"2. Emit event"| K
-    K -->|"3. Check cache"| CACHE
-    READER -->|"4. API call"| FEED
-    FEED -->|"5. Check cache"| CACHE
+    POSTER -->|"1. POST new tweet"| API
+    API -->|"2. Publish tweet event"| K
+    K -->|"3. Write to follower feeds"| CACHE
+    READER -->|"4. GET home timeline"| FEED
+    FEED -->|"5. Read pre-built feed"| CACHE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -128,11 +128,11 @@ flowchart LR
     R2[("Redis timeline<br/>follower 2")]:::data
     R3[("Redis timeline<br/>follower N")]:::data
 
-    TWEET -->|"1. API call"| API
-    API -->|"2. Call service"| FAN
-    FAN -->|"3. Check cache"| R1
-    FAN -->|"4. Check cache"| R2
-    FAN -->|"5. Check cache"| R3
+    TWEET -->|"1. POST new tweet"| API
+    API -->|"2. Trigger fan-out"| FAN
+    FAN -->|"3. Prepend to follower 1"| R1
+    FAN -->|"4. Prepend to follower 2"| R2
+    FAN -->|"5. Prepend to follower N"| R3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -157,8 +157,8 @@ flowchart LR
     TWEETS[("Tweets<br/>get recent from each")]:::data
     MERGE["Merge and rank"]:::service
 
-    USER -->|"1. API call"| FEED
-    FEED -->|"2. Push update"| FOLLOW
+    USER -->|"1. GET home timeline"| FEED
+    FEED -->|"2. Read follower list"| FOLLOW
     FEED -->|"3. Fetch recent"| TWEETS
     FEED -->|"4. Get prediction"| MERGE
 
@@ -221,10 +221,10 @@ flowchart LR
     TDB[("Tweet Store<br/>Cassandra")]:::data
     K["Kafka"]:::async
 
-    POSTER -->|"1. Send request"| GW
-    GW -->|"2. Route request"| TS
-    TS -->|"3. Query DB"| TDB
-    TS -->|"4. Emit event"| K
+    POSTER -->|"1. POST new tweet"| GW
+    GW -->|"2. Forward to tweet svc"| TS
+    TS -->|"3. Persist tweet"| TDB
+    TS -->|"4. Publish tweet event"| K
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -267,13 +267,13 @@ flowchart LR
     FEED["Feed Service"]:::service
     TDB[("Tweet Store")]:::data
 
-    K -->|"1. Consume event"| FANOUT
+    K -->|"1. Process tweet event"| FANOUT
     FANOUT -->|"2. Lookup followers"| GRAPH
-    FANOUT -->|"3. Check cache"| CACHE
-    READER -->|"4. Send request"| GW
-    GW -->|"5. Route request"| FEED
-    FEED -->|"6. Check cache"| CACHE
-    FEED -->|"7. Query DB"| TDB
+    FANOUT -->|"3. Prepend to follower feeds"| CACHE
+    READER -->|"4. GET home timeline"| GW
+    GW -->|"5. Forward to feed svc"| FEED
+    FEED -->|"6. Read pre-built feed"| CACHE
+    FEED -->|"7. Hydrate tweet details"| TDB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -500,18 +500,18 @@ flowchart LR
     K["Kafka<br/>tweet events"]:::async
     MEDIA[("Media<br/>S3 plus CDN")]:::data
 
-    USERS -->|"1. Send request"| GW
-    GW -->|"2. Route request"| TS
-    GW -->|"3. Route request"| FEED
-    TS -->|"4. Query DB"| TDB
-    TS -->|"5. Store file"| MEDIA
-    TS -->|"6. Emit event"| K
-    K -->|"7. Consume event"| FANOUT
-    FANOUT -->|"8. Push update"| GRAPH
-    FANOUT -->|"9. Check cache"| CACHE
-    FEED -->|"10. Check cache"| CACHE
-    FEED -->|"11. Query DB"| TDB
-    FEED -->|"12. Call service"| RANK
+    USERS -->|"1. POST or GET"| GW
+    GW -->|"2. Forward to tweet svc"| TS
+    GW -->|"3. Forward to feed svc"| FEED
+    TS -->|"4. Persist tweet"| TDB
+    TS -->|"5. Store media file"| MEDIA
+    TS -->|"6. Publish tweet event"| K
+    K -->|"7. Process tweet event"| FANOUT
+    FANOUT -->|"8. Lookup followers"| GRAPH
+    FANOUT -->|"9. Prepend to follower feeds"| CACHE
+    FEED -->|"10. Read pre-built feed"| CACHE
+    FEED -->|"11. Hydrate tweet details"| TDB
+    FEED -->|"12. Rank by relevance"| RANK
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

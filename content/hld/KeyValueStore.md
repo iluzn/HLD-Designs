@@ -169,7 +169,7 @@ flowchart LR
     N4["Node 4<br/>keys U-Z"]:::data
     COORD["Coordinator<br/>membership"]:::async
 
-    C -->|"1. Send request"| R
+    C -->|"1. PUT key value"| R
     R -->|"2. Route to node"| N1
     R -->|"3. Route to node"| N2
     R -->|"4. Route to node"| N3
@@ -217,7 +217,7 @@ flowchart LR
     R1["Replica 1<br/>Node 3"]:::data
     R2["Replica 2<br/>Node 4"]:::data
 
-    C -->|"1. Send request"| R
+    C -->|"1. PUT key value"| R
     R -->|"2. Write to primary"| P
     P -->|"3. Replicate"| R1
     P -->|"4. Replicate"| R2
@@ -363,7 +363,7 @@ flowchart LR
     end
 
     KEY["key: user:42<br/>hash position"]:::client
-    KEY -->|"1. Send request"| VN2
+    KEY -->|"1. Hash to vnode"| VN2
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -506,7 +506,7 @@ flowchart LR
     N6["Node 6"]:::data
     COORD["Coordinator<br/>ZooKeeper"]:::async
 
-    C -->|"1. Send request"| LB
+    C -->|"1. GET or PUT request"| LB
     LB -->|"2. Route"| R
     R -->|"3. Route to replica"| N1
     R -->|"4. Route to replica"| N2

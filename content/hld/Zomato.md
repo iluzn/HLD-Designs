@@ -28,12 +28,12 @@ flowchart LR
     MATCH["Dispatch<br/>Temporal"]:::service
     WS["WebSocket<br/>live tracking"]:::service
 
-    CUST -->|"1. Send request"| SEARCH
-    CUST -->|"2. API call"| ORDER
+    CUST -->|"1. Search restaurants"| SEARCH
+    CUST -->|"2. Place food order"| ORDER
     RIDER -->|"3. Read cache"| LOC
     ORDER -->|"4. Assign rider"| MATCH
-    MATCH -->|"5. Update cache"| LOC
-    LOC -->|"6. Return data"| WS
+    MATCH -->|"5. Write rider assignment"| LOC
+    LOC -->|"6. Stream rider position"| WS
     WS -->|"7. Deliver"| CUST
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -162,9 +162,9 @@ flowchart LR
     RESTSVC["Restaurant Service"]:::service
     DB[("Restaurants and Menus DB")]:::data
 
-    CUST -->|"1. Send request"| GW
-    GW -->|"2. Route request"| RESTSVC
-    RESTSVC -->|"3. Query DB"| DB
+    CUST -->|"1. Browse restaurants"| GW
+    GW -->|"2. Forward to restaurant svc"| RESTSVC
+    RESTSVC -->|"3. Fetch restaurant data"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -204,11 +204,11 @@ flowchart LR
     DB[("Orders DB")]:::data
     PG["Payment Gateway<br/>Razorpay Stripe UPI"]:::external
 
-    CUST -->|"1. Send request"| GW
-    GW -->|"2. Route request"| ORDER
-    ORDER -->|"3. Query DB"| DB
-    ORDER -->|"4. Call service"| PAY
-    PAY -->|"5. Call external"| PG
+    CUST -->|"1. Place food order"| GW
+    GW -->|"2. Forward to order svc"| ORDER
+    ORDER -->|"3. Persist order record"| DB
+    ORDER -->|"4. Initiate payment"| PAY
+    PAY -->|"5. Charge via gateway"| PG
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -253,14 +253,14 @@ flowchart LR
     PUSH["FCM and APNs"]:::external
 
     RIDER -->|"1. Location pings"| LOC
-    LOC -->|"2. Query DB"| LOCDB
-    CUST -->|"3. Send request"| GW
-    GW -->|"4. Route request"| ORDER
-    ORDER -->|"5. Query DB"| ORDERDB
+    LOC -->|"2. Query nearby riders"| LOCDB
+    CUST -->|"3. Place order"| GW
+    GW -->|"4. Forward to order svc"| ORDER
+    ORDER -->|"5. Persist order record"| ORDERDB
     ORDER -->|"6. Match request"| MATCH
-    MATCH -->|"7. Query DB"| LOCDB
-    MATCH -->|"8. Send notification"| NOTIF
-    NOTIF -->|"9. Send notification"| PUSH
+    MATCH -->|"7. Find nearest rider"| LOCDB
+    MATCH -->|"8. Notify selected rider"| NOTIF
+    NOTIF -->|"9. Push via FCM"| PUSH
     PUSH -->|"10. Notify rider"| RIDER
     RIDER -->|"11. Accept"| GW
 
@@ -324,10 +324,10 @@ flowchart LR
     K["Kafka<br/>rider location stream"]:::async
     DW[("Cassandra<br/>history")]:::data
 
-    RIDER -->|"1. API call"| LOC
-    LOC -->|"2. Check cache"| GEO
-    LOC -->|"3. Emit event"| K
-    K -->|"4. Send request"| DW
+    RIDER -->|"1. PUT GPS location"| LOC
+    LOC -->|"2. GEOADD to Redis Geo"| GEO
+    LOC -->|"3. Publish location event"| K
+    K -->|"4. Archive to history"| DW
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -473,14 +473,14 @@ flowchart LR
     K["Kafka"]:::async
     IDX["Indexer"]:::service
 
-    CUST -->|"1. Send request"| GW
-    GW -->|"2. Route request"| SEARCH
-    SEARCH -->|"3. Check cache"| REDIS
-    SEARCH -->|"4. Update index"| ES
+    CUST -->|"1. Search restaurants"| GW
+    GW -->|"2. Forward to search svc"| SEARCH
+    SEARCH -->|"3. Lookup cached results"| REDIS
+    SEARCH -->|"4. Full-text query"| ES
     RDB -->|"5. CDC stream"| CDC
     CDC -->|"6. Stream changes"| K
-    K -->|"7. Consume event"| IDX
-    IDX -->|"8. Return results"| ES
+    K -->|"7. Index new menu items"| IDX
+    IDX -->|"8. Update search index"| ES
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -703,34 +703,34 @@ flowchart LR
     PG["Razorpay Stripe UPI"]:::external
     PUSH["FCM APNs"]:::external
 
-    CUST -->|"1. Send request"| GW
-    RIDER -->|"2. Send request"| GW
-    REST -->|"3. Send request"| GW
-    CUST -->|"4. Send request"| WS
-    RIDER -->|"5. API call"| LOC
+    CUST -->|"1. Browse or order"| GW
+    RIDER -->|"2. Send GPS pings"| GW
+    REST -->|"3. Manage menu"| GW
+    CUST -->|"4. Track delivery"| WS
+    RIDER -->|"5. PUT GPS location"| LOC
 
-    GW -->|"6. Route request"| RSVC
-    RSVC -->|"7. Query DB"| RDB
-    GW -->|"8. Route request"| SEARCH
-    SEARCH -->|"9. Check cache"| SCACHE
-    SEARCH -->|"10. Update index"| ES
+    GW -->|"6. Forward to restaurant svc"| RSVC
+    RSVC -->|"7. Fetch restaurant data"| RDB
+    GW -->|"8. Forward to search svc"| SEARCH
+    SEARCH -->|"9. Lookup cached results"| SCACHE
+    SEARCH -->|"10. Full-text query"| ES
     RDB -->|"11. CDC stream"| CDC
     CDC -->|"12. Stream changes"| K
-    K -->|"13. Consume event"| ES
-    GW -->|"14. Route request"| ORDER
-    ORDER -->|"15. Query DB"| ORDERDB
-    ORDER -->|"16. Call service"| PAY
+    K -->|"13. Index new menu items"| ES
+    GW -->|"14. Forward to order svc"| ORDER
+    ORDER -->|"15. Persist order record"| ORDERDB
+    ORDER -->|"16. Initiate payment"| PAY
     PAY -->|"17. Charge"| PG
     ORDER -->|"18. Confirmed"| MATCH
-    LOC -->|"19. Check cache"| GEO
-    LOC -->|"20. Emit event"| K
-    K -->|"21. Consume event"| HIST
-    LOC -->|"22. Check cache"| PUBSUB
-    PUBSUB -->|"23. Return data"| WS
-    MATCH -->|"24. Update cache"| GEO
-    MATCH -->|"25. Call service"| NOTIF
-    NOTIF -->|"26. Send notification"| PUSH
-    MATCH -->|"27. Call service"| ORDER
+    LOC -->|"19. GEOADD to Redis Geo"| GEO
+    LOC -->|"20. Publish location event"| K
+    K -->|"21. Archive to history"| HIST
+    LOC -->|"22. Stream via Pub/Sub"| PUBSUB
+    PUBSUB -->|"23. Push rider position"| WS
+    MATCH -->|"24. Find nearest rider"| GEO
+    MATCH -->|"25. Notify selected rider"| NOTIF
+    NOTIF -->|"26. Push via FCM"| PUSH
+    MATCH -->|"27. Update order status"| ORDER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

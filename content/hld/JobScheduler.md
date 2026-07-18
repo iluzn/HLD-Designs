@@ -25,11 +25,11 @@ flowchart LR
     QUEUE["Job Queue<br/>Kafka"]:::async
     WORKERS["Worker Pool<br/>executes jobs"]:::service
 
-    USER -->|"1. API call"| API
-    API -->|"2. Query DB"| DB
-    TICKER -->|"3. Persist data"| DB
-    TICKER -->|"4. Emit event"| QUEUE
-    QUEUE -->|"5. Consume event"| WORKERS
+    USER -->|"1. POST job definition"| API
+    API -->|"2. Store job schedule"| DB
+    TICKER -->|"3. Scan due jobs"| DB
+    TICKER -->|"4. Enqueue due job"| QUEUE
+    QUEUE -->|"5. Execute job handler"| WORKERS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -264,9 +264,9 @@ flowchart LR
     DB[("Postgres<br/>jobs + schedules")]:::data
     CACHE[("Redis<br/>upcoming index")]:::data
 
-    CLIENT -->|"1. API call"| API
-    API -->|"2. Query DB"| DB
-    API -->|"3. Check cache"| CACHE
+    CLIENT -->|"1. POST create job"| API
+    API -->|"2. Store job schedule"| DB
+    API -->|"3. Add to hot window"| CACHE
 
     classDef client fill:#fed7aa,stroke:#c2410c,color:#431407
     classDef edge fill:#bfdbfe,stroke:#1d4ed8,color:#0c1f4a
@@ -311,14 +311,14 @@ flowchart LR
     HEARTBEAT[("Redis<br/>worker heartbeats")]:::data
     RETRY["Retry Queue<br/>delayed topic"]:::async
 
-    CACHE -->|"1. Return data"| DISPATCH
-    DISPATCH -->|"2. Emit event"| KAFKA
-    DISPATCH -->|"3. Query DB"| EXEC
-    KAFKA -->|"4. Consume event"| WORKER
-    WORKER -->|"5. Query DB"| EXEC
-    WORKER -->|"6. Check cache"| HEARTBEAT
+    CACHE -->|"1. Pop due jobs"| DISPATCH
+    DISPATCH -->|"2. Publish to pool topic"| KAFKA
+    DISPATCH -->|"3. Insert execution row"| EXEC
+    KAFKA -->|"4. Deliver to worker"| WORKER
+    WORKER -->|"5. Write execution result"| EXEC
+    WORKER -->|"6. Renew heartbeat TTL"| HEARTBEAT
     WORKER -.failure.-> RETRY
-    RETRY -->|"7. Consume event"| KAFKA
+    RETRY -->|"7. Re-enqueue with backoff"| KAFKA
 
     classDef service fill:#bbf7d0,stroke:#16a34a,color:#052e16
     classDef async fill:#e9d5ff,stroke:#7c3aed,color:#3b0764
@@ -357,10 +357,10 @@ flowchart LR
     CANCEL[("Redis<br/>cancel set")]:::data
     WORKER["Worker"]:::service
 
-    CLIENT -->|"1. API call"| API
-    API -->|"2. Query DB"| DB
-    API -->|"3. Check cache"| CANCEL
-    WORKER -->|"4. Check cache"| CANCEL
+    CLIENT -->|"1. POST cancel execution"| API
+    API -->|"2. Fetch execution state"| DB
+    API -->|"3. Write to cancel set"| CANCEL
+    WORKER -->|"4. Poll cancel set"| CANCEL
 
     classDef client fill:#fed7aa,stroke:#c2410c,color:#431407
     classDef edge fill:#bfdbfe,stroke:#1d4ed8,color:#0c1f4a
@@ -454,12 +454,12 @@ flowchart LR
     D1 -->|"1. Acquire leader lock"| ETCD
     D2 -->|"2. Acquire leader lock"| ETCD
     D3 -->|"3. Acquire leader lock"| ETCD
-    ZSET1 -->|"4. Return data"| D1
-    ZSET2 -->|"5. Return data"| D2
-    ZSET3 -->|"6. Return data"| D3
-    D1 -->|"7. Emit event"| KAFKA
-    D2 -->|"8. Emit event"| KAFKA
-    D3 -->|"9. Emit event"| KAFKA
+    ZSET1 -->|"4. Pop due jobs shard 1"| D1
+    ZSET2 -->|"5. Pop due jobs shard 2"| D2
+    ZSET3 -->|"6. Pop due jobs shard N"| D3
+    D1 -->|"7. Publish to pool topic"| KAFKA
+    D2 -->|"8. Publish to pool topic"| KAFKA
+    D3 -->|"9. Publish to pool topic"| KAFKA
 
     classDef service fill:#bbf7d0,stroke:#16a34a,color:#052e16
     classDef async fill:#e9d5ff,stroke:#7c3aed,color:#3b0764
@@ -749,9 +749,9 @@ flowchart LR
         CH[("Analytics Store<br/>executions OLAP replica")]:::data
     end
 
-    CLIENT -->|"1. API call"| API
-    API -->|"2. Query DB"| PG
-    API -->|"3. Check cache"| REDIS
+    CLIENT -->|"1. POST create or cancel job"| API
+    API -->|"2. Persist job definition"| PG
+    API -->|"3. Write to hot ZSET"| REDIS
     API -->|"4. Write schedule"| CRON
     HYDRATOR -->|"5. Fetch job details"| PG
     HYDRATOR -->|"6. Read metadata"| REDIS
@@ -759,24 +759,24 @@ flowchart LR
     DISP -->|"8. Acquire shard lock"| ETCD
     DISP -->|"9. Update status"| PG
     DISP -->|"10. Dispatch job"| KAFKA
-    SWEEPER -->|"11. Persist data"| PG
-    SWEEPER -->|"12. Emit event"| KAFKA
-    KAFKA -->|"13. Consume event"| WORKER_A
-    KAFKA -->|"14. Consume event"| WORKER_B
-    KAFKA -->|"15. Consume event"| WORKER_C
-    WORKER_A -->|"16. Send request"| PG
-    WORKER_B -->|"17. Query DB"| PG
-    WORKER_C -->|"18. Query DB"| PG
+    SWEEPER -->|"11. Re-schedule stuck jobs"| PG
+    SWEEPER -->|"12. Re-enqueue for retry"| KAFKA
+    KAFKA -->|"13. Execute email jobs"| WORKER_A
+    KAFKA -->|"14. Execute ETL jobs"| WORKER_B
+    KAFKA -->|"15. Execute general jobs"| WORKER_C
+    WORKER_A -->|"16. Write execution result"| PG
+    WORKER_B -->|"17. Write execution result"| PG
+    WORKER_C -->|"18. Write execution result"| PG
     WORKER_A -->|"19. Read cache"| REDIS
-    WORKER_B -->|"20. Check cache"| REDIS
-    WORKER_C -->|"21. Check cache"| REDIS
+    WORKER_B -->|"20. Renew heartbeat TTL"| REDIS
+    WORKER_C -->|"21. Poll cancel set"| REDIS
     WORKER_A -.failure.-> KAFKA
     WORKER_B -.failure.-> KAFKA
     WORKER_C -.failure.-> KAFKA
     DISP -->|"22. Report metrics"| METRICS
     WORKER_A -->|"23. Report metrics"| METRICS
     WORKER_A -->|"24. Report traces"| TRACES
-    PG -->|"25. Return data"| CH
+    PG -->|"25. Replicate to OLAP"| CH
 
     classDef client fill:#fed7aa,stroke:#c2410c,color:#431407
     classDef edge fill:#bfdbfe,stroke:#1d4ed8,color:#0c1f4a

@@ -24,7 +24,7 @@ flowchart LR
     DB[("Optional DB<br/>for coordination")]:::data
 
     SVC -->|"1. Request ID"| IDG
-    IDG -->|"2. Persist data"| DB
+    IDG -->|"2. Reserve ID range"| DB
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -402,7 +402,7 @@ flowchart LR
     ZK[("ZooKeeper<br/>machine-ID registry")]:::data
     NTP["NTP time sync"]:::external
 
-    APP -->|"1. Send request"| LB
+    APP -->|"1. Request unique ID"| LB
     LB -->|"2. Route"| G1
     LB -->|"3. Route"| G2
     LB -->|"4. Route"| GN

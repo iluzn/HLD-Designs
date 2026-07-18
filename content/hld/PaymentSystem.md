@@ -175,13 +175,13 @@ flowchart LR
     BANK["Bank or Card Network"]:::external
     LEDGER[("Ledger<br/>Double-Entry")]:::data
 
-    MERCHANT -->|"1. API call"| API
-    API -->|"2. Check cache"| IDEMP
-    API -->|"3. Call external"| ORCH
-    ORCH -->|"4. Query DB"| DB
-    ORCH -->|"5. Call external"| ROUTER
-    ROUTER -->|"6. Call external"| BANK
-    ORCH -->|"7. Query DB"| LEDGER
+    MERCHANT -->|"1. POST /payments"| API
+    API -->|"2. Check idempotency key"| IDEMP
+    API -->|"3. Start payment flow"| ORCH
+    ORCH -->|"4. Persist payment record"| DB
+    ORCH -->|"5. Route to bank gateway"| ROUTER
+    ROUTER -->|"6. Charge via bank"| BANK
+    ORCH -->|"7. Post ledger entry"| LEDGER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -217,11 +217,11 @@ flowchart LR
     LEDGER[("Ledger")]:::data
 
     MERCHANT -->|"1. POST /refund"| API
-    API -->|"2. Call external"| ORCH
-    ORCH -->|"3. Query DB"| DB
-    ORCH -->|"4. Call external"| ROUTER
-    ROUTER -->|"5. Call external"| BANK
-    ORCH -->|"6. Query DB"| LEDGER
+    API -->|"2. Validate refund request"| ORCH
+    ORCH -->|"3. Check original payment"| DB
+    ORCH -->|"4. Route refund to bank"| ROUTER
+    ROUTER -->|"5. Initiate bank refund"| BANK
+    ORCH -->|"6. Post refund ledger entry"| LEDGER
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -256,8 +256,8 @@ flowchart LR
     SCHEDULER -->|"1. Trigger batch"| SETTLE
     SETTLE -->|"2. Query payments"| DB
     SETTLE -->|"3. Post entries"| LEDGER
-    SETTLE -->|"4. Call service"| PAYOUT
-    PAYOUT -->|"5. Call external"| BANK
+    SETTLE -->|"4. Initiate merchant payout"| PAYOUT
+    PAYOUT -->|"5. Transfer to merchant bank"| BANK
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -405,17 +405,17 @@ flowchart LR
     SETTLE["Settlement Engine"]:::async
     RECON["Reconciliation Job"]:::async
 
-    MERCHANT -->|"1. API call"| API
-    SDK -->|"2. Send request"| VAULT
-    API -->|"3. Query DB"| IDEMP
+    MERCHANT -->|"1. POST /payments"| API
+    SDK -->|"2. Tokenize card data"| VAULT
+    API -->|"3. Check idempotency key"| IDEMP
     API -->|"4. Orchestrate"| ORCH
-    ORCH -->|"5. Query DB"| DB
-    ORCH -->|"6. Post entry"| LEDGER
+    ORCH -->|"5. Persist payment record"| DB
+    ORCH -->|"6. Post ledger entry"| LEDGER
     ORCH -->|"7. Route payment"| ROUTER
-    ROUTER -->|"8. Call external"| BANK1
-    ROUTER -->|"9. Call external"| BANK2
+    ROUTER -->|"8. Charge via Visa"| BANK1
+    ROUTER -->|"9. Charge via UPI"| BANK2
     VAULT -->|"10. Decrypt and route"| ROUTER
-    SETTLE -->|"11. Query DB"| DB
+    SETTLE -->|"11. Batch settled payments"| DB
     SETTLE -->|"12. Post entries"| LEDGER
     RECON -->|"13. Fix breaks"| DB
     RECON -->|"14. Fix breaks"| LEDGER

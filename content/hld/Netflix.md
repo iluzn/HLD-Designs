@@ -202,13 +202,13 @@ flowchart LR
     S3E["S3 Encoded Segments"]:::data
     CAT["Catalog DB"]:::data
 
-    Studio -->|"1. Call service"| IS
-    IS -->|"2. Store file"| S3M
+    Studio -->|"1. Upload raw video"| IS
+    IS -->|"2. Store raw master file"| S3M
     IS -->|"3. Start workflow"| ORCH
     ORCH -->|"4. Dispatch task"| EW
-    EW -->|"5. Store file"| S3E
+    EW -->|"5. Store encoded segments"| S3E
     EW -->|"6. Report complete"| ORCH
-    ORCH -->|"7. Query DB"| CAT
+    ORCH -->|"7. Update catalog metadata"| CAT
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -257,10 +257,10 @@ flowchart LR
     S3["S3 Segments"]:::data
     SS["Session Store Redis"]:::data
 
-    TV -->|"1. Call service"| GW
-    GW -->|"2. Route request"| PS
+    TV -->|"1. Request playback"| GW
+    GW -->|"2. Forward to playback svc"| PS
     PS -->|"3. Get DRM license"| DRM
-    PS -->|"4. Check cache"| SS
+    PS -->|"4. Lookup active session"| SS
     TV -->|"5. Fetch segments"| CDN
     CDN -->|"6. Fetch origin"| S3
 
@@ -311,11 +311,11 @@ flowchart LR
     ES["Elasticsearch"]:::data
     CAT["Catalog DB"]:::data
 
-    TV -->|"1. Send request"| GW
-    GW -->|"2. Route request"| RS
-    RS -->|"3. Check cache"| RC
-    RS -->|"4. Query DB"| CAT
-    TV -->|"5. Send request"| GW
+    TV -->|"1. Browse catalog"| GW
+    GW -->|"2. Forward to reco svc"| RS
+    RS -->|"3. Lookup cached recs"| RC
+    RS -->|"4. Fetch from catalog"| CAT
+    TV -->|"5. Search titles"| GW
     GW -->|"6. Search query"| ES
     KF -->|"7. Stream events"| ML
     ML -->|"8. Return prediction"| RC
@@ -673,22 +673,22 @@ flowchart LR
     WEB -->|"3. Resolve CDN"| DNS
     DNS -->|"4. Route to API"| GW
     DNS -->|"5. Route to edge"| CDN
-    GW -->|"6. Route request"| PS
-    GW -->|"7. Route request"| RS
-    GW -->|"8. Route request"| SS
+    GW -->|"6. Route to playback svc"| PS
+    GW -->|"7. Route to reco svc"| RS
+    GW -->|"8. Route to search svc"| SS
     PS -->|"9. Get DRM license"| DRM
-    PS -->|"10. Check cache"| RD
-    RS -->|"11. Check cache"| RD
-    RS -->|"12. Query DB"| CAT
+    PS -->|"10. Lookup active session"| RD
+    RS -->|"11. Lookup cached recs"| RD
+    RS -->|"12. Fetch from catalog"| CAT
     SS -->|"13. Update index"| ES
     CDN -->|"14. Fetch origin"| S3
     IS -->|"15. Start workflow"| TMP
     TMP -->|"16. Dispatch encode"| EW
-    EW -->|"17. Store file"| S3
+    EW -->|"17. Store encoded segments"| S3
     EW -->|"18. Report complete"| TMP
     TMP -->|"19. Update catalog"| CAT
     KF -->|"20. Stream events"| ML
-    ML -->|"21. Update cache"| RD
+    ML -->|"21. Refresh reco cache"| RD
     TV -->|"22. Fetch segments"| CDN
     MOB -->|"23. Fetch segments"| CDN
     WEB -->|"24. Fetch segments"| CDN

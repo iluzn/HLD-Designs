@@ -26,7 +26,7 @@ flowchart LR
 
     USER -->|"1. Click short URL"| CDN
     CDN -->|"2. Cache miss"| RS
-    RS -->|"3. Check cache"| REDIS
+    RS -->|"3. Lookup short code"| REDIS
     RS -->|"4. Fallback read"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -263,9 +263,9 @@ flowchart LR
     K["Event Bus"]:::async
 
     USER -->|"1. GET /aB3xY9"| CDN
-    CDN -->|"2. Cache miss"| RS
-    RS -->|"3. Check cache"| CACHE
-    RS -->|"4. Cache miss - read DB"| DB
+    CDN -->|"2. Forward on miss"| RS
+    RS -->|"3. Lookup short code"| CACHE
+    RS -->|"4. Fetch mapping from DB"| DB
     RS -->|"5. Fire click event async"| K
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -390,7 +390,7 @@ flowchart LR
 
     USER --> CDN
     CDN -->|"miss"| RS
-    RS -->|"check cache"| REDIS
+    RS -->|"Lookup short code"| REDIS
     RS -->|"miss"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -608,7 +608,7 @@ flowchart LR
     GW -->|"3b. GET /code"| RS
     WS -->|"4. Get unique ID"| IDG
     WS -->|"5. Store mapping"| DB
-    RS -->|"4. Check cache"| REDIS
+    RS -->|"4. Lookup short code"| REDIS
     RS -->|"5. DB fallback"| DB
     RS -->|"6. Fire click event"| Q
     Q -->|"7. Aggregate counts"| CONSUMER

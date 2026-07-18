@@ -26,12 +26,12 @@ flowchart LR
     DISP["Dispatcher<br/>fires HTTP callback"]:::service
     TARGET["Caller callback URL"]:::external
 
-    CALLER -->|"1. Call service"| API
-    API -->|"2. Query DB"| DB
-    API -->|"3. Emit event"| SQS
-    SWEEPER -->|"4. Schedule"| DB
-    SWEEPER -->|"5. Trigger job"| SQS
-    SQS -->|"6. Consume event"| DISP
+    CALLER -->|"1. Register delayed trigger"| API
+    API -->|"2. Persist trigger record"| DB
+    API -->|"3. Enqueue short delays"| SQS
+    SWEEPER -->|"4. Scan due triggers"| DB
+    SWEEPER -->|"5. Enqueue for dispatch"| SQS
+    SQS -->|"6. Pick up due trigger"| DISP
     DISP -->|"7. POST callback"| TARGET
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -207,7 +207,7 @@ We'll layer in components as the three FRs demand them.
 ```mermaid
 flowchart LR
   Caller["Caller"] -->|"1. Register trigger"| API["Trigger API"]
-  API -->|"2. Check cache"| Idem["Redis<br/>idempotency cache"]
+  API -->|"2. Check idempotency key"| Idem["Redis<br/>idempotency cache"]
   API -->|"3. Persist trigger"| DB["Cassandra<br/>partition by fireAt-minute"]
 
   classDef client fill:#FFD8A8,stroke:#E8590C,color:#000
@@ -484,8 +484,8 @@ If a callback fails N times, the trigger lands in a DLQ topic (Kafka). A small o
 
 ```mermaid
 flowchart LR
-  Caller["Caller services"] -->|"1. Send request"| ALB["API gateway"]
-  ALB -->|"2. Route request"| API["Trigger API"]
+  Caller["Caller services"] -->|"1. Register delayed trigger"| ALB["API gateway"]
+  ALB -->|"2. Forward to trigger API"| API["Trigger API"]
   API -->|"3. Check idempotency"| Idem["Redis idem cache"]
   API -->|"4. Persist trigger"| DB["Cassandra<br/>partition by bucket sub-shard"]
   API -->|"5. Enqueue short delay"| SQSshort["SQS short-delay queue"]

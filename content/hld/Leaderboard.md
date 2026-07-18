@@ -154,8 +154,8 @@ flowchart LR
     API["Leaderboard Service"]:::service
     REDIS[("Redis Sorted Set<br/>ZADD")]:::data
 
-    GAME -->|"1. Call service"| API
-    API -->|"2. Check cache"| REDIS
+    GAME -->|"1. POST player score"| API
+    API -->|"2. ZADD to sorted set"| REDIS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -213,7 +213,7 @@ flowchart LR
     DB[("Durable Store<br/>Postgres or DynamoDB")]:::data
     USER["Player"]:::client
 
-    GAME -->|"1. Call service"| API
+    GAME -->|"1. Submit new score"| API
     API -->|"2. ZADD score"| REDIS
     API -->|"3. INSERT for durability"| DB
     USER -->|"4. GET rank or top-N"| API
@@ -304,12 +304,12 @@ flowchart LR
     AGG["Global Aggregator"]:::service
     RG[("Redis Global")]:::data
 
-    G1 -->|"1. Check cache"| R1
-    G2 -->|"2. Check cache"| R2
+    G1 -->|"1. ZADD local score"| R1
+    G2 -->|"2. ZADD local score"| R2
     R1 -->|"3. Publish change"| K
     R2 -->|"4. Publish change"| K
-    K -->|"5. Consume event"| AGG
-    AGG -->|"6. Check cache"| RG
+    K -->|"5. Merge regional scores"| AGG
+    AGG -->|"6. ZADD global rank"| RG
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -415,16 +415,16 @@ flowchart LR
     WS["WebSocket Push"]:::service
     USER["Players"]:::client
 
-    GAME -->|"1. Call service"| API
-    API -->|"2. Check cache"| R1
-    API -->|"3. Query DB"| DB
-    R1 -->|"4. Publish change"| K
-    K -->|"5. Consume event"| AGG
-    AGG -->|"6. Check cache"| RG
-    CACHE -->|"7. Return data"| RG
-    CACHE -->|"8. Return data"| WS
-    WS -->|"9. Push update"| USER
-    USER -->|"10. Read cache"| CACHE
+    GAME -->|"1. Submit score update"| API
+    API -->|"2. ZADD to regional Redis"| R1
+    API -->|"3. Persist for durability"| DB
+    R1 -->|"4. Publish score change"| K
+    K -->|"5. Merge regional scores"| AGG
+    AGG -->|"6. ZADD to global Redis"| RG
+    CACHE -->|"7. Serve top-K from global"| RG
+    CACHE -->|"8. Feed live leaderboard"| WS
+    WS -->|"9. Push rank updates"| USER
+    USER -->|"10. Fetch cached rankings"| CACHE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0

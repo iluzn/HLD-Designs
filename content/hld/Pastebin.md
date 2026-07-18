@@ -162,10 +162,10 @@ flowchart LR
     S3[("Object Storage<br/>paste content")]:::data
     META[("Metadata DB<br/>id expiry lang")]:::data
 
-    USER -->|"1. API call"| API
+    USER -->|"1. POST paste content"| API
     API -->|"2. Generate short ID"| ID
-    API -->|"3. Store content"| S3
-    API -->|"4. Save metadata"| META
+    API -->|"3. Store paste text"| S3
+    API -->|"4. Save paste metadata"| META
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -204,10 +204,10 @@ flowchart LR
     META[("Metadata DB")]:::data
     S3[("Object Storage")]:::data
 
-    READER -->|"1. Update cache"| CDN
-    CDN -->|"2. Cache miss"| API
-    API -->|"3. Query DB"| META
-    API -->|"4. Store file"| S3
+    READER -->|"1. GET paste by ID"| CDN
+    CDN -->|"2. Forward on miss"| API
+    API -->|"3. Fetch paste metadata"| META
+    API -->|"4. Fetch paste content"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -245,9 +245,9 @@ flowchart LR
     S3[("Object Storage")]:::data
     CRON["Cleanup Service<br/>runs every 5 min"]:::async
 
-    API -->|"1. Check expiry"| META
-    CRON -->|"2. Query DB"| META
-    CRON -->|"3. Store file"| S3
+    API -->|"1. Check if paste expired"| META
+    CRON -->|"2. Scan expired pastes"| META
+    CRON -->|"3. Delete expired content"| S3
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -406,14 +406,14 @@ flowchart LR
     CLEANUP["Cleanup Service"]:::async
     READER["Reader"]:::client
 
-    USER -->|"1. Create paste"| API
+    USER -->|"1. POST paste content"| API
     API -->|"2. Generate short ID"| ID
-    API -->|"3. Store content"| S3
-    API -->|"4. Save metadata"| META
-    READER -->|"5. Read paste"| CDN
-    CDN -->|"6. Cache miss"| API
-    CLEANUP -->|"7. Scan expired"| META
-    CLEANUP -->|"8. Delete content"| S3
+    API -->|"3. Store paste text"| S3
+    API -->|"4. Save paste metadata"| META
+    READER -->|"5. GET paste by ID"| CDN
+    CDN -->|"6. Forward on miss"| API
+    CLEANUP -->|"7. Scan expired pastes"| META
+    CLEANUP -->|"8. Delete expired content"| S3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

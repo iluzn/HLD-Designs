@@ -164,7 +164,7 @@ flowchart LR
     SCHED -->|"1. Dispatch jobs"| WORKERS
     WORKERS -->|"2. Fetch RSS and HTML"| SOURCES
     WORKERS -->|"3. Parse content"| EXTRACT
-    EXTRACT -->|"4. Emit event"| KF
+    EXTRACT -->|"4. Publish parsed article"| KF
     KF -->|"5. Sink data"| STORE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -206,10 +206,10 @@ flowchart LR
     CLUSTERDB[("Cluster DB<br/>Postgres")]:::data
     STORE[("Article Store")]:::data
 
-    KF -->|"1. Consume event"| CLUSTER
-    CLUSTER -->|"2. Check cache"| EMBED
-    CLUSTER -->|"3. Query DB"| CLUSTERDB
-    CLUSTER -->|"4. Query DB"| STORE
+    KF -->|"1. Process new article"| CLUSTER
+    CLUSTER -->|"2. Compute embeddings"| EMBED
+    CLUSTER -->|"3. Read cluster centroids"| CLUSTERDB
+    CLUSTER -->|"4. Fetch article content"| STORE
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
@@ -251,12 +251,12 @@ flowchart LR
     PROFILE[("User Profile<br/>Redis")]:::data
     CLUSTERDB[("Cluster DB")]:::data
 
-    USER -->|"1. Send request"| GW
-    GW -->|"2. Route request"| FEED
-    FEED -->|"3. Check cache"| CACHE
-    FEED -->|"4. Call service"| RANK
-    RANK -->|"5. Check cache"| PROFILE
-    RANK -->|"6. Query DB"| CLUSTERDB
+    USER -->|"1. GET personalized feed"| GW
+    GW -->|"2. Forward to feed svc"| FEED
+    FEED -->|"3. Lookup cached feed"| CACHE
+    FEED -->|"4. Score and rank articles"| RANK
+    RANK -->|"5. Load user preferences"| PROFILE
+    RANK -->|"6. Read top clusters"| CLUSTERDB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -463,17 +463,17 @@ flowchart LR
 
     SOURCES -->|"1. Provide articles"| WORKERS
     SCHED -->|"2. Trigger crawl"| WORKERS
-    WORKERS -->|"3. Emit event"| KF
-    KF -->|"4. Consume event"| CLUSTER
+    WORKERS -->|"3. Publish parsed article"| KF
+    KF -->|"4. Process new article"| CLUSTER
     KF -->|"5. Sink data"| ARTICLES
-    CLUSTER -->|"6. Check cache"| EMBED
-    CLUSTER -->|"7. Query DB"| CLUSTERDB
-    USER -->|"8. Send request"| GW
-    GW -->|"9. Route request"| FEED
-    FEED -->|"10. Check cache"| CACHE
-    FEED -->|"11. Call service"| RANK
-    RANK -->|"12. Query DB"| CLUSTERDB
-    RANK -->|"13. Check cache"| PROFILE
+    CLUSTER -->|"6. Compute embeddings"| EMBED
+    CLUSTER -->|"7. Read cluster centroids"| CLUSTERDB
+    USER -->|"8. GET personalized feed"| GW
+    GW -->|"9. Forward to feed svc"| FEED
+    FEED -->|"10. Lookup cached feed"| CACHE
+    FEED -->|"11. Score and rank articles"| RANK
+    RANK -->|"12. Read top clusters"| CLUSTERDB
+    RANK -->|"13. Load user preferences"| PROFILE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

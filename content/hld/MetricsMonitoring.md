@@ -181,7 +181,7 @@ flowchart LR
     APPS -->|"1. Write metrics"| AGENT
     AGENT -->|"2. Buffer and ship"| KAFKA
     KAFKA -->|"3. Write DB"| WRITER
-    WRITER -->|"4. Return data"| TSDB
+    WRITER -->|"4. Persist to TSDB"| TSDB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -226,10 +226,10 @@ flowchart LR
     ROLLUP2[("1hr Rollups<br/>2+ years")]:::data
     CACHE["Query Cache<br/>Redis"]:::data
 
-    DASH -->|"1. Call service"| QAPI
+    DASH -->|"1. Submit PromQL query"| QAPI
     QAPI -->|"2. Route query"| QENG
-    QENG -->|"3. Check cache"| CACHE
-    QENG -->|"4. Read DB"| TSDB
+    QENG -->|"3. Lookup cached result"| CACHE
+    QENG -->|"4. Scan raw data"| TSDB
     QENG -->|"5. Read rollup"| ROLLUP1
     QENG -->|"6. Read rollup"| ROLLUP2
 
@@ -270,11 +270,11 @@ flowchart LR
     PD["PagerDuty and Slack"]:::external
 
     APPS -->|"1. Write metrics"| AGENT
-    AGENT -->|"2. Query analytics"| KAFKA
+    AGENT -->|"2. Ship to Kafka"| KAFKA
     KAFKA -->|"3. Sink data"| WRITER
-    WRITER -->|"4. Return data"| TSDB
-    KAFKA -->|"5. Consume event"| ALERT
-    ALERT -->|"6. Send notification"| NOTIFY
+    WRITER -->|"4. Persist to TSDB"| TSDB
+    KAFKA -->|"5. Evaluate alert rules"| ALERT
+    ALERT -->|"6. Fire alert"| NOTIFY
     NOTIFY -->|"7. Dispatch alert"| PD
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -457,17 +457,17 @@ flowchart LR
     PD["PagerDuty and Slack"]:::external
 
     APPS -->|"1. Write metrics"| AGENT
-    AGENT -->|"2. Query analytics"| KAFKA
+    AGENT -->|"2. Ship to Kafka"| KAFKA
     KAFKA -->|"3. Write DB"| WRITER
-    KAFKA -->|"4. Call service"| ALERT
-    WRITER -->|"5. Return data"| TSDB
-    TSDB -->|"6. Query analytics"| ROLLUPJOB
-    ROLLUPJOB -->|"7. Persist data"| ROLLUP
+    KAFKA -->|"4. Evaluate alert rules"| ALERT
+    WRITER -->|"5. Persist to TSDB"| TSDB
+    TSDB -->|"6. Compute rollups"| ROLLUPJOB
+    ROLLUPJOB -->|"7. Store rollup data"| ROLLUP
     DASH -->|"8. Query"| QENG
-    QENG -->|"9. Check cache"| QCACHE
-    QENG -->|"10. Write metrics"| TSDB
-    QENG -->|"11. Read DB"| ROLLUP
-    ALERT -->|"12. Send notification"| NOTIFY
+    QENG -->|"9. Lookup cached result"| QCACHE
+    QENG -->|"10. Scan raw data"| TSDB
+    QENG -->|"11. Read rollup data"| ROLLUP
+    ALERT -->|"12. Fire alert"| NOTIFY
     NOTIFY -->|"13. Dispatch alert"| PD
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0

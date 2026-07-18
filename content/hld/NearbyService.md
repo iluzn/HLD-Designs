@@ -164,11 +164,11 @@ flowchart LR
     PLACEDB[("Place Metadata<br/>Postgres")]:::data
     CACHE["Result Cache"]:::data
 
-    USER -->|"1. Send request"| LB
-    LB -->|"2. Route request"| NEARBY
-    NEARBY -->|"3. Check cache"| CACHE
-    NEARBY -->|"4. Check cache"| GEODEX
-    NEARBY -->|"5. Query DB"| PLACEDB
+    USER -->|"1. GET /nearby?lat=X&lng=Y"| LB
+    LB -->|"2. Forward to nearby svc"| NEARBY
+    NEARBY -->|"3. Lookup cached results"| CACHE
+    NEARBY -->|"4. Query spatial index"| GEODEX
+    NEARBY -->|"5. Enrich place details"| PLACEDB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -200,11 +200,11 @@ flowchart LR
     UPDATER["Index Updater"]:::service
     GEODYN["Dynamic Spatial Index<br/>(Redis Geo)"]:::data
 
-    DRIVER -->|"1. Send request"| LB
-    LB -->|"2. Route request"| LOCAPI
-    LOCAPI -->|"3. Emit event"| KAFKA
-    KAFKA -->|"4. Consume event"| UPDATER
-    UPDATER -->|"5. Return results"| GEODYN
+    DRIVER -->|"1. PUT GPS coordinates"| LB
+    LB -->|"2. Forward to location API"| LOCAPI
+    LOCAPI -->|"3. Publish location event"| KAFKA
+    KAFKA -->|"4. Update spatial index"| UPDATER
+    UPDATER -->|"5. GEOADD to Redis Geo"| GEODYN
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0
@@ -235,8 +235,8 @@ flowchart LR
     SEARCH["Elasticsearch<br/>(geo + attributes)"]:::data
     CACHE["Cache"]:::data
 
-    USER -->|"1. API call"| NEARBY
-    NEARBY -->|"2. Check cache"| CACHE
+    USER -->|"1. GET /nearby"| NEARBY
+    NEARBY -->|"2. Lookup cached results"| CACHE
     NEARBY -->|"3. Update index"| GEODEX
     NEARBY -->|"4. Update index"| SEARCH
 
@@ -354,16 +354,16 @@ flowchart LR
     PLACEDB[("Place DB<br/>Postgres")]:::data
     CACHE["Result Cache<br/>Redis"]:::data
 
-    USER -->|"1. Send request"| LB
-    LB -->|"2. Route request"| NEARBY
-    NEARBY -->|"3. Check cache"| CACHE
-    NEARBY -->|"4. Update index"| STATIC
-    NEARBY -->|"5. Check cache"| DYNAMIC
-    NEARBY -->|"6. Query DB"| PLACEDB
-    DRIVER -->|"7. Send request"| LOCAPI
-    LOCAPI -->|"8. Emit event"| KAFKA
-    KAFKA -->|"9. Consume event"| UPDATER
-    UPDATER -->|"10. Return results"| DYNAMIC
+    USER -->|"1. GET /nearby"| LB
+    LB -->|"2. Forward to nearby svc"| NEARBY
+    NEARBY -->|"3. Lookup cached results"| CACHE
+    NEARBY -->|"4. Query static index"| STATIC
+    NEARBY -->|"5. Query live drivers"| DYNAMIC
+    NEARBY -->|"6. Enrich place details"| PLACEDB
+    DRIVER -->|"7. PUT GPS coordinates"| LOCAPI
+    LOCAPI -->|"8. Publish location event"| KAFKA
+    KAFKA -->|"9. Update spatial index"| UPDATER
+    UPDATER -->|"10. GEOADD to Redis Geo"| DYNAMIC
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#38bdf8,color:#e2e8f0

@@ -126,7 +126,7 @@ flowchart LR
     INDEX[("Inverted Index<br/>sharded")]:::data
 
     STORE -->|"1. Change events"| KAFKA
-    KAFKA -->|"2. Consume event"| INDEXER
+    KAFKA -->|"2. Index new documents"| INDEXER
     INDEXER -->|"3. Return results"| INDEX
 
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -145,8 +145,8 @@ flowchart LR
     INDEX[("Inverted Index<br/>sharded")]:::data
     CACHE[("Redis<br/>hot queries")]:::data
 
-    USER -->|"1. API call"| QUERY
-    QUERY -->|"2. Check cache"| CACHE
+    USER -->|"1. Submit search query"| QUERY
+    QUERY -->|"2. Lookup cached results"| CACHE
     CACHE -.->|miss| INDEX
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0

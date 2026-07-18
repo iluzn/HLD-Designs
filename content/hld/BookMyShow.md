@@ -202,13 +202,13 @@ flowchart LR
     DB["Postgres Catalog DB"]:::data
     RL["Redis Lock Store"]:::data
 
-    User -->|"1. Send request"| GW
-    GW -->|"2. Route request"| CAT
-    GW -->|"3. Route request"| SS
-    CAT -->|"4. Check cache"| RC
-    CAT -->|"5. Query DB"| DB
-    SS -->|"6. Check cache"| RL
-    SS -->|"7. Query DB"| DB
+    User -->|"1. Browse shows"| GW
+    GW -->|"2. Forward to catalog svc"| CAT
+    GW -->|"3. Forward to seat svc"| SS
+    CAT -->|"4. Lookup cached shows"| RC
+    CAT -->|"5. Fetch show from DB"| DB
+    SS -->|"6. Acquire seat lock"| RL
+    SS -->|"7. Read seat availability"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -252,13 +252,13 @@ flowchart LR
     DB["Booking DB Postgres"]:::data
     REC["Hold Expiry Reconciler"]:::service
 
-    User -->|"1. Send request"| GW
-    GW -->|"2. Route request"| BS
+    User -->|"1. POST book seats"| GW
+    GW -->|"2. Forward to booking svc"| BS
     BS -->|"3. Acquire lock"| LM
-    LM -->|"4. Check cache"| RL
-    BS -->|"5. Query DB"| DB
-    REC -->|"6. Update cache"| RL
-    REC -->|"7. Persist data"| DB
+    LM -->|"4. SET NX seat lock"| RL
+    BS -->|"5. Write booking record"| DB
+    REC -->|"6. Release expired locks"| RL
+    REC -->|"7. Cancel expired holds"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -316,15 +316,15 @@ flowchart LR
     DB["Booking DB"]:::data
     NS["Notification Service"]:::service
 
-    User -->|"1. API call"| BS
-    BS -->|"2. Call service"| PS
-    PS -->|"3. Call external"| PGW
-    PGW -->|"4. Route request"| PS
-    PS -->|"5. Call service"| BS
-    BS -->|"6. Call service"| CONF
-    CONF -->|"7. Query DB"| DB
-    CONF -->|"8. Emit event"| KF
-    KF -->|"9. Consume event"| NS
+    User -->|"1. POST confirm payment"| BS
+    BS -->|"2. Initiate payment"| PS
+    PS -->|"3. Charge via gateway"| PGW
+    PGW -->|"4. Webhook payment result"| PS
+    PS -->|"5. Confirm to booking svc"| BS
+    BS -->|"6. Generate e-ticket"| CONF
+    CONF -->|"7. Read booking details"| DB
+    CONF -->|"8. Publish booking confirmed"| KF
+    KF -->|"9. Send confirmation email"| NS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef service fill:#1a3a2a,stroke:#4ade80,color:#e2e8f0
@@ -620,10 +620,10 @@ flowchart LR
     BS["Booking Service"]:::service
     RL["Redis Locks"]:::data
 
-    Users -->|"1. API call"| WR
+    Users -->|"1. Enter waiting room"| WR
     WR -->|"2. Assign position"| Q
     Q -->|"3. Dequeue 100/sec"| BS
-    BS -->|"4. Check cache"| RL
+    BS -->|"4. Acquire seat lock"| RL
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -731,33 +731,33 @@ flowchart LR
         FCM["FCM and Email"]:::external
     end
 
-    UA -->|"1. Send request"| LB
+    UA -->|"1. Open ticket page"| LB
     LB -->|"2. Route API"| GW
     LB -->|"3. Route SSE"| SSE
     GW -->|"4. Route to waiting room"| WR
-    WR -->|"5. Emit event"| Q
-    Q -->|"6. Consume event"| BS
-    GW -->|"7. Route request"| CAT
-    GW -->|"8. Route request"| SS
-    GW -->|"9. Route request"| BS
-    CAT -->|"10. Check cache"| RC
-    CAT -->|"11. Query DB"| PG
-    SS -->|"12. Check cache"| RL
+    WR -->|"5. Enqueue user position"| Q
+    Q -->|"6. Dequeue for booking"| BS
+    GW -->|"7. Forward to catalog svc"| CAT
+    GW -->|"8. Forward to seat svc"| SS
+    GW -->|"9. Forward to booking svc"| BS
+    CAT -->|"10. Lookup cached shows"| RC
+    CAT -->|"11. Fetch show from DB"| PG
+    SS -->|"12. Read seat availability"| RL
     BS -->|"13. Acquire lock"| LM
-    LM -->|"14. Check cache"| RL
-    BS -->|"15. Query DB"| PG
-    BS -->|"16. Call service"| PS
-    PS -->|"17. Call external"| PGW
-    BS -->|"18. Emit event"| KF
-    KF -->|"19. Consume event"| CONF
-    KF -->|"20. Consume event"| NS
-    KF -->|"21. Consume event"| SSE
-    CONF -->|"22. Query DB"| PG
-    NS -->|"23. Send notification"| FCM
-    REC -->|"24. Update cache"| RL
-    REC -->|"25. Persist data"| PG
+    LM -->|"14. SET NX seat lock"| RL
+    BS -->|"15. Write booking record"| PG
+    BS -->|"16. Initiate payment"| PS
+    PS -->|"17. Charge via gateway"| PGW
+    BS -->|"18. Publish booking event"| KF
+    KF -->|"19. Generate e-ticket"| CONF
+    KF -->|"20. Send confirmation"| NS
+    KF -->|"21. Push seat status update"| SSE
+    CONF -->|"22. Read booking details"| PG
+    NS -->|"23. Push via FCM and email"| FCM
+    REC -->|"24. Release expired locks"| RL
+    REC -->|"25. Cancel expired holds"| PG
     SSE -->|"26. Check limit"| RPS
-    RPS -->|"27. Return data"| SSE
+    RPS -->|"27. Broadcast to clients"| SSE
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0

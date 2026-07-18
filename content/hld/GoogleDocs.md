@@ -205,12 +205,12 @@ flowchart LR
     OL["Operation Log Cassandra"]:::data
     RPS["Redis Pub/Sub"]:::async
 
-    U1 -->|"1. Send request"| WSG
-    U2 -->|"2. Send request"| WSG
-    WSG -->|"3. Route request"| CS
-    CS -->|"4. Query DB"| OL
-    CS -->|"5. Check cache"| RPS
-    RPS -->|"6. Return data"| WSG
+    U1 -->|"1. Send edit operation"| WSG
+    U2 -->|"2. Send edit operation"| WSG
+    WSG -->|"3. Forward to collab svc"| CS
+    CS -->|"4. Append to op log"| OL
+    CS -->|"5. Broadcast via Pub/Sub"| RPS
+    RPS -->|"6. Push to WS gateways"| WSG
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -258,11 +258,11 @@ flowchart LR
     SS["Snapshot Service"]:::service
     S3["Object Store S3"]:::data
 
-    User -->|"1. Send request"| GW
-    GW -->|"2. Route request"| DS
-    DS -->|"3. Query DB"| DB
-    DS -->|"4. Query DB"| OL
-    SS -->|"5. Query DB"| OL
+    User -->|"1. Open document"| GW
+    GW -->|"2. Forward to doc svc"| DS
+    DS -->|"3. Fetch doc metadata"| DB
+    DS -->|"4. Read recent ops"| OL
+    SS -->|"5. Compact op log"| OL
     SS -->|"6. Store snapshot"| S3
     DS -->|"7. Fetch snapshot"| S3
 
@@ -309,11 +309,11 @@ flowchart LR
     CS["Change Summarizer"]:::service
     KF["Kafka"]:::async
 
-    User -->|"1. Send request"| GW
-    GW -->|"2. Route request"| HS
-    HS -->|"3. Query DB"| OL
-    HS -->|"4. Store file"| S3
-    KF -->|"5. Consume event"| CS
+    User -->|"1. View revision history"| GW
+    GW -->|"2. Forward to history svc"| HS
+    HS -->|"3. Read version ops"| OL
+    HS -->|"4. Fetch past snapshot"| S3
+    KF -->|"5. Feed change summarizer"| CS
     CS -->|"6. Propagate change"| DB["History DB Postgres"]:::data
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
@@ -524,13 +524,13 @@ flowchart LR
     U2["User 2"]:::client
     U3["User 3"]:::client
 
-    CS -->|"1. Check cache"| RPS
-    RPS -->|"2. Return data"| WSG1
-    RPS -->|"3. Return data"| WSG2
-    RPS -->|"4. Return data"| WSG3
-    WSG1 -->|"5. Return response"| U1
-    WSG2 -->|"6. Return response"| U2
-    WSG3 -->|"7. Return response"| U3
+    CS -->|"1. Broadcast op via Pub/Sub"| RPS
+    RPS -->|"2. Push to gateway 1"| WSG1
+    RPS -->|"3. Push to gateway 2"| WSG2
+    RPS -->|"4. Push to gateway 3"| WSG3
+    WSG1 -->|"5. Deliver to user 1"| U1
+    WSG2 -->|"6. Deliver to user 2"| U2
+    WSG3 -->|"7. Deliver to user 3"| U3
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -612,9 +612,9 @@ flowchart LR
     LB -->|"2. DocId hash"| CS1
     LB -->|"3. DocId hash"| CS2
     LB -->|"4. DocId hash"| CS3
-    CS1 -->|"5. Check cache"| RED
-    CS2 -->|"6. Check cache"| RED
-    CS3 -->|"7. Check cache"| RED
+    CS1 -->|"5. Load doc state"| RED
+    CS2 -->|"6. Load doc state"| RED
+    CS3 -->|"7. Load doc state"| RED
     CS1 -->|"8. Persist op"| OL
 
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -712,27 +712,27 @@ flowchart LR
         ES["Elasticsearch"]:::data
     end
 
-    U1 -->|"1. Send request"| LB
+    U1 -->|"1. Open document"| LB
     LB -->|"2. Route HTTP"| GW
     LB -->|"3. Route WebSocket"| WSG
-    GW -->|"4. Route request"| DS
-    WSG -->|"5. Route request"| CS
-    CS -->|"6. Check cache"| RED
-    CS -->|"7. Query DB"| CAS
-    CS -->|"8. Check cache"| RPS
-    RPS -->|"9. Return data"| WSG
-    DS -->|"10. Query DB"| PG
-    DS -->|"11. Store file"| S3
-    DS -->|"12. Query DB"| CAS
-    SS -->|"13. Query DB"| CAS
-    SS -->|"14. Store file"| S3
-    KF -->|"15. Consume event"| SUMM
-    KF -->|"16. Consume event"| ES
-    CS -->|"17. Emit event"| KF
-    HS -->|"18. Query DB"| CAS
-    HS -->|"19. Store file"| S3
-    PRES -->|"20. Check cache"| RED
-    PRES -->|"21. Check cache"| RPS
+    GW -->|"4. Forward to doc svc"| DS
+    WSG -->|"5. Forward to collab svc"| CS
+    CS -->|"6. Load doc state"| RED
+    CS -->|"7. Append to op log"| CAS
+    CS -->|"8. Broadcast via Pub/Sub"| RPS
+    RPS -->|"9. Push to WS gateways"| WSG
+    DS -->|"10. Fetch doc metadata"| PG
+    DS -->|"11. Store doc snapshot"| S3
+    DS -->|"12. Read op log"| CAS
+    SS -->|"13. Compact op log"| CAS
+    SS -->|"14. Save compacted snapshot"| S3
+    KF -->|"15. Feed doc summarizer"| SUMM
+    KF -->|"16. Update search index"| ES
+    CS -->|"17. Publish doc change"| KF
+    HS -->|"18. Read version history"| CAS
+    HS -->|"19. Fetch old snapshots"| S3
+    PRES -->|"20. Track active cursors"| RED
+    PRES -->|"21. Broadcast presence"| RPS
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
