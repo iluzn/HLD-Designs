@@ -597,6 +597,7 @@ flowchart LR
     WS["Write Service"]:::service
     RS["Redirect Service"]:::service
     IDG["Snowflake ID Gen"]:::service
+    CONSUMER["Analytics Consumer"]:::service
 
     REDIS[("Redis Cache")]:::data
     DB[("Database")]:::data
@@ -604,14 +605,16 @@ flowchart LR
 
     CLIENT -->|"1. POST /links"| GW
     GW -->|"2. Auth + forward"| WS
-    WS -->|"3. Get ID"| IDG
+    WS -->|"3. Get unique ID"| IDG
     WS -->|"4. Store mapping"| DB
 
     BROWSER -->|"1. GET /code"| CDN
-    CDN -->|"2. Miss"| RS
-    RS -->|"3. Cache lookup"| REDIS
-    RS -->|"4. Miss - read DB"| DB
+    CDN -->|"2. Cache miss"| RS
+    RS -->|"3. Check cache"| REDIS
+    RS -->|"4. DB fallback"| DB
     RS -->|"5. Fire click event"| Q
+    Q -->|"6. Aggregate counts"| CONSUMER
+    CONSUMER -->|"7. Write rollups"| DB
 
     classDef client fill:#4c3a5e,stroke:#818cf8,color:#e2e8f0
     classDef edge fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
@@ -620,7 +623,7 @@ flowchart LR
     classDef data fill:#3b3520,stroke:#fbbf24,color:#e2e8f0
 ```
 
-The complete system: write path (left) creates short codes via Snowflake + stores in DB. Read path (right) serves redirects through CDN → Redis → DB tiers, firing analytics events async to a queue. Simple, fast, and scalable.
+The complete system: **Write path** (top) — creates short codes via Snowflake ID generation, stores in DB. **Read path** (bottom) — serves redirects through CDN → Redis → DB, firing analytics events async to a queue. **Analytics** — a consumer aggregates click counts in the background without touching the redirect hot path.
 
 
 ---
