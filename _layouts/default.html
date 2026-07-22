@@ -864,43 +864,6 @@
     })();
     </script>
 
-    <!-- Adsterra Native Banner — inserted before Deep Dives on content pages only -->
-    <script>
-    (function() {
-        var content = document.querySelector('.content');
-        if (!content) return;
-        // Only show on HLD, DSA, concept pages (not landing/index pages)
-        var path = window.location.pathname;
-        if (path === '/' || path === '/hld' || path === '/hld/' || path === '/lld' || path === '/lld/' || path === '/dsa' || path === '/dsa/' || path === '/problemset' || path === '/problemset/') return;
-
-        // Find the "Potential Deep Dives" or "Deep Dives" h2
-        var headings = content.querySelectorAll('h2');
-        var target = null;
-        for (var i = 0; i < headings.length; i++) {
-            if (/deep dive|potential deep/i.test(headings[i].textContent)) {
-                target = headings[i];
-                break;
-            }
-        }
-        // Fallback: if no deep dive heading, place before the last h2
-        if (!target && headings.length > 3) {
-            target = headings[Math.floor(headings.length * 0.6)];
-        }
-        if (!target) return;
-
-        var adWrapper = document.createElement('div');
-        adWrapper.style.cssText = 'margin: 2rem 0; text-align: center; opacity: 0.9;';
-        adWrapper.innerHTML = '<div id="container-1696e9e49842bbf61f04ace63df852cc"></div>';
-        target.parentNode.insertBefore(adWrapper, target);
-
-        var s = document.createElement('script');
-        s.async = true;
-        s.setAttribute('data-cfasync', 'false');
-        s.src = 'https://pl30480367.effectivecpmnetwork.com/1696e9e49842bbf61f04ace63df852cc/invoke.js';
-        document.head.appendChild(s);
-    })();
-    </script>
-
     <!-- Code language tabs: resilient delegated handler (works regardless of init order or DOM changes) -->
     <script>
     document.addEventListener('click', function (e) {
